@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:lunaastrology.com)",
+      "Bash(node -e \"const p = require\\('./package.json'\\); console.log\\('Node:', process.version, 'Next:', p.dependencies.next\\)\")",
+      "Bash(npm show *)",
+      "Bash(npm install *)",
+      "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const j=JSON.parse\\(d\\); console.log\\('main:', j.main, 'exports:', JSON.stringify\\(j.exports\\).slice\\(0,200\\)\\)\")",
+      "Bash(node -e \"const e = require\\('ephemeris'\\); const d = new Date\\('2000-01-01T12:00:00Z'\\); const r = e.getAllPlanets\\(d, 2.17, 41.38, 0\\); console.log\\(Object.keys\\(r.observed\\)\\); console.log\\('sun:', r.observed.sun.apparentLongitudeDd, 'retrograde:', r.observed.sun.retrograde\\); console.log\\('chiron:', r.observed.chiron?.apparentLongitudeDd\\)\")",
+      "Bash(node -e \"const e = require\\('ephemeris'\\); const d = new Date\\('2000-01-01T12:00:00Z'\\); const r = e.getAllPlanets\\(d, 2.17, 41.38, 0\\); console.log\\('mars raw keys:', Object.keys\\(r.observed.mars.raw || {}\\)\\); console.log\\('mars full:', JSON.stringify\\(r.observed.mars, null, 2\\).slice\\(0,500\\)\\)\")",
+      "Bash(node -e \"const e = require\\('ephemeris'\\); const d = new Date\\('2000-01-01T12:00:00Z'\\); const r = e.getAllPlanets\\(d, 2.17, 41.38, 0\\); console.log\\('position keys:', Object.keys\\(r.observed.mars.raw.position || {}\\)\\); const p = r.observed.mars.raw.position; if\\(p\\) console.log\\('pos:', JSON.stringify\\(p\\).slice\\(0,300\\)\\)\")",
+      "Bash(node -e \"const e = require\\('ephemeris'\\); const d = new Date\\('2000-01-01T12:00:00Z'\\); const r = e.getAllPlanets\\(d, 2.17, 41.38, 0\\); const p = r.observed.mars.raw.position; console.log\\('is_retrograde:', p.is_retrograde\\); console.log\\('apparentLongitude:', p.apparentLongitude\\); console.log\\('apparentLongitude30String:', p.apparentLongitude30String\\);\")",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:3000 -o /dev/null -w \"%{http_code}\")",
+      "Bash(curl -s http://localhost:3002 -o /dev/null -w \"%{http_code}\")",
+      "Bash(curl -s http://localhost:3002/form -o /dev/null -w \"%{http_code}\")",
+      "Bash(curl -s http://localhost:3002/resultado -o /dev/null -w \"%{http_code}\")"
+    ]
+  }
+}

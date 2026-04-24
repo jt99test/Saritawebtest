@@ -1,0 +1,67 @@
+"use client";
+
+import { create } from "zustand";
+
+import type { Aspect, ChartPointId } from "@/lib/chart";
+
+type ChartStore = {
+  selectedPointId: ChartPointId | null;
+  hoveredAspectId: string | null;
+  activePanel: "details" | "settings";
+  detailTab: "essence" | "data" | "aspects" | "reading";
+  showAspects: boolean;
+  showMinorPoints: boolean;
+  panelOpen: boolean;
+  selectPoint: (pointId: ChartPointId | null) => void;
+  hoverAspect: (aspectId: string | null) => void;
+  setActivePanel: (panel: "details" | "settings") => void;
+  setDetailTab: (tab: "essence" | "data" | "aspects" | "reading") => void;
+  toggleAspects: () => void;
+  toggleMinorPoints: () => void;
+  isAspectHighlighted: (aspect: Aspect) => boolean;
+  openPanel: () => void;
+  closePanel: () => void;
+};
+
+export const useChartStore = create<ChartStore>((set, get) => ({
+  selectedPointId: null,
+  hoveredAspectId: null,
+  activePanel: "details",
+  detailTab: "essence",
+  showAspects: true,
+  showMinorPoints: true,
+  panelOpen: false,
+  selectPoint: (selectedPointId) =>
+    set({
+      selectedPointId,
+      activePanel: "details",
+      detailTab: "essence",
+      hoveredAspectId: null,
+    }),
+  hoverAspect: (hoveredAspectId) => set({ hoveredAspectId }),
+  setActivePanel: (activePanel) => set({ activePanel }),
+  setDetailTab: (detailTab) => set({ detailTab }),
+  toggleAspects: () => set((state) => ({ showAspects: !state.showAspects })),
+  toggleMinorPoints: () => set((state) => ({ showMinorPoints: !state.showMinorPoints })),
+  openPanel: () => set({ panelOpen: true }),
+  closePanel: () =>
+    set({
+      panelOpen: false,
+      selectedPointId: null,
+      hoveredAspectId: null,
+      detailTab: "essence",
+    }),
+  isAspectHighlighted: (aspect) => {
+    const { selectedPointId, hoveredAspectId } = get();
+
+    if (hoveredAspectId) {
+      return aspect.id === hoveredAspectId;
+    }
+
+    if (!selectedPointId) {
+      return false;
+    }
+
+    return aspect.from === selectedPointId || aspect.to === selectedPointId;
+  },
+}));

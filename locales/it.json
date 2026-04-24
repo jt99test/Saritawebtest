@@ -1,0 +1,248 @@
+{
+  "brand": {
+    "name": "SARITA"
+  },
+  "common": {
+    "languageLabel": "Lingua",
+    "languages": {
+      "es": "ES",
+      "en": "EN",
+      "it": "IT"
+    },
+    "yes": "Sì",
+    "no": "No",
+    "close": "Chiudi",
+    "show": "Mostra",
+    "hide": "Nascondi"
+  },
+  "home": {
+    "eyebrow": "Carta natale · Tema natale",
+    "subtitle": "Il cielo del giorno in cui sei nato",
+    "cta": "Genera carta natale"
+  },
+  "form": {
+    "back": "Indietro",
+    "title": "Dicci quando e dove sei nato",
+    "subtitle": "Solo ciò che serve per preparare la tua carta natale con calma e chiarezza.",
+    "fields": {
+      "name": "Nome",
+      "birthdate": "Data di nascita",
+      "birthtime": "Ora di nascita",
+      "location": "Luogo di nascita"
+    },
+    "placeholders": {
+      "name": "Il tuo nome",
+      "location": "Madrid, Spagna"
+    },
+    "locationStatus": {
+      "hint": "Inizia a scrivere e scegli una città precisa dall’elenco.",
+      "searching": "Cerchiamo luoghi…",
+      "empty": "Non abbiamo trovato risultati per questa ricerca.",
+      "error": "Al momento non è possibile caricare i suggerimenti.",
+      "selected": "Luogo selezionato"
+    },
+    "submit": "Vedi la mia carta natale"
+  },
+  "loading": {
+    "errorFallback": "C'è stato un problema durante la preparazione della tua carta natale.",
+    "steps": [
+      "Cerchiamo il cielo del momento in cui sei nato",
+      "Tracciamo la posizione dei pianeti",
+      "Prepariamo la tua carta natale"
+    ]
+  },
+  "result": {
+    "intro": "Così erano allineati i pianeti quando sei nato.",
+    "back": "Torna all'inizio",
+    "eyebrow": "Risultato",
+    "title": "Questa è la mappa del cielo della tua nascita",
+    "subtitle": "Una prima lettura visiva per esplorare la tua carta con calma.",
+    "variants": {
+      "default": "Base",
+      "astronomical": "Editoriale",
+      "symbolic": "Simbolica"
+    },
+    "panels": {
+      "details": "Lettura",
+      "settings": "Impostazioni",
+      "overview": "Quadro tecnico",
+      "event": "Dati del momento",
+      "system": "Sistema della carta",
+      "angles": "Angoli",
+      "positions": "Posizioni",
+      "aspectSummary": "Aspetti",
+      "aspectMatrix": "Matrice degli aspetti",
+      "houseCusps": "Cuspidi",
+      "filters": "Visualizzazione",
+      "selectedPoint": "Punto selezionato",
+      "selectedAspect": "Aspetti attivi",
+      "allPoints": "Punti della carta",
+      "placement": "Posizione nella carta",
+      "coordinates": "Coordinate"
+    },
+    "fields": {
+      "date": "Data e ora",
+      "location": "Luogo",
+      "latitude": "Latitudine",
+      "longitude": "Longitudine",
+      "utcOffset": "UTC",
+      "timezone": "Fuso orario",
+      "daylightSaving": "Ora legale",
+      "timezoneIdentifier": "Identificatore TZ",
+      "zodiac": "Zodiaco",
+      "houseSystem": "Sistema di case",
+      "chartMethod": "Tipo di carta",
+      "calculationMethod": "Calcolo",
+      "julianDay": "Giorno giuliano",
+      "locus": "Locus",
+      "point": "Punto",
+      "aspect": "Aspetto",
+      "pointsPair": "Relazione",
+      "house": "Casa",
+      "sign": "Segno",
+      "position": "Posizione",
+      "retrograde": "Retrogrado",
+      "retrogradeShort": "Rx",
+      "zodiacPosition": "Posizione zodiacale",
+      "eclipticLongitude": "Longitudine eclittica",
+      "element": "Elemento",
+      "modality": "Modalità",
+      "houseMeaning": "Area della casa",
+      "ascendant": "Ascendente",
+      "mc": "Medio cielo",
+      "descendant": "Discendente",
+      "ic": "Fondo cielo",
+      "orb": "Orbe"
+    },
+    "toggles": {
+      "aspects": "Aspetti",
+      "minorPoints": "Punti secondari"
+    },
+    "messages": {
+      "detailsHint": "Tocca un pianeta o un punto per aprire la sua scheda.",
+      "settingsHint": "Queste impostazioni sono pronte per collegarsi più avanti a calcoli reali.",
+      "noAspectSelected": "Seleziona un punto per evidenziare i suoi aspetti.",
+      "orbitalHint": "La ruota è interattiva: tocca, metti a fuoco e confronta le relazioni.",
+      "mockNotice": "Visualizzazione base pronta per dati reali.",
+      "missingResult": "Torna al modulo per generare la tua carta natale con i tuoi dati.",
+      "noAspectMatrix": "Nessun aspetto esatto"
+    },
+    "editorial": {
+      "signFocus": "Essenza",
+      "houseFocus": "Manifestazione",
+      "technicalSheet": "Scheda tecnica",
+      "summaryPrefix": "",
+      "summaryMiddle": "si esprime attraverso",
+      "summarySuffix": "e prende forma nell'ambito di",
+      "retrogradeActive": "Il moto retrogrado ne rende l'espressione più interiore e sfumata.",
+      "retrogradeDirect": "La sua espressione si dispiega in modo diretto e visibile.",
+      "signPrompts": {
+        "aries": "Impulso, apertura e affermazione immediata.",
+        "taurus": "Presenza stabile, sensoriale e perseverante.",
+        "gemini": "Movimento mentale, curiosità e linguaggio.",
+        "cancer": "Memoria, protezione e sensibilità emotiva.",
+        "leo": "Autoespressione, luce e volontà creativa.",
+        "virgo": "Discernimento, precisione e cura del dettaglio.",
+        "libra": "Armonia, relazione e coscienza dell'altro.",
+        "scorpio": "Intensità, profondità e trasformazione.",
+        "sagittarius": "Ricerca di senso, espansione e visione.",
+        "capricorn": "Struttura, ambizione e maturità.",
+        "aquarius": "Distanza lucida, innovazione e prospettiva.",
+        "pisces": "Permeabilità, intuizione e risonanza sottile."
+      },
+      "housePrompts": {
+        "1": "Qui diventa visibile nell'identità e nel modo in cui ti presenti.",
+        "2": "Qui si traduce in valore, risorse e sicurezza.",
+        "3": "Qui appare nella tua voce, nelle idee e nel modo di comunicare.",
+        "4": "Qui si radica in origini, intimità e casa.",
+        "5": "Qui chiede creazione, gioco e desiderio di esprimersi.",
+        "6": "Qui si organizza in abitudini, lavoro quotidiano e cura.",
+        "7": "Qui si rivela attraverso il legame e lo specchio dell'altro.",
+        "8": "Qui si intensifica nei processi di cambiamento e profondità emotiva.",
+        "9": "Qui cerca orizzonte, visione ed espansione di senso.",
+        "10": "Qui prende forma pubblica, vocazionale e visibile.",
+        "11": "Qui si attiva nelle reti, nella comunità e nei futuri possibili.",
+        "12": "Qui opera dal sottile, dall'interiore e dall'inconscio."
+      }
+    },
+    "points": {
+      "sun": "Sole",
+      "moon": "Luna",
+      "mercury": "Mercurio",
+      "venus": "Venere",
+      "mars": "Marte",
+      "jupiter": "Giove",
+      "saturn": "Saturno",
+      "uranus": "Urano",
+      "neptune": "Nettuno",
+      "pluto": "Plutone",
+      "northNode": "Nodo nord",
+      "southNode": "Nodo sud",
+      "chiron": "Chirone",
+      "partOfFortune": "Parte della fortuna",
+      "lilith": "Lilith"
+    },
+    "signs": {
+      "aries": "Ariete",
+      "taurus": "Toro",
+      "gemini": "Gemelli",
+      "cancer": "Cancro",
+      "leo": "Leone",
+      "virgo": "Vergine",
+      "libra": "Bilancia",
+      "scorpio": "Scorpione",
+      "sagittarius": "Sagittario",
+      "capricorn": "Capricorno",
+      "aquarius": "Acquario",
+      "pisces": "Pesci"
+    },
+    "aspectTypes": {
+      "conjunction": "Congiunzione",
+      "sextile": "Sestile",
+      "square": "Quadratura",
+      "trine": "Trigono",
+      "opposition": "Opposizione",
+      "quincunx": "Quincunce"
+    },
+    "aspectSymbols": {
+      "conjunction": "☌",
+      "sextile": "✶",
+      "square": "□",
+      "trine": "△",
+      "opposition": "☍",
+      "quincunx": "⚻"
+    },
+    "elements": {
+      "fire": "Fuoco",
+      "earth": "Terra",
+      "air": "Aria",
+      "water": "Acqua"
+    },
+    "modalities": {
+      "cardinal": "Cardinale",
+      "fixed": "Fissa",
+      "mutable": "Mobile"
+    },
+    "houseMeanings": {
+      "1": "Identità",
+      "2": "Risorse",
+      "3": "Comunicazione",
+      "4": "Casa",
+      "5": "Creatività",
+      "6": "Servizio",
+      "7": "Relazioni",
+      "8": "Trasformazione",
+      "9": "Senso",
+      "10": "Percorso",
+      "11": "Legami",
+      "12": "Intuizione"
+    },
+    "settingsValues": {
+      "natal": "Natale",
+      "swissEphemeris": "Swiss Ephemeris",
+      "tropical": "Tropicale",
+      "placidus": "Placidus",
+      "geocentric": "Geocentrico"
+    }
+  }
+}

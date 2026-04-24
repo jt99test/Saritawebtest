@@ -1,0 +1,248 @@
+{
+  "brand": {
+    "name": "SARITA"
+  },
+  "common": {
+    "languageLabel": "Language",
+    "languages": {
+      "es": "ES",
+      "en": "EN",
+      "it": "IT"
+    },
+    "yes": "Yes",
+    "no": "No",
+    "close": "Close",
+    "show": "Show",
+    "hide": "Hide"
+  },
+  "home": {
+    "eyebrow": "Natal chart · Birth chart",
+    "subtitle": "The sky on the day you were born",
+    "cta": "Generate natal chart"
+  },
+  "form": {
+    "back": "Back",
+    "title": "Tell us when and where you were born",
+    "subtitle": "Just enough to prepare your natal chart with calm and clarity.",
+    "fields": {
+      "name": "Name",
+      "birthdate": "Birth date",
+      "birthtime": "Birth time",
+      "location": "Birth place"
+    },
+    "placeholders": {
+      "name": "Your name",
+      "location": "Madrid, Spain"
+    },
+    "locationStatus": {
+      "hint": "Start typing and choose a specific city from the list.",
+      "searching": "Searching places…",
+      "empty": "We couldn’t find results for that search.",
+      "error": "Suggestions could not be loaded right now.",
+      "selected": "Selected place"
+    },
+    "submit": "See my natal chart"
+  },
+  "loading": {
+    "errorFallback": "There was a problem while preparing your natal chart.",
+    "steps": [
+      "Looking for the sky at the moment you were born",
+      "Tracing the position of the planets",
+      "Preparing your natal chart"
+    ]
+  },
+  "result": {
+    "intro": "This is how the planets were aligned when you were born.",
+    "back": "Back to home",
+    "eyebrow": "Result",
+    "title": "This is the sky map from your birth",
+    "subtitle": "A first visual reading to explore your chart with calm.",
+    "variants": {
+      "default": "Base",
+      "astronomical": "Editorial",
+      "symbolic": "Symbolic"
+    },
+    "panels": {
+      "details": "Reading",
+      "settings": "Settings",
+      "overview": "Technical overview",
+      "event": "Moment data",
+      "system": "Chart system",
+      "angles": "Angles",
+      "positions": "Positions",
+      "aspectSummary": "Aspects",
+      "aspectMatrix": "Aspect matrix",
+      "houseCusps": "House cusps",
+      "filters": "Display",
+      "selectedPoint": "Selected point",
+      "selectedAspect": "Active aspects",
+      "allPoints": "Chart points",
+      "placement": "Chart placement",
+      "coordinates": "Coordinates"
+    },
+    "fields": {
+      "date": "Date and time",
+      "location": "Location",
+      "latitude": "Latitude",
+      "longitude": "Longitude",
+      "utcOffset": "UTC",
+      "timezone": "Timezone",
+      "daylightSaving": "Daylight saving time",
+      "timezoneIdentifier": "TZ identifier",
+      "zodiac": "Zodiac",
+      "houseSystem": "House system",
+      "chartMethod": "Chart type",
+      "calculationMethod": "Calculation",
+      "julianDay": "Julian day",
+      "locus": "Locus",
+      "point": "Point",
+      "aspect": "Aspect",
+      "pointsPair": "Relationship",
+      "house": "House",
+      "sign": "Sign",
+      "position": "Position",
+      "retrograde": "Retrograde",
+      "retrogradeShort": "Rx",
+      "zodiacPosition": "Zodiac position",
+      "eclipticLongitude": "Ecliptic longitude",
+      "element": "Element",
+      "modality": "Modality",
+      "houseMeaning": "House area",
+      "ascendant": "Ascendant",
+      "mc": "Midheaven",
+      "descendant": "Descendant",
+      "ic": "Imum Coeli",
+      "orb": "Orb"
+    },
+    "toggles": {
+      "aspects": "Aspects",
+      "minorPoints": "Minor points"
+    },
+    "messages": {
+      "detailsHint": "Tap a planet or point to open its data card.",
+      "settingsHint": "These settings are ready to be wired to real calculations later on.",
+      "noAspectSelected": "Select a point to highlight its aspects.",
+      "orbitalHint": "The wheel is interactive: tap, focus, and compare relationships.",
+      "mockNotice": "Base visualization ready for real data.",
+      "missingResult": "Go back to the form to generate your natal chart from your details.",
+      "noAspectMatrix": "No exact aspect"
+    },
+    "editorial": {
+      "signFocus": "Essence",
+      "houseFocus": "Expression",
+      "technicalSheet": "Technical sheet",
+      "summaryPrefix": "",
+      "summaryMiddle": "expresses itself through",
+      "summarySuffix": "and takes shape in the sphere of",
+      "retrogradeActive": "Retrograde motion softens the expression and turns it inward.",
+      "retrogradeDirect": "Its expression unfolds in a direct and visible way.",
+      "signPrompts": {
+        "aries": "Impulse, opening, and immediate assertion.",
+        "taurus": "Stable, sensual presence and steady endurance.",
+        "gemini": "Mental movement, curiosity, and language.",
+        "cancer": "Memory, protection, and emotional sensitivity.",
+        "leo": "Self-expression, radiance, and creative will.",
+        "virgo": "Discernment, precision, and attention to detail.",
+        "libra": "Harmony, relationship, and awareness of the other.",
+        "scorpio": "Intensity, depth, and transformation.",
+        "sagittarius": "Search for meaning, expansion, and vision.",
+        "capricorn": "Structure, ambition, and maturity.",
+        "aquarius": "Lucid distance, innovation, and perspective.",
+        "pisces": "Permeability, intuition, and subtle resonance."
+      },
+      "housePrompts": {
+        "1": "Here it becomes visible in identity and the way you present yourself.",
+        "2": "Here it translates into value, resources, and security.",
+        "3": "Here it appears in your voice, your ideas, and how you communicate.",
+        "4": "Here it settles into roots, intimacy, and home.",
+        "5": "Here it asks for creation, play, and the desire to express.",
+        "6": "Here it is shaped through habits, daily work, and care.",
+        "7": "Here it is revealed through relationship and the mirror of the other.",
+        "8": "Here it intensifies through change and emotional depth.",
+        "9": "Here it seeks horizon, vision, and expansion of meaning.",
+        "10": "Here it takes public, vocational, and visible form.",
+        "11": "Here it activates through networks, community, and future possibilities.",
+        "12": "Here it works through the subtle, the inner, and the unconscious."
+      }
+    },
+    "points": {
+      "sun": "Sun",
+      "moon": "Moon",
+      "mercury": "Mercury",
+      "venus": "Venus",
+      "mars": "Mars",
+      "jupiter": "Jupiter",
+      "saturn": "Saturn",
+      "uranus": "Uranus",
+      "neptune": "Neptune",
+      "pluto": "Pluto",
+      "northNode": "North node",
+      "southNode": "South node",
+      "chiron": "Chiron",
+      "partOfFortune": "Part of Fortune",
+      "lilith": "Lilith"
+    },
+    "signs": {
+      "aries": "Aries",
+      "taurus": "Taurus",
+      "gemini": "Gemini",
+      "cancer": "Cancer",
+      "leo": "Leo",
+      "virgo": "Virgo",
+      "libra": "Libra",
+      "scorpio": "Scorpio",
+      "sagittarius": "Sagittarius",
+      "capricorn": "Capricorn",
+      "aquarius": "Aquarius",
+      "pisces": "Pisces"
+    },
+    "aspectTypes": {
+      "conjunction": "Conjunction",
+      "sextile": "Sextile",
+      "square": "Square",
+      "trine": "Trine",
+      "opposition": "Opposition",
+      "quincunx": "Quincunx"
+    },
+    "aspectSymbols": {
+      "conjunction": "☌",
+      "sextile": "✶",
+      "square": "□",
+      "trine": "△",
+      "opposition": "☍",
+      "quincunx": "⚻"
+    },
+    "elements": {
+      "fire": "Fire",
+      "earth": "Earth",
+      "air": "Air",
+      "water": "Water"
+    },
+    "modalities": {
+      "cardinal": "Cardinal",
+      "fixed": "Fixed",
+      "mutable": "Mutable"
+    },
+    "houseMeanings": {
+      "1": "Identity",
+      "2": "Resources",
+      "3": "Communication",
+      "4": "Home",
+      "5": "Creativity",
+      "6": "Service",
+      "7": "Relationships",
+      "8": "Transformation",
+      "9": "Meaning",
+      "10": "Trajectory",
+      "11": "Networks",
+      "12": "Intuition"
+    },
+    "settingsValues": {
+      "natal": "Natal",
+      "swissEphemeris": "Swiss Ephemeris",
+      "tropical": "Tropical",
+      "placidus": "Placidus",
+      "geocentric": "Geocentric"
+    }
+  }
+}
