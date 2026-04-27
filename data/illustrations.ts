@@ -1,13 +1,13 @@
 export const illustrations = {
   moons: {
-    nueva: "/images/moons/luna-nueva.png",
-    llena: "/images/moons/luna-llena.png",
+    nueva: "/images/premium/moon-new-dark.png",
+    llena: "/images/premium/moon-full-photo.png",
   },
   elements: {
-    fuego: "/images/elements/elemento-fuego.png",
-    tierra: "/images/elements/elemento-tierra.png",
-    aire: "/images/elements/elemento-aire.png",
-    agua: "/images/elements/elemento-agua.png",
+    fuego: "/images/premium/element-fire-solar.png",
+    tierra: "/images/premium/element-earth-stone.png",
+    aire: "/images/premium/element-air-storm.png",
+    agua: "/images/premium/element-water-moon.png",
   },
   planets: {
     sol: "/images/planets/planeta-sol.png",
@@ -19,13 +19,11 @@ export const illustrations = {
   },
   scenes: {
     loading: "/images/scenes/loading-cosmos.png",
-    landing: "/images/scenes/landing-hero.png",
+    landing: "/images/premium/hero-observatory-planets.png",
   },
   decorative: {
     constellationPattern: "/images/decorative/bg-constellation-pattern.png",
     nebulaTexture: "/images/decorative/bg-nebula-texture.png",
-    solLunaUnion: "/images/decorative/sol-luna-union.png",
-    sparklesSet: "/images/decorative/sparkles-set.png",
     zodiacoCirculo: "/images/decorative/zodiaco-circulo.png",
   },
 } as const;

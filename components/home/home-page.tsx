@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { motion } from "motion/react";
 
 import { LanguageSelector } from "@/components/i18n/language-selector";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
@@ -21,12 +22,24 @@ export function HomePage() {
   }, []);
 
   return (
-    <main className="relative isolate min-h-screen overflow-hidden bg-cosmic-950">
+    <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
 
-      <section className="relative min-h-screen overflow-hidden">
+      <section className="relative isolate min-h-screen overflow-hidden">
         <AtmosphericBackground variant="hero" />
         <AtmosphericBackground variant="heroGlow" />
+
+        <Image
+          src={illustrations.scenes.landing}
+          alt=""
+          fill
+          priority
+          className="pointer-events-none absolute inset-0 -z-10 h-full w-full object-cover opacity-60 saturate-[0.82]"
+          style={{ objectPosition: "70% center" }}
+          sizes="100vw"
+        />
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(5,7,13,0.68),rgba(5,7,13,0.34)_42%,rgba(5,7,13,0.82)),linear-gradient(180deg,rgba(5,7,13,0.24),rgba(5,7,13,0.78)_76%,#05070d)]" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[34vh] bg-gradient-to-t from-cosmic-950 via-cosmic-950/72 to-transparent" />
 
         <Container className="relative flex min-h-screen flex-col pb-8 pt-5 sm:pb-10 sm:pt-6">
           <div className="flex items-start justify-between gap-4 sm:gap-6">
@@ -48,42 +61,74 @@ export function HomePage() {
             </div>
           </div>
 
-          <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center gap-7 pt-8 text-center sm:gap-8 sm:pt-10">
-            <div className="relative w-full overflow-hidden rounded-[1.4rem] border border-white/8 shadow-[0_34px_120px_rgba(0,0,0,0.44)]">
-              <Image
-                src={illustrations.scenes.landing}
-                alt="Ilustracion cosmica de bienvenida"
-                width={1440}
-                height={810}
-                priority
-                className="aspect-[16/10] w-full object-cover sm:aspect-[16/8]"
-                sizes="(min-width: 1280px) 1152px, 100vw"
-              />
+          <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 items-center pt-8 sm:pt-10">
+            <motion.div
+              className="flex w-full max-w-[34rem] flex-col items-start gap-5 text-left sm:gap-6"
+              initial="hidden"
+              animate="show"
+              variants={{ hidden: {}, show: {} }}
+            >
+            <motion.div
+              className="h-px w-20 bg-gradient-to-r from-dusty-gold/70 to-transparent sm:w-28"
+              variants={{
+                hidden: { opacity: 0, y: 12 },
+                show: { opacity: 1, y: 0 },
+              }}
+              transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+            />
+            <motion.h1
+              className="max-w-[9ch] text-6xl leading-[0.9] font-medium text-white drop-shadow-[0_18px_34px_rgba(0,0,0,0.58)] sm:text-8xl lg:text-[8rem]"
+              variants={{
+                hidden: { opacity: 0, y: 12 },
+                show: { opacity: 1, y: 0 },
+              }}
+              transition={{ delay: 0.12, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+            >
+              {dictionary.brand.name}
+            </motion.h1>
 
-              <div className="absolute inset-x-0 top-[10%] flex flex-col items-center px-5 sm:top-[12%]">
-                <div className="mb-4 h-px w-20 bg-gradient-to-r from-transparent via-dusty-gold/70 to-transparent sm:mb-5 sm:w-28" />
-                <h1 className="max-w-[9ch] text-6xl leading-[0.92] font-medium text-white drop-shadow-[0_18px_34px_rgba(0,0,0,0.58)] sm:text-8xl lg:text-9xl">
-                  {dictionary.brand.name}
-                </h1>
-              </div>
-            </div>
-
-            <p className="max-w-xl text-balance text-[0.95rem] leading-7 text-dusty-gold/82 sm:text-base">
+            <motion.p
+              className="max-w-xl text-balance text-[0.95rem] leading-7 text-ivory/76 drop-shadow-[0_8px_24px_rgba(0,0,0,0.5)] sm:text-base"
+              variants={{
+                hidden: { opacity: 0, y: 12 },
+                show: { opacity: 1, y: 0 },
+              }}
+              transition={{ delay: 0.26, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+            >
               {dictionary.home.subtitle}
-            </p>
+            </motion.p>
 
-            <div>
+            <motion.div
+              className="pt-1"
+              variants={{
+                hidden: { opacity: 0, y: 12 },
+                show: { opacity: 1, y: 0 },
+              }}
+              transition={{ delay: 0.42, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+            >
               <PrimaryButton
                 href="/form"
                 variant="ghostGold"
-                className="min-w-56 px-8 py-3.5 text-[0.8rem] tracking-[0.18em] uppercase"
+                className="min-w-56 border-dusty-gold/45 bg-cosmic-950/24 px-8 py-3.5 text-[0.8rem] uppercase tracking-[0.18em] shadow-[0_18px_54px_rgba(0,0,0,0.34)] backdrop-blur-md"
               >
                 {dictionary.home.cta}
               </PrimaryButton>
-            </div>
+            </motion.div>
+            </motion.div>
           </div>
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-cosmic-950 via-cosmic-950/55 to-transparent" />
+          <div className="relative z-10 border-t border-white/10 py-4">
+            <div className="grid gap-3 text-center sm:grid-cols-3 sm:text-left">
+              {["Carta natal", "Luna del mes", "Yoga astral"].map((item) => (
+                <p
+                  key={item}
+                  className="text-[0.65rem] font-medium uppercase tracking-[0.24em] text-ivory/45"
+                >
+                  {item}
+                </p>
+              ))}
+            </div>
+          </div>
         </Container>
       </section>
     </main>

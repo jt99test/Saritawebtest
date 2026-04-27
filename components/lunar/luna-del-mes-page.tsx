@@ -326,19 +326,19 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
   });
 
   return (
-    <div className="mx-auto max-w-[1200px] pb-0 pt-20">
+    <div className="mx-auto max-w-[1080px] pb-0 pt-8 lg:pt-10">
       <header className="text-center">
         <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">
           luna del mes
         </p>
-        <h1 className="mt-2 font-serif text-[56px] font-normal leading-none tracking-[-0.01em] text-white lg:text-[80px]">
+        <h1 className="mt-1.5 font-serif text-[52px] font-normal leading-none tracking-[-0.01em] text-white lg:text-[68px]">
           {currentMonth.setLocale("es").toFormat("LLLL yyyy").toLowerCase()}
         </h1>
-        <p className="mx-auto mt-4 max-w-[480px] font-serif text-[15px] italic leading-7 text-white/50 lg:max-w-[540px]">
+        <p className="mx-auto mt-3 max-w-[480px] font-serif text-[15px] italic leading-7 text-white/50 lg:max-w-[540px]">
           Dos lunas marcan este mes. Tócalas para entrar.
         </p>
 
-        <div className="mt-24 lg:mt-[120px]">
+        <div className="mt-10 lg:mt-12">
           {toggleOptions.length > 0 ? (
             <LunationToggle
               options={toggleOptions}
@@ -350,16 +350,16 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
       </header>
 
       {previewLoading ? (
-        <p className="mt-20 text-center font-serif text-sm italic leading-7 text-white/55">
+        <p className="mt-12 text-center font-serif text-sm italic leading-7 text-white/55">
           Calculando tu luna del mes...
         </p>
       ) : previewError ? (
-        <p className="mt-20 text-center font-serif text-sm italic leading-7 text-white/55">
+        <p className="mt-12 text-center font-serif text-sm italic leading-7 text-white/55">
           {previewError}
         </p>
       ) : selectedMetadata ? (
         <div>
-          <div className="mt-20 lg:mt-[120px]">
+          <div className="mt-12 lg:mt-14">
             <LunationHeaderCard
               metadata={selectedMetadata}
               dictionary={dictionary}
@@ -367,7 +367,7 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
             />
           </div>
 
-          <div className="mt-32 lg:mt-40">
+          <div className="mt-20 lg:mt-28">
             <LunationReadingCard
               prose={prose}
               loading={activeStream.loading}
@@ -376,23 +376,23 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
             />
           </div>
 
-          <div className="mt-24 lg:mt-40">
+          <div className="mt-10 lg:mt-12">
             <ActiveTransitsList
               transits={selectedMetadata.activeTransits}
               timezone={timezone}
             />
           </div>
 
-          <div className="mt-24 lg:mt-40">
+          <div className="mt-16 lg:mt-20">
             <MonthlyRoutineCard metadata={selectedMetadata} />
           </div>
 
-          <div className="mt-32 lg:mt-40">
+          <div className="mt-10 lg:mt-12">
             <PracticalActions actions={actions} loading={activeStream.loading} />
           </div>
         </div>
       ) : (
-        <p className="mt-20 text-center font-serif text-sm italic leading-7 text-white/55">
+        <p className="mt-12 text-center font-serif text-sm italic leading-7 text-white/55">
           No hemos encontrado lunaciones para este mes.
         </p>
       )}

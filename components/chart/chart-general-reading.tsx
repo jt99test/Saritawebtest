@@ -21,6 +21,15 @@ type GateMeta = {
   glyph: string;
 };
 
+const GATE_GLYPHS: Partial<Record<ChartPointId, string>> = {
+  sun: "\u2609",
+  moon: "\u263d",
+  venus: "\u2640",
+  mercury: "\u263f",
+  northNode: "\u260a",
+  saturn: "\u2644",
+};
+
 const GATE_META_BY_TITLE: Array<{ needle: string; meta: GateMeta }> = [
   { needle: "esencia", meta: { pointId: "sun", glyph: "☉" } },
   { needle: "sientes", meta: { pointId: "moon", glyph: "☽" } },
@@ -146,17 +155,17 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
   }
 
   return (
-    <section className="pb-24">
+    <section className="pb-12 lg:pb-14">
       <div className="mx-auto max-w-[720px] text-center">
-        <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.5)]">
+        <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">
           tu carta, en esencia
         </p>
-        <h2 className="mt-2 font-serif text-[36px] font-normal leading-tight text-ivory lg:text-[44px]">
+        <h2 className="mt-1.5 font-serif text-[30px] font-normal leading-tight text-ivory lg:text-[36px]">
           Seis puertas de entrada
         </h2>
       </div>
 
-      <div className="mx-auto mt-14 max-w-[720px]">
+      <div className="mx-auto mt-7 max-w-[700px] lg:mt-8">
         {cards.map((card, index) => {
           const expanded = expandedId === card.id;
           const cachedContent = cachedReadings[card.theme] ?? "";
@@ -166,19 +175,27 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
           const fullReading = cachedContent || streamingContent;
           const paragraphs = fullReading ? splitReadingParagraphs(fullReading) : [];
           const gateMeta = gateMetaFor(card.title);
-          const actionLabel = cachedContent ? "Leer ↓" : "Generar ↓";
+          const actionLabel = loading
+            ? dictionary.result.generalReading.generating
+            : cachedContent
+              ? expanded
+                ? "Leer —"
+                : "Leer +"
+              : expanded
+                ? "Generar —"
+                : "Generar +";
 
           return (
             <article
               key={card.id}
               className={[
-                "border-t-[0.5px] border-[rgba(232,197,71,0.15)]",
+                "border-t-[0.5px] border-dusty-gold/15",
                 index === cards.length - 1 ? "border-b-[0.5px]" : "",
               ].join(" ")}
             >
               <button
                 type="button"
-                className="grid w-full cursor-pointer grid-cols-[60px_minmax(0,1fr)_120px] items-center gap-6 py-7 text-left transition duration-200 hover:bg-[rgba(232,197,71,0.03)] lg:grid-cols-[80px_minmax(0,1fr)_120px] lg:py-9"
+                className="grid w-full cursor-pointer grid-cols-[48px_minmax(0,1fr)_96px] items-center gap-4 py-4.5 text-left transition duration-200 hover:bg-dusty-gold/[0.03] sm:grid-cols-[56px_minmax(0,1fr)_128px] lg:grid-cols-[64px_minmax(0,1fr)_128px] lg:py-5"
                 onClick={() => {
                   setExpandedId(expanded ? null : card.id);
                   if (!cachedContent && !streamingContent && !loading) {
@@ -187,18 +204,18 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
                 }}
                 aria-expanded={expanded}
               >
-                <span className="text-center font-serif text-[32px] text-[rgba(255,255,255,0.6)] lg:text-[36px]">
-                  {gateMeta.glyph}
+                <span className="text-center font-serif text-[28px] text-[rgba(255,255,255,0.58)] lg:text-[32px]">
+                  {GATE_GLYPHS[gateMeta.pointId] ?? gateMeta.glyph}
                 </span>
                 <span>
-                  <span className="block font-serif text-2xl font-normal text-white lg:text-[28px]">
+                  <span className="block font-serif text-[21px] font-normal text-white lg:text-[24px]">
                     {card.title}
                   </span>
                   <span className="mt-1 block font-serif text-[13px] italic text-[rgba(255,255,255,0.5)] lg:text-sm">
                     {subtitleFor(gateMeta.pointId, chart, dictionary)}
                   </span>
                 </span>
-                <span className="text-right text-[13px] text-[rgba(232,197,71,0.8)]">
+                <span className="text-right text-[11px] uppercase tracking-[0.16em] text-dusty-gold/80">
                   {actionLabel}
                 </span>
               </button>
@@ -213,7 +230,7 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
                 transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
                 className="overflow-hidden"
               >
-                <div className="max-w-[600px] pb-7 pl-[84px] lg:pl-[104px]">
+                <div className="max-w-[600px] pb-5 pl-[64px] sm:pl-[76px] lg:pl-[84px]">
                   {error ? (
                     <div className="space-y-4">
                       <p className="font-serif text-[17px] leading-[1.75] text-[rgba(255,255,255,0.85)] lg:text-lg lg:leading-[1.8]">
@@ -222,18 +239,13 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
                       <button
                         type="button"
                         onClick={() => void generateReading(card.theme)}
-                        className="text-[13px] text-[rgba(232,197,71,0.8)] transition hover:text-ivory"
+                        className="text-[13px] text-dusty-gold/80 transition hover:text-ivory"
                       >
                         {dictionary.result.generalReading.retry} ↓
                       </button>
                     </div>
                   ) : fullReading ? (
                     <div className="space-y-5">
-                      {loading ? (
-                        <p className="text-[13px] uppercase tracking-[0.2em] text-[rgba(232,197,71,0.65)]">
-                          {dictionary.result.generalReading.generating}
-                        </p>
-                      ) : null}
                       <div className="space-y-5">
                         {paragraphs.map((paragraph, paragraphIndex) => (
                           <p

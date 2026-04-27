@@ -361,7 +361,7 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
         </p>
       </header>
 
-      <section className="mx-auto mt-32 max-w-[1040px] lg:mt-40 lg:max-w-[1080px]">
+      <section className="mx-auto mt-16 max-w-[1040px] border-t-[0.5px] border-dusty-gold/12 pt-10 lg:mt-20 lg:max-w-[1080px]">
         <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">
           tu rutina del mes
         </p>
@@ -420,7 +420,7 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
         </div>
       </section>
 
-      <section className="mx-auto mt-32 max-w-[960px] lg:mt-40 lg:max-w-[1080px]">
+      <section className="mx-auto mt-16 max-w-[960px] border-t-[0.5px] border-dusty-gold/12 pt-10 lg:mt-20 lg:max-w-[1080px]">
         <div className="text-center">
           <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">
             las cuatro rutinas
@@ -443,14 +443,15 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
                   alt={ELEMENT_ALT_TEXT[element]}
                   width={260}
                   height={260}
-                  className="mx-auto h-[200px] w-auto object-contain transition duration-[250ms] group-hover:brightness-[1.08] lg:h-[260px]"
+                  className="mx-auto h-[200px] w-auto object-contain transition duration-[350ms] group-hover:scale-[1.02] group-hover:brightness-[1.15] lg:h-[260px]"
                   sizes="260px"
                 />
                 <h3 className="mt-8 font-serif text-[32px] font-normal leading-tight text-white transition-colors duration-[250ms] group-hover:text-dusty-gold lg:text-[38px]">
                   {`Elemento ${ELEMENT_LABELS[element]}`}
                 </h3>
-                <p className="mx-auto mt-3 max-w-[280px] font-serif text-sm italic leading-6 text-white/55 lg:max-w-[320px] lg:text-base">
-                  {ELEMENT_ESSENCE[element]}
+                <p className="relative mx-auto mt-3 max-w-[280px] font-serif text-sm italic leading-6 text-white/55 lg:max-w-[320px] lg:text-base">
+                  <span>{ELEMENT_ESSENCE[element]}</span>
+                  <span className="mx-auto mt-3 block h-px w-12 origin-center scale-x-0 bg-dusty-gold/55 transition-transform duration-300 group-hover:scale-x-100" />
                 </p>
                 <p className="mx-auto mt-6 max-w-[360px] font-serif text-xs italic leading-6 text-white/40">
                   {getPortalMeta(element)}
@@ -461,7 +462,7 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
         </div>
       </section>
 
-      <section className="mt-32 w-full lg:mt-40">
+      <section className="mt-16 w-full border-t-[0.5px] border-dusty-gold/12 pt-10 lg:mt-20">
         <div className="text-center">
           <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">
             tu postura ancla

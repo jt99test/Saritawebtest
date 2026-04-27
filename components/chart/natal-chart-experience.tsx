@@ -55,9 +55,9 @@ export function NatalChartExperience({
   ].filter(Boolean).join(" · ");
 
   return (
-    <div className="relative mx-auto max-w-[880px] pb-24 lg:max-w-[1200px]">
-      <div className="space-y-4">
-        <nav className="flex flex-wrap items-center gap-x-6 gap-y-3 border-b border-white/8 pb-3">
+    <div className="relative mx-auto max-w-[880px] pb-12 lg:max-w-[1180px]">
+      <div className="space-y-3">
+        <nav className="grid gap-2 border-y border-white/8 py-2 sm:grid-cols-3 lg:max-w-[42rem]">
           {PAGE_TABS.map((tab) => {
             const active = pageTab === tab;
             return (
@@ -65,17 +65,21 @@ export function NatalChartExperience({
                 key={tab}
                 type="button"
                 onClick={() => setPageTab(tab)}
-                className="group relative pb-2 text-left transition"
+                className={[
+                  "group border-l px-3 py-2.5 text-left transition",
+                  active
+                    ? "border-dusty-gold bg-dusty-gold/7"
+                    : "border-white/10 bg-transparent hover:border-dusty-gold/35 hover:bg-white/[0.025]",
+                ].join(" ")}
               >
-                <span className="font-serif text-lg text-ivory/72 transition group-hover:text-ivory">
-                  {dictionary.result.primaryTabs[tab]}
-                </span>
                 <span
                   className={[
-                    "absolute inset-x-0 -bottom-0.5 h-px origin-left transition",
-                    active ? "scale-x-100 bg-[rgba(232,197,71,0.6)]" : "scale-x-0 bg-transparent",
+                    "block text-[0.65rem] font-semibold uppercase leading-none tracking-[0.22em] transition",
+                    active ? "text-dusty-gold" : "text-ivory/52 group-hover:text-ivory/78",
                   ].join(" ")}
-                />
+                >
+                  {dictionary.result.primaryTabs[tab]}
+                </span>
               </button>
             );
           })}
@@ -86,7 +90,7 @@ export function NatalChartExperience({
 
       {pageTab === "natal" ? (
         <>
-          <section className="pt-10 lg:mb-40">
+          <section className="pt-5">
             <div className="flex flex-wrap items-center justify-center gap-3">
               {isMock ? (
                 <div className="rounded-full border border-dusty-gold/18 bg-dusty-gold/8 px-4 py-2 text-xs uppercase tracking-[0.24em] text-dusty-gold/82">
@@ -95,50 +99,50 @@ export function NatalChartExperience({
               ) : null}
             </div>
 
-            <div className="mt-12 mb-20 text-center lg:hidden">
-              <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.5)]">
+            <div className="mt-8 mb-8 text-center lg:hidden">
+              <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.35)]">
                 la carta de
               </p>
-              <h1 className="mt-2 font-serif text-[56px] font-normal leading-none tracking-[-0.01em] text-ivory">
+              <h1 className="-mt-1 font-serif text-[52px] font-normal leading-none text-ivory">
                 {getFirstName(chart.event.name)}
               </h1>
-              <p className="mt-2 font-serif text-[14px] italic text-[rgba(255,255,255,0.5)]">
+              <p className="mt-4 font-serif text-[14px] italic text-[rgba(255,255,255,0.5)]">
                 {headerSubtitle}
               </p>
             </div>
 
-            <div className="relative mx-auto max-w-[60rem] lg:max-w-[1200px]">
-              <div className="space-y-8 lg:grid lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center lg:gap-16 lg:space-y-0">
-                <div className="hidden text-right lg:block">
-                  <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.5)]">
+            <div className="relative mx-auto max-w-[56rem] lg:max-w-[1180px]">
+              <div className="space-y-6 lg:grid lg:grid-cols-[minmax(240px,1fr)_minmax(420px,500px)_minmax(150px,0.72fr)] lg:items-center lg:gap-8 lg:space-y-0">
+                <div className="hidden min-w-0 text-right lg:block">
+                  <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.35)]">
                     la carta de
                   </p>
-                  <h1 className="mt-2 font-serif text-[88px] font-normal leading-none tracking-[-0.01em] text-ivory">
+                  <h1 className="-mt-1 font-serif text-[72px] font-normal leading-none text-ivory">
                     {getFirstName(chart.event.name)}
                   </h1>
-                  <p className="mt-2 font-serif text-[15px] italic text-[rgba(255,255,255,0.5)]">
+                  <p className="ml-auto mt-4 max-w-[260px] font-serif text-[15px] italic leading-6 text-[rgba(255,255,255,0.5)]">
                     {headerSubtitle}
                   </p>
                 </div>
 
-                <div className="relative flex justify-center lg:w-[520px]">
+                <div className="relative z-10 flex justify-center">
                   <NatalChartWheel chart={chart} />
                 </div>
-                <div className="lg:self-center">
+                <div className="min-w-0 lg:self-center">
                   <ChartLayerRail />
                 </div>
               </div>
             </div>
 
             {!panelOpen && !selectedPointId ? (
-              <p className="mt-8 text-center font-serif text-[14px] italic text-[rgba(255,255,255,0.4)]">
-                toca un planeta para abrir su lectura
+              <p className="mt-3 text-center font-serif text-[13px] italic text-[rgba(255,255,255,0.32)]">
+                selecciona un planeta para abrir su lectura
               </p>
             ) : null}
           </section>
 
           {!panelOpen && !selectedPointId ? (
-            <div className="mt-8 space-y-8 lg:mt-0">
+            <div className="mt-12 space-y-0 lg:mt-16">
               <ChartBalanceSection chart={chart} dictionary={dictionary} />
               <ChartGeneralReading chart={chart} dictionary={dictionary} />
             </div>

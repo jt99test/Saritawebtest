@@ -17,13 +17,16 @@ export function LunationReadingCard({
   error,
   onGenerate,
 }: LunationReadingCardProps) {
+  const actionClass =
+    "mt-6 w-full border-t border-dusty-gold/18 pt-5 text-center text-[11px] uppercase tracking-[0.22em] text-dusty-gold/90 transition-opacity hover:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dusty-gold/60";
+
   return (
     <section className="mx-auto max-w-[680px] text-center">
       <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">
         lectura personalizada
       </p>
 
-      <div className="mt-10">
+      <div className="mt-6">
         {loading ? (
           <motion.div
             className="font-serif text-[15px] italic text-dusty-gold/70"
@@ -37,30 +40,22 @@ export function LunationReadingCard({
         {error ? (
           <div className="mt-4 space-y-4">
             <p className="font-serif text-[17px] leading-8 text-white/68">{error}</p>
-            <button
-              type="button"
-              onClick={onGenerate}
-              className="border border-dusty-gold/40 px-8 py-3.5 font-serif text-sm text-dusty-gold/90 transition hover:bg-dusty-gold/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dusty-gold/60"
-            >
+            <button type="button" onClick={onGenerate} className={actionClass}>
               Intentar de nuevo
             </button>
           </div>
         ) : prose ? (
           <RenderedReading
             text={prose}
-            className="mx-auto mt-2 max-w-none text-left font-serif text-[19px] leading-[1.8] text-white/88 lg:text-[20px] lg:leading-[1.85]"
-            paragraphClassName="mb-6"
+            className="mx-auto mt-2 max-w-none text-left font-serif text-[17px] leading-[1.72] text-white/88"
+            paragraphClassName="mb-4"
           />
         ) : (
           <div>
-            <p className="font-serif text-[22px] font-normal leading-8 text-white/80">
+            <p className="font-serif text-[21px] font-normal leading-8 text-white/80">
               Esta luna tiene algo que decirte.
             </p>
-            <button
-              type="button"
-              onClick={onGenerate}
-              className="mt-8 border border-dusty-gold/40 bg-transparent px-8 py-3.5 font-serif text-sm text-dusty-gold/90 transition hover:bg-dusty-gold/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dusty-gold/60"
-            >
+            <button type="button" onClick={onGenerate} className={actionClass}>
               Generar lectura
             </button>
           </div>

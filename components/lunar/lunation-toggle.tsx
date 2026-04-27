@@ -23,7 +23,7 @@ export function LunationToggle({
   onChange,
 }: LunationToggleProps) {
   return (
-    <div className="flex flex-wrap items-start justify-center gap-10 min-[420px]:flex-nowrap md:gap-20 lg:gap-[120px]">
+    <div className="flex flex-wrap items-start justify-center gap-8 min-[420px]:flex-nowrap md:gap-14 lg:gap-20">
       {options.map((option) => {
         const active = option.id === value;
         const moonSrc =
@@ -37,7 +37,7 @@ export function LunationToggle({
             onClick={() => onChange(option.id)}
             aria-pressed={active}
             className={[
-              "group flex w-[min(42vw,160px)] flex-col items-center p-0 text-center outline-none transition duration-[400ms] ease-out focus-visible:ring-2 focus-visible:ring-dusty-gold/70 focus-visible:ring-offset-4 focus-visible:ring-offset-cosmic-950 lg:w-[220px]",
+              "group flex w-[min(40vw,140px)] flex-col items-center p-0 text-center outline-none transition duration-[400ms] ease-out focus-visible:ring-2 focus-visible:ring-dusty-gold/70 focus-visible:ring-offset-4 focus-visible:ring-offset-cosmic-950 lg:w-[180px]",
               active
                 ? "scale-100 cursor-pointer opacity-100"
                 : "scale-90 cursor-pointer opacity-40 grayscale saturate-0 hover:scale-95 hover:opacity-70 hover:grayscale-0 hover:saturate-100",
@@ -63,7 +63,7 @@ export function LunationToggle({
             </span>
             <span
               className={[
-                "mt-6 font-serif text-[22px] font-normal leading-tight transition-colors duration-[400ms] lg:text-[26px]",
+                "mt-4 font-serif text-[20px] font-normal leading-tight transition-colors duration-[400ms] lg:text-[23px]",
                 active ? "text-white" : "text-white/40 group-hover:text-white/62",
               ].join(" ")}
             >

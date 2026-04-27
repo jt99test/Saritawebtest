@@ -1252,24 +1252,24 @@ export function ChartLayerRail() {
   ];
 
   return (
-    <div className="flex min-w-[12rem] flex-col border-l-[0.5px] border-[rgba(232,197,71,0.15)] pl-6 lg:border-l-0 lg:pl-0">
-      <p className="mb-4 font-serif text-[13px] italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.5)]">
+    <div className="mx-auto flex w-full max-w-[34rem] flex-col border-t-[0.5px] border-[rgba(232,197,71,0.13)] pt-4 lg:mx-0 lg:w-auto lg:min-w-[10rem] lg:border-t-0 lg:pt-0">
+      <p className="mb-3 text-center font-serif text-[12px] italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.5)] lg:text-left">
         vista
       </p>
-      <div className="flex flex-col gap-3.5">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-3 lg:flex lg:flex-col lg:gap-3">
         {controls.map((control) => (
           <button
             key={control.id}
             type="button"
             onClick={control.onClick}
-            className="flex items-center gap-3 text-left transition focus-visible:outline-none"
+            className="flex items-center gap-2.5 text-left transition focus-visible:outline-none"
             aria-pressed={control.active}
             aria-label={control.label}
           >
             <span
               aria-hidden="true"
               className={[
-                "h-2 w-2 shrink-0 rounded-full",
+                "h-1.5 w-1.5 shrink-0 rounded-full",
                 control.active
                   ? "bg-[#e8c547]"
                   : "border-[0.5px] border-[rgba(232,197,71,0.55)] bg-transparent",
@@ -1277,7 +1277,7 @@ export function ChartLayerRail() {
             />
             <span
               className={[
-                "text-[13px] leading-none",
+                "text-[12px] leading-none",
                 control.active ? "text-white" : "text-[rgba(255,255,255,0.55)]",
               ].join(" ")}
             >
@@ -1398,7 +1398,7 @@ export function NatalChartWheel({ chart }: Props) {
         <>
             <rect width={SIZE} height={SIZE} fill="url(#symbolic-bg)" rx="430" />
 
-            <g opacity="0.9">
+            <g opacity="0.5">
               <animateTransform
                 attributeName="transform"
                 attributeType="XML"
@@ -1419,7 +1419,7 @@ export function NatalChartWheel({ chart }: Props) {
               ))}
             </g>
 
-            <g opacity="0.28">
+            <g opacity="0.14">
               <ellipse cx="250" cy="260" rx="170" ry="96" fill="rgba(168,98,212,0.16)" />
               <ellipse cx="620" cy="580" rx="190" ry="120" fill="rgba(255,77,109,0.10)" />
               <ellipse cx="610" cy="220" rx="145" ry="82" fill="rgba(77,154,255,0.10)" />

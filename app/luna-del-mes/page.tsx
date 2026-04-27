@@ -64,12 +64,12 @@ export default function LunaDelMesRoutePage() {
   );
 
   return (
-    <main className="relative isolate min-h-screen overflow-hidden bg-cosmic-950">
+    <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
 
-      <section className="relative min-h-screen py-6 sm:py-8">
+      <section className="relative min-h-screen py-5 sm:py-6">
         <Container className="relative flex min-h-screen flex-col">
-          <div className="mb-6 flex items-center justify-between gap-4 pt-2">
+          <div className="mb-4 flex items-center justify-between gap-4 pt-1">
             <Link
               href="/"
               className="text-xs font-medium uppercase tracking-[0.28em] text-ivory/54 transition hover:text-ivory"

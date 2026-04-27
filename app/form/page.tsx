@@ -48,8 +48,8 @@ export default function FormPage() {
 
       <section className="relative min-h-screen py-8 sm:py-10">
         <Container className="relative flex min-h-screen items-center">
-          <Reveal mode="immediate" className="mx-auto w-full max-w-2xl">
-            <div className="rounded-4xl border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03))] p-6 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-9">
+          <Reveal mode="immediate" className="mx-auto grid w-full max-w-5xl gap-10 lg:grid-cols-[0.8fr_1fr] lg:items-end">
+            <div className="pb-2">
               <Link
                 href="/"
                 className="text-xs font-medium uppercase tracking-[0.26em] text-ivory/52 transition hover:text-ivory"
@@ -61,8 +61,12 @@ export default function FormPage() {
               <p className="mt-4 max-w-xl text-base leading-8 text-ivory/68">
                 {dictionary.form.subtitle}
               </p>
+            </div>
 
-              <form onSubmit={handleSubmit} className="mt-8 grid gap-4 sm:grid-cols-2">
+              <form
+                onSubmit={handleSubmit}
+                className="grid gap-4 border-t border-dusty-gold/16 pt-8 sm:grid-cols-2 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0"
+              >
                 <label className="block">
                   <span className={labelClass}>{dictionary.form.fields.name}</span>
                   <input
@@ -132,7 +136,6 @@ export default function FormPage() {
                   </PrimaryButton>
                 </div>
               </form>
-            </div>
           </Reveal>
         </Container>
       </section>

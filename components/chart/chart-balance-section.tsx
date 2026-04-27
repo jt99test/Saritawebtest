@@ -121,19 +121,19 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
   ];
 
   return (
-    <section className="py-24 lg:pb-40">
+    <section className="py-5 lg:pt-0 lg:pb-14">
       <div className="mx-auto max-w-[720px] text-center">
         <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.5)]">
           tu equilibrio
         </p>
-        <h2 className="mt-2 font-serif text-[36px] font-normal leading-tight text-ivory lg:text-[48px]">
+        <h2 className="mt-1.5 font-serif text-[30px] font-normal leading-tight text-ivory lg:text-[36px]">
           {dictionary.result.elements[dominantElement]} dominante · {dictionary.result.modalities[dominantModality]} en exceso
         </h2>
       </div>
 
-      <div className="mx-auto mt-16 grid max-w-[720px] gap-16 md:grid-cols-[240px_minmax(0,1fr)] md:items-center lg:mt-20 lg:max-w-[1040px] lg:grid-cols-[400px_minmax(0,1fr)] lg:gap-24">
+      <div className="mx-auto mt-8 grid max-w-[720px] gap-8 md:grid-cols-[200px_minmax(0,1fr)] md:items-center lg:mt-10 lg:max-w-[820px] lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-14">
         <div className="text-center">
-          <svg viewBox="0 0 240 240" className="h-[240px] w-[240px] lg:h-[360px] lg:w-[360px]" role="img" aria-label="Equilibrio de elementos">
+          <svg viewBox="0 0 240 240" className="h-[200px] w-[200px] lg:h-[270px] lg:w-[270px]" role="img" aria-label="Equilibrio de elementos">
             {quadrants.map(({ element, start, end, labelAngle }) => {
               const elementPercent = percent(elementCounts[element], total);
               const labelPoint = polarPoint(80, labelAngle);
@@ -142,16 +142,7 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
               return (
                 <g
                   key={element}
-                  role="button"
-                  tabIndex={0}
-                  className="cursor-pointer outline-none transition hover:brightness-125"
-                  onClick={() => console.log(`Elemento ${dictionary.result.elements[element]}`)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      console.log(`Elemento ${dictionary.result.elements[element]}`);
-                    }
-                  }}
+                  className="transition"
                 >
                   <path
                     d={arcPath(start, end)}
@@ -182,22 +173,19 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
               );
             })}
           </svg>
-          <p className="mt-5 text-center text-xs leading-6 text-[rgba(255,255,255,0.5)] lg:hidden">
+          <p className="mt-3 text-center text-xs leading-6 text-[rgba(255,255,255,0.5)] lg:hidden">
             {modalityLine}
           </p>
         </div>
 
         <div>
-          <p className="font-serif text-[19px] leading-[1.7] text-white lg:max-w-[480px] lg:text-[26px] lg:leading-[1.6]">
+          <p className="font-serif text-[18px] leading-[1.65] text-white lg:max-w-[440px] lg:text-[21px] lg:leading-[1.58]">
             {firstName}, {ELEMENT_STATEMENTS[dominantElement]}
-          </p>
-          <p className="mt-6 font-serif text-[13px] italic text-[rgba(255,255,255,0.4)]">
-            toca un elemento para profundizar
           </p>
         </div>
       </div>
 
-      <p className="mx-auto mt-14 hidden max-w-[720px] text-center font-serif text-sm italic leading-6 text-[rgba(255,255,255,0.5)] lg:block">
+      <p className="mx-auto mt-7 hidden max-w-[720px] text-center font-serif text-sm italic leading-6 text-[rgba(255,255,255,0.45)] lg:block">
         {modalityLine}
       </p>
     </section>

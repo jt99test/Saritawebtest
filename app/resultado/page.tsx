@@ -68,11 +68,11 @@ export default function ResultPage() {
   const isMock = result?.isMock ?? true;
 
   return (
-    <main className="relative isolate min-h-screen overflow-hidden bg-cosmic-950">
+    <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
       <div
         aria-hidden="true"
-        className="constellation-drift pointer-events-none absolute inset-0 opacity-[0.05]"
+        className="constellation-drift pointer-events-none absolute inset-0 opacity-[0.06]"
         style={{
           backgroundImage:
             "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.9)' stroke-width='1'%3E%3Ccircle cx='102' cy='144' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Ccircle cx='182' cy='204' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Ccircle cx='242' cy='124' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Cpath d='M102 144L182 204 242 124'/%3E%3Ccircle cx='498' cy='210' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Ccircle cx='566' cy='170' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Ccircle cx='626' cy='252' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Cpath d='M498 210L566 170 626 252'/%3E%3Ccircle cx='282' cy='532' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Ccircle cx='352' cy='492' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Ccircle cx='416' cy='570' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Cpath d='M282 532L352 492 416 570'/%3E%3Ccircle cx='604' cy='562' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Ccircle cx='668' cy='612' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Ccircle cx='728' cy='540' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Cpath d='M604 562L668 612 728 540'/%3E%3C/g%3E%3C/svg%3E\")",
@@ -81,19 +81,19 @@ export default function ResultPage() {
         }}
       />
 
-      <section className="relative min-h-screen py-6 sm:py-8">
+      <section className="relative min-h-screen py-5 sm:py-6">
         <Container className="relative flex min-h-screen flex-col">
-          <div className="mb-6 flex items-center justify-between gap-4 pt-2">
+          <div className="mb-4 flex items-center justify-between gap-4 border-b border-white/8 pb-3 pt-1">
             <Link
               href="/"
-              className="text-xs font-medium uppercase tracking-[0.28em] text-ivory/54 transition hover:text-ivory"
+              className="text-xs font-medium uppercase tracking-[0.24em] text-ivory/68 transition hover:text-ivory"
             >
-              {dictionary.result.back}
+              ← {dictionary.result.back}
             </Link>
 
             <Link
               href="/form"
-              className="text-xs font-medium uppercase tracking-[0.28em] text-ivory/42 transition hover:text-ivory/72"
+              className="border-l border-white/12 pl-4 text-right text-xs font-medium uppercase tracking-[0.24em] text-ivory/54 transition hover:text-ivory/80"
             >
               {dictionary.form.back}
             </Link>

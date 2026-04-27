@@ -20,21 +20,24 @@ export function LunationHeaderCard({
   const dateLabel = DateTime.fromISO(metadata.timestamp, { zone: "utc" })
     .setZone(timezone)
     .setLocale("es")
-    .toFormat("d 'de' LLLL");
-  const degreeLabel = `${signLabel} ${metadata.position.degree}° ${String(
-    metadata.position.minutes,
-  ).padStart(2, "0")}'`;
+    .toFormat("d LLL");
+  const degreeLabel = `${metadata.position.degree}° ${String(metadata.position.minutes).padStart(
+    2,
+    "0",
+  )}'`;
 
   return (
-    <section className="mx-auto max-w-[720px] text-center">
-      <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">
-        el momento exacto
-      </p>
-      <h2 className="mt-2 font-serif text-[40px] font-normal leading-tight text-white lg:text-[56px]">
+    <section className="mx-auto max-w-[720px] border-l border-dusty-gold/18 pl-5 text-left sm:pl-7">
+      <p className="text-xs uppercase tracking-[0.22em] text-dusty-gold/68">{signLabel}</p>
+      <h2 className="mt-1 font-serif text-[72px] font-normal leading-none text-white">
         {degreeLabel}
       </h2>
-      <p className="mx-auto mt-3 max-w-[560px] font-serif text-sm italic leading-7 text-white/55 lg:text-base">
-        {`activa tu Casa ${metadata.activatedHouse} · ${metadata.areaOfLife.toLowerCase()} · ${dateLabel}`}
+      <p className="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-xs uppercase tracking-[0.14em] text-white/58 [font-variant-numeric:tabular-nums]">
+        <span>{`Casa ${metadata.activatedHouse}`}</span>
+        <span aria-hidden="true">·</span>
+        <span>{metadata.areaOfLife}</span>
+        <span aria-hidden="true">·</span>
+        <span>{dateLabel}</span>
       </p>
     </section>
   );
