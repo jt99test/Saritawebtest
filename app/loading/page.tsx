@@ -72,6 +72,15 @@ export default function LoadingPage() {
   return (
     <main className="relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
+      <Image
+        src={illustrations.scenes.landing}
+        alt=""
+        fill
+        priority
+        className="cosmos-slow-zoom pointer-events-none object-cover opacity-50 saturate-[0.78]"
+        sizes="100vw"
+      />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(5,7,13,0.48),rgba(5,7,13,0.65)_55%,#05070d)]" />
 
       <section className="relative min-h-screen py-8 sm:py-10">
         <Container className="relative flex min-h-screen items-center justify-center">
@@ -80,18 +89,6 @@ export default function LoadingPage() {
               <p className="text-xs font-medium uppercase tracking-[0.28em] text-ivory/46">
                 {dictionary.brand.name}
               </p>
-
-              <div className="relative w-full max-w-[720px] overflow-hidden rounded-[1.6rem] border border-white/8 shadow-[0_28px_90px_rgba(0,0,0,0.42)]">
-                <Image
-                  src={illustrations.scenes.loading}
-                  alt="Ilustracion cosmica para la espera"
-                  width={720}
-                  height={1080}
-                  priority
-                  className="cosmos-slow-zoom h-[58vh] min-h-[360px] w-full object-cover sm:h-auto sm:max-h-[68vh]"
-                  sizes="(min-width: 768px) 720px, 100vw"
-                />
-              </div>
 
               <div className="space-y-4">
                 <p className="font-serif text-3xl leading-tight text-ivory sm:text-4xl">

@@ -43,10 +43,9 @@ function useDesktopBreakpoint() {
 function SectionLabel({ children }: { children: string }) {
   return (
     <div>
-      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-dusty-gold/72">
+      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-ivory/40">
         {children}
       </p>
-      <span className="mt-3 block h-0.5 w-10 rounded-full bg-dusty-gold/70" />
     </div>
   );
 }
@@ -282,7 +281,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
             exit={isDesktop ? { x: "100%", opacity: 0.92 } : { y: "100%", opacity: 0.92 }}
             transition={{ type: "spring", damping: 28, stiffness: 240 }}
             className={[
-              "fixed z-50 overflow-hidden border-[rgba(232,197,71,0.25)] bg-[rgba(20,10,35,0.95)] backdrop-blur-[12px]",
+              "fixed z-50 overflow-hidden border-[rgba(236,232,223,0.08)] bg-[rgba(10,14,22,0.96)] backdrop-blur-[12px]",
               isDesktop
                 ? "right-0 top-0 h-screen w-[420px] border-l shadow-[-24px_0_90px_rgba(0,0,0,0.42)]"
                 : "inset-x-0 bottom-0 h-[75vh] rounded-t-[2rem] border-t shadow-[0_-24px_90px_rgba(0,0,0,0.42)]",
@@ -297,7 +296,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
 
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-dusty-gold/72">
+                    <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-ivory/40">
                       {dictionary.result.panels.selectedPoint}
                     </p>
                     <div className="mt-3 flex items-center gap-3">
@@ -349,8 +348,8 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                         className={[
                           "rounded-full border px-3.5 py-2 text-[0.66rem] font-semibold uppercase tracking-[0.24em] transition",
                           active
-                            ? "border-dusty-gold/48 bg-dusty-gold/14 text-ivory"
-                            : "border-white/10 bg-white/[0.03] text-ivory/52 hover:border-white/16 hover:text-ivory",
+                            ? "border-dusty-gold/48 bg-dusty-gold/12 text-ivory"
+                            : "border-[rgba(236,232,223,0.08)] bg-transparent text-ivory/52 hover:border-white/16 hover:text-ivory",
                         ].join(" ")}
                         aria-pressed={active}
                       >
@@ -365,7 +364,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                 {detailTab === "essence" ? (
                   <div className="space-y-6">
                     <div className="grid gap-4">
-                      <section className="rounded-[1.6rem] border border-[rgba(232,197,71,0.25)] bg-[rgba(20,10,35,0.7)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-[10px]">
+                      <section className="rounded-[1.6rem] border border-[rgba(236,232,223,0.08)] bg-[rgba(255,255,255,0.025)] p-5 shadow-none">
                         <SectionLabel>{dictionary.result.editorial.signFocus}</SectionLabel>
                         <h3 className="mt-4 font-serif text-2xl text-ivory">
                           {dictionary.result.signs[point.sign]}
@@ -373,20 +372,20 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                         <ul className="mt-4 space-y-2 text-sm leading-7 text-ivory/68">
                           {essenceItems.map((item) => (
                             <li key={item} className="flex gap-2">
-                              <span className="mt-3 h-1.5 w-1.5 rounded-full bg-dusty-gold/76" />
+                              <span className="mt-3 h-1.5 w-1.5 rounded-full bg-ivory/35" />
                               <span>{item}</span>
                             </li>
                           ))}
                         </ul>
                       </section>
 
-                      <section className="rounded-[1.6rem] border border-[rgba(232,197,71,0.25)] bg-[rgba(20,10,35,0.7)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-[10px]">
+                      <section className="rounded-[1.6rem] border border-[rgba(236,232,223,0.08)] bg-[rgba(255,255,255,0.025)] p-5 shadow-none">
                         <SectionLabel>{dictionary.result.editorial.houseFocus}</SectionLabel>
                         <h3 className="mt-4 font-serif text-2xl text-ivory">{selectedHouseArea}</h3>
                         <ul className="mt-4 space-y-2 text-sm leading-7 text-ivory/68">
                           {manifestationItems.map((item) => (
                             <li key={item} className="flex gap-2">
-                              <span className="mt-3 h-1.5 w-1.5 rounded-full bg-dusty-gold/76" />
+                              <span className="mt-3 h-1.5 w-1.5 rounded-full bg-ivory/35" />
                               <span>{item}</span>
                             </li>
                           ))}
@@ -397,7 +396,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                 ) : null}
 
                 {detailTab === "data" ? (
-                  <section className="rounded-[1.6rem] border border-[rgba(232,197,71,0.25)] bg-[rgba(20,10,35,0.7)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-[10px]">
+                  <section className="rounded-[1.6rem] border border-[rgba(236,232,223,0.08)] bg-[rgba(255,255,255,0.025)] p-5 shadow-none">
                     <SectionLabel>{dictionary.result.editorial.technicalSheet}</SectionLabel>
                     {point.id === "northNode" || point.id === "southNode" ? (
                       <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-dusty-gold/20 bg-dusty-gold/8 px-3 py-2 text-xs leading-6 text-ivory/72">
@@ -446,7 +445,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                               "w-full rounded-[1.45rem] border p-4 text-left transition",
                               active
                                 ? "border-dusty-gold/52 bg-dusty-gold/12 shadow-[0_0_0_1px_rgba(232,197,71,0.15)]"
-                                : "border-[rgba(232,197,71,0.25)] bg-[rgba(20,10,35,0.7)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-[10px] hover:border-white/16 hover:bg-white/[0.05]",
+                                : "border-[rgba(236,232,223,0.08)] bg-[rgba(255,255,255,0.025)] shadow-none hover:border-white/16 hover:bg-white/[0.05]",
                             ].join(" ")}
                           >
                             <div className="flex items-start justify-between gap-4">
@@ -472,7 +471,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                 ) : null}
 
                 {detailTab === "reading" ? (
-                  <section className="rounded-[1.6rem] border border-[rgba(232,197,71,0.25)] bg-[rgba(20,10,35,0.7)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-[10px]">
+                  <section className="rounded-[1.6rem] border border-[rgba(236,232,223,0.08)] bg-[rgba(255,255,255,0.025)] p-5 shadow-none">
                     <SectionLabel>{dictionary.result.drawer.readingLabel}</SectionLabel>
 
                     {loading ? (

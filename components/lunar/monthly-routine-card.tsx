@@ -45,7 +45,7 @@ export function MonthlyRoutineCard({ metadata }: MonthlyRoutineCardProps) {
       <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">
         tu práctica este mes
       </p>
-      <h3 className="mt-2 font-serif text-[48px] font-normal leading-none text-white lg:text-[72px]">
+      <h3 className="mt-2 font-serif text-[36px] font-normal leading-tight text-white">
         {`Elemento ${ELEMENT_LABELS[metadata.element]}`}
       </h3>
 

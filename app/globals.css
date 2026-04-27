@@ -94,24 +94,6 @@ h6 {
   }
 }
 
-@keyframes constellation-drift {
-  from {
-    transform: translate3d(-1.5%, -1%, 0);
-  }
-
-  50% {
-    transform: translate3d(1.5%, 1%, 0);
-  }
-
-  to {
-    transform: translate3d(-1.5%, -1%, 0);
-  }
-}
-
-.constellation-drift {
-  animation: constellation-drift 1200s linear infinite;
-}
-
 @keyframes cosmos-slow-zoom {
   from,
   to {

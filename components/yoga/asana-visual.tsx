@@ -9,11 +9,11 @@ type AsanaVisualProps = {
 };
 
 const TONE_GLOW: Record<AsanaVisualTone, string> = {
-  fuego: "rgba(244,114,134,0.08)",
-  tierra: "rgba(181,151,115,0.08)",
-  agua: "rgba(167,139,250,0.08)",
-  aire: "rgba(125,211,252,0.08)",
-  neutral: "rgba(167,139,250,0.08)",
+  fuego: "rgba(181,163,110,0.06)",
+  tierra: "rgba(181,163,110,0.05)",
+  agua: "rgba(236,232,223,0.05)",
+  aire: "rgba(236,232,223,0.05)",
+  neutral: "rgba(236,232,223,0.05)",
 };
 
 export function AsanaVisual({
@@ -22,7 +22,7 @@ export function AsanaVisual({
   className = "",
 }: AsanaVisualProps) {
   const frameClassName =
-    `aspect-[3/4] w-full overflow-hidden rounded-[1.15rem] border border-[#e8c547]/30 bg-[rgba(15,23,42,0.8)] shadow-[0_18px_60px_rgba(0,0,0,0.32)] ${className}`.trim();
+    `aspect-[3/4] w-full overflow-hidden rounded-[1.15rem] border border-[rgba(236,232,223,0.09)] bg-[rgba(255,255,255,0.025)] shadow-none ${className}`.trim();
 
   if (asana.imagePath) {
     return (
@@ -41,7 +41,7 @@ export function AsanaVisual({
     <div
       className={`flex ${frameClassName} items-center justify-center px-6 text-center`}
       style={{
-        backgroundImage: `radial-gradient(circle at 50% 34%, ${TONE_GLOW[tone]}, transparent 46%), linear-gradient(180deg, rgba(15,23,42,0.82), rgba(5,7,13,0.94))`,
+        backgroundImage: `radial-gradient(circle at 50% 34%, ${TONE_GLOW[tone]}, transparent 46%), linear-gradient(180deg, rgba(10,14,22,0.88), rgba(5,7,13,0.96))`,
       }}
     >
       <div className="flex max-w-[15rem] flex-col items-center">
@@ -54,7 +54,7 @@ export function AsanaVisual({
         <p className="mt-5 font-serif text-2xl leading-tight text-ivory/88">
           {asana.nameSanskrit}
         </p>
-        <p className="mt-3 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-violet-200/42">
+        <p className="mt-3 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-ivory/40">
           Sin foto disponible
         </p>
       </div>

@@ -70,16 +70,6 @@ export default function ResultPage() {
   return (
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
-      <div
-        aria-hidden="true"
-        className="constellation-drift pointer-events-none absolute inset-0 opacity-[0.06]"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='rgba(255,255,255,0.9)' stroke-width='1'%3E%3Ccircle cx='102' cy='144' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Ccircle cx='182' cy='204' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Ccircle cx='242' cy='124' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Cpath d='M102 144L182 204 242 124'/%3E%3Ccircle cx='498' cy='210' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Ccircle cx='566' cy='170' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Ccircle cx='626' cy='252' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Cpath d='M498 210L566 170 626 252'/%3E%3Ccircle cx='282' cy='532' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Ccircle cx='352' cy='492' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Ccircle cx='416' cy='570' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Cpath d='M282 532L352 492 416 570'/%3E%3Ccircle cx='604' cy='562' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Ccircle cx='668' cy='612' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Ccircle cx='728' cy='540' r='1.2' fill='rgba(255,255,255,0.9)'/%3E%3Cpath d='M604 562L668 612 728 540'/%3E%3C/g%3E%3C/svg%3E\")",
-          backgroundSize: "700px 700px",
-          backgroundPosition: "center",
-        }}
-      />
 
       <section className="relative min-h-screen py-5 sm:py-6">
         <Container className="relative flex min-h-screen flex-col">

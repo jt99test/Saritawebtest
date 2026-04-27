@@ -22,7 +22,6 @@ export const illustrations = {
     landing: "/images/premium/hero-observatory-planets.png",
   },
   decorative: {
-    constellationPattern: "/images/decorative/bg-constellation-pattern.png",
     nebulaTexture: "/images/decorative/bg-nebula-texture.png",
     zodiacoCirculo: "/images/decorative/zodiaco-circulo.png",
   },
