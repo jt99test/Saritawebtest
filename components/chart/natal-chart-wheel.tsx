@@ -476,22 +476,23 @@ function SymbolicAspects({
         const highlighted = highlightedAspectId === aspect.id;
         const hovered = hoveredAspectId === aspect.id;
         const selected = selectedAspectId === aspect.id;
-        const strokeOpacity = selectedAspectId
-          ? selected
-            ? 0.9
-            : 0.05
-          : highlightedAspectId
-            ? highlighted
+        const hasPointFocus = Boolean(focusPointId);
+        const strokeOpacity = hovered
+          ? 0.85
+          : hasPointFocus
+            ? focused
               ? 0.85
-              : 0.1
-            : hovered
-              ? 0.85
-              : focusPointId
-                ? focused
+              : 0.12
+            : selectedAspectId
+              ? selected
+                ? 0.9
+                : 0.05
+              : highlightedAspectId
+                ? highlighted
                   ? 0.85
-                  : 0.12
+                  : 0.1
                 : 0.65;
-        const strokeWidth = selected || highlighted || hovered
+        const strokeWidth = selected || highlighted || hovered || (hasPointFocus && focused)
           ? 1.4
           : definition.major
             ? 1.4
@@ -1385,6 +1386,7 @@ export function NatalChartWheel({ chart }: Props) {
   function handlePointHover(nextTooltip: TooltipState | null, pointId: ChartPointId | null = null) {
     setTooltip(nextTooltip);
     setHoveredPointId(pointId);
+    setHoveredAspectVisualId(null);
   }
 
   function handleAspectHover(nextTooltip: TooltipState | null, aspectId: string | null = null) {
