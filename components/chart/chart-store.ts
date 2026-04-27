@@ -6,6 +6,7 @@ import type { Aspect, ChartPointId } from "@/lib/chart";
 
 type ChartStore = {
   selectedPointId: ChartPointId | null;
+  selectedAspect: Aspect | null;
   hoveredAspectId: string | null;
   activePanel: "details" | "settings";
   detailTab: "essence" | "data" | "aspects" | "reading";
@@ -15,6 +16,7 @@ type ChartStore = {
   showDegrees: boolean;
   panelOpen: boolean;
   selectPoint: (pointId: ChartPointId | null) => void;
+  selectAspect: (aspect: Aspect | null) => void;
   hoverAspect: (aspectId: string | null) => void;
   setActivePanel: (panel: "details" | "settings") => void;
   setDetailTab: (tab: "essence" | "data" | "aspects" | "reading") => void;
@@ -29,6 +31,7 @@ type ChartStore = {
 
 export const useChartStore = create<ChartStore>((set, get) => ({
   selectedPointId: null,
+  selectedAspect: null,
   hoveredAspectId: null,
   activePanel: "details",
   detailTab: "essence",
@@ -42,6 +45,14 @@ export const useChartStore = create<ChartStore>((set, get) => ({
       selectedPointId,
       activePanel: "details",
       detailTab: "essence",
+      hoveredAspectId: null,
+      selectedAspect: null,
+    }),
+  selectAspect: (selectedAspect) =>
+    set({
+      selectedAspect,
+      selectedPointId: null,
+      panelOpen: false,
       hoveredAspectId: null,
     }),
   hoverAspect: (hoveredAspectId) => set({ hoveredAspectId }),
@@ -58,6 +69,7 @@ export const useChartStore = create<ChartStore>((set, get) => ({
       selectedPointId: null,
       hoveredAspectId: null,
       detailTab: "essence",
+      selectedAspect: null,
     }),
   isAspectHighlighted: (aspect) => {
     const { selectedPointId, hoveredAspectId } = get();

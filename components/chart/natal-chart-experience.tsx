@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { Dictionary } from "@/lib/i18n";
 import type { NatalChartData } from "@/lib/chart";
 
+import { AspectDetailPanel } from "@/components/chart/aspect-detail-panel";
 import { ChartBalanceSection } from "@/components/chart/chart-balance-section";
 import { ChartGeneralReading } from "@/components/chart/chart-general-reading";
 import { useChartStore } from "@/components/chart/chart-store";
@@ -55,9 +56,9 @@ export function NatalChartExperience({
   ].filter(Boolean).join(" · ");
 
   return (
-    <div className="relative mx-auto max-w-[880px] pb-12 lg:max-w-[1180px]">
+    <div className="relative mx-auto max-w-[880px] pb-20 lg:max-w-[1180px]">
       <div className="space-y-3">
-        <nav className="grid gap-2 border-y border-white/8 py-2 sm:grid-cols-3 lg:max-w-[42rem]">
+        <nav className="flex gap-0 border-b border-white/8 pb-0 pt-1">
           {PAGE_TABS.map((tab) => {
             const active = pageTab === tab;
             return (
@@ -66,10 +67,10 @@ export function NatalChartExperience({
                 type="button"
                 onClick={() => setPageTab(tab)}
                 className={[
-                  "group border-l px-3 py-2.5 text-left transition",
+                  "group border-b-[1.5px] px-5 pb-3 pt-2 text-left transition",
                   active
-                    ? "border-dusty-gold bg-dusty-gold/7"
-                    : "border-white/10 bg-transparent hover:border-dusty-gold/35 hover:bg-white/[0.025]",
+                    ? "border-dusty-gold bg-transparent"
+                    : "border-transparent bg-transparent hover:border-dusty-gold/30",
                 ].join(" ")}
               >
                 <span
@@ -90,7 +91,7 @@ export function NatalChartExperience({
 
       {pageTab === "natal" ? (
         <>
-          <section className="pt-5">
+          <section className="pt-8">
             <div className="flex flex-wrap items-center justify-center gap-3">
               {isMock ? (
                 <div className="rounded-full border border-dusty-gold/18 bg-dusty-gold/8 px-4 py-2 text-xs uppercase tracking-[0.24em] text-dusty-gold/82">
@@ -99,7 +100,7 @@ export function NatalChartExperience({
               ) : null}
             </div>
 
-            <div className="mt-8 mb-8 text-center lg:hidden">
+            <div className="mt-10 mb-10 text-center lg:hidden">
               <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.35)]">
                 la carta de
               </p>
@@ -111,8 +112,8 @@ export function NatalChartExperience({
               </p>
             </div>
 
-            <div className="relative mx-auto max-w-[56rem] lg:max-w-[1180px]">
-              <div className="space-y-6 lg:grid lg:grid-cols-[minmax(240px,1fr)_minmax(420px,500px)_minmax(150px,0.72fr)] lg:items-center lg:gap-8 lg:space-y-0">
+            <div className="relative mx-auto max-w-[56rem] py-6 lg:max-w-[1180px]">
+              <div className="space-y-6 lg:grid lg:grid-cols-[minmax(220px,1fr)_minmax(500px,640px)_minmax(140px,0.65fr)] lg:items-center lg:gap-8 lg:space-y-0">
                 <div className="hidden min-w-0 text-right lg:block">
                   <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.35)]">
                     la carta de
@@ -149,6 +150,7 @@ export function NatalChartExperience({
           ) : null}
 
           <PlanetDetailPanel chart={chart} dictionary={dictionary} />
+          <AspectDetailPanel chart={chart} />
         </>
       ) : null}
 

@@ -42,12 +42,21 @@ const HOUSE_NUMBER_RADIUS = 208;
 const ASPECT_RADIUS = 134;
 
 const SYMBOLIC_ASPECT_COLORS: Record<AspectId, string> = {
-  conjunction: "rgba(181,163,110,0.7)",
-  opposition: "rgba(200,120,120,0.45)",
-  square: "rgba(200,120,120,0.45)",
-  trine: "rgba(130,146,214,0.45)",
-  sextile: "rgba(130,146,214,0.45)",
-  quincunx: "rgba(214,214,222,0.28)",
+  conjunction: "rgba(220,195,120,0.95)",
+  opposition: "rgba(220,110,110,0.85)",
+  square: "rgba(220,110,110,0.85)",
+  trine: "rgba(140,158,240,0.85)",
+  sextile: "rgba(140,158,240,0.75)",
+  quincunx: "rgba(200,200,215,0.55)",
+};
+
+const ASPECT_SYMBOLS: Record<AspectId, string> = {
+  conjunction: "☌",
+  sextile: "⚹",
+  square: "□",
+  trine: "△",
+  opposition: "☍",
+  quincunx: "⚻",
 };
 
 const POINT_GLYPHS: Record<ChartPointId, string> = {
@@ -258,15 +267,15 @@ function SymbolicWheelFrame({ ascendant }: { ascendant: number }) {
           key={`tint-${sign.id}`}
           d={describeRingSegment(ZODIAC_INNER, ZODIAC_OUTER, sign.start, sign.start + 30, ascendant)}
           fill={elementTints[sign.element]}
-          stroke="rgba(236,232,223,0.08)"
-          strokeWidth="0.9"
+          stroke="rgba(236,232,223,0.28)"
+          strokeWidth="1"
         />
       ))}
 
-      <circle cx={CX} cy={CY} r={ZODIAC_OUTER + 2} fill="none" stroke="rgba(236,232,223,0.2)" strokeWidth="1" />
-      <circle cx={CX} cy={CY} r={ZODIAC_OUTER - 12} fill="none" stroke="rgba(236,232,223,0.08)" strokeWidth="0.7" />
-      <circle cx={CX} cy={CY} r={ZODIAC_INNER + 12} fill="none" stroke="rgba(236,232,223,0.08)" strokeWidth="0.7" />
-      <circle cx={CX} cy={CY} r={ZODIAC_INNER} fill="none" stroke="rgba(236,232,223,0.32)" strokeWidth="1" />
+      <circle cx={CX} cy={CY} r={ZODIAC_OUTER + 2} fill="none" stroke="rgba(236,232,223,0.55)" strokeWidth="1.2" />
+      <circle cx={CX} cy={CY} r={ZODIAC_OUTER - 12} fill="none" stroke="rgba(236,232,223,0.18)" strokeWidth="0.7" />
+      <circle cx={CX} cy={CY} r={ZODIAC_INNER + 12} fill="none" stroke="rgba(236,232,223,0.18)" strokeWidth="0.7" />
+      <circle cx={CX} cy={CY} r={ZODIAC_INNER} fill="none" stroke="rgba(236,232,223,0.6)" strokeWidth="1.2" />
       <circle cx={CX} cy={CY} r={HOUSE_OUTER} fill="none" stroke="rgba(236,232,223,0.14)" strokeWidth="0.9" />
       <circle cx={CX} cy={CY} r={HOUSE_INNER} fill="none" stroke="rgba(236,232,223,0.1)" strokeWidth="0.8" />
 
@@ -280,9 +289,9 @@ function SymbolicWheelFrame({ ascendant }: { ascendant: number }) {
             textAnchor="middle"
             dominantBaseline="central"
             fill="#ece8df"
-            fillOpacity="0.62"
-            fontSize="20"
-            fontWeight="500"
+            fillOpacity="0.92"
+            fontSize="22"
+            fontWeight="600"
             fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
           >
             {sign.glyph}
@@ -325,7 +334,7 @@ function HouseGeometry({ chart, ascendant }: { chart: NatalChartData; ascendant:
       })}
 
       {chart.houses.map((house) => {
-        const [outerX, outerY] = pointAtRadius(HOUSE_OUTER, house.longitude, ascendant);
+        const [outerX, outerY] = pointAtRadius(ZODIAC_INNER, house.longitude, ascendant);
         const [innerX, innerY] = pointAtRadius(HOUSE_INNER, house.longitude, ascendant);
         return (
           <line
@@ -334,8 +343,8 @@ function HouseGeometry({ chart, ascendant }: { chart: NatalChartData; ascendant:
             y1={round(outerY)}
             x2={round(innerX)}
             y2={round(innerY)}
-            stroke="rgba(236,232,223,0.13)"
-            strokeWidth={house.house === 1 || house.house === 4 || house.house === 7 || house.house === 10 ? 1.1 : 0.7}
+            stroke="rgba(236,232,223,0.38)"
+            strokeWidth={house.house === 1 || house.house === 4 || house.house === 7 || house.house === 10 ? 1.6 : 0.9}
           />
         );
       })}
@@ -431,7 +440,9 @@ function SymbolicAspects({
   hoveredPointId,
   highlightedAspectId,
   hoveredAspectId,
+  selectedAspectId,
   onHoverAspect,
+  onClickAspect,
 }: {
   aspects: Aspect[];
   pointsById: Map<ChartPointId, ChartPoint>;
@@ -440,7 +451,9 @@ function SymbolicAspects({
   hoveredPointId: ChartPointId | null;
   highlightedAspectId: string | null;
   hoveredAspectId: string | null;
+  selectedAspectId: string | null;
   onHoverAspect: (tooltip: TooltipState | null, aspectId?: string | null) => void;
+  onClickAspect: (aspect: Aspect) => void;
 }) {
   const focusPointId = hoveredPointId ?? activePointId;
 
@@ -456,49 +469,49 @@ function SymbolicAspects({
 
         const [x1, y1] = pointAtRadius(ASPECT_RADIUS, fromPoint.longitude, ascendant);
         const [x2, y2] = pointAtRadius(ASPECT_RADIUS, toPoint.longitude, ascendant);
+        const mx = (x1 + x2) / 2;
+        const my = (y1 + y2) / 2;
         const definition = getAspectDefinition(aspect.type);
         const focused = focusPointId ? aspect.from === focusPointId || aspect.to === focusPointId : true;
         const highlighted = highlightedAspectId === aspect.id;
         const hovered = hoveredAspectId === aspect.id;
-        const strokeOpacity = highlightedAspectId
-          ? highlighted
-            ? 0.85
-            : 0.1
-          : hovered
-            ? 0.85
-            : focusPointId
-              ? focused
-                ? 0.85
-                : 0.12
-              : 0.25;
-        const strokeWidth = highlighted || hovered
-          ? 1.2
+        const selected = selectedAspectId === aspect.id;
+        const strokeOpacity = selectedAspectId
+          ? selected
+            ? 0.9
+            : 0.05
+          : highlightedAspectId
+            ? highlighted
+              ? 0.85
+              : 0.1
+            : hovered
+              ? 0.85
+              : focusPointId
+                ? focused
+                  ? 0.85
+                  : 0.12
+                : 0.65;
+        const strokeWidth = selected || highlighted || hovered
+          ? 1.4
           : definition.major
-            ? 0.8
-            : 0.5;
-        const tooltip = `${dictionary.result.aspectTypes[aspect.type]} - ${dictionary.result.points[aspect.from]} / ${dictionary.result.points[aspect.to]} - ${dictionary.result.fields.orb} ${aspect.orb.toFixed(1)}Ã‚Â°`;
+            ? 1.4
+            : 0.8;
+        const tooltip = `${dictionary.result.aspectTypes[aspect.type]} - ${dictionary.result.points[aspect.from]} / ${dictionary.result.points[aspect.to]} - ${dictionary.result.fields.orb} ${aspect.orb.toFixed(1)}°`;
 
         return (
-          <line
+          <g
             key={aspect.id}
-            x1={round(x1)}
-            y1={round(y1)}
-            x2={round(x2)}
-            y2={round(y2)}
-            stroke={SYMBOLIC_ASPECT_COLORS[aspect.type]}
-            strokeOpacity={strokeOpacity}
-            strokeWidth={strokeWidth}
-            strokeDasharray={aspect.type === "quincunx" ? "2 3" : undefined}
-            strokeLinecap="round"
+            role="button"
             tabIndex={0}
-            role="img"
             aria-label={tooltip}
+            style={{ cursor: "pointer" }}
+            onClick={() => onClickAspect(aspect)}
             onMouseEnter={() =>
               onHoverAspect(
                 {
                   id: aspect.id,
-                  xPercent: (((x1 + x2) / 2) / SIZE) * 100,
-                  yPercent: (((y1 + y2) / 2) / SIZE) * 100,
+                  xPercent: (mx / SIZE) * 100,
+                  yPercent: (my / SIZE) * 100,
                   content: tooltip,
                 },
                 aspect.id,
@@ -509,15 +522,53 @@ function SymbolicAspects({
               onHoverAspect(
                 {
                   id: aspect.id,
-                  xPercent: (((x1 + x2) / 2) / SIZE) * 100,
-                  yPercent: (((y1 + y2) / 2) / SIZE) * 100,
+                  xPercent: (mx / SIZE) * 100,
+                  yPercent: (my / SIZE) * 100,
                   content: tooltip,
                 },
                 aspect.id,
               )
             }
             onBlur={() => onHoverAspect(null, null)}
-          />
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onClickAspect(aspect);
+              }
+            }}
+          >
+            <line
+              x1={round(x1)}
+              y1={round(y1)}
+              x2={round(x2)}
+              y2={round(y2)}
+              stroke="transparent"
+              strokeWidth={12}
+            />
+            <line
+              x1={round(x1)}
+              y1={round(y1)}
+              x2={round(x2)}
+              y2={round(y2)}
+              stroke={SYMBOLIC_ASPECT_COLORS[aspect.type]}
+              strokeOpacity={strokeOpacity}
+              strokeWidth={strokeWidth}
+              strokeDasharray={aspect.type === "quincunx" ? "2 3" : undefined}
+              strokeLinecap="round"
+            />
+            <text
+              x={round(mx)}
+              y={round(my)}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fill={SYMBOLIC_ASPECT_COLORS[aspect.type]}
+              fillOpacity={strokeOpacity * 1.2 > 1 ? 1 : strokeOpacity * 1.2}
+              fontSize="11"
+              fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', serif"
+            >
+              {ASPECT_SYMBOLS[aspect.type]}
+            </text>
+          </g>
         );
       })}
     </>
@@ -1119,7 +1170,8 @@ function ClearPlanetLayer({
                 cy={round(layout.glyphY)}
                 r={29}
                 fill="rgba(232,197,71,0.08)"
-                stroke="rgba(232,197,71,0.55)"
+                stroke={point.color}
+                strokeOpacity="0.55"
                 strokeWidth={1.2}
               />
             ) : null}
@@ -1138,7 +1190,7 @@ function ClearPlanetLayer({
               y={round(layout.glyphY)}
               textAnchor="middle"
               dominantBaseline="central"
-              fill="#ffffff"
+              fill={point.color}
               fillOpacity="1"
               fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
               fontSize="27"
@@ -1275,6 +1327,7 @@ export function ChartLayerRail() {
 export function NatalChartWheel({ chart }: Props) {
   const {
     selectedPointId,
+    selectedAspect,
     hoveredAspectId,
     panelOpen,
     showAspects,
@@ -1282,6 +1335,7 @@ export function NatalChartWheel({ chart }: Props) {
     showMinorPoints,
     showDegrees,
     selectPoint,
+    selectAspect,
     openPanel,
   } = useChartStore();
   const [hoveredPointId, setHoveredPointId] = useState<ChartPointId | null>(null);
@@ -1338,8 +1392,12 @@ export function NatalChartWheel({ chart }: Props) {
     setHoveredAspectVisualId(aspectId);
   }
 
+  function handleAspectClick(aspect: Aspect) {
+    selectAspect(aspect);
+  }
+
   return (
-    <div className="relative aspect-square w-full max-w-[54rem] lg:w-[520px]">
+    <div className="relative aspect-square w-full max-w-[54rem] lg:w-[640px]">
       {tooltip ? (
         <div
           className="pointer-events-none absolute z-30 hidden -translate-x-1/2 -translate-y-[calc(100%+0.85rem)] rounded-2xl border border-[rgba(236,232,223,0.08)] bg-[rgba(10,14,22,0.96)] px-3 py-2 text-xs leading-6 text-ivory/86 shadow-[0_18px_45px_rgba(0,0,0,0.28)] backdrop-blur-[10px] md:block"
@@ -1386,7 +1444,9 @@ export function NatalChartWheel({ chart }: Props) {
               hoveredPointId={hoveredPointId}
               highlightedAspectId={hoveredAspectId}
               hoveredAspectId={hoveredAspectVisualId}
+              selectedAspectId={selectedAspect?.id ?? null}
               onHoverAspect={handleAspectHover}
+              onClickAspect={handleAspectClick}
             />
 
             <circle cx={CX} cy={CY} r={12} fill="none" stroke="rgba(181,163,110,0.5)" strokeWidth={0.5} />
