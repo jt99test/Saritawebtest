@@ -1,0 +1,205 @@
+"use client";
+
+import type { Dictionary } from "@/lib/i18n";
+import {
+  getSignFromLongitude,
+  zodiacSigns,
+  type Element,
+  type Modality,
+  type NatalChartData,
+} from "@/lib/chart";
+
+const BALANCE_POINT_IDS = [
+  "sun",
+  "moon",
+  "mercury",
+  "venus",
+  "mars",
+  "jupiter",
+  "saturn",
+  "uranus",
+  "neptune",
+  "pluto",
+] as const;
+
+const ELEMENT_ORDER: Element[] = ["fire", "earth", "air", "water"];
+const MODALITY_ORDER: Modality[] = ["cardinal", "fixed", "mutable"];
+
+const ELEMENT_COLORS: Record<Element, string> = {
+  fire: "#c97a8a",
+  earth: "#8a7a9c",
+  air: "#7a9ac9",
+  water: "#6b6ba8",
+};
+
+const ELEMENT_STATEMENTS: Record<Element, string> = {
+  air: "tu energía vive en la cabeza. Piensas, comunicas, intercambias — y necesitas iniciar las cosas tú mismo o te ahogas.",
+  fire: "tu energía empuja hacia adelante. Inicias, ardes, te lanzas — y necesitas un cauce o te quemas.",
+  earth: "tu energía construye despacio. Aterrizas, sostienes, das forma — y necesitas tiempo o te tensas.",
+  water: "tu energía se mueve por debajo. Sientes, intuyes, absorbes — y necesitas refugio o te disuelves.",
+};
+
+type ChartBalanceSectionProps = {
+  chart: NatalChartData;
+  dictionary: Dictionary;
+};
+
+function getFirstName(name: string) {
+  return name.trim().split(/\s+/)[0] || name;
+}
+
+function percent(count: number, total: number) {
+  return total > 0 ? Math.round((count / total) * 100) : 0;
+}
+
+function dominantKey<TKey extends string>(counts: Record<TKey, number>, order: TKey[]) {
+  return order.reduce((dominant, key) => (
+    counts[key] > counts[dominant] ? key : dominant
+  ), order[0]!);
+}
+
+function polarPoint(radius: number, angle: number) {
+  const radians = (angle * Math.PI) / 180;
+  return {
+    x: 120 + radius * Math.cos(radians),
+    y: 120 + radius * Math.sin(radians),
+  };
+}
+
+function arcPath(startAngle: number, endAngle: number) {
+  const radius = 80;
+  const start = polarPoint(radius, startAngle);
+  const end = polarPoint(radius, endAngle);
+  const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+
+  return `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArc} 1 ${end.x} ${end.y}`;
+}
+
+export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionProps) {
+  const balancePoints = chart.points.filter((point) =>
+    BALANCE_POINT_IDS.includes(point.id as (typeof BALANCE_POINT_IDS)[number]),
+  );
+  const ascendantSign = getSignFromLongitude(chart.meta.ascendant);
+  const allSigns = [...balancePoints.map((point) => point.sign), ascendantSign];
+  const total = allSigns.length;
+
+  const elementCounts: Record<Element, number> = {
+    fire: 0,
+    earth: 0,
+    air: 0,
+    water: 0,
+  };
+
+  const modalityCounts: Record<Modality, number> = {
+    cardinal: 0,
+    fixed: 0,
+    mutable: 0,
+  };
+
+  allSigns.forEach((signId) => {
+    const sign = zodiacSigns.find((entry) => entry.id === signId);
+    if (!sign) {
+      return;
+    }
+
+    elementCounts[sign.element] += 1;
+    modalityCounts[sign.modality] += 1;
+  });
+
+  const dominantElement = dominantKey(elementCounts, ELEMENT_ORDER);
+  const dominantModality = dominantKey(modalityCounts, MODALITY_ORDER);
+  const firstName = getFirstName(chart.event.name);
+  const modalityLine = MODALITY_ORDER.map(
+    (modality) => `${dictionary.result.modalities[modality]} ${percent(modalityCounts[modality], total)}%`,
+  ).join(" · ");
+
+  const quadrants: Array<{ element: Element; start: number; end: number; labelAngle: number }> = [
+    { element: "fire", start: -89.5, end: -0.5, labelAngle: -45 },
+    { element: "earth", start: 0.5, end: 89.5, labelAngle: 45 },
+    { element: "air", start: 90.5, end: 179.5, labelAngle: 135 },
+    { element: "water", start: 180.5, end: 269.5, labelAngle: 225 },
+  ];
+
+  return (
+    <section className="py-24 lg:pb-40">
+      <div className="mx-auto max-w-[720px] text-center">
+        <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.5)]">
+          tu equilibrio
+        </p>
+        <h2 className="mt-2 font-serif text-[36px] font-normal leading-tight text-ivory lg:text-[48px]">
+          {dictionary.result.elements[dominantElement]} dominante · {dictionary.result.modalities[dominantModality]} en exceso
+        </h2>
+      </div>
+
+      <div className="mx-auto mt-16 grid max-w-[720px] gap-16 md:grid-cols-[240px_minmax(0,1fr)] md:items-center lg:mt-20 lg:max-w-[1040px] lg:grid-cols-[400px_minmax(0,1fr)] lg:gap-24">
+        <div className="text-center">
+          <svg viewBox="0 0 240 240" className="h-[240px] w-[240px] lg:h-[360px] lg:w-[360px]" role="img" aria-label="Equilibrio de elementos">
+            {quadrants.map(({ element, start, end, labelAngle }) => {
+              const elementPercent = percent(elementCounts[element], total);
+              const labelPoint = polarPoint(80, labelAngle);
+              const active = element === dominantElement;
+
+              return (
+                <g
+                  key={element}
+                  role="button"
+                  tabIndex={0}
+                  className="cursor-pointer outline-none transition hover:brightness-125"
+                  onClick={() => console.log(`Elemento ${dictionary.result.elements[element]}`)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      console.log(`Elemento ${dictionary.result.elements[element]}`);
+                    }
+                  }}
+                >
+                  <path
+                    d={arcPath(start, end)}
+                    fill="none"
+                    stroke={ELEMENT_COLORS[element]}
+                    strokeWidth="40"
+                    opacity={Math.min(1, Math.max(0.25, elementPercent / 50))}
+                  />
+                  <text
+                    x={labelPoint.x}
+                    y={labelPoint.y - 4}
+                    textAnchor="middle"
+                    className="font-serif text-[12px]"
+                    fill={active ? "#e8c547" : "rgba(255,255,255,0.7)"}
+                  >
+                    {dictionary.result.elements[element]}
+                  </text>
+                  <text
+                    x={labelPoint.x}
+                    y={labelPoint.y + 10}
+                    textAnchor="middle"
+                    className="font-serif text-[10px]"
+                    fill={active ? "#e8c547" : "rgba(255,255,255,0.7)"}
+                  >
+                    {elementPercent}%
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
+          <p className="mt-5 text-center text-xs leading-6 text-[rgba(255,255,255,0.5)] lg:hidden">
+            {modalityLine}
+          </p>
+        </div>
+
+        <div>
+          <p className="font-serif text-[19px] leading-[1.7] text-white lg:max-w-[480px] lg:text-[26px] lg:leading-[1.6]">
+            {firstName}, {ELEMENT_STATEMENTS[dominantElement]}
+          </p>
+          <p className="mt-6 font-serif text-[13px] italic text-[rgba(255,255,255,0.4)]">
+            toca un elemento para profundizar
+          </p>
+        </div>
+      </div>
+
+      <p className="mx-auto mt-14 hidden max-w-[720px] text-center font-serif text-sm italic leading-6 text-[rgba(255,255,255,0.5)] lg:block">
+        {modalityLine}
+      </p>
+    </section>
+  );
+}

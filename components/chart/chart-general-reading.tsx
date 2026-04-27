@@ -1,134 +1,259 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
 
-import { formatSignPosition, getAugmentedChartPoints, type NatalChartData } from "@/lib/chart";
+import type { ChartPointId, NatalChartData } from "@/lib/chart";
 import type { Dictionary } from "@/lib/i18n";
+import { getGeneralReadingCards } from "@/data/chart-readings";
+import { hashNatalChart } from "@/lib/chart-hash";
+import { GENERAL_READING_THEMES, type GeneralReadingTheme } from "@/lib/general-reading";
+import { getAllCachedReadings, setCachedReading } from "@/lib/general-reading-cache";
+import { splitReadingParagraphs } from "@/components/ui/rendered-reading";
 
 type ChartGeneralReadingProps = {
   chart: NatalChartData;
   dictionary: Dictionary;
 };
 
-type ReadingCard = {
-  id: string;
-  title: string;
-  oneLiner: string;
-  fullText: string[];
+type GateMeta = {
+  pointId: ChartPointId;
+  glyph: string;
 };
 
-function buildReadingCards(chart: NatalChartData, dictionary: Dictionary): ReadingCard[] {
-  const points = getAugmentedChartPoints(chart);
-  const sun = points.find((point) => point.id === "sun");
-  const venus = points.find((point) => point.id === "venus");
-  const mercury = points.find((point) => point.id === "mercury");
-  const saturn = points.find((point) => point.id === "saturn");
-  const northNode = points.find((point) => point.id === "northNode");
-  const ascendantSign = dictionary.result.signs[formatSignPosition(chart.meta.ascendant).sign];
-  const mcSign = dictionary.result.signs[formatSignPosition(chart.meta.mc).sign];
-  const sunSign = sun ? dictionary.result.signs[sun.sign] : ascendantSign;
-  const venusSign = venus ? dictionary.result.signs[venus.sign] : dictionary.result.signs.libra;
-  const mercurySign = mercury ? dictionary.result.signs[mercury.sign] : dictionary.result.signs.gemini;
-  const saturnSign = saturn ? dictionary.result.signs[saturn.sign] : dictionary.result.signs.capricorn;
-  const nodeSign = northNode ? dictionary.result.signs[northNode.sign] : mcSign;
+const GATE_META_BY_TITLE: Array<{ needle: string; meta: GateMeta }> = [
+  { needle: "esencia", meta: { pointId: "sun", glyph: "☉" } },
+  { needle: "sientes", meta: { pointId: "moon", glyph: "☽" } },
+  { needle: "amas", meta: { pointId: "venus", glyph: "♀" } },
+  { needle: "piensas", meta: { pointId: "mercury", glyph: "☿" } },
+  { needle: "propósito", meta: { pointId: "northNode", glyph: "☊" } },
+  { needle: "proposito", meta: { pointId: "northNode", glyph: "☊" } },
+  { needle: "desafíos", meta: { pointId: "saturn", glyph: "♄" } },
+  { needle: "desafios", meta: { pointId: "saturn", glyph: "♄" } },
+];
 
-  return [
-    {
-      id: "essence",
-      title: dictionary.result.generalReading.cards.essence.title,
-      oneLiner: `${dictionary.result.generalReading.cards.essence.oneLiner} ${sunSign} y ${ascendantSign}.`,
-      fullText: [
-        `${dictionary.result.generalReading.cards.essence.paragraphs[0]} ${sunSign} marca el tono central de la identidad, mientras ${ascendantSign} define la forma en que esa esencia entra en contacto con el mundo.`,
-        dictionary.result.generalReading.cards.essence.paragraphs[1],
-      ],
-    },
-    {
-      id: "love",
-      title: dictionary.result.generalReading.cards.love.title,
-      oneLiner: `${dictionary.result.generalReading.cards.love.oneLiner} ${venusSign} y la casa 7.`,
-      fullText: [
-        `${dictionary.result.generalReading.cards.love.paragraphs[0]} Venus en ${venusSign} da pistas sobre el gusto, el afecto y la manera de elegir vínculos significativos.`,
-        dictionary.result.generalReading.cards.love.paragraphs[1],
-      ],
-    },
-    {
-      id: "mind",
-      title: dictionary.result.generalReading.cards.mind.title,
-      oneLiner: `${dictionary.result.generalReading.cards.mind.oneLiner} ${mercurySign} y la casa 3.`,
-      fullText: [
-        `${dictionary.result.generalReading.cards.mind.paragraphs[0]} Mercurio en ${mercurySign} matiza la voz, el ritmo mental y la manera de hilar ideas.`,
-        dictionary.result.generalReading.cards.mind.paragraphs[1],
-      ],
-    },
-    {
-      id: "purpose",
-      title: dictionary.result.generalReading.cards.purpose.title,
-      oneLiner: `${dictionary.result.generalReading.cards.purpose.oneLiner} ${mcSign} y ${nodeSign}.`,
-      fullText: [
-        `${dictionary.result.generalReading.cards.purpose.paragraphs[0]} El Medio Cielo en ${mcSign} y el Nodo Norte en ${nodeSign} apuntan hacia una dirección vocacional y evolutiva que pide tiempo para desplegarse.`,
-        dictionary.result.generalReading.cards.purpose.paragraphs[1],
-      ],
-    },
-    {
-      id: "challenges",
-      title: dictionary.result.generalReading.cards.challenges.title,
-      oneLiner: `${dictionary.result.generalReading.cards.challenges.oneLiner} ${saturnSign} y las tensiones activas.`,
-      fullText: [
-        `${dictionary.result.generalReading.cards.challenges.paragraphs[0]} Saturno en ${saturnSign} suele señalar exigencias, límites y una disciplina que se aprende atravesando fricción.`,
-        dictionary.result.generalReading.cards.challenges.paragraphs[1],
-      ],
-    },
-  ];
+function gateMetaFor(title: string): GateMeta {
+  const normalized = title.toLowerCase();
+  return GATE_META_BY_TITLE.find((entry) => normalized.includes(entry.needle))?.meta ?? {
+    pointId: "sun",
+    glyph: "☉",
+  };
+}
+
+function subtitleFor(pointId: ChartPointId, chart: NatalChartData, dictionary: Dictionary) {
+  const point = chart.points.find((entry) => entry.id === pointId);
+
+  if (!point) {
+    return "";
+  }
+
+  return `${dictionary.result.points[point.id]} en ${dictionary.result.signs[point.sign]} · Casa ${point.house}`;
 }
 
 export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingProps) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const cards = useMemo(() => buildReadingCards(chart, dictionary), [chart, dictionary]);
+  const [chartHash, setChartHash] = useState<string | null>(null);
+  const [cachedReadings, setCachedReadings] = useState<Record<string, string>>({});
+  const [streamingReadings, setStreamingReadings] = useState<Record<string, string>>({});
+  const [loadingThemes, setLoadingThemes] = useState<Record<string, boolean>>({});
+  const [errors, setErrors] = useState<Record<string, string | null>>({});
+  const controllersRef = useRef<Record<string, AbortController>>({});
+  const cards = getGeneralReadingCards(chart, dictionary);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      const nextHash = await hashNatalChart(chart);
+      if (cancelled) {
+        return;
+      }
+
+      setChartHash(nextHash);
+      setCachedReadings(getAllCachedReadings(nextHash));
+      setStreamingReadings({});
+      setLoadingThemes({});
+      setErrors({});
+      setExpandedId(null);
+    })();
+
+    return () => {
+      cancelled = true;
+      Object.values(controllersRef.current).forEach((controller) => controller.abort());
+      controllersRef.current = {};
+    };
+  }, [chart]);
+
+  async function generateReading(theme: GeneralReadingTheme) {
+    if (!chartHash || loadingThemes[theme]) {
+      return false;
+    }
+
+    const controller = new AbortController();
+    controllersRef.current[theme] = controller;
+
+    setLoadingThemes((current) => ({ ...current, [theme]: true }));
+    setErrors((current) => ({ ...current, [theme]: null }));
+    setStreamingReadings((current) => ({ ...current, [theme]: "" }));
+
+    try {
+      const response = await fetch("/api/general-reading", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chart, theme }),
+        signal: controller.signal,
+      });
+
+      if (!response.ok || !response.body) {
+        throw new Error("No se pudo generar");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      const readStream = async (content: string): Promise<string> => {
+        const { done, value } = await reader.read();
+
+        if (done) {
+          return content;
+        }
+
+        const nextContent = content + decoder.decode(value, { stream: true });
+        setStreamingReadings((current) => ({ ...current, [theme]: nextContent }));
+        return readStream(nextContent);
+      };
+
+      const finalContent = (await readStream("")).trim();
+
+      if (!finalContent) {
+        throw new Error("No se pudo generar");
+      }
+
+      setCachedReading(chartHash, theme, finalContent);
+      setCachedReadings((current) => ({ ...current, [theme]: finalContent }));
+      setStreamingReadings((current) => ({ ...current, [theme]: finalContent }));
+      return true;
+    } catch (error) {
+      if ((error as Error).name !== "AbortError") {
+        setErrors((current) => ({ ...current, [theme]: "No se pudo generar. Intentar de nuevo" }));
+      }
+
+      return false;
+    } finally {
+      delete controllersRef.current[theme];
+      setLoadingThemes((current) => ({ ...current, [theme]: false }));
+    }
+  }
 
   return (
-    <section className="space-y-6">
-      <div className="text-center lg:text-left">
-        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-dusty-gold/72">
-          {dictionary.result.generalReading.eyebrow}
+    <section className="pb-24">
+      <div className="mx-auto max-w-[720px] text-center">
+        <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.5)]">
+          tu carta, en esencia
         </p>
-        <h2 className="mt-4 text-3xl text-ivory sm:text-[2.5rem]">
-          {dictionary.result.generalReading.title}
+        <h2 className="mt-2 font-serif text-[36px] font-normal leading-tight text-ivory lg:text-[44px]">
+          Seis puertas de entrada
         </h2>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        {cards.map((card) => {
+      <div className="mx-auto mt-14 max-w-[720px]">
+        {cards.map((card, index) => {
           const expanded = expandedId === card.id;
+          const cachedContent = cachedReadings[card.theme] ?? "";
+          const streamingContent = streamingReadings[card.theme] ?? "";
+          const loading = !!loadingThemes[card.theme];
+          const error = errors[card.theme];
+          const fullReading = cachedContent || streamingContent;
+          const paragraphs = fullReading ? splitReadingParagraphs(fullReading) : [];
+          const gateMeta = gateMetaFor(card.title);
+          const actionLabel = cachedContent ? "Leer ↓" : "Generar ↓";
 
           return (
             <article
               key={card.id}
-              className="group rounded-[1.9rem] border border-dusty-gold/20 bg-[linear-gradient(180deg,rgba(18,11,31,0.78),rgba(8,10,18,0.64))] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-xl transition duration-300 hover:border-dusty-gold/34 hover:shadow-[0_18px_50px_rgba(0,0,0,0.26),inset_0_1px_0_rgba(255,255,255,0.06)] sm:p-6"
+              className={[
+                "border-t-[0.5px] border-[rgba(232,197,71,0.15)]",
+                index === cards.length - 1 ? "border-b-[0.5px]" : "",
+              ].join(" ")}
             >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-dusty-gold/68">
+              <button
+                type="button"
+                className="grid w-full cursor-pointer grid-cols-[60px_minmax(0,1fr)_120px] items-center gap-6 py-7 text-left transition duration-200 hover:bg-[rgba(232,197,71,0.03)] lg:grid-cols-[80px_minmax(0,1fr)_120px] lg:py-9"
+                onClick={() => {
+                  setExpandedId(expanded ? null : card.id);
+                  if (!cachedContent && !streamingContent && !loading) {
+                    void generateReading(card.theme);
+                  }
+                }}
+                aria-expanded={expanded}
+              >
+                <span className="text-center font-serif text-[32px] text-[rgba(255,255,255,0.6)] lg:text-[36px]">
+                  {gateMeta.glyph}
+                </span>
+                <span>
+                  <span className="block font-serif text-2xl font-normal text-white lg:text-[28px]">
                     {card.title}
-                  </p>
-                  <p className="mt-4 text-lg leading-8 text-ivory/88">{card.oneLiner}</p>
-                </div>
+                  </span>
+                  <span className="mt-1 block font-serif text-[13px] italic text-[rgba(255,255,255,0.5)] lg:text-sm">
+                    {subtitleFor(gateMeta.pointId, chart, dictionary)}
+                  </span>
+                </span>
+                <span className="text-right text-[13px] text-[rgba(232,197,71,0.8)]">
+                  {actionLabel}
+                </span>
+              </button>
 
-                <button
-                  type="button"
-                  onClick={() => setExpandedId(expanded ? null : card.id)}
-                  className="shrink-0 rounded-full border border-white/10 px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-ivory/62 transition hover:border-dusty-gold/26 hover:text-ivory"
-                >
-                  {expanded ? dictionary.common.hide : dictionary.result.generalReading.readMore}
-                </button>
-              </div>
-
-              {expanded ? (
-                <div className="mt-5 space-y-4 border-t border-white/8 pt-5 text-sm leading-7 text-ivory/68">
-                  {card.fullText.map((paragraph) => (
-                    <p key={paragraph}>{paragraph}</p>
-                  ))}
+              <motion.div
+                initial={false}
+                animate={expanded ? "open" : "closed"}
+                variants={{
+                  open: { height: "auto", opacity: 1 },
+                  closed: { height: 0, opacity: 0 },
+                }}
+                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                className="overflow-hidden"
+              >
+                <div className="max-w-[600px] pb-7 pl-[84px] lg:pl-[104px]">
+                  {error ? (
+                    <div className="space-y-4">
+                      <p className="font-serif text-[17px] leading-[1.75] text-[rgba(255,255,255,0.85)] lg:text-lg lg:leading-[1.8]">
+                        {error}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => void generateReading(card.theme)}
+                        className="text-[13px] text-[rgba(232,197,71,0.8)] transition hover:text-ivory"
+                      >
+                        {dictionary.result.generalReading.retry} ↓
+                      </button>
+                    </div>
+                  ) : fullReading ? (
+                    <div className="space-y-5">
+                      {loading ? (
+                        <p className="text-[13px] uppercase tracking-[0.2em] text-[rgba(232,197,71,0.65)]">
+                          {dictionary.result.generalReading.generating}
+                        </p>
+                      ) : null}
+                      <div className="space-y-5">
+                        {paragraphs.map((paragraph, paragraphIndex) => (
+                          <p
+                            key={`${card.id}-${paragraphIndex}`}
+                            className="font-serif text-[17px] leading-[1.75] text-[rgba(255,255,255,0.85)] lg:text-lg lg:leading-[1.8]"
+                          >
+                            {paragraph}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="font-serif text-[17px] leading-[1.75] text-[rgba(255,255,255,0.55)] lg:text-lg lg:leading-[1.8]">
+                      {GENERAL_READING_THEMES.includes(card.theme)
+                        ? dictionary.result.generalReading.placeholder
+                        : ""}
+                    </p>
+                  )}
                 </div>
-              ) : null}
+              </motion.div>
             </article>
           );
         })}

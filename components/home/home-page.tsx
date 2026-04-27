@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
-import { CelestialLayer } from "@/components/celestial/celestial-layer";
 import { LanguageSelector } from "@/components/i18n/language-selector";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { PrimaryButton } from "@/components/ui/primary-button";
+import { illustrations } from "@/data/illustrations";
 import { defaultLocale, dictionaries, type Locale } from "@/lib/i18n";
 
 export function HomePage() {
@@ -24,7 +25,6 @@ export function HomePage() {
       <AtmosphericBackground variant="page" />
 
       <section className="relative min-h-screen overflow-hidden">
-        <CelestialLayer />
         <AtmosphericBackground variant="hero" />
         <AtmosphericBackground variant="heroGlow" />
 
@@ -34,7 +34,7 @@ export function HomePage() {
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="h-px w-10 shrink-0 bg-gradient-to-r from-dusty-gold/70 to-transparent sm:w-14" />
                 <p className="truncate text-[0.56rem] uppercase tracking-[0.28em] text-dusty-gold/80 sm:text-[0.68rem] sm:tracking-[0.38em]">
-                {dictionary.home.eyebrow}
+                  {dictionary.home.eyebrow}
                 </p>
               </div>
             </div>
@@ -48,18 +48,31 @@ export function HomePage() {
             </div>
           </div>
 
-          <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 flex-col items-center justify-end pb-[15vh] text-center sm:pb-[13vh]">
-            <div className="mb-5 h-px w-20 bg-gradient-to-r from-transparent via-dusty-gold/70 to-transparent sm:mb-7 sm:w-28" />
+          <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center gap-7 pt-8 text-center sm:gap-8 sm:pt-10">
+            <div className="relative w-full overflow-hidden rounded-[1.4rem] border border-white/8 shadow-[0_34px_120px_rgba(0,0,0,0.44)]">
+              <Image
+                src={illustrations.scenes.landing}
+                alt="Ilustracion cosmica de bienvenida"
+                width={1440}
+                height={810}
+                priority
+                className="aspect-[16/10] w-full object-cover sm:aspect-[16/8]"
+                sizes="(min-width: 1280px) 1152px, 100vw"
+              />
 
-            <h1 className="max-w-[10ch] text-[clamp(5.75rem,14vw,15rem)] leading-[0.88] font-medium tracking-[-0.055em] text-white drop-shadow-[0_20px_40px_rgba(0,0,0,0.55)]">
-              {dictionary.brand.name}
-            </h1>
+              <div className="absolute inset-x-0 top-[10%] flex flex-col items-center px-5 sm:top-[12%]">
+                <div className="mb-4 h-px w-20 bg-gradient-to-r from-transparent via-dusty-gold/70 to-transparent sm:mb-5 sm:w-28" />
+                <h1 className="max-w-[9ch] text-6xl leading-[0.92] font-medium text-white drop-shadow-[0_18px_34px_rgba(0,0,0,0.58)] sm:text-8xl lg:text-9xl">
+                  {dictionary.brand.name}
+                </h1>
+              </div>
+            </div>
 
-            <p className="mt-4 max-w-sm text-balance text-[0.92rem] leading-7 text-dusty-gold/82 sm:mt-5 sm:text-[1.02rem]">
+            <p className="max-w-xl text-balance text-[0.95rem] leading-7 text-dusty-gold/82 sm:text-base">
               {dictionary.home.subtitle}
             </p>
 
-            <div className="mt-8 sm:mt-10">
+            <div>
               <PrimaryButton
                 href="/form"
                 variant="ghostGold"

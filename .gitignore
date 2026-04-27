@@ -23,6 +23,9 @@
 # misc
 .DS_Store
 *.pem
+tmp-*.txt
+tmp_*.png
+/swisseph-source/
 
 # debug
 npm-debug.log*

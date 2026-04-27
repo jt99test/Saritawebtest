@@ -15,6 +15,7 @@ import {
 import type { Dictionary } from "@/lib/i18n";
 
 import { useChartStore } from "@/components/chart/chart-store";
+import { RenderedReading, splitReadingParagraphs } from "@/components/ui/rendered-reading";
 
 type Props = {
   chart: NatalChartData;
@@ -41,9 +42,12 @@ function useDesktopBreakpoint() {
 
 function SectionLabel({ children }: { children: string }) {
   return (
-    <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-dusty-gold/72">
-      {children}
-    </p>
+    <div>
+      <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-dusty-gold/72">
+        {children}
+      </p>
+      <span className="mt-3 block h-0.5 w-10 rounded-full bg-dusty-gold/70" />
+    </div>
   );
 }
 
@@ -75,6 +79,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
     hoveredAspectId,
     detailTab,
     panelOpen,
+    showMinorAspects,
     closePanel,
     hoverAspect,
     setDetailTab,
@@ -85,6 +90,8 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const prevPointRef = useRef<ChartPointId | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const isDesktop = useDesktopBreakpoint();
 
   const augmentedPoints = useMemo(() => getAugmentedChartPoints(chart), [chart]);
@@ -93,10 +100,16 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
     () =>
       point
         ? chart.aspects
-            .filter((aspect) => aspect.from === point.id || aspect.to === point.id)
+            .filter((aspect) => {
+              if (!(aspect.from === point.id || aspect.to === point.id)) {
+                return false;
+              }
+
+              return aspect.type === "quincunx" ? showMinorAspects : true;
+            })
             .sort((left, right) => left.orb - right.orb)
         : [],
-    [chart.aspects, point],
+    [chart.aspects, point, showMinorAspects],
   );
 
   useEffect(() => {
@@ -157,17 +170,23 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
 
   useEffect(() => {
     if (!panelOpen) {
-      prevPointRef.current = null;
       abortRef.current?.abort();
       hoverAspect(null);
-      setReadingExpanded(false);
-    }
-  }, [hoverAspect, panelOpen]);
+      const returnToId = prevPointRef.current;
+      prevPointRef.current = null;
 
-  useEffect(() => {
-    if (!panelOpen) {
+      if (returnToId) {
+        requestAnimationFrame(() => {
+          const trigger = document.querySelector<HTMLElement>(`[data-chart-point="${returnToId}"]`);
+          trigger?.focus();
+        });
+      }
+
       return;
     }
+
+    const panel = panelRef.current;
+    closeButtonRef.current?.focus();
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -175,9 +194,41 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
       }
     };
 
+    const handleTab = (event: KeyboardEvent) => {
+      if (event.key !== "Tab" || !panel) {
+        return;
+      }
+
+      const focusable = Array.from(
+        panel.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((element) => !element.hasAttribute("disabled"));
+
+      if (focusable.length === 0) {
+        return;
+      }
+
+      const first = focusable[0]!;
+      const last = focusable[focusable.length - 1]!;
+      const activeElement = document.activeElement as HTMLElement | null;
+
+      if (event.shiftKey && activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
     window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, [closePanel, panelOpen]);
+    window.addEventListener("keydown", handleTab);
+    return () => {
+      window.removeEventListener("keydown", handleEscape);
+      window.removeEventListener("keydown", handleTab);
+    };
+  }, [closePanel, hoverAspect, panelOpen]);
 
   if (!point) {
     return null;
@@ -187,10 +238,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
   const signGlyph = zodiacSigns.find((sign) => sign.id === point.sign)?.glyph ?? "";
   const position = formatSignPosition(point.longitude);
   const selectedHouseArea = houseArea(dictionary, point.house);
-  const paragraphs = reading
-    .split(/\n\s*\n/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean);
+  const paragraphs = splitReadingParagraphs(reading);
   const previewParagraph = paragraphs[0] ?? "";
   const remainingParagraphs = paragraphs.slice(1);
   const essenceItems = [
@@ -234,13 +282,16 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
             exit={isDesktop ? { x: "100%", opacity: 0.92 } : { y: "100%", opacity: 0.92 }}
             transition={{ type: "spring", damping: 28, stiffness: 240 }}
             className={[
-              "fixed z-50 overflow-hidden border-white/10 bg-[rgba(20,10,35,0.95)] backdrop-blur-xl",
+              "fixed z-50 overflow-hidden border-[rgba(232,197,71,0.25)] bg-[rgba(20,10,35,0.95)] backdrop-blur-[12px]",
               isDesktop
-                ? "right-0 top-0 h-screen w-[420px] border-l border-l-dusty-gold/55 shadow-[-24px_0_90px_rgba(0,0,0,0.42)]"
-                : "inset-x-0 bottom-0 h-[75vh] rounded-t-[2rem] border-t border-t-dusty-gold/50 shadow-[0_-24px_90px_rgba(0,0,0,0.42)]",
+                ? "right-0 top-0 h-screen w-[420px] border-l shadow-[-24px_0_90px_rgba(0,0,0,0.42)]"
+                : "inset-x-0 bottom-0 h-[75vh] rounded-t-[2rem] border-t shadow-[0_-24px_90px_rgba(0,0,0,0.42)]",
             ].join(" ")}
+            aria-modal="true"
+            role="dialog"
+            aria-label={dictionary.result.panels.selectedPoint}
           >
-            <div className="flex h-full flex-col">
+            <div ref={panelRef} className="flex h-full flex-col">
               <div className="border-b border-white/8 px-5 pb-4 pt-4 sm:px-6">
                 {!isDesktop ? <div className="mx-auto mb-4 h-1.5 w-14 rounded-full bg-white/14" /> : null}
 
@@ -266,6 +317,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                   </div>
 
                   <button
+                    ref={closeButtonRef}
                     type="button"
                     onClick={closePanel}
                     className="rounded-full border border-white/10 p-2.5 text-ivory/55 transition hover:border-white/16 hover:text-ivory"
@@ -300,6 +352,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                             ? "border-dusty-gold/48 bg-dusty-gold/14 text-ivory"
                             : "border-white/10 bg-white/[0.03] text-ivory/52 hover:border-white/16 hover:text-ivory",
                         ].join(" ")}
+                        aria-pressed={active}
                       >
                         {tab.label}
                       </button>
@@ -311,19 +364,8 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
               <div className="flex-1 overflow-y-auto px-5 pb-6 pt-5 sm:px-6">
                 {detailTab === "essence" ? (
                   <div className="space-y-6">
-                    <section className="rounded-[1.6rem] border border-dusty-gold/18 bg-white/[0.03] p-5">
-                      <SectionLabel>{dictionary.result.drawer.summaryLabel}</SectionLabel>
-                      <p className="mt-4 text-base leading-8 text-ivory/82">
-                        <span className="text-ivory">{dictionary.result.points[point.id]}</span>{" "}
-                        {dictionary.result.editorial.summaryMiddle}{" "}
-                        <span className="text-ivory">{dictionary.result.signs[point.sign]}</span>{" "}
-                        {dictionary.result.editorial.summarySuffix}{" "}
-                        <span className="text-ivory">{selectedHouseArea}</span>.
-                      </p>
-                    </section>
-
                     <div className="grid gap-4">
-                      <section className="rounded-[1.6rem] border border-white/10 bg-white/[0.03] p-5">
+                      <section className="rounded-[1.6rem] border border-[rgba(232,197,71,0.25)] bg-[rgba(20,10,35,0.7)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-[10px]">
                         <SectionLabel>{dictionary.result.editorial.signFocus}</SectionLabel>
                         <h3 className="mt-4 font-serif text-2xl text-ivory">
                           {dictionary.result.signs[point.sign]}
@@ -338,7 +380,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                         </ul>
                       </section>
 
-                      <section className="rounded-[1.6rem] border border-white/10 bg-white/[0.03] p-5">
+                      <section className="rounded-[1.6rem] border border-[rgba(232,197,71,0.25)] bg-[rgba(20,10,35,0.7)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-[10px]">
                         <SectionLabel>{dictionary.result.editorial.houseFocus}</SectionLabel>
                         <h3 className="mt-4 font-serif text-2xl text-ivory">{selectedHouseArea}</h3>
                         <ul className="mt-4 space-y-2 text-sm leading-7 text-ivory/68">
@@ -355,8 +397,16 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                 ) : null}
 
                 {detailTab === "data" ? (
-                  <section className="rounded-[1.6rem] border border-white/10 bg-white/[0.03] p-5">
+                  <section className="rounded-[1.6rem] border border-[rgba(232,197,71,0.25)] bg-[rgba(20,10,35,0.7)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-[10px]">
                     <SectionLabel>{dictionary.result.editorial.technicalSheet}</SectionLabel>
+                    {point.id === "northNode" || point.id === "southNode" ? (
+                      <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-dusty-gold/20 bg-dusty-gold/8 px-3 py-2 text-xs leading-6 text-ivory/72">
+                        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-dusty-gold/30 text-[0.68rem] text-dusty-gold/90">
+                          ⓘ
+                        </span>
+                        <span>{dictionary.result.messages.meanNodeNote}</span>
+                      </div>
+                    ) : null}
                     <dl className="mt-4">
                       <InfoRow label={dictionary.result.fields.position} value={point.degreeLabel} />
                       <InfoRow
@@ -396,7 +446,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                               "w-full rounded-[1.45rem] border p-4 text-left transition",
                               active
                                 ? "border-dusty-gold/52 bg-dusty-gold/12 shadow-[0_0_0_1px_rgba(232,197,71,0.15)]"
-                                : "border-white/10 bg-white/[0.03] hover:border-white/16 hover:bg-white/[0.05]",
+                                : "border-[rgba(232,197,71,0.25)] bg-[rgba(20,10,35,0.7)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-[10px] hover:border-white/16 hover:bg-white/[0.05]",
                             ].join(" ")}
                           >
                             <div className="flex items-start justify-between gap-4">
@@ -422,7 +472,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                 ) : null}
 
                 {detailTab === "reading" ? (
-                  <section className="rounded-[1.6rem] border border-white/10 bg-white/[0.03] p-5">
+                  <section className="rounded-[1.6rem] border border-[rgba(232,197,71,0.25)] bg-[rgba(20,10,35,0.7)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] backdrop-blur-[10px]">
                     <SectionLabel>{dictionary.result.drawer.readingLabel}</SectionLabel>
 
                     {loading ? (
@@ -442,14 +492,16 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                     ) : null}
 
                     {!loading && !error && previewParagraph ? (
-                      <div className="mt-4 space-y-4 font-serif text-sm leading-8 text-ivory/74">
-                        <p>{previewParagraph}</p>
-                        {readingExpanded ? remainingParagraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>) : null}
+                      <div className="mt-4">
+                        <RenderedReading
+                          paragraphs={readingExpanded ? paragraphs : [previewParagraph]}
+                          className="font-serif text-sm text-ivory/74"
+                        />
                         {remainingParagraphs.length > 0 ? (
                           <button
                             type="button"
                             onClick={() => setReadingExpanded((current) => !current)}
-                            className="rounded-full border border-white/10 px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-ivory/62 transition hover:border-dusty-gold/26 hover:text-ivory"
+                            className="mt-6 rounded-full border border-dusty-gold/24 px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-dusty-gold/86 transition hover:border-dusty-gold/42 hover:text-ivory"
                           >
                             {readingExpanded ? dictionary.common.hide : dictionary.result.drawer.readMore}
                           </button>

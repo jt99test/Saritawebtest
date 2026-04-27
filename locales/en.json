@@ -57,6 +57,89 @@
     "eyebrow": "Result",
     "title": "This is the sky map from your birth",
     "subtitle": "A first visual reading to explore your chart with calm.",
+    "prompt": "Tap a planet to explore it",
+    "primaryTabs": {
+      "natal": "Your chart",
+      "moon": "Moon of the month",
+      "yoga": "Astral yoga",
+      "transits": "Monthly transits",
+      "premium": "Premium",
+      "upcoming": "Coming soon",
+      "upcomingMessage": "This view is already prepared inside the experience, but its content is not active yet."
+    },
+    "drawer": {
+      "tabs": {
+        "essence": "Essence",
+        "data": "Data",
+        "aspects": "Aspects",
+        "reading": "Reading"
+      },
+      "summaryLabel": "Core key",
+      "readingLabel": "Reading",
+      "readMore": "Read more"
+    },
+    "generalReading": {
+      "eyebrow": "General reading",
+      "title": "Your chart, in essence",
+      "readMore": "Read more",
+      "generate": "Generate personalized reading",
+      "generateAll": "Generate all 6 readings",
+      "generating": "Generating reading",
+      "retry": "Try again",
+      "placeholder": "You can generate this reading whenever you want. It will be saved for this chart so you don't have to request it again.",
+      "cards": {
+        "essence": {
+          "title": "Your essence",
+          "oneLiner": "An initial synthesis between your Sun and your Ascendant begins from",
+          "paragraphs": [
+            "This is the base identity reading that frames the overall experience.",
+            "The block is ready for a fuller interpretation once we define the final copy."
+          ]
+        },
+        "feelings": {
+          "title": "How you feel",
+          "fullText": "[lorem ipsum placeholder - to be replaced with Claude-generated content in next iteration]"
+        },
+        "love": {
+          "title": "How you love",
+          "oneLiner": "Your relational style begins to take shape through",
+          "paragraphs": [
+            "This block summarizes the emotional tone, attraction pattern, and primary relationship climate.",
+            "We can replace this text with a more polished reading once the final narrative is ready."
+          ]
+        },
+        "mind": {
+          "title": "How you think",
+          "oneLiner": "Your mind and voice organize themselves between",
+          "paragraphs": [
+            "This section focuses on language, ideas, and mental style.",
+            "The structure is ready to receive richer copy in the next phase."
+          ]
+        },
+        "purpose": {
+          "title": "Your purpose",
+          "oneLiner": "Your deeper direction can be sensed between",
+          "paragraphs": [
+            "This block points toward vocation, visibility, and developmental direction.",
+            "For now it remains an editorial base that we can later refine with real interpretation."
+          ]
+        },
+        "challenges": {
+          "title": "Your challenges",
+          "oneLiner": "Your most formative tensions appear between",
+          "paragraphs": [
+            "This section gathers demanding lessons, friction points, and inner maturation.",
+            "Later we can replace it with a more specific reading based on aspects and rulerships."
+          ]
+        }
+      }
+    },
+    "balance": {
+      "eyebrow": "Distribution",
+      "title": "Your inner balance",
+      "elementsTitle": "Elements",
+      "modalitiesTitle": "Modalities"
+    },
     "variants": {
       "default": "Base",
       "astronomical": "Editorial",
@@ -116,7 +199,10 @@
     },
     "toggles": {
       "aspects": "Aspects",
-      "minorPoints": "Minor points"
+      "majorAspects": "Major aspects",
+      "minorAspects": "Minor aspects",
+      "minorPoints": "Minor points",
+      "degrees": "Degrees and minutes"
     },
     "messages": {
       "detailsHint": "Tap a planet or point to open its data card.",
@@ -125,7 +211,8 @@
       "orbitalHint": "The wheel is interactive: tap, focus, and compare relationships.",
       "mockNotice": "Base visualization ready for real data.",
       "missingResult": "Go back to the form to generate your natal chart from your details.",
-      "noAspectMatrix": "No exact aspect"
+      "noAspectMatrix": "No exact aspect",
+      "meanNodeNote": "Calculated using the Mean Node — psychological use."
     },
     "editorial": {
       "signFocus": "Essence",

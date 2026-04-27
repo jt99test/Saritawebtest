@@ -57,6 +57,89 @@
     "eyebrow": "Resultado",
     "title": "Este es el mapa del cielo en tu nacimiento",
     "subtitle": "Una primera lectura visual para explorar tu carta con calma.",
+    "prompt": "Toca un planeta para explorarlo",
+    "primaryTabs": {
+      "natal": "Tu carta",
+      "moon": "Luna del mes",
+      "yoga": "Yoga astral",
+      "transits": "Tránsitos del mes",
+      "premium": "Premium",
+      "upcoming": "Próximamente",
+      "upcomingMessage": "Esta vista ya queda preparada dentro de la experiencia, pero todavía no hemos activado su contenido."
+    },
+    "drawer": {
+      "tabs": {
+        "essence": "Esencia",
+        "data": "Datos",
+        "aspects": "Aspectos",
+        "reading": "Lectura"
+      },
+      "summaryLabel": "Clave principal",
+      "readingLabel": "Lectura",
+      "readMore": "Leer más"
+    },
+    "generalReading": {
+      "eyebrow": "Lectura general",
+      "title": "Tu carta, en esencia",
+      "readMore": "Leer más",
+      "generate": "Generar lectura personalizada",
+      "generateAll": "Generar las 6 lecturas",
+      "generating": "Generando lectura",
+      "retry": "Intentar de nuevo",
+      "placeholder": "Puedes generar esta lectura cuando quieras. Se guardará para esta carta y no tendrás que pedirla de nuevo.",
+      "cards": {
+        "essence": {
+          "title": "Tu esencia",
+          "oneLiner": "Una síntesis inicial entre tu Sol y tu Ascendente abre la lectura desde",
+          "paragraphs": [
+            "Aquí va la lectura base de identidad para orientar la experiencia general.",
+            "Este bloque queda preparado para una interpretación más amplia cuando definamos el copy final."
+          ]
+        },
+        "feelings": {
+          "title": "Cómo sientes",
+          "fullText": "[lorem ipsum placeholder - to be replaced with Claude-generated content in next iteration]"
+        },
+        "love": {
+          "title": "Cómo amas",
+          "oneLiner": "Tu forma de vincularte empieza a dibujarse desde",
+          "paragraphs": [
+            "Este bloque resume el tono afectivo, la forma de elegir vínculos y el clima relacional principal.",
+            "Podemos sustituir este texto por una lectura más cuidada cuando cerremos la narrativa final."
+          ]
+        },
+        "mind": {
+          "title": "Cómo piensas",
+          "oneLiner": "Tu mente y tu voz se organizan entre",
+          "paragraphs": [
+            "Aquí se concentra la lectura sobre lenguaje, ideas y estilo mental.",
+            "La estructura ya está lista para conectar un copy más elaborado en la siguiente fase."
+          ]
+        },
+        "purpose": {
+          "title": "Tu propósito",
+          "oneLiner": "La dirección de fondo se intuye entre",
+          "paragraphs": [
+            "Este bloque apunta a vocación, visibilidad y desarrollo evolutivo.",
+            "De momento lo dejamos como una base editorial que luego podremos afinar con interpretación real."
+          ]
+        },
+        "challenges": {
+          "title": "Tus desafíos",
+          "oneLiner": "Las fricciones más formativas aparecen entre",
+          "paragraphs": [
+            "Aquí se agrupan los aprendizajes exigentes, las tensiones y la maduración interna.",
+            "Más adelante podremos reemplazarlo por una lectura específica basada en aspectos y regencias."
+          ]
+        }
+      }
+    },
+    "balance": {
+      "eyebrow": "Distribución",
+      "title": "Tu equilibrio interno",
+      "elementsTitle": "Elementos",
+      "modalitiesTitle": "Modalidades"
+    },
     "variants": {
       "default": "Base",
       "astronomical": "Editorial",
@@ -116,7 +199,10 @@
     },
     "toggles": {
       "aspects": "Aspectos",
-      "minorPoints": "Puntos secundarios"
+      "majorAspects": "Aspectos mayores",
+      "minorAspects": "Aspectos menores",
+      "minorPoints": "Puntos menores",
+      "degrees": "Grados y minutos"
     },
     "messages": {
       "detailsHint": "Pulsa sobre un planeta o un punto para ver su ficha.",
@@ -125,7 +211,8 @@
       "orbitalHint": "La rueda es interactiva: toca, enfoca y compara relaciones.",
       "mockNotice": "Visualización base preparada para datos reales.",
       "missingResult": "Vuelve al formulario para generar tu carta natal con tus datos.",
-      "noAspectMatrix": "Sin aspecto exacto"
+      "noAspectMatrix": "Sin aspecto exacto",
+      "meanNodeNote": "Calculado según el Nodo Medio (Mean Node) — uso psicológico."
     },
     "editorial": {
       "signFocus": "Esencia",

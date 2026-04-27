@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+import { illustrations } from "@/data/illustrations";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
@@ -73,30 +75,37 @@ export default function LoadingPage() {
 
       <section className="relative min-h-screen py-8 sm:py-10">
         <Container className="relative flex min-h-screen items-center justify-center">
-          <Reveal mode="immediate" className="mx-auto w-full max-w-2xl text-center">
-            <div className="rounded-4xl border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03))] p-8 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-10">
+          <Reveal mode="immediate" className="mx-auto w-full max-w-[720px] text-center">
+            <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-6 sm:min-h-0">
               <p className="text-xs font-medium uppercase tracking-[0.28em] text-ivory/46">
                 {dictionary.brand.name}
               </p>
 
-              <div className="mx-auto mt-8 h-11 w-11 animate-spin rounded-full border-2 border-white/10 border-t-dusty-gold/75" />
+              <div className="relative w-full max-w-[720px] overflow-hidden rounded-[1.6rem] border border-white/8 shadow-[0_28px_90px_rgba(0,0,0,0.42)]">
+                <Image
+                  src={illustrations.scenes.loading}
+                  alt="Ilustracion cosmica para la espera"
+                  width={720}
+                  height={1080}
+                  priority
+                  className="cosmos-slow-zoom h-[58vh] min-h-[360px] w-full object-cover sm:h-auto sm:max-h-[68vh]"
+                  sizes="(min-width: 768px) 720px, 100vw"
+                />
+              </div>
 
-              <div className="mt-8 space-y-3">
-                {dictionary.loading.steps.map((step, index) => (
-                  <p
-                    key={step}
-                    className={[
-                      "text-sm transition-all duration-500 sm:text-base",
-                      index === stepIndex
-                        ? "text-ivory/90"
-                        : index < stepIndex
-                          ? "text-ivory/38"
-                          : "text-ivory/22",
-                    ].join(" ")}
-                  >
-                    {step}
-                  </p>
-                ))}
+              <div className="space-y-4">
+                <p className="font-serif text-3xl leading-tight text-ivory sm:text-4xl">
+                  {dictionary.loading.steps[stepIndex] ?? "Calculando tu carta..."}
+                </p>
+                <div className="flex items-center justify-center gap-2" aria-hidden="true">
+                  {[0, 1, 2].map((dot) => (
+                    <span
+                      key={dot}
+                      className="h-2 w-2 rounded-full bg-dusty-gold/80 [animation:pulse_1.4s_ease-in-out_infinite]"
+                      style={{ animationDelay: `${dot * 160}ms` }}
+                    />
+                  ))}
+                </div>
               </div>
 
               {error ? (

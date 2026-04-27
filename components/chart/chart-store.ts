@@ -10,14 +10,18 @@ type ChartStore = {
   activePanel: "details" | "settings";
   detailTab: "essence" | "data" | "aspects" | "reading";
   showAspects: boolean;
+  showMinorAspects: boolean;
   showMinorPoints: boolean;
+  showDegrees: boolean;
   panelOpen: boolean;
   selectPoint: (pointId: ChartPointId | null) => void;
   hoverAspect: (aspectId: string | null) => void;
   setActivePanel: (panel: "details" | "settings") => void;
   setDetailTab: (tab: "essence" | "data" | "aspects" | "reading") => void;
   toggleAspects: () => void;
+  toggleMinorAspects: () => void;
   toggleMinorPoints: () => void;
+  toggleDegrees: () => void;
   isAspectHighlighted: (aspect: Aspect) => boolean;
   openPanel: () => void;
   closePanel: () => void;
@@ -29,7 +33,9 @@ export const useChartStore = create<ChartStore>((set, get) => ({
   activePanel: "details",
   detailTab: "essence",
   showAspects: true,
+  showMinorAspects: false,
   showMinorPoints: true,
+  showDegrees: true,
   panelOpen: false,
   selectPoint: (selectedPointId) =>
     set({
@@ -42,7 +48,9 @@ export const useChartStore = create<ChartStore>((set, get) => ({
   setActivePanel: (activePanel) => set({ activePanel }),
   setDetailTab: (detailTab) => set({ detailTab }),
   toggleAspects: () => set((state) => ({ showAspects: !state.showAspects })),
+  toggleMinorAspects: () => set((state) => ({ showMinorAspects: !state.showMinorAspects })),
   toggleMinorPoints: () => set((state) => ({ showMinorPoints: !state.showMinorPoints })),
+  toggleDegrees: () => set((state) => ({ showDegrees: !state.showDegrees })),
   openPanel: () => set({ panelOpen: true }),
   closePanel: () =>
     set({
