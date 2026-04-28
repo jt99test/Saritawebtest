@@ -3,10 +3,16 @@ import { getAugmentedChartPoints, zodiacSigns, type ChartPointId, type NatalChar
 export const GENERAL_READING_THEMES = [
   "tu-esencia",
   "como-sientes",
-  "como-amas",
+  "que-das-valor",
   "como-piensas",
   "tu-proposito",
   "tus-desafios",
+  "tu-ascendente",
+  "como-actuas",
+  "donde-creces",
+  "donde-rompes-esquemas",
+  "donde-suenas",
+  "donde-transformas",
 ] as const;
 
 export type GeneralReadingTheme = (typeof GENERAL_READING_THEMES)[number];
@@ -85,9 +91,6 @@ function getHouseSign(chart: NatalChartData, houseNumber: number) {
 
 export function getChartSummaryForPrompt(chart: NatalChartData) {
   const points = getAugmentedChartPoints(chart);
-  const ascSignId = zodiacSigns.find(
-    (sign) => sign.start <= chart.meta.ascendant && chart.meta.ascendant < sign.start + 30,
-  )?.id ?? "aries";
   const mcSignId = zodiacSigns.find(
     (sign) => sign.start <= chart.meta.mc && chart.meta.mc < sign.start + 30,
   )?.id ?? "capricorn";
@@ -113,9 +116,6 @@ export function getChartSummaryForPrompt(chart: NatalChartData) {
     .join("\n");
 
   return [
-    `Ascendente en ${getSignName(ascSignId)} ${Math.floor(chart.meta.ascendant % 30)}° ${Math.round((chart.meta.ascendant % 1) * 60)
-      .toString()
-      .padStart(2, "0")}'`,
     `Medio Cielo en ${getSignName(mcSignId)} ${Math.floor(chart.meta.mc % 30)}° ${Math.round((chart.meta.mc % 1) * 60)
       .toString()
       .padStart(2, "0")}'`,
@@ -132,7 +132,12 @@ export function getThemeInstruction(chart: NatalChartData, theme: GeneralReading
   const moon = points.find((point) => point.id === "moon");
   const venus = points.find((point) => point.id === "venus");
   const mercury = points.find((point) => point.id === "mercury");
+  const mars = points.find((point) => point.id === "mars");
+  const jupiter = points.find((point) => point.id === "jupiter");
   const saturn = points.find((point) => point.id === "saturn");
+  const uranus = points.find((point) => point.id === "uranus");
+  const neptune = points.find((point) => point.id === "neptune");
+  const pluto = points.find((point) => point.id === "pluto");
   const northNode = points.find((point) => point.id === "northNode");
   const ascSign = getSignName(
     zodiacSigns.find((sign) => sign.start <= chart.meta.ascendant && chart.meta.ascendant < sign.start + 30)?.id ?? "aries",
@@ -149,12 +154,18 @@ export function getThemeInstruction(chart: NatalChartData, theme: GeneralReading
     .join(", ");
 
   const instructions: Record<GeneralReadingTheme, string> = {
-    "tu-esencia": `Escribe sobre cómo se manifiesta la esencia de ${chart.event.name} a través de su Sol en ${getSignName(sun?.sign ?? "leo")} y su Ascendente en ${ascSign}. Cómo se ve, cómo se presenta al mundo, qué energía irradia.`,
+    "tu-esencia": `Escribe sobre cómo se manifiesta la esencia de ${chart.event.name} a través de su Sol en ${getSignName(sun?.sign ?? "leo")} en la casa ${sun?.house ?? 5}. Qué vitalidad irradia, qué identidad está aprendiendo a habitar y qué la hace sentirse verdaderamente ella misma.`,
     "como-sientes": `Escribe sobre el mundo emocional de ${chart.event.name} a través de su Luna en ${getSignName(moon?.sign ?? "cancer")} en la casa ${moon?.house ?? 4}. Qué necesita emocionalmente, cómo procesa los sentimientos, qué le da seguridad interna.`,
-    "como-amas": `Escribe sobre cómo ama ${chart.event.name} a través de su Venus en ${getSignName(venus?.sign ?? "libra")} en la casa ${venus?.house ?? 7}, y la energía de su casa 7 (regida por ${RULERS[seventhHouseSign]}). Cómo se vincula, qué busca en el otro, qué ofrece en el amor.`,
+    "que-das-valor": `Escribe sobre lo que ${chart.event.name} valora a través de su Venus en ${getSignName(venus?.sign ?? "libra")} en la casa ${venus?.house ?? 7}, y la energía de su casa 7 (regida por ${RULERS[seventhHouseSign]}). Enfoca Venus como deseo, gusto, valor personal, placer, belleza, vínculos y aquello que elige cuidar.`,
     "como-piensas": `Escribe sobre cómo piensa y se comunica ${chart.event.name} a través de su Mercurio en ${getSignName(mercury?.sign ?? "gemini")} en la casa ${mercury?.house ?? 3}, y la energía de su casa 3 en ${getSignName(thirdHouseSign)}. Cómo procesa información, cómo se expresa, qué tipo de mente tiene.`,
     "tu-proposito": `Escribe sobre el propósito de vida de ${chart.event.name} a través de su Medio Cielo en ${mcSign}, la casa 10, y su Nodo Norte en ${getSignName(northNode?.sign ?? "aries")} en la casa ${northNode?.house ?? 10}. Hacia dónde se dirige su evolución, qué debe desarrollar, qué legado puede construir.`,
     "tus-desafios": `Escribe sobre los desafíos centrales de ${chart.event.name} a través de Saturno en ${getSignName(saturn?.sign ?? "capricorn")} en la casa ${saturn?.house ?? 10}, y las cuadraturas/oposiciones más significativas de su carta (${hardAspects || "sin aspectos duros especialmente cerrados"}). Qué fricciones le piden madurar, qué patrones debe trabajar, qué le costará pero le hará crecer.`,
+    "tu-ascendente": `Escribe sobre el Ascendente de ${chart.event.name} en ${ascSign}. Enfócate por completo en cómo moldea su personalidad externa, primeras impresiones y manera de entrar en la vida. Explica cómo dialoga con su Sol en ${getSignName(sun?.sign ?? "leo")} y su Luna en ${getSignName(moon?.sign ?? "cancer")}.`,
+    "como-actuas": `Escribe sobre cómo actúa ${chart.event.name} a través de Marte en ${getSignName(mars?.sign ?? "aries")} en la casa ${mars?.house ?? 1}. Describe impulso, deseo, energía física, enojo, coraje, iniciativa y estilo de conflicto.`,
+    "donde-creces": `Escribe sobre dónde crece ${chart.event.name} a través de Júpiter en ${getSignName(jupiter?.sign ?? "sagittarius")} en la casa ${jupiter?.house ?? 9}. Describe expansión, oportunidades, abundancia, fe, suerte y aprendizaje.`,
+    "donde-rompes-esquemas": `Escribe sobre dónde rompe esquemas ${chart.event.name} a través de Urano en ${getSignName(uranus?.sign ?? "aquarius")} en la casa ${uranus?.house ?? 11}. Describe independencia, cambio, innovación, rebeldía y necesidad de libertad.`,
+    "donde-suenas": `Escribe sobre dónde sueña ${chart.event.name} a través de Neptuno en ${getSignName(neptune?.sign ?? "pisces")} en la casa ${neptune?.house ?? 12}. Describe espiritualidad, idealismo, inspiración, sensibilidad, ilusión y límites difusos.`,
+    "donde-transformas": `Escribe sobre dónde transforma ${chart.event.name} a través de Plutón en ${getSignName(pluto?.sign ?? "scorpio")} en la casa ${pluto?.house ?? 8}. Describe poder, sombra, intensidad, duelo, muerte simbólica, renacimiento y regeneración.`,
   };
 
   return instructions[theme];

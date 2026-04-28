@@ -105,6 +105,22 @@ type WasmHouses = {
   ascmc: Float64Array;  // [0]=ASC [1]=MC [2]=ARMC [3]=Vertex
 };
 
+const FIVE_DEGREE_CUSP_ORB = 5;
+const FIVE_DEGREE_CUSP_POINT_IDS = new Set<ChartPointId>([
+  "sun",
+  "moon",
+  "mercury",
+  "venus",
+  "mars",
+  "jupiter",
+  "saturn",
+  "uranus",
+  "neptune",
+  "pluto",
+  "northNode",
+  "southNode",
+]);
+
 function obliquity(julianDayUt: number) {
   const t = (julianDayUt - 2451545.0) / 36525;
   return 23.439291111 - 0.013004167 * t - 0.0000001638 * t * t + 0.0000005036 * t * t * t;
@@ -137,6 +153,7 @@ function getHouseForLongitude(
   houses: WasmHouses,
   obliquityOfDate: number,
   eclipticLatitude = 0,
+  applyFiveDegreeCuspRule = false,
 ) {
   const housePosition = se.house_pos(
     houses.ascmc[2]!,  // ARMC
@@ -146,7 +163,19 @@ function getHouseForLongitude(
     longitude,
     eclipticLatitude,
   );
-  return clampHouse(housePosition);
+  const house = clampHouse(housePosition);
+
+  if (!applyFiveDegreeCuspRule) {
+    return house;
+  }
+
+  const nextHouse = house === 12 ? 1 : house + 1;
+  const nextCusp = normalizeLongitude(houses.cusps[nextHouse]!);
+  const distanceBeforeNextCusp = normalizeLongitude(nextCusp - longitude);
+
+  // Traditional practice commonly uses a 5 degree orb before a cusp, though some schools use 3.
+  // SARITA applies the 5 degree rule for planets and nodes, not for cusp/angle points.
+  return distanceBeforeNextCusp < FIVE_DEGREE_CUSP_ORB ? nextHouse : house;
 }
 
 function buildPoint(
@@ -167,7 +196,15 @@ function buildPoint(
     degreeInSign: getDegreeInSign(longitude),
     minutesInSign: getMinutesInSign(longitude),
     absoluteLongitudeLabel: toAbsoluteLongitudeLabel(longitude),
-    house: getHouseForLongitude(se, longitude, latitude, houses, obliquityOfDate, result.latitude),
+    house: getHouseForLongitude(
+      se,
+      longitude,
+      latitude,
+      houses,
+      obliquityOfDate,
+      result.latitude,
+      FIVE_DEGREE_CUSP_POINT_IDS.has(config.id),
+    ),
     color: config.color,
     retrograde: result.longitudeSpeed < 0,
   };
@@ -183,6 +220,7 @@ function buildDerivedPoint(
   latitude: number,
   obliquityOfDate: number,
   retrograde = false,
+  applyFiveDegreeCuspRule = false,
 ): ChartPoint {
   const normalized = normalizeLongitude(longitude);
   return {
@@ -194,7 +232,15 @@ function buildDerivedPoint(
     degreeInSign: getDegreeInSign(normalized),
     minutesInSign: getMinutesInSign(normalized),
     absoluteLongitudeLabel: toAbsoluteLongitudeLabel(normalized),
-    house: getHouseForLongitude(se, normalized, latitude, houses, obliquityOfDate),
+    house: getHouseForLongitude(
+      se,
+      normalized,
+      latitude,
+      houses,
+      obliquityOfDate,
+      0,
+      applyFiveDegreeCuspRule,
+    ),
     color,
     retrograde,
   };
@@ -275,7 +321,7 @@ export async function calculateNatalChart(input: ChartInput): Promise<NatalChart
 
   if (northNode) {
     points.push(buildDerivedPoint(se, "southNode", "☋", northNode.longitude + 180, "#8f8798",
-      rawHouses, input.lat, eps, northNode.retrograde));
+      rawHouses, input.lat, eps, northNode.retrograde, true));
   }
 
   if (sun && moon) {

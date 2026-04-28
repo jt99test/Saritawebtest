@@ -39,6 +39,13 @@ const ELEMENT_STATEMENTS: Record<Element, string> = {
   water: "tu energía se mueve por debajo. Sientes, intuyes, absorbes — y necesitas refugio o te disuelves.",
 };
 
+const ELEMENT_TOOLTIPS: Record<Element, string> = {
+  fire: "Fuego habla de impulso, deseo y vitalidad. En una carta natal muestra dónde nace la acción y qué enciende el coraje.",
+  earth: "Tierra habla de cuerpo, sostén y realidad concreta. Muestra cómo construyes seguridad, hábitos y presencia.",
+  air: "Aire habla de mente, palabra y vínculo social. Muestra cómo piensas, comunicas y conectas ideas con personas.",
+  water: "Agua habla de emoción, memoria e intuición. Muestra cómo sientes, absorbes y necesitas proteger tu mundo interno.",
+};
+
 type ChartBalanceSectionProps = {
   chart: NatalChartData;
   dictionary: Dictionary;
@@ -176,6 +183,32 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
           <p className="mt-3 text-center text-xs leading-6 text-[rgba(255,255,255,0.5)] lg:hidden">
             {modalityLine}
           </p>
+          <div className="mt-5 grid grid-cols-2 gap-2 text-left">
+            {ELEMENT_ORDER.map((element) => (
+              <div key={element} className="group relative">
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-between border border-white/8 bg-white/[0.025] px-3 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-ivory/58 transition hover:border-dusty-gold/24 hover:text-ivory"
+                  aria-label={`${dictionary.result.elements[element]}: ${ELEMENT_TOOLTIPS[element]}`}
+                >
+                  <span className="flex items-center gap-2">
+                    <span
+                      className="h-2.5 w-2.5"
+                      style={{ backgroundColor: ELEMENT_COLORS[element] }}
+                    />
+                    {dictionary.result.elements[element]}
+                  </span>
+                  <span>{percent(elementCounts[element], total)}%</span>
+                </button>
+                <div
+                  className="pointer-events-none absolute bottom-full left-0 z-20 mb-2 hidden w-56 border border-white/12 p-3 text-xs leading-5 text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)] group-hover:block"
+                  style={{ backgroundColor: ELEMENT_COLORS[element] }}
+                >
+                  {ELEMENT_TOOLTIPS[element]}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         <div>

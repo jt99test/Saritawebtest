@@ -76,6 +76,8 @@
     "planLabel": "Piano",
     "thisMonth": "Questo mese",
     "open": "Apri",
+    "delete": "Elimina",
+    "cancel": "Annulla",
     "fallbackTitle": "Lettura",
     "emptyTitle": "Il tuo archivio aspetta la sua prima carta",
     "emptyBody": "Genera una lettura natale e verrà salvata qui, pronta quando vorrai tornarci.",
@@ -123,14 +125,14 @@
       "title": "La tua carta, in essenza",
       "readMore": "Leggi di più",
       "generate": "Genera lettura personalizzata",
-      "generateAll": "Genera tutte e 6 le letture",
-      "generating": "Generando lettura",
+      "generateAll": "Genera letture",
+      "generating": "Generando",
       "retry": "Riprova",
       "placeholder": "Puoi generare questa lettura quando vuoi. Verrà salvata per questa carta e non dovrai richiederla di nuovo.",
       "cards": {
         "essence": {
           "title": "La tua essenza",
-          "oneLiner": "Una prima sintesi tra il tuo Sole e il tuo Ascendente parte da",
+          "oneLiner": "Una prima sintesi del tuo Sole parte da",
           "paragraphs": [
             "Questa è la lettura base dell'identità che orienta l'esperienza generale.",
             "Il blocco è pronto per una interpretazione più ampia quando definiremo il copy finale."
@@ -141,8 +143,8 @@
           "fullText": "[lorem ipsum placeholder - to be replaced with Claude-generated content in next iteration]"
         },
         "love": {
-          "title": "Come ami",
-          "oneLiner": "Il tuo modo di legarti comincia a prendere forma attraverso",
+          "title": "A cosa dai valore",
+          "oneLiner": "Il tuo valore, desiderio e gusto prendono forma attraverso",
           "paragraphs": [
             "Questo blocco riassume il tono affettivo, il modo di scegliere i legami e il clima relazionale principale.",
             "Potremo sostituire questo testo con una lettura più curata quando la narrativa finale sarà pronta."
@@ -171,6 +173,34 @@
             "Qui si raccolgono gli apprendimenti più esigenti, gli attriti e la maturazione interiore.",
             "Più avanti potremo sostituirlo con una lettura più specifica basata su aspetti e reggenze."
           ]
+        },
+        "ascendant": {
+          "title": "Il tuo ascendente",
+          "oneLiner": "Il tuo modo di entrare nella vita parte da",
+          "paragraphs": [
+            "Qui si legge la maschera viva, la prima impressione e il modo in cui vai verso il mondo.",
+            "Questo blocco collegherà poi il tuo Ascendente con Sole e Luna per una lettura più fine."
+          ]
+        },
+        "action": {
+          "title": "Come agisci",
+          "oneLiner": "Il tuo impulso e il tuo modo di agire si accendono attraverso"
+        },
+        "growth": {
+          "title": "Dove cresci",
+          "oneLiner": "La tua espansione trova strada attraverso"
+        },
+        "breakthrough": {
+          "title": "Dove rompi gli schemi",
+          "oneLiner": "La tua libertà chiede spazio attraverso"
+        },
+        "dreams": {
+          "title": "Dove sogni",
+          "oneLiner": "La tua immaginazione e sensibilità si aprono attraverso"
+        },
+        "transformation": {
+          "title": "Dove trasformi",
+          "oneLiner": "Il tuo potere di rinascere si attiva attraverso"
         }
       }
     },

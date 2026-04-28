@@ -76,6 +76,8 @@
     "planLabel": "Plan",
     "thisMonth": "Este mes",
     "open": "Abrir",
+    "delete": "Eliminar",
+    "cancel": "Cancelar",
     "fallbackTitle": "Lectura",
     "emptyTitle": "Tu archivo está esperando su primera carta",
     "emptyBody": "Genera una lectura natal y quedará guardada aquí para volver a ella cuando quieras.",
@@ -123,14 +125,14 @@
       "title": "Tu carta, en esencia",
       "readMore": "Leer más",
       "generate": "Generar lectura personalizada",
-      "generateAll": "Generar las 6 lecturas",
-      "generating": "Generando lectura",
+      "generateAll": "Generar lecturas",
+      "generating": "Generando",
       "retry": "Intentar de nuevo",
       "placeholder": "Puedes generar esta lectura cuando quieras. Se guardará para esta carta y no tendrás que pedirla de nuevo.",
       "cards": {
         "essence": {
           "title": "Tu esencia",
-          "oneLiner": "Una síntesis inicial entre tu Sol y tu Ascendente abre la lectura desde",
+          "oneLiner": "Una síntesis inicial de tu Sol abre la lectura desde",
           "paragraphs": [
             "Aquí va la lectura base de identidad para orientar la experiencia general.",
             "Este bloque queda preparado para una interpretación más amplia cuando definamos el copy final."
@@ -141,8 +143,8 @@
           "fullText": "[lorem ipsum placeholder - to be replaced with Claude-generated content in next iteration]"
         },
         "love": {
-          "title": "Cómo amas",
-          "oneLiner": "Tu forma de vincularte empieza a dibujarse desde",
+          "title": "Qué le das valor",
+          "oneLiner": "Tu forma de valorar, desear y elegir empieza desde",
           "paragraphs": [
             "Este bloque resume el tono afectivo, la forma de elegir vínculos y el clima relacional principal.",
             "Podemos sustituir este texto por una lectura más cuidada cuando cerremos la narrativa final."
@@ -171,6 +173,34 @@
             "Aquí se agrupan los aprendizajes exigentes, las tensiones y la maduración interna.",
             "Más adelante podremos reemplazarlo por una lectura específica basada en aspectos y regencias."
           ]
+        },
+        "ascendant": {
+          "title": "Tu ascendente",
+          "oneLiner": "Tu forma de entrar en la vida empieza desde",
+          "paragraphs": [
+            "Aquí se lee la máscara viva, la primera impresión y el modo en que avanzas hacia el mundo.",
+            "Este bloque conecta después tu Ascendente con el Sol y la Luna para afinar la lectura."
+          ]
+        },
+        "action": {
+          "title": "Cómo actúas",
+          "oneLiner": "Tu impulso y tu manera de actuar se encienden desde"
+        },
+        "growth": {
+          "title": "Dónde creces",
+          "oneLiner": "Tu expansión encuentra camino desde"
+        },
+        "breakthrough": {
+          "title": "Dónde rompes esquemas",
+          "oneLiner": "Tu libertad pide espacio desde"
+        },
+        "dreams": {
+          "title": "Dónde sueñas",
+          "oneLiner": "Tu imaginación y tu sensibilidad se abren desde"
+        },
+        "transformation": {
+          "title": "Dónde transformas",
+          "oneLiner": "Tu poder de renacer se activa desde"
         }
       }
     },

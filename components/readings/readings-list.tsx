@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 
+import { deleteReadingAction } from "@/app/lecturas/actions";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { illustrations } from "@/data/illustrations";
@@ -30,6 +32,9 @@ export function ReadingsList({ readings }: { readings: StoredReading[] }) {
   const router = useRouter();
   const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [pendingId, setPendingId] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   if (!readings.length) {
     return (
@@ -78,32 +83,89 @@ export function ReadingsList({ readings }: { readings: StoredReading[] }) {
         }).format(new Date(reading.created_at));
 
         return (
-          <button
+          <article
             key={reading.id}
-            type="button"
-            disabled={!result}
-            onClick={() => {
-              if (!result) {
-                return;
-              }
-
-              window.sessionStorage.setItem(CHART_RESULT_KEY, JSON.stringify(result));
-              router.push("/resultado");
-            }}
-            className="group grid w-full gap-2 border-b border-white/8 py-5 text-left transition enabled:hover:border-dusty-gold/24 disabled:cursor-not-allowed disabled:opacity-50 sm:grid-cols-[1fr_auto] sm:items-center"
+            className="grid gap-4 border-b border-white/8 py-5 transition hover:border-dusty-gold/24 sm:grid-cols-[1fr_auto] sm:items-center"
           >
-            <div>
+            <button
+              type="button"
+              disabled={!result}
+              onClick={() => {
+                if (!result) {
+                  return;
+                }
+
+                window.sessionStorage.setItem(CHART_RESULT_KEY, JSON.stringify(result));
+                router.push("/resultado");
+              }}
+              className="min-w-0 text-left disabled:cursor-not-allowed disabled:opacity-50"
+            >
               <p className="font-serif text-[21px] leading-tight text-ivory">
                 {label}
               </p>
               <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-ivory/38">
                 {typeLabel} · {date}
               </p>
+            </button>
+
+            <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+              {confirmingId === reading.id ? (
+                <>
+                  <button
+                    type="button"
+                    disabled={isPending && pendingId === reading.id}
+                    onClick={() => {
+                      setPendingId(reading.id);
+                      startTransition(async () => {
+                        const result = await deleteReadingAction(reading.id);
+                        setPendingId(null);
+
+                        if (result.ok) {
+                          setConfirmingId(null);
+                          router.refresh();
+                        }
+                      });
+                    }}
+                    className="inline-flex min-w-20 items-center justify-center border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-100/82 transition hover:border-amber-300/45"
+                  >
+                    {isPending && pendingId === reading.id ? "..." : dictionary.readings.delete}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmingId(null)}
+                    className="inline-flex min-w-20 items-center justify-center border border-white/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-ivory/52 transition hover:text-ivory"
+                  >
+                    {dictionary.readings.cancel}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    disabled={!result}
+                    onClick={() => {
+                      if (!result) {
+                        return;
+                      }
+
+                      window.sessionStorage.setItem(CHART_RESULT_KEY, JSON.stringify(result));
+                      router.push("/resultado");
+                    }}
+                    className="inline-flex min-w-24 items-center justify-center border border-dusty-gold/24 bg-dusty-gold/[0.055] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-dusty-gold/82 transition hover:border-dusty-gold/42 hover:bg-dusty-gold/[0.085] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {dictionary.readings.open}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmingId(reading.id)}
+                    className="inline-flex min-w-24 items-center justify-center border border-white/10 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-ivory/42 transition hover:border-amber-300/28 hover:text-amber-100/78"
+                  >
+                    {dictionary.readings.delete}
+                  </button>
+                </>
+              )}
             </div>
-            <span className="inline-flex min-w-24 items-center justify-center border border-dusty-gold/24 bg-dusty-gold/[0.055] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-dusty-gold/82 transition group-hover:border-dusty-gold/42 group-hover:bg-dusty-gold/[0.085]">
-              {dictionary.readings.open}
-            </span>
-          </button>
+          </article>
         );
       })}
     </div>

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 
-import type { ChartPointId, NatalChartData } from "@/lib/chart";
+import { formatSignPosition, type ChartPointId, type NatalChartData } from "@/lib/chart";
 import type { Dictionary } from "@/lib/i18n";
 import { getGeneralReadingCards } from "@/data/chart-readings";
 import { hashNatalChart } from "@/lib/chart-hash";
@@ -17,31 +17,66 @@ type ChartGeneralReadingProps = {
 };
 
 type GateMeta = {
-  pointId: ChartPointId;
+  pointId: ChartPointId | "ascendant";
   glyph: string;
 };
 
-const GATE_GLYPHS: Partial<Record<ChartPointId, string>> = {
+const GATE_GLYPHS: Partial<Record<ChartPointId | "ascendant", string>> = {
   sun: "\u2609",
   moon: "\u263d",
   venus: "\u2640",
   mercury: "\u263f",
   northNode: "\u260a",
   saturn: "\u2644",
+  mars: "\u2642",
+  jupiter: "\u2643",
+  uranus: "\u2645",
+  neptune: "\u2646",
+  pluto: "\u2647",
+  ascendant: "AC",
+};
+
+const GATE_META_BY_THEME: Partial<Record<GeneralReadingTheme, GateMeta>> = {
+  "tu-esencia": { pointId: "sun", glyph: "☉" },
+  "como-sientes": { pointId: "moon", glyph: "☽" },
+  "que-das-valor": { pointId: "venus", glyph: "♀" },
+  "como-piensas": { pointId: "mercury", glyph: "☿" },
+  "tu-proposito": { pointId: "northNode", glyph: "☊" },
+  "tus-desafios": { pointId: "saturn", glyph: "♄" },
+  "tu-ascendente": { pointId: "ascendant", glyph: "AC" },
+  "como-actuas": { pointId: "mars", glyph: "♂" },
+  "donde-creces": { pointId: "jupiter", glyph: "♃" },
+  "donde-rompes-esquemas": { pointId: "uranus", glyph: "♅" },
+  "donde-suenas": { pointId: "neptune", glyph: "♆" },
+  "donde-transformas": { pointId: "pluto", glyph: "♇" },
 };
 
 const GATE_META_BY_TITLE: Array<{ needle: string; meta: GateMeta }> = [
   { needle: "esencia", meta: { pointId: "sun", glyph: "☉" } },
+  { needle: "ascendente", meta: { pointId: "ascendant", glyph: "AC" } },
   { needle: "sientes", meta: { pointId: "moon", glyph: "☽" } },
   { needle: "amas", meta: { pointId: "venus", glyph: "♀" } },
+  { needle: "valor", meta: { pointId: "venus", glyph: "♀" } },
   { needle: "piensas", meta: { pointId: "mercury", glyph: "☿" } },
   { needle: "propósito", meta: { pointId: "northNode", glyph: "☊" } },
   { needle: "proposito", meta: { pointId: "northNode", glyph: "☊" } },
   { needle: "desafíos", meta: { pointId: "saturn", glyph: "♄" } },
   { needle: "desafios", meta: { pointId: "saturn", glyph: "♄" } },
+  { needle: "actúas", meta: { pointId: "mars", glyph: "♂" } },
+  { needle: "actuas", meta: { pointId: "mars", glyph: "♂" } },
+  { needle: "creces", meta: { pointId: "jupiter", glyph: "♃" } },
+  { needle: "rompes", meta: { pointId: "uranus", glyph: "♅" } },
+  { needle: "sueñas", meta: { pointId: "neptune", glyph: "♆" } },
+  { needle: "suenas", meta: { pointId: "neptune", glyph: "♆" } },
+  { needle: "transformas", meta: { pointId: "pluto", glyph: "♇" } },
 ];
 
-function gateMetaFor(title: string): GateMeta {
+function gateMetaFor(theme: GeneralReadingTheme, title: string): GateMeta {
+  const byTheme = GATE_META_BY_THEME[theme];
+  if (byTheme) {
+    return byTheme;
+  }
+
   const normalized = title.toLowerCase();
   return GATE_META_BY_TITLE.find((entry) => normalized.includes(entry.needle))?.meta ?? {
     pointId: "sun",
@@ -49,7 +84,12 @@ function gateMetaFor(title: string): GateMeta {
   };
 }
 
-function subtitleFor(pointId: ChartPointId, chart: NatalChartData, dictionary: Dictionary) {
+function subtitleFor(pointId: ChartPointId | "ascendant", chart: NatalChartData, dictionary: Dictionary) {
+  if (pointId === "ascendant") {
+    const sign = dictionary.result.signs[formatSignPosition(chart.meta.ascendant).sign];
+    return sign ? `Ascendente en ${sign}` : "Ascendente";
+  }
+
   const point = chart.points.find((entry) => entry.id === pointId);
 
   if (!point) {
@@ -161,7 +201,7 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
           tu carta, en esencia
         </p>
         <h2 className="mt-1.5 font-serif text-[30px] font-normal leading-tight text-ivory lg:text-[36px]">
-          Seis puertas de entrada
+          Puertas de entrada
         </h2>
       </div>
 
@@ -174,7 +214,7 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
           const error = errors[card.theme];
           const fullReading = cachedContent || streamingContent;
           const paragraphs = fullReading ? splitReadingParagraphs(fullReading) : [];
-          const gateMeta = gateMetaFor(card.title);
+          const gateMeta = gateMetaFor(card.theme, card.title);
           const actionLabel = loading
             ? dictionary.result.generalReading.generating
             : cachedContent
@@ -217,12 +257,12 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
                 </span>
                 <span
                   className={[
-                    "inline-flex min-h-9 items-center justify-center border px-3 text-center text-[10px] font-semibold uppercase tracking-[0.16em] transition",
+                    "inline-flex min-h-9 items-center justify-center px-3 text-center text-[10px] font-semibold uppercase tracking-[0.16em] transition",
                     loading
-                      ? "border-dusty-gold/24 bg-dusty-gold/[0.055] text-dusty-gold/80"
+                      ? "border-transparent bg-transparent px-0 text-dusty-gold/80"
                       : cachedContent
-                        ? "border-white/10 bg-white/[0.025] text-ivory/62 group-hover:border-dusty-gold/30 group-hover:text-dusty-gold/86"
-                        : "border-dusty-gold/28 bg-dusty-gold/[0.07] text-dusty-gold/88 shadow-[0_12px_32px_rgba(0,0,0,0.18)] group-hover:border-dusty-gold/50 group-hover:bg-dusty-gold/[0.11]",
+                        ? "border border-white/10 bg-white/[0.025] text-ivory/62 group-hover:border-dusty-gold/30 group-hover:text-dusty-gold/86"
+                        : "border border-dusty-gold/28 bg-dusty-gold/[0.07] text-dusty-gold/88 shadow-[0_12px_32px_rgba(0,0,0,0.18)] group-hover:border-dusty-gold/50 group-hover:bg-dusty-gold/[0.11]",
                   ].join(" ")}
                 >
                   {actionLabel}

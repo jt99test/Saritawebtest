@@ -193,39 +193,20 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
       }
     };
 
-    const handleTab = (event: KeyboardEvent) => {
-      if (event.key !== "Tab" || !panel) {
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (!target || panel?.contains(target) || target.closest("[data-chart-point]")) {
         return;
       }
 
-      const focusable = Array.from(
-        panel.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
-        ),
-      ).filter((element) => !element.hasAttribute("disabled"));
-
-      if (focusable.length === 0) {
-        return;
-      }
-
-      const first = focusable[0]!;
-      const last = focusable[focusable.length - 1]!;
-      const activeElement = document.activeElement as HTMLElement | null;
-
-      if (event.shiftKey && activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
+      closePanel();
     };
 
     window.addEventListener("keydown", handleEscape);
-    window.addEventListener("keydown", handleTab);
+    window.addEventListener("pointerdown", handlePointerDown);
     return () => {
       window.removeEventListener("keydown", handleEscape);
-      window.removeEventListener("keydown", handleTab);
+      window.removeEventListener("pointerdown", handlePointerDown);
     };
   }, [closePanel, hoverAspect, panelOpen]);
 
@@ -262,18 +243,6 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
     <AnimatePresence>
       {panelOpen ? (
         <>
-          <motion.button
-            type="button"
-            key="drawer-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.22 }}
-            className="fixed inset-0 z-40 bg-black/45 backdrop-blur-[4px]"
-            onClick={closePanel}
-            aria-label={dictionary.common.close}
-          />
-
           <motion.aside
             key="drawer-panel"
             initial={isDesktop ? { x: "100%", opacity: 0.92 } : { y: "100%", opacity: 0.92 }}
@@ -281,12 +250,12 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
             exit={isDesktop ? { x: "100%", opacity: 0.92 } : { y: "100%", opacity: 0.92 }}
             transition={{ type: "spring", damping: 28, stiffness: 240 }}
             className={[
-              "fixed z-50 overflow-hidden border-[rgba(236,232,223,0.08)] bg-[rgba(10,14,22,0.96)] backdrop-blur-[12px]",
+              "fixed z-40 overflow-hidden border-[rgba(236,232,223,0.08)] bg-[rgba(10,14,22,0.96)] backdrop-blur-[12px]",
               isDesktop
-                ? "right-0 top-0 h-screen w-[420px] border-l shadow-[-24px_0_90px_rgba(0,0,0,0.42)]"
-                : "inset-x-0 bottom-0 h-[75vh] rounded-t-[2rem] border-t shadow-[0_-24px_90px_rgba(0,0,0,0.42)]",
+                ? "right-0 top-0 h-screen w-[380px] border-l shadow-[-24px_0_90px_rgba(0,0,0,0.42)]"
+                : "inset-x-0 bottom-0 h-[58vh] rounded-t-[2rem] border-t shadow-[0_-24px_90px_rgba(0,0,0,0.42)]",
             ].join(" ")}
-            aria-modal="true"
+            aria-modal="false"
             role="dialog"
             aria-label={dictionary.result.panels.selectedPoint}
           >

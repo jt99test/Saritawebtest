@@ -65,6 +65,13 @@ const ELEMENT_ESSENCE: Record<RoutineElement, string> = {
   agua: "Para soltar lo que se aferra.",
 };
 
+const ELEMENT_BADGE_CLASSES: Record<RoutineElement, string> = {
+  fuego: "border-red-300/28 bg-red-300/10 text-red-100/82",
+  tierra: "border-emerald-300/28 bg-emerald-300/10 text-emerald-100/82",
+  agua: "border-sky-300/28 bg-sky-300/10 text-sky-100/82",
+  aire: "border-cyan-300/28 bg-cyan-300/10 text-cyan-100/82",
+};
+
 const ANCHOR_REASON: Record<Element, string> = {
   fire: "Tu fuego se dispersa. Esta postura lo concentra.",
   earth: "Tu peso se vuelve rigidez. Esta postura lo afloja.",
@@ -149,7 +156,7 @@ function toRoutineElement(element: Element): RoutineElement {
         : "aire";
 }
 
-function getDominantElement(chart: NatalChartData): Element {
+function getElementCounts(chart: NatalChartData): Record<Element, number> {
   const counts: Record<Element, number> = {
     fire: 0,
     earth: 0,
@@ -174,8 +181,46 @@ function getDominantElement(chart: NatalChartData): Element {
     counts[ascendantMeta.element] += 1;
   }
 
-  return (Object.entries(counts).sort((left, right) => right[1] - left[1])[0]?.[0] ??
-    "fire") as Element;
+  return counts;
+}
+
+function getSortedElements(chart: NatalChartData) {
+  const counts = getElementCounts(chart);
+  const order: Element[] = ["fire", "earth", "air", "water"];
+
+  return order
+    .map((element) => ({ element, count: counts[element] }))
+    .sort((left, right) => right.count - left.count);
+}
+
+function getDominantElement(chart: NatalChartData): Element {
+  // Count the ten main planets plus the Ascendant by sign element, then pick the highest count.
+  return getSortedElements(chart)[0]?.element ?? "fire";
+}
+
+function getBlendedRoutine(chart: NatalChartData) {
+  const [first, second] = getSortedElements(chart);
+
+  if (!first || !second || first.count - second.count > 2) {
+    return null;
+  }
+
+  const firstKey = toRoutineElement(first.element);
+  const secondKey = toRoutineElement(second.element);
+  const firstAsanas = yogaRoutines[firstKey].asanas.slice(
+    0,
+    Math.ceil(yogaRoutines[firstKey].asanas.length / 2),
+  );
+  const secondAsanas = yogaRoutines[secondKey].asanas.slice(
+    0,
+    Math.floor(yogaRoutines[secondKey].asanas.length / 2),
+  );
+
+  return {
+    primary: firstKey,
+    secondary: secondKey,
+    asanas: [...firstAsanas, ...secondAsanas],
+  };
 }
 
 function parseCachedLunationKey(
@@ -334,9 +379,10 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
     () => chooseMonthlyRoutine(cachedReports, chart),
     [cachedReports, chart],
   );
+  const blendedRoutine = useMemo(() => getBlendedRoutine(chart), [chart]);
   const anchorPose = useMemo(() => getAnchorPose(chart), [chart]);
   const fallbackElement = toRoutineElement(anchorPose.element);
-  const monthlyElement = monthlyRoutine?.entry.metadata.assignedRoutine ?? fallbackElement;
+  const monthlyElement = blendedRoutine?.primary ?? monthlyRoutine?.entry.metadata.assignedRoutine ?? fallbackElement;
   const anchorImage = anchorPose.asana?.imagePath ?? illustrations.elements[fallbackElement];
   const anchorName = anchorPose.asana
     ? displayText(anchorPose.asana.nameSanskrit)
@@ -381,20 +427,38 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
           </div>
 
           <div>
-            {monthlyRoutine ? (
+            {monthlyRoutine || blendedRoutine ? (
               <>
                 <p className="font-serif text-[13px] italic lowercase text-white/50">
-                  esta luna te pide
+                  {blendedRoutine ? "rutina combinada" : "esta luna te pide"}
                 </p>
                 <h2 className="mt-2 font-serif text-[48px] font-normal leading-tight text-white lg:text-[64px]">
-                  {ELEMENT_HEADLINES[monthlyElement]}
+                  {blendedRoutine
+                    ? `${ELEMENT_LABELS[blendedRoutine.primary]} + ${ELEMENT_LABELS[blendedRoutine.secondary]}`
+                    : ELEMENT_HEADLINES[monthlyElement]}
                 </h2>
                 <p className="mt-6 font-serif text-lg leading-[1.6] text-white/80 lg:max-w-[440px] lg:text-[20px] lg:leading-[1.7]">
-                  {ELEMENT_COPY[monthlyElement]}
+                  {blendedRoutine
+                    ? `Tienes ${ELEMENT_LABELS[blendedRoutine.primary]} y ${ELEMENT_LABELS[blendedRoutine.secondary]} muy presentes en tu carta. He creado esta rutina especialmente para ti.`
+                    : ELEMENT_COPY[monthlyElement]}
                 </p>
                 <p className="mt-8 font-serif text-[13px] italic leading-7 text-white/50">
-                  {getRoutineMeta(monthlyElement)}
+                  {blendedRoutine
+                    ? blendedRoutine.asanas.slice(0, 5).map((asana) => displayText(asana.nameSanskrit)).join(" · ")
+                    : getRoutineMeta(monthlyElement)}
                 </p>
+                {blendedRoutine ? (
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {blendedRoutine.asanas.map((asana) => (
+                      <span
+                        key={`${asana.element}-${asana.slug}`}
+                        className={`border px-3 py-1.5 text-[0.62rem] font-semibold uppercase tracking-[0.16em] ${ELEMENT_BADGE_CLASSES[asana.element]}`}
+                      >
+                        {ELEMENT_LABELS[asana.element]} · {displayText(asana.nameSanskrit)}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
                 <PrimaryButton
                   href={`/yoga-astral/${monthlyElement}`}
                   variant="ghostGold"

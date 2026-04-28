@@ -49,7 +49,7 @@ export default function LavadoIntestinalPage() {
               </div>
             </PremiumCard>
 
-            <PremiumCard className="border-t border-[rgba(181,163,110,0.15)] bg-transparent p-0 pt-8 shadow-none sm:pt-8">
+            <PremiumCard className="border-t border-[rgba(181,163,110,0.15)] bg-transparent p-0 pt-10 shadow-none sm:pt-12">
               <h2 className="font-serif text-3xl text-ivory">Preparación</h2>
               <p className="mt-4 max-w-4xl text-sm leading-7 text-ivory/68">
                 {lavadoIntestinal.preparation}

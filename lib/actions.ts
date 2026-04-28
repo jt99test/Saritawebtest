@@ -34,8 +34,10 @@ async function getReadingAccess() {
 
   const plan = profile?.plan ?? "free";
   const limit = PLAN_LIMITS[plan] ?? PLAN_LIMITS.free;
+  // Usage is counted from immutable usage events so deleting an archived reading
+  // does not refund the monthly quota that was already spent.
   const { count } = await supabase
-    .from("readings")
+    .from("reading_usage_events")
     .select("id", { count: "exact", head: true })
     .eq("user_id", user.id)
     .gte("created_at", getStartOfMonth());
@@ -64,6 +66,20 @@ async function saveNatalReading(result: ChartCalculationResult, access: ReadingA
 
   if (error) {
     console.error("Reading save error:", error.message);
+  }
+
+  if (data?.id) {
+    const { error: usageError } = await access.supabase
+      .from("reading_usage_events")
+      .insert({
+        user_id: access.user.id,
+        reading_id: data.id,
+        type: "natal",
+      });
+
+    if (usageError) {
+      console.error("Reading usage event error:", usageError.message);
+    }
   }
 
   result.readingId = data?.id;

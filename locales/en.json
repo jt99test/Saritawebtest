@@ -76,6 +76,8 @@
     "planLabel": "Plan",
     "thisMonth": "This month",
     "open": "Open",
+    "delete": "Delete",
+    "cancel": "Cancel",
     "fallbackTitle": "Reading",
     "emptyTitle": "Your archive is waiting for its first chart",
     "emptyBody": "Generate a natal reading and it will be saved here, ready whenever you want to return to it.",
@@ -123,14 +125,14 @@
       "title": "Your chart, in essence",
       "readMore": "Read more",
       "generate": "Generate personalized reading",
-      "generateAll": "Generate all 6 readings",
-      "generating": "Generating reading",
+      "generateAll": "Generate readings",
+      "generating": "Generating",
       "retry": "Try again",
       "placeholder": "You can generate this reading whenever you want. It will be saved for this chart so you don't have to request it again.",
       "cards": {
         "essence": {
           "title": "Your essence",
-          "oneLiner": "An initial synthesis between your Sun and your Ascendant begins from",
+          "oneLiner": "An initial synthesis of your Sun begins from",
           "paragraphs": [
             "This is the base identity reading that frames the overall experience.",
             "The block is ready for a fuller interpretation once we define the final copy."
@@ -141,8 +143,8 @@
           "fullText": "[lorem ipsum placeholder - to be replaced with Claude-generated content in next iteration]"
         },
         "love": {
-          "title": "How you love",
-          "oneLiner": "Your relational style begins to take shape through",
+          "title": "What you value",
+          "oneLiner": "Your values, desire, and taste begin to take shape through",
           "paragraphs": [
             "This block summarizes the emotional tone, attraction pattern, and primary relationship climate.",
             "We can replace this text with a more polished reading once the final narrative is ready."
@@ -171,6 +173,34 @@
             "This section gathers demanding lessons, friction points, and inner maturation.",
             "Later we can replace it with a more specific reading based on aspects and rulerships."
           ]
+        },
+        "ascendant": {
+          "title": "Your ascendant",
+          "oneLiner": "Your way of entering life begins through",
+          "paragraphs": [
+            "This reads the living mask, first impression, and way you move toward the world.",
+            "This block later connects your Ascendant with your Sun and Moon for a finer reading."
+          ]
+        },
+        "action": {
+          "title": "How you act",
+          "oneLiner": "Your drive and action style ignite through"
+        },
+        "growth": {
+          "title": "Where you grow",
+          "oneLiner": "Your expansion finds its path through"
+        },
+        "breakthrough": {
+          "title": "Where you break patterns",
+          "oneLiner": "Your freedom asks for space through"
+        },
+        "dreams": {
+          "title": "Where you dream",
+          "oneLiner": "Your imagination and sensitivity open through"
+        },
+        "transformation": {
+          "title": "Where you transform",
+          "oneLiner": "Your power to be reborn activates through"
         }
       }
     },

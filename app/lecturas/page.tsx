@@ -21,8 +21,7 @@ export default async function ReadingsPage() {
     .from("readings")
     .select("id,type,chart_data,created_at")
     .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(30);
+    .order("created_at", { ascending: false });
   const { data: profile } = await supabase
     .from("profiles")
     .select("plan")
@@ -31,8 +30,10 @@ export default async function ReadingsPage() {
   const startOfMonth = new Date();
   startOfMonth.setUTCDate(1);
   startOfMonth.setUTCHours(0, 0, 0, 0);
+  // Monthly quota is counted from usage events, so deleting an archive item
+  // does not refund a reading already generated this month.
   const { count } = await supabase
-    .from("readings")
+    .from("reading_usage_events")
     .select("id", { count: "exact", head: true })
     .eq("user_id", user.id)
     .gte("created_at", startOfMonth.toISOString());

@@ -38,6 +38,25 @@ const SIGN_GLYPHS: Record<string, string> = {
   Piscis: "♓",
 };
 
+const ELEMENT_META: Record<Elemento, { emotional: string; badgeClass: string }> = {
+  fuego: {
+    emotional: "Mente",
+    badgeClass: "border-red-300/28 bg-red-300/10 text-red-100/82",
+  },
+  tierra: {
+    emotional: "Estructura",
+    badgeClass: "border-emerald-300/28 bg-emerald-300/10 text-emerald-100/82",
+  },
+  agua: {
+    emotional: "Mundo emocional",
+    badgeClass: "border-sky-300/28 bg-sky-300/10 text-sky-100/82",
+  },
+  aire: {
+    emotional: "Extroversión",
+    badgeClass: "border-cyan-300/28 bg-cyan-300/10 text-cyan-100/82",
+  },
+};
+
 function isElemento(value: string): value is Elemento {
   return ELEMENTOS.includes(value as Elemento);
 }
@@ -106,9 +125,14 @@ export default async function YogaAstralElementPage({
                     <h1 className="mt-4 font-serif text-5xl leading-tight text-ivory sm:text-6xl">
                       {routine.title}
                     </h1>
-                    <p className="mt-4 text-base leading-8 text-ivory/72">
-                      {routine.bodyZone}
-                    </p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <span className="border border-white/10 bg-white/[0.025] px-3 py-1.5 text-xs leading-5 text-ivory/72">
+                        {routine.bodyZone}
+                      </span>
+                      <span className="border border-dusty-gold/18 bg-dusty-gold/[0.055] px-3 py-1.5 font-serif text-xs italic leading-5 text-dusty-gold/78">
+                        {ELEMENT_META[elemento].emotional}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -186,6 +210,11 @@ export default async function YogaAstralElementPage({
                               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#e8c547]/28 bg-[#e8c547]/10 font-serif text-xl text-[#e8c547]">
                                 {index + 1}
                               </span>
+                              <span
+                                className={`rounded-full border px-3.5 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] ${ELEMENT_META[asana.element].badgeClass}`}
+                              >
+                                {asana.element}
+                              </span>
                               <span className="rounded-full border border-dusty-gold/25 bg-dusty-gold/12 px-3.5 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-dusty-gold/88">
                                 {asana.duration}
                               </span>
@@ -199,6 +228,10 @@ export default async function YogaAstralElementPage({
                             <p className="mt-5 text-sm leading-7 text-ivory/68">
                               {asana.description}
                             </p>
+                            <div className="mt-5 rounded-[1rem] border border-amber-300/28 bg-amber-300/8 p-4 text-sm leading-7 text-amber-100/82">
+                              <span className="mr-2 font-semibold">Precaución:</span>
+                              {asana.warning}
+                            </div>
                           </div>
                         </div>
                       </PremiumCard>
