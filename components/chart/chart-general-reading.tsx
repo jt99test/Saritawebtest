@@ -195,7 +195,7 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
             >
               <button
                 type="button"
-                className="grid w-full cursor-pointer grid-cols-[48px_minmax(0,1fr)_96px] items-center gap-4 py-4.5 text-left transition duration-200 hover:bg-dusty-gold/[0.03] sm:grid-cols-[56px_minmax(0,1fr)_128px] lg:grid-cols-[64px_minmax(0,1fr)_128px] lg:py-5"
+                className="group grid w-full cursor-pointer grid-cols-[48px_minmax(0,1fr)_112px] items-center gap-4 py-4.5 text-left transition duration-200 hover:bg-dusty-gold/[0.03] sm:grid-cols-[56px_minmax(0,1fr)_140px] lg:grid-cols-[64px_minmax(0,1fr)_144px] lg:py-5"
                 onClick={() => {
                   setExpandedId(expanded ? null : card.id);
                   if (!cachedContent && !streamingContent && !loading) {
@@ -215,7 +215,16 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
                     {subtitleFor(gateMeta.pointId, chart, dictionary)}
                   </span>
                 </span>
-                <span className="text-right text-[11px] uppercase tracking-[0.16em] text-dusty-gold/80">
+                <span
+                  className={[
+                    "inline-flex min-h-9 items-center justify-center border px-3 text-center text-[10px] font-semibold uppercase tracking-[0.16em] transition",
+                    loading
+                      ? "border-dusty-gold/24 bg-dusty-gold/[0.055] text-dusty-gold/80"
+                      : cachedContent
+                        ? "border-white/10 bg-white/[0.025] text-ivory/62 group-hover:border-dusty-gold/30 group-hover:text-dusty-gold/86"
+                        : "border-dusty-gold/28 bg-dusty-gold/[0.07] text-dusty-gold/88 shadow-[0_12px_32px_rgba(0,0,0,0.18)] group-hover:border-dusty-gold/50 group-hover:bg-dusty-gold/[0.11]",
+                  ].join(" ")}
+                >
                   {actionLabel}
                 </span>
               </button>
@@ -239,7 +248,7 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
                       <button
                         type="button"
                         onClick={() => void generateReading(card.theme)}
-                        className="text-[13px] text-dusty-gold/80 transition hover:text-ivory"
+                        className="inline-flex items-center justify-center border border-dusty-gold/28 bg-dusty-gold/[0.07] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-dusty-gold/86 transition hover:border-dusty-gold/50 hover:bg-dusty-gold/[0.11]"
                       >
                         {dictionary.result.generalReading.retry} ↓
                       </button>
