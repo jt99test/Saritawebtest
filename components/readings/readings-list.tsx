@@ -1,8 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
+import { useStoredLocale } from "@/components/i18n/use-stored-locale";
+import { PrimaryButton } from "@/components/ui/primary-button";
+import { illustrations } from "@/data/illustrations";
 import { CHART_RESULT_KEY, type ChartCalculationResult } from "@/lib/chart-session";
+import { dictionaries } from "@/lib/i18n";
 
 type StoredReading = {
   id: string;
@@ -23,12 +28,37 @@ function getStoredResult(reading: StoredReading): ChartCalculationResult | null 
 
 export function ReadingsList({ readings }: { readings: StoredReading[] }) {
   const router = useRouter();
+  const locale = useStoredLocale();
+  const dictionary = dictionaries[locale];
 
   if (!readings.length) {
     return (
-      <p className="mt-8 border-t border-dusty-gold/14 pt-6 font-serif text-[17px] italic leading-7 text-ivory/52">
-        Aún no hay lecturas guardadas en esta cuenta.
-      </p>
+      <div className="mt-8 grid overflow-hidden border-t border-dusty-gold/14 pt-7 sm:grid-cols-[0.9fr_1.1fr] sm:gap-8">
+        <div className="relative hidden min-h-52 overflow-hidden border border-white/8 sm:block">
+          <Image
+            src={illustrations.scenes.landing}
+            alt=""
+            fill
+            className="object-cover opacity-58 saturate-[0.78]"
+            sizes="320px"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,7,13,0.2),rgba(5,7,13,0.84))]" />
+        </div>
+        <div className="flex flex-col justify-center">
+          <p className="font-serif text-[25px] leading-tight text-ivory">
+            {dictionary.readings.emptyTitle}
+          </p>
+          <p className="mt-3 max-w-md text-sm leading-7 text-ivory/58">
+            {dictionary.readings.emptyBody}
+          </p>
+          <PrimaryButton
+            href="/form"
+            className="mt-6 self-start px-5 py-3 text-[0.72rem] uppercase tracking-[0.18em]"
+          >
+            {dictionary.readings.emptyCta}
+          </PrimaryButton>
+        </div>
+      </div>
     );
   }
 
@@ -36,8 +66,12 @@ export function ReadingsList({ readings }: { readings: StoredReading[] }) {
     <div className="mt-8 border-t border-dusty-gold/14">
       {readings.map((reading) => {
         const result = getStoredResult(reading);
-        const label = result?.chart.event.name ?? "Lectura";
-        const date = new Intl.DateTimeFormat("es", {
+        const label = result?.chart.event.name ?? dictionary.readings.fallbackTitle;
+        const typeLabel =
+          reading.type && reading.type in dictionary.readings.types
+            ? dictionary.readings.types[reading.type as keyof typeof dictionary.readings.types]
+            : reading.type;
+        const date = new Intl.DateTimeFormat(locale, {
           day: "2-digit",
           month: "short",
           year: "numeric",
@@ -63,11 +97,11 @@ export function ReadingsList({ readings }: { readings: StoredReading[] }) {
                 {label}
               </p>
               <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-ivory/38">
-                {reading.type} · {date}
+                {typeLabel} · {date}
               </p>
             </div>
             <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-dusty-gold/62">
-              abrir
+              {dictionary.readings.open}
             </span>
           </button>
         );

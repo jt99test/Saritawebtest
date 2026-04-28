@@ -1,27 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "motion/react";
 
 import { AccountButton } from "@/components/auth/account-button";
 import { LanguageSelector } from "@/components/i18n/language-selector";
+import { setStoredLocale, useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { illustrations } from "@/data/illustrations";
-import { defaultLocale, dictionaries, isLocale, LOCALE_STORAGE_KEY, type Locale } from "@/lib/i18n";
+import { dictionaries, type Locale } from "@/lib/i18n";
 
 export function HomePage() {
-  const [locale, setLocale] = useState<Locale>(() => {
-    if (typeof window === "undefined") {
-      return defaultLocale;
-    }
-
-    const storedLocale = window.localStorage.getItem(LOCALE_STORAGE_KEY);
-    return storedLocale && isLocale(storedLocale) ? storedLocale : defaultLocale;
-  });
+  const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
+  const features = dictionary.home.features;
 
   useEffect(() => {
     if (window.location.hash) {
@@ -30,8 +26,7 @@ export function HomePage() {
   }, []);
 
   function handleLocaleChange(nextLocale: Locale) {
-    setLocale(nextLocale);
-    window.localStorage.setItem(LOCALE_STORAGE_KEY, nextLocale);
+    setStoredLocale(nextLocale);
   }
 
   return (
@@ -122,8 +117,7 @@ export function HomePage() {
             >
               <PrimaryButton
                 href="/form"
-                variant="ghostGold"
-                className="min-w-56 border-dusty-gold/45 bg-cosmic-950/24 px-8 py-3.5 text-[0.8rem] uppercase tracking-[0.18em] shadow-[0_18px_54px_rgba(0,0,0,0.34)] backdrop-blur-md"
+                className="min-w-56 px-8 py-3.5 text-[0.8rem] uppercase tracking-[0.18em]"
               >
                 {dictionary.home.cta}
               </PrimaryButton>
@@ -132,14 +126,20 @@ export function HomePage() {
           </div>
 
           <div className="relative z-10 border-t border-white/10 py-4">
-            <div className="grid gap-3 text-center sm:grid-cols-3 sm:text-left">
-              {["Carta natal", "Luna del mes", "Yoga astral"].map((item) => (
-                <p
-                  key={item}
-                  className="text-[0.65rem] font-medium uppercase tracking-[0.24em] text-ivory/45"
+            <div className="grid gap-3 sm:grid-cols-3">
+              {features.map((feature) => (
+                <Link
+                  key={feature.href}
+                  href={feature.href}
+                  className="group block border-l border-white/10 px-4 py-2 text-left transition hover:border-dusty-gold/45 hover:bg-white/[0.025]"
                 >
-                  {item}
-                </p>
+                  <span className="block text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-ivory/58 transition group-hover:text-dusty-gold/82">
+                    {feature.title}
+                  </span>
+                  <span className="mt-1 block text-xs leading-5 text-ivory/42 transition group-hover:text-ivory/66">
+                    {feature.description}
+                  </span>
+                </Link>
               ))}
             </div>
           </div>

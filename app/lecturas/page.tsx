@@ -1,11 +1,10 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { AccountButton } from "@/components/auth/account-button";
+import { ReadingsArchiveHeader } from "@/components/readings/readings-archive-header";
+import { ReadingUsageSummary } from "@/components/readings/reading-usage-summary";
+import { ReadingsList } from "@/components/readings/readings-list";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
-import { ReadingsList } from "@/components/readings/readings-list";
-import { ReadingUsageSummary } from "@/components/readings/reading-usage-summary";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export default async function ReadingsPage() {
@@ -46,35 +45,10 @@ export default async function ReadingsPage() {
 
       <section className="relative py-6 sm:py-8">
         <Container className="min-h-screen">
-          <div className="mx-auto mb-10 flex max-w-3xl items-center justify-between gap-4 border-b border-white/8 pb-4">
-            <Link
-              href="/resultado"
-              className="text-xs font-medium uppercase tracking-[0.24em] text-ivory/58 transition hover:text-ivory"
-            >
-              ← volver
-            </Link>
-            <AccountButton />
-          </div>
+          <ReadingsArchiveHeader />
 
           <div className="mx-auto max-w-3xl">
-            <div className="grid gap-6 sm:grid-cols-[1fr_auto] sm:items-end">
-              <div>
-                <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.24em] text-dusty-gold/58">
-                  archivo personal
-                </p>
-                <h1 className="font-serif text-[48px] font-normal leading-none text-ivory">
-                  Lecturas guardadas
-                </h1>
-              </div>
-              <Link
-                href="/form"
-                className="border-t border-dusty-gold/18 pt-3 text-left text-[11px] font-semibold uppercase tracking-[0.22em] text-dusty-gold/78 transition hover:text-dusty-gold sm:min-w-[190px] sm:text-right"
-              >
-                Generar nueva lectura
-              </Link>
-            </div>
             <ReadingUsageSummary plan={plan} count={count ?? 0} limit={limit} />
-
             <ReadingsList readings={readings ?? []} />
           </div>
         </Container>

@@ -18,7 +18,24 @@
   "home": {
     "eyebrow": "Natal chart · Birth chart",
     "subtitle": "The sky on the day you were born",
-    "cta": "Generate natal chart"
+    "cta": "Generate natal chart",
+    "features": [
+      {
+        "title": "Natal chart",
+        "description": "A visual reading of your birth sky.",
+        "href": "/form"
+      },
+      {
+        "title": "Moon of the month",
+        "description": "The current lunar weather and how to work with it.",
+        "href": "/luna-del-mes"
+      },
+      {
+        "title": "Astral yoga",
+        "description": "Body practices aligned with your element.",
+        "href": "/yoga-astral"
+      }
+    ]
   },
   "form": {
     "back": "Back",
@@ -52,8 +69,22 @@
     ]
   },
   "readings": {
+    "back": "← Back",
+    "eyebrow": "Personal archive",
+    "title": "Saved readings",
+    "newReading": "Generate new reading",
     "planLabel": "Plan",
     "thisMonth": "This month",
+    "open": "Open",
+    "fallbackTitle": "Reading",
+    "emptyTitle": "Your archive is waiting for its first chart",
+    "emptyBody": "Generate a natal reading and it will be saved here, ready whenever you want to return to it.",
+    "emptyCta": "Create my first reading",
+    "types": {
+      "natal": "Natal",
+      "luna": "Moon",
+      "yoga": "Yoga"
+    },
     "planNames": {
       "free": "Free",
       "basico": "Basic",

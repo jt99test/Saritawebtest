@@ -18,7 +18,24 @@
   "home": {
     "eyebrow": "Carta natale · Tema natale",
     "subtitle": "Il cielo del giorno in cui sei nato",
-    "cta": "Genera carta natale"
+    "cta": "Genera carta natale",
+    "features": [
+      {
+        "title": "Carta natale",
+        "description": "Una lettura visiva del cielo della tua nascita.",
+        "href": "/form"
+      },
+      {
+        "title": "Luna del mese",
+        "description": "Il clima lunare attuale e come lavorarci.",
+        "href": "/luna-del-mes"
+      },
+      {
+        "title": "Yoga astrale",
+        "description": "Pratiche corporee allineate al tuo elemento.",
+        "href": "/yoga-astral"
+      }
+    ]
   },
   "form": {
     "back": "Indietro",
@@ -52,8 +69,22 @@
     ]
   },
   "readings": {
+    "back": "← Indietro",
+    "eyebrow": "Archivio personale",
+    "title": "Letture salvate",
+    "newReading": "Genera nuova lettura",
     "planLabel": "Piano",
     "thisMonth": "Questo mese",
+    "open": "Apri",
+    "fallbackTitle": "Lettura",
+    "emptyTitle": "Il tuo archivio aspetta la sua prima carta",
+    "emptyBody": "Genera una lettura natale e verrà salvata qui, pronta quando vorrai tornarci.",
+    "emptyCta": "Crea la mia prima lettura",
+    "types": {
+      "natal": "Natale",
+      "luna": "Luna",
+      "yoga": "Yoga"
+    },
     "planNames": {
       "free": "Gratis",
       "basico": "Base",
