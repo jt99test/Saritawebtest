@@ -90,7 +90,7 @@ export function ReadingsList({ readings }: { readings: StoredReading[] }) {
               window.sessionStorage.setItem(CHART_RESULT_KEY, JSON.stringify(result));
               router.push("/resultado");
             }}
-            className="grid w-full gap-2 border-b border-white/8 py-5 text-left transition enabled:hover:border-dusty-gold/24 disabled:cursor-not-allowed disabled:opacity-50 sm:grid-cols-[1fr_auto] sm:items-center"
+            className="group grid w-full gap-2 border-b border-white/8 py-5 text-left transition enabled:hover:border-dusty-gold/24 disabled:cursor-not-allowed disabled:opacity-50 sm:grid-cols-[1fr_auto] sm:items-center"
           >
             <div>
               <p className="font-serif text-[21px] leading-tight text-ivory">
@@ -100,7 +100,7 @@ export function ReadingsList({ readings }: { readings: StoredReading[] }) {
                 {typeLabel} · {date}
               </p>
             </div>
-            <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-dusty-gold/62">
+            <span className="inline-flex min-w-24 items-center justify-center border border-dusty-gold/24 bg-dusty-gold/[0.055] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-dusty-gold/82 transition group-hover:border-dusty-gold/42 group-hover:bg-dusty-gold/[0.085]">
               {dictionary.readings.open}
             </span>
           </button>

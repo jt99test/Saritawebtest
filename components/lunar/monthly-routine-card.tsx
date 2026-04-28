@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import { PrimaryButton } from "@/components/ui/primary-button";
 import type { LunarReportMetadata } from "@/lib/lunar-report";
 import { yogaRoutines } from "@/data/sarita/yoga-routines";
 
@@ -57,13 +56,13 @@ export function MonthlyRoutineCard({ metadata }: MonthlyRoutineCardProps) {
         {[routineNames, mantra, metadata.routine.totalDuration].filter(Boolean).join(" · ")}
       </p>
 
-      <Link
+      <PrimaryButton
         href={`/yoga-astral/${ROUTE_SEGMENTS[metadata.assignedRoutine]}`}
-        className="group mt-8 inline-flex items-center gap-2 font-serif text-[17px] text-dusty-gold/90 transition hover:text-dusty-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dusty-gold/60"
+        variant="ghostGold"
+        className="mt-8 px-6 py-3 text-[0.72rem] uppercase tracking-[0.2em]"
       >
-        <span>Ver rutina completa</span>
-        <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-      </Link>
+        Ver rutina completa
+      </PrimaryButton>
     </section>
   );
 }

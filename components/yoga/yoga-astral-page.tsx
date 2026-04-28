@@ -11,6 +11,7 @@ import type { LunarReportCacheEntry } from "@/lib/lunar-report";
 import { getSignFromLongitude, zodiacSigns } from "@/lib/chart";
 import { hashNatalChart } from "@/lib/chart-hash";
 import { getAllCachedLunarReports } from "@/lib/lunar-report-cache";
+import { PrimaryButton } from "@/components/ui/primary-button";
 import { illustrations } from "@/data/illustrations";
 import { yogaRoutines } from "@/data/sarita/yoga-routines";
 
@@ -394,26 +395,26 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
                 <p className="mt-8 font-serif text-[13px] italic leading-7 text-white/50">
                   {getRoutineMeta(monthlyElement)}
                 </p>
-                <Link
+                <PrimaryButton
                   href={`/yoga-astral/${monthlyElement}`}
-                  className="group mt-8 inline-flex items-center gap-2 font-serif text-base text-dusty-gold/90 transition hover:text-dusty-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dusty-gold/60 lg:text-lg"
+                  variant="ghostGold"
+                  className="mt-8 px-6 py-3 text-[0.72rem] uppercase tracking-[0.2em]"
                 >
-                  <span>Entrar en la rutina</span>
-                  <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-                </Link>
+                  Entrar en la rutina
+                </PrimaryButton>
               </>
             ) : (
               <>
                 <p className="max-w-[420px] font-serif text-[17px] italic leading-8 text-white/50">
                   Visita la Luna del mes para que te asignemos una rutina.
                 </p>
-                <Link
+                <PrimaryButton
                   href="/luna-del-mes"
-                  className="group mt-8 inline-flex items-center gap-2 font-serif text-base text-dusty-gold/90 transition hover:text-dusty-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dusty-gold/60 lg:text-lg"
+                  variant="ghostGold"
+                  className="mt-8 px-6 py-3 text-[0.72rem] uppercase tracking-[0.2em]"
                 >
-                  <span>Ir a Luna del mes</span>
-                  <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-                </Link>
+                  Ir a Luna del mes
+                </PrimaryButton>
               </>
             )}
           </div>
@@ -518,13 +519,13 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
             </p>
           </div>
 
-          <Link
+          <PrimaryButton
             href="/yoga-astral/kriyas/lavado-intestinal"
-            className="group inline-flex items-center gap-2 font-serif text-[15px] text-dusty-gold/90 transition hover:text-dusty-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dusty-gold/60"
+            variant="ghostGold"
+            className="self-start px-5 py-3 text-[0.68rem] uppercase tracking-[0.2em] sm:self-auto"
           >
-            <span>Ver protocolo</span>
-            <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
-          </Link>
+            Ver protocolo
+          </PrimaryButton>
         </div>
       </section>
     </div>
