@@ -27,15 +27,13 @@ export function LunationReadingCard({
       <div className="mt-6">
         {loading ? (
           <motion.div
-            className="mx-auto inline-flex items-center justify-center border border-dusty-gold/24 bg-dusty-gold/[0.055] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-dusty-gold/86 shadow-[0_16px_44px_rgba(0,0,0,0.22)]"
+            className="mx-auto inline-flex min-w-56 items-center justify-center border border-dusty-gold/24 bg-dusty-gold/[0.055] px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-dusty-gold/86 shadow-[0_16px_44px_rgba(0,0,0,0.22)]"
             animate={{ opacity: [0.45, 1, 0.45] }}
             transition={{ duration: 1.8, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
           >
             Generando lectura
           </motion.div>
-        ) : null}
-
-        {error ? (
+        ) : error ? (
           <div className="mt-4 space-y-4">
             <p className="font-serif text-[17px] leading-8 text-white/68">{error}</p>
             <PrimaryButton
