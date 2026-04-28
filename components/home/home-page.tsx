@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
 
+import { AccountButton } from "@/components/auth/account-button";
 import { LanguageSelector } from "@/components/i18n/language-selector";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
@@ -52,7 +53,8 @@ export function HomePage() {
               </div>
             </div>
 
-            <div className="ml-auto">
+            <div className="ml-auto flex items-center gap-4">
+              <AccountButton />
               <LanguageSelector
                 dictionary={dictionary}
                 locale={locale}

@@ -14,7 +14,24 @@ export type ChartCalculationResult = {
   isMock: boolean;
   error?: string;
   request: FormValues;
+  readingId?: string;
+  saved?: boolean;
+  usage?: {
+    count: number;
+    limit: number;
+    plan: string;
+  };
 };
+
+export type ChartLimitReachedResult = {
+  limitReached: true;
+  error: "limit_reached";
+  plan: string;
+  count: number;
+  limit: number;
+};
+
+export type ChartActionResult = ChartCalculationResult | ChartLimitReachedResult;
 
 export const CHART_DRAFT_KEY = "sarita_chart_draft";
 export const CHART_RESULT_KEY = "sarita_chart";

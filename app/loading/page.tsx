@@ -10,15 +10,39 @@ import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
 import { calculateChartAction } from "@/lib/actions";
-import { CHART_DRAFT_KEY, CHART_RESULT_KEY, type ChartCalculationResult, type FormValues } from "@/lib/chart-session";
+import {
+  CHART_DRAFT_KEY,
+  CHART_RESULT_KEY,
+  type ChartActionResult,
+  type ChartCalculationResult,
+  type ChartLimitReachedResult,
+  type FormValues,
+} from "@/lib/chart-session";
 import { getDictionary } from "@/lib/i18n";
 
 const dictionary = getDictionary("es");
+const chartGenerationPromises = new Map<string, Promise<ChartActionResult>>();
+
+function getChartGenerationPromise(rawDraft: string, draft: FormValues) {
+  const existing = chartGenerationPromises.get(rawDraft);
+
+  if (existing) {
+    return existing;
+  }
+
+  const promise = calculateChartAction(draft).finally(() => {
+    chartGenerationPromises.delete(rawDraft);
+  });
+
+  chartGenerationPromises.set(rawDraft, promise);
+  return promise;
+}
 
 export default function LoadingPage() {
   const router = useRouter();
   const [stepIndex, setStepIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [limitReached, setLimitReached] = useState<ChartLimitReachedResult | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -43,8 +67,13 @@ export default function LoadingPage() {
 
     (async () => {
       try {
-        const result = await calculateChartAction(draft);
+        const result = await getChartGenerationPromise(rawDraft, draft);
         if (cancelled) {
+          return;
+        }
+
+        if ("limitReached" in result) {
+          setLimitReached(result);
           return;
         }
 
@@ -104,6 +133,24 @@ export default function LoadingPage() {
                   ))}
                 </div>
               </div>
+
+              {limitReached ? (
+                <div className="mt-8 max-w-md border border-dusty-gold/18 bg-white/[0.025] px-5 py-5 text-sm text-ivory/68">
+                  <p className="font-serif text-[21px] leading-tight text-ivory">
+                    Has llegado al límite de tu plan.
+                  </p>
+                  <p className="mt-3 leading-7">
+                    Has usado {limitReached.count} de {limitReached.limit} lecturas este mes.
+                    Puedes mejorar tu plan para seguir generando lecturas.
+                  </p>
+                  <Link
+                    href="/"
+                    className="mt-5 inline-block text-xs font-medium uppercase tracking-[0.24em] text-dusty-gold/80 transition hover:text-dusty-gold"
+                  >
+                    Ver opciones
+                  </Link>
+                </div>
+              ) : null}
 
               {error ? (
                 <div className="mt-8 rounded-2xl border border-white/10 bg-white/4 px-4 py-4 text-sm text-ivory/60">

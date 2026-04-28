@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 import Link from "next/link";
 
+import { AccountButton } from "@/components/auth/account-button";
 import { NatalChartExperience } from "@/components/chart/natal-chart-experience";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
@@ -73,20 +74,27 @@ export default function ResultPage() {
 
       <section className="relative min-h-screen py-5 sm:py-6">
         <Container className="relative flex min-h-screen flex-col">
-          <div className="mb-4 flex items-center justify-between gap-4 border-b border-white/8 pb-3 pt-1">
+          <div className="mb-4 grid min-h-10 grid-cols-[1fr_auto_1fr] items-center gap-4 border-b border-white/8 pb-3 pt-1">
             <Link
               href="/"
-              className="text-xs font-medium uppercase tracking-[0.24em] text-ivory/68 transition hover:text-ivory"
+              className="justify-self-start text-xs font-medium uppercase tracking-[0.24em] text-ivory/68 transition hover:text-ivory"
             >
               ← {dictionary.result.back}
             </Link>
 
-            <Link
-              href="/form"
-              className="border-l border-white/12 pl-4 text-right text-xs font-medium uppercase tracking-[0.24em] text-ivory/54 transition hover:text-ivory/80"
-            >
-              {dictionary.form.back}
-            </Link>
+            <p className="justify-self-center text-[10px] font-semibold uppercase tracking-[0.22em] text-dusty-gold/58">
+              {result?.saved ? "Lectura guardada" : ""}
+            </p>
+
+            <div className="flex items-center gap-4 justify-self-end border-l border-white/12 pl-4">
+              <Link
+                href="/form"
+                className="text-right text-xs font-medium uppercase tracking-[0.24em] text-ivory/54 transition hover:text-ivory/80"
+              >
+                {dictionary.form.back}
+              </Link>
+              <AccountButton />
+            </div>
           </div>
 
           {result ? (

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 import { fontSans, fontSerif } from "@/app/fonts";
+import { AuthModal } from "@/components/auth/auth-modal";
 
 import "./globals.css";
 
@@ -22,6 +24,9 @@ export default function RootLayout({
     >
       <body className="min-h-full bg-cosmic-950 font-sans text-ivory">
         {children}
+        <Suspense fallback={null}>
+          <AuthModal />
+        </Suspense>
       </body>
     </html>
   );

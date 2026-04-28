@@ -16,6 +16,8 @@
     "@anthropic-ai/sdk": "^0.91.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.0",
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.105.0",
     "ephemeris": "^2.2.0",
     "geo-tz": "^8.1.6",
     "luxon": "^3.7.2",
