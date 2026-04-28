@@ -439,7 +439,7 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
                 </h2>
                 <p className="mt-6 font-serif text-lg leading-[1.6] text-white/80 lg:max-w-[440px] lg:text-[20px] lg:leading-[1.7]">
                   {blendedRoutine
-                    ? `Tienes ${ELEMENT_LABELS[blendedRoutine.primary]} y ${ELEMENT_LABELS[blendedRoutine.secondary]} muy presentes en tu carta. He creado esta rutina especialmente para ti.`
+                    ? `En tu carta, ${ELEMENT_LABELS[blendedRoutine.primary]} y ${ELEMENT_LABELS[blendedRoutine.secondary]} se responden. Esta práctica cruza sus ritmos para que la mente, el cuerpo y la respiración encuentren un mismo cauce.`
                     : ELEMENT_COPY[monthlyElement]}
                 </p>
                 <p className="mt-8 font-serif text-[13px] italic leading-7 text-white/50">

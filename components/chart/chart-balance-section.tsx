@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import type { Dictionary } from "@/lib/i18n";
 import {
   getSignFromLongitude,
@@ -83,6 +85,7 @@ function arcPath(startAngle: number, endAngle: number) {
 }
 
 export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionProps) {
+  const [hoveredElement, setHoveredElement] = useState<Element | null>(null);
   const balancePoints = chart.points.filter((point) =>
     BALANCE_POINT_IDS.includes(point.id as (typeof BALANCE_POINT_IDS)[number]),
   );
@@ -140,23 +143,31 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
 
       <div className="mx-auto mt-8 grid max-w-[720px] gap-8 md:grid-cols-[200px_minmax(0,1fr)] md:items-center lg:mt-10 lg:max-w-[820px] lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-14">
         <div className="text-center">
+          <div className="relative inline-block">
           <svg viewBox="0 0 240 240" className="h-[200px] w-[200px] lg:h-[270px] lg:w-[270px]" role="img" aria-label="Equilibrio de elementos">
             {quadrants.map(({ element, start, end, labelAngle }) => {
               const elementPercent = percent(elementCounts[element], total);
               const labelPoint = polarPoint(80, labelAngle);
               const active = element === dominantElement;
+              const hovered = element === hoveredElement;
 
               return (
                 <g
                   key={element}
-                  className="transition"
+                  className="cursor-help transition"
+                  onMouseEnter={() => setHoveredElement(element)}
+                  onMouseLeave={() => setHoveredElement(null)}
+                  onFocus={() => setHoveredElement(element)}
+                  onBlur={() => setHoveredElement(null)}
+                  tabIndex={0}
                 >
                   <path
                     d={arcPath(start, end)}
                     fill="none"
                     stroke={ELEMENT_COLORS[element]}
-                    strokeWidth="40"
-                    opacity={Math.min(1, Math.max(0.25, elementPercent / 50))}
+                    strokeWidth={hovered ? "46" : "40"}
+                    opacity={hovered ? 1 : Math.min(1, Math.max(0.25, elementPercent / 50))}
+                    className="transition-all duration-200"
                   />
                   <text
                     x={labelPoint.x}
@@ -180,35 +191,21 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
               );
             })}
           </svg>
+          {hoveredElement ? (
+            <div
+              className="pointer-events-none absolute left-1/2 top-1/2 z-20 w-56 -translate-x-1/2 -translate-y-1/2 border border-white/12 p-3 text-left text-xs leading-5 text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]"
+              style={{ backgroundColor: ELEMENT_COLORS[hoveredElement] }}
+            >
+              <p className="mb-1 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-white/78">
+                {dictionary.result.elements[hoveredElement]}
+              </p>
+              {ELEMENT_TOOLTIPS[hoveredElement]}
+            </div>
+          ) : null}
+          </div>
           <p className="mt-3 text-center text-xs leading-6 text-[rgba(255,255,255,0.5)] lg:hidden">
             {modalityLine}
           </p>
-          <div className="mt-5 grid grid-cols-2 gap-2 text-left">
-            {ELEMENT_ORDER.map((element) => (
-              <div key={element} className="group relative">
-                <button
-                  type="button"
-                  className="flex w-full items-center justify-between border border-white/8 bg-white/[0.025] px-3 py-2 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-ivory/58 transition hover:border-dusty-gold/24 hover:text-ivory"
-                  aria-label={`${dictionary.result.elements[element]}: ${ELEMENT_TOOLTIPS[element]}`}
-                >
-                  <span className="flex items-center gap-2">
-                    <span
-                      className="h-2.5 w-2.5"
-                      style={{ backgroundColor: ELEMENT_COLORS[element] }}
-                    />
-                    {dictionary.result.elements[element]}
-                  </span>
-                  <span>{percent(elementCounts[element], total)}%</span>
-                </button>
-                <div
-                  className="pointer-events-none absolute bottom-full left-0 z-20 mb-2 hidden w-56 border border-white/12 p-3 text-xs leading-5 text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)] group-hover:block"
-                  style={{ backgroundColor: ELEMENT_COLORS[element] }}
-                >
-                  {ELEMENT_TOOLTIPS[element]}
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
 
         <div>
