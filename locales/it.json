@@ -51,6 +51,15 @@
       "Prepariamo la tua carta natale"
     ]
   },
+  "readings": {
+    "planLabel": "Piano",
+    "thisMonth": "Questo mese",
+    "planNames": {
+      "free": "Gratis",
+      "basico": "Base",
+      "completo": "Completo"
+    }
+  },
   "result": {
     "intro": "Così erano allineati i pianeti quando sei nato.",
     "back": "Torna all'inizio",

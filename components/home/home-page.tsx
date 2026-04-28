@@ -10,10 +10,17 @@ import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { illustrations } from "@/data/illustrations";
-import { defaultLocale, dictionaries, type Locale } from "@/lib/i18n";
+import { defaultLocale, dictionaries, isLocale, LOCALE_STORAGE_KEY, type Locale } from "@/lib/i18n";
 
 export function HomePage() {
-  const [locale, setLocale] = useState<Locale>(defaultLocale);
+  const [locale, setLocale] = useState<Locale>(() => {
+    if (typeof window === "undefined") {
+      return defaultLocale;
+    }
+
+    const storedLocale = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+    return storedLocale && isLocale(storedLocale) ? storedLocale : defaultLocale;
+  });
   const dictionary = dictionaries[locale];
 
   useEffect(() => {
@@ -21,6 +28,11 @@ export function HomePage() {
       window.history.replaceState(null, "", window.location.pathname + window.location.search);
     }
   }, []);
+
+  function handleLocaleChange(nextLocale: Locale) {
+    setLocale(nextLocale);
+    window.localStorage.setItem(LOCALE_STORAGE_KEY, nextLocale);
+  }
 
   return (
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
@@ -58,7 +70,7 @@ export function HomePage() {
               <LanguageSelector
                 dictionary={dictionary}
                 locale={locale}
-                onChange={setLocale}
+                onChange={handleLocaleChange}
               />
             </div>
           </div>

@@ -51,6 +51,15 @@
       "Preparando tu carta natal"
     ]
   },
+  "readings": {
+    "planLabel": "Plan",
+    "thisMonth": "Este mes",
+    "planNames": {
+      "free": "Gratis",
+      "basico": "Básico",
+      "completo": "Completo"
+    }
+  },
   "result": {
     "intro": "Así estaban alineados los planetas cuando naciste.",
     "back": "Volver al inicio",

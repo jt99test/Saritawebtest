@@ -51,6 +51,15 @@
       "Preparing your natal chart"
     ]
   },
+  "readings": {
+    "planLabel": "Plan",
+    "thisMonth": "This month",
+    "planNames": {
+      "free": "Free",
+      "basico": "Basic",
+      "completo": "Complete"
+    }
+  },
   "result": {
     "intro": "This is how the planets were aligned when you were born.",
     "back": "Back to home",

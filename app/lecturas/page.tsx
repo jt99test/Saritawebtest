@@ -5,6 +5,7 @@ import { AccountButton } from "@/components/auth/account-button";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { ReadingsList } from "@/components/readings/readings-list";
+import { ReadingUsageSummary } from "@/components/readings/reading-usage-summary";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export default async function ReadingsPage() {
@@ -72,14 +73,7 @@ export default async function ReadingsPage() {
                 Generar nueva lectura
               </Link>
             </div>
-            <div className="mt-6 grid gap-3 border-y border-white/8 py-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-ivory/45 sm:grid-cols-2">
-              <p>
-                Plan <span className="text-dusty-gold/70">{plan}</span>
-              </p>
-              <p className="sm:text-right">
-                Este mes <span className="text-dusty-gold/70">{count ?? 0} / {limit}</span>
-              </p>
-            </div>
+            <ReadingUsageSummary plan={plan} count={count ?? 0} limit={limit} />
 
             <ReadingsList readings={readings ?? []} />
           </div>
