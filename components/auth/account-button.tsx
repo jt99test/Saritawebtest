@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 
+import { clearChartSession } from "@/lib/chart-session";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
 export function AccountButton() {
@@ -41,6 +42,7 @@ export function AccountButton() {
 
   async function signOut() {
     await supabase.auth.signOut();
+    clearChartSession();
     setMenuOpen(false);
     setUser(null);
     router.refresh();

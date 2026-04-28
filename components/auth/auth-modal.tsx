@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
+import { clearChartSession } from "@/lib/chart-session";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
 type AuthMode = "sign-up" | "sign-in";
@@ -59,6 +60,7 @@ export function AuthModal() {
       return;
     }
 
+    clearChartSession();
     closeModal();
     router.refresh();
   }

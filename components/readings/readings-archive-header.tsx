@@ -15,7 +15,7 @@ export function ReadingsArchiveHeader() {
     <>
       <div className="mx-auto mb-10 flex max-w-3xl items-center justify-between gap-4 border-b border-white/8 pb-4">
         <Link
-          href="/resultado"
+          href="/"
           className="text-xs font-medium uppercase tracking-[0.24em] text-ivory/58 transition hover:text-ivory"
         >
           {dictionary.readings.back}
