@@ -21,7 +21,7 @@ import {
 // Stable SE numeric constants (never change across SE versions)
 const SE_SUN = 0, SE_MOON = 1, SE_MERCURY = 2, SE_VENUS = 3, SE_MARS = 4;
 const SE_JUPITER = 5, SE_SATURN = 6, SE_URANUS = 7, SE_NEPTUNE = 8, SE_PLUTO = 9;
-const SE_TRUE_NODE = 11, SE_MEAN_APOG = 12, SE_CHIRON = 15;
+const SE_TRUE_NODE = 11, SE_MEAN_APOG = 13, SE_CHIRON = 15, SE_CERES = 17;
 const SEFLG_SPEED = 256, SEFLG_SWIEPH = 2;
 
 let _se: SwissEph | null = null;
@@ -96,6 +96,9 @@ type ChartInput = {
   lat: number;
   lng: number;
   daylightSaving: boolean;
+  houseSystem?: "P" | "W" | "K" | "E";
+  julianDayUt?: number;
+  solarReturnYear?: number;
 };
 
 type CalcResult = ReturnType<typeof calcUt>;
@@ -120,6 +123,13 @@ const FIVE_DEGREE_CUSP_POINT_IDS = new Set<ChartPointId>([
   "northNode",
   "southNode",
 ]);
+
+const HOUSE_SYSTEM_LABELS = {
+  P: "placidus",
+  W: "wholeSign",
+  K: "koch",
+  E: "equal",
+} as const;
 
 function obliquity(julianDayUt: number) {
   const t = (julianDayUt - 2451545.0) / 36525;
@@ -295,7 +305,7 @@ export async function calculateNatalChart(input: ChartInput): Promise<NatalChart
   }
 
   const utcDateTime = localDateTime.toUTC();
-  const julianDayUt = se.julday(
+  const julianDayUt = input.julianDayUt ?? se.julday(
     utcDateTime.year,
     utcDateTime.month,
     utcDateTime.day,
@@ -303,7 +313,8 @@ export async function calculateNatalChart(input: ChartInput): Promise<NatalChart
   );
 
   const flags = ephemerisFlag();
-  const rawHouses = se.houses(julianDayUt, input.lat, input.lng, "P") as unknown as WasmHouses;
+  const houseSystem = input.houseSystem ?? "P";
+  const rawHouses = se.houses(julianDayUt, input.lat, input.lng, houseSystem) as unknown as WasmHouses;
 
   const houseCusps: HouseCusp[] = Array.from(rawHouses.cusps.slice(1, 13)).map((longitude, index) => ({
     house: index + 1,
@@ -333,6 +344,13 @@ export async function calculateNatalChart(input: ChartInput): Promise<NatalChart
       rawHouses, input.lat, eps));
   }
 
+  // Ceres is optional in SARITA's extended data layer; it stays out of core points
+  // until a view explicitly chooses to render extended points.
+  const ceresResult = calcUt(se, julianDayUt, SE_CERES, flags);
+  const ceres = buildDerivedPoint(se, "ceres", "⚳", ceresResult.longitude, "#cdbf8d",
+    rawHouses, input.lat, eps, ceresResult.longitudeSpeed < 0);
+  const extendedPoints = [...points, ceres];
+
   const aspects = detectAspects(points);
   const offsetMinutes = localDateTime.offset;
   const offsetHours = Math.floor(Math.abs(offsetMinutes) / 60);
@@ -358,7 +376,7 @@ export async function calculateNatalChart(input: ChartInput): Promise<NatalChart
     },
     settings: {
       zodiac: "tropical",
-      houseSystem: "placidus",
+      houseSystem: HOUSE_SYSTEM_LABELS[houseSystem],
       locus: "geocentric",
       chartMethod: "natal",
       calculationMethod: "swissEphemeris",
@@ -371,6 +389,71 @@ export async function calculateNatalChart(input: ChartInput): Promise<NatalChart
       mc:         normalizeLongitude(rawHouses.ascmc[1]!),
       descendant: normalizeLongitude(rawHouses.cusps[7]  ?? rawHouses.ascmc[0]! + 180),
       ic:         normalizeLongitude(rawHouses.cusps[4]  ?? rawHouses.ascmc[1]! + 180),
+      solarReturnYear: input.solarReturnYear,
     },
+    extendedPoints,
   };
+}
+
+function longitudeDelta(current: number, target: number) {
+  const delta = normalizeLongitude(current - target);
+  return delta > 180 ? delta - 360 : delta;
+}
+
+export async function calculateSolarReturn(
+  natalSunLongitude: number,
+  targetYear: number,
+  lat: number,
+  lng: number,
+  birthMonth = 6,
+  birthDay = 30,
+): Promise<NatalChartData> {
+  if (targetYear < 1901 || targetYear > 2100) {
+    throw new Error("Año de revolución solar fuera de rango");
+  }
+
+  const se = await initSwisseph();
+  const flags = ephemerisFlag();
+  const estimate = DateTime.utc(targetYear, birthMonth, birthDay, 12);
+  const estimateJd = se.julday(
+    estimate.year,
+    estimate.month,
+    estimate.day,
+    estimate.hour,
+  );
+  let low = estimateJd - 2;
+  let high = estimateJd + 2;
+
+  for (let i = 0; i < 40; i += 1) {
+    const mid = (low + high) / 2;
+    const delta = longitudeDelta(calcUt(se, mid, SE_SUN, flags).longitude, natalSunLongitude);
+
+    if (Math.abs(delta) < 0.0003) {
+      low = mid;
+      high = mid;
+      break;
+    }
+
+    if (delta > 0) {
+      high = mid;
+    } else {
+      low = mid;
+    }
+  }
+
+  const julianDayUt = (low + high) / 2;
+  const returnDate = estimate.plus({ days: julianDayUt - estimateJd });
+
+  return calculateNatalChart({
+    name: `RS ${targetYear}`,
+    birthDate: returnDate.toISODate() ?? `${targetYear}-01-01`,
+    birthTime: returnDate.toFormat("HH:mm"),
+    timezone: "UTC",
+    displayLocation: "Revolución Solar",
+    lat,
+    lng,
+    daylightSaving: false,
+    julianDayUt,
+    solarReturnYear: targetYear,
+  });
 }

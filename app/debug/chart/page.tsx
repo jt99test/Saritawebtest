@@ -81,6 +81,7 @@ const POINT_LABELS: Record<ChartPointId, string> = {
   chiron: "Chiron",
   partOfFortune: "Part of Fortune",
   lilith: "Lilith",
+  ceres: "Ceres",
 };
 
 const SIGN_LABELS = {

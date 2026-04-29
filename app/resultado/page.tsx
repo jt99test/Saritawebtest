@@ -67,6 +67,7 @@ export default function ResultPage() {
 
   const chart = result?.chart ?? mockNatalChart;
   const isMock = result?.isMock ?? true;
+  const plan = result?.usage?.plan ?? "free";
 
   return (
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
@@ -98,7 +99,13 @@ export default function ResultPage() {
           </div>
 
           {result ? (
-            <NatalChartExperience chart={chart} dictionary={dictionary} isMock={isMock} />
+            <NatalChartExperience
+              chart={chart}
+              dictionary={dictionary}
+              isMock={isMock}
+              plan={plan}
+              request={result.request}
+            />
           ) : (
             <div className="flex flex-1 items-center justify-center">
               <div className="rounded-4xl border border-white/10 bg-white/[0.03] px-8 py-10 text-center shadow-[0_24px_80px_rgba(0,0,0,0.32)] backdrop-blur-xl">

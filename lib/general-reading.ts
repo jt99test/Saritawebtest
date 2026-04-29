@@ -33,6 +33,7 @@ const POINT_LABELS: Partial<Record<ChartPointId, string>> = {
   chiron: "Quirón",
   partOfFortune: "Parte de la Fortuna",
   lilith: "Lilith",
+  ceres: "Ceres",
 };
 
 const ASPECT_LABELS = {

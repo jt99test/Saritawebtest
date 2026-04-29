@@ -62,6 +62,7 @@ const POINT_LABELS: Record<ChartPointId, string> = {
   chiron: "Quir\u00f3n",
   partOfFortune: "Parte de la Fortuna",
   lilith: "Lilith",
+  ceres: "Ceres",
 };
 
 const ASPECT_LABELS: Record<AspectId, string> = {

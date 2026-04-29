@@ -75,6 +75,7 @@ const POINT_GLYPHS: Record<ChartPointId, string> = {
   chiron: "⚷",
   partOfFortune: "⊗",
   lilith: "⚸",
+  ceres: "⚳",
 };
 
 const POINT_SYMBOLS: Record<ChartPointId, string> = {
@@ -93,6 +94,7 @@ const POINT_SYMBOLS: Record<ChartPointId, string> = {
   chiron: "\u26b7",
   partOfFortune: "\u2297",
   lilith: "\u26b8",
+  ceres: "\u26b3",
 };
 
 const DISPLAY_ASPECTS: Array<{ type: AspectId; angle: number; orb: number; major: boolean }> = [

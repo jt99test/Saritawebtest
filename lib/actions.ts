@@ -52,6 +52,7 @@ async function getReadingAccess() {
 }
 
 type ReadingAccess = NonNullable<Awaited<ReturnType<typeof getReadingAccess>>>;
+export type HouseSystemCode = "P" | "W" | "K" | "E";
 
 async function saveNatalReading(result: ChartCalculationResult, access: ReadingAccess) {
   const { data, error } = await access.supabase
@@ -162,4 +163,91 @@ export async function calculateChartAction(values: FormValues): Promise<ChartAct
 
     return result;
   }
+}
+
+export async function recalculateHouseSystemAction(
+  values: FormValues,
+  houseSystem: HouseSystemCode,
+): Promise<NatalChartData> {
+  const { geocode } = await import("./geocoding");
+  const { calculateNatalChart } = await import("./ephemeris.server");
+  const geo = values.selectedLocation ? values.selectedLocation : await geocode(values.location);
+
+  return calculateNatalChart({
+    name: values.name,
+    birthDate: values.birthDate,
+    birthTime: values.birthTime || "12:00",
+    timezone: geo.timezone,
+    displayLocation: geo.displayName,
+    lat: geo.lat,
+    lng: geo.lng,
+    daylightSaving: geo.daylightSaving,
+    houseSystem,
+  });
+}
+
+export async function calculateSolarReturnAction(input: {
+  natalChart: NatalChartData;
+  targetYear: number;
+  city?: string;
+  lat?: number;
+  lng?: number;
+}) {
+  const access = await getReadingAccess();
+
+  if (!access) {
+    return { ok: false as const, error: "not_authenticated" };
+  }
+
+  if (access.plan === "free") {
+    return { ok: false as const, error: "plan_required" };
+  }
+
+  if (access.count >= access.limit) {
+    return { ok: false as const, error: "limit_reached" };
+  }
+
+  const { calculateSolarReturn } = await import("./ephemeris.server");
+  const sun = input.natalChart.points.find((point) => point.id === "sun");
+
+  if (!sun) {
+    return { ok: false as const, error: "missing_sun" };
+  }
+
+  const year = Math.max(1901, Math.min(2100, input.targetYear));
+  const lat = input.lat ?? Number(input.natalChart.event.latitude.match(/[\d.]+/)?.[0] ?? 0);
+  const lng = input.lng ?? Number(input.natalChart.event.longitude.match(/[\d.]+/)?.[0] ?? 0);
+  const birthDate = input.natalChart.event.dateLabel.match(/(\d{4})/)?.[1];
+  const estimatedMonth = new Date().getUTCMonth() + 1;
+  const chart = await calculateSolarReturn(sun.longitude, year, lat, lng, estimatedMonth);
+
+  chart.event.name = input.natalChart.event.name;
+  chart.event.title = `Revolución Solar ${year}`;
+  chart.event.locationLabel = input.city ?? input.natalChart.event.locationLabel;
+  chart.meta.solarReturnYear = year;
+
+  const { data, error } = await access.supabase
+    .from("readings")
+    .insert({
+      user_id: access.user.id,
+      type: "solar_return",
+      chart_data: {
+        chart,
+        natalChartId: input.natalChart.event.julianDay,
+        targetYear: year,
+        birthYear: birthDate,
+      },
+    })
+    .select("id")
+    .single();
+
+  if (!error && data?.id) {
+    await access.supabase.from("reading_usage_events").insert({
+      user_id: access.user.id,
+      reading_id: data.id,
+      type: "solar_return",
+    });
+  }
+
+  return { ok: !error as boolean, chart, error: error?.message };
 }

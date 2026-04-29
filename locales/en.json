@@ -104,10 +104,45 @@
       "natal": "Your chart",
       "moon": "Moon of the month",
       "yoga": "Astral yoga",
+      "complete": "Full chart",
+      "solarReturn": "Solar Return",
+      "synastry": "Synastry",
       "transits": "Monthly transits",
       "premium": "Premium",
       "upcoming": "Coming soon",
       "upcomingMessage": "This view is already prepared inside the experience, but its content is not active yet."
+    },
+    "planGate": {
+      "eyebrow": "premium reading",
+      "title": "Unlock {featureName}",
+      "description": "This layer opens deeper readings of your chart and relationships. It is included in the paid plans.",
+      "cta": "See plans"
+    },
+    "completeChart": {
+      "eyebrow": "full chart",
+      "shape": "Chart shape",
+      "houseSystem": "House system",
+      "tableTitle": "Planet data",
+      "aspectTitle": "Aspect matrix",
+      "showAspects": "Show matrix",
+      "hideAspects": "Hide matrix",
+      "columns": ["", "Name", "Sign", "Degree", "House", "℞", "Dignity"],
+      "houseSystems": {
+        "P": "Placidus",
+        "W": "Whole Sign",
+        "K": "Koch",
+        "E": "Equal Houses"
+      }
+    },
+    "solarReturn": {
+      "title": "Solar Return",
+      "subtitle": "Coming soon",
+      "body": "The map of your year will open here: the Sun's return, the birthday city, and the themes asking for attention."
+    },
+    "synastry": {
+      "title": "Synastry",
+      "subtitle": "Coming soon",
+      "body": "Here you will compare two charts as mirrors of consciousness, without reducing the bond to a score."
     },
     "drawer": {
       "tabs": {
@@ -337,7 +372,8 @@
       "southNode": "South node",
       "chiron": "Chiron",
       "partOfFortune": "Part of Fortune",
-      "lilith": "Lilith"
+      "lilith": "Lilith",
+      "ceres": "Ceres"
     },
     "signs": {
       "aries": "Aries",
@@ -399,6 +435,9 @@
       "swissEphemeris": "Swiss Ephemeris",
       "tropical": "Tropical",
       "placidus": "Placidus",
+      "wholeSign": "Whole Sign",
+      "koch": "Koch",
+      "equal": "Equal Houses",
       "geocentric": "Geocentric"
     }
   }

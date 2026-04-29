@@ -62,6 +62,7 @@ const POINT_LABELS = {
   chiron: "Quirón",
   partOfFortune: "Parte de la Fortuna",
   lilith: "Lilith",
+  ceres: "Ceres",
 } as const;
 
 function monthLabel(year: number, month: number) {

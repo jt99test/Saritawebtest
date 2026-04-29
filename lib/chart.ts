@@ -34,7 +34,8 @@ export type ChartPointId =
   | "southNode"
   | "chiron"
   | "partOfFortune"
-  | "lilith";
+  | "lilith"
+  | "ceres";
 
 export type AspectId =
   | "conjunction"
@@ -46,7 +47,7 @@ export type AspectId =
 
 export type ChartSettings = {
   zodiac: "tropical";
-  houseSystem: "placidus";
+  houseSystem: "placidus" | "wholeSign" | "koch" | "equal";
   locus: "geocentric";
   chartMethod: ChartMethod;
   calculationMethod: CalculationMethod;
@@ -98,6 +99,7 @@ export type ChartMeta = {
   mc: number;
   descendant: number;
   ic: number;
+  solarReturnYear?: number;
 };
 
 export type NatalChartData = {
@@ -107,6 +109,7 @@ export type NatalChartData = {
   houses: HouseCusp[];
   aspects: Aspect[];
   meta: ChartMeta;
+  extendedPoints?: ChartPoint[];
 };
 
 export function normalizeLongitude(longitude: number): number {

@@ -104,10 +104,45 @@
       "natal": "La tua carta",
       "moon": "Luna del mese",
       "yoga": "Yoga astrale",
+      "complete": "Carta completa",
+      "solarReturn": "Rivoluzione Solare",
+      "synastry": "Sinastria",
       "transits": "Transiti del mese",
       "premium": "Premium",
       "upcoming": "Prossimamente",
       "upcomingMessage": "Questa vista è già pronta dentro l'esperienza, ma il suo contenuto non è ancora attivo."
+    },
+    "planGate": {
+      "eyebrow": "lettura premium",
+      "title": "Sblocca {featureName}",
+      "description": "Questo livello apre letture più profonde della tua carta e dei tuoi legami. È incluso nei piani a pagamento.",
+      "cta": "Vedi piani"
+    },
+    "completeChart": {
+      "eyebrow": "carta completa",
+      "shape": "Forma della carta",
+      "houseSystem": "Sistema di case",
+      "tableTitle": "Dati planetari",
+      "aspectTitle": "Matrice degli aspetti",
+      "showAspects": "Mostra matrice",
+      "hideAspects": "Nascondi matrice",
+      "columns": ["", "Nome", "Segno", "Grado", "Casa", "℞", "Dignità"],
+      "houseSystems": {
+        "P": "Placidus",
+        "W": "Segni Interi",
+        "K": "Koch",
+        "E": "Case Uguali"
+      }
+    },
+    "solarReturn": {
+      "title": "Rivoluzione Solare",
+      "subtitle": "Prossimamente",
+      "body": "Qui si aprirà la mappa dell'anno: il ritorno del Sole, la città del compleanno e i temi che chiedono attenzione."
+    },
+    "synastry": {
+      "title": "Sinastria",
+      "subtitle": "Prossimamente",
+      "body": "Qui potrai confrontare due carte come specchi di coscienza, senza ridurre il legame a un punteggio."
     },
     "drawer": {
       "tabs": {
@@ -337,7 +372,8 @@
       "southNode": "Nodo sud",
       "chiron": "Chirone",
       "partOfFortune": "Parte della fortuna",
-      "lilith": "Lilith"
+      "lilith": "Lilith",
+      "ceres": "Cerere"
     },
     "signs": {
       "aries": "Ariete",
@@ -399,6 +435,9 @@
       "swissEphemeris": "Swiss Ephemeris",
       "tropical": "Tropicale",
       "placidus": "Placidus",
+      "wholeSign": "Segni Interi",
+      "koch": "Koch",
+      "equal": "Case Uguali",
       "geocentric": "Geocentrico"
     }
   }

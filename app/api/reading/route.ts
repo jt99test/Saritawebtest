@@ -64,6 +64,7 @@ function buildPrompt(chart: NatalChartData, pointId: ChartPointId): string {
     chiron: "Quirón",
     partOfFortune: "Parte de la Fortuna",
     lilith: "Lilith",
+    ceres: "Ceres",
   };
 
   const houseNames: Record<number, string> = {
