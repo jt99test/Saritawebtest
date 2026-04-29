@@ -13,8 +13,9 @@ import { ChartGeneralReading } from "@/components/chart/chart-general-reading";
 import { useChartStore } from "@/components/chart/chart-store";
 import { ChartLayerRail, NatalChartWheel } from "@/components/chart/natal-chart-wheel";
 import { PlanetDetailPanel } from "@/components/chart/planet-detail-panel";
+import { SolarReturnPage } from "@/components/chart/solar-return-page";
+import { SynastryPage } from "@/components/chart/synastry-page";
 import { LunaDelMesPage } from "@/components/lunar/luna-del-mes-page";
-import { PlanGate } from "@/components/ui/plan-gate";
 import { YogaAstralPage } from "@/components/yoga/yoga-astral-page";
 
 type NatalChartExperienceProps = {
@@ -50,7 +51,6 @@ export function NatalChartExperience({
   chart,
   dictionary,
   isMock = false,
-  plan = "free",
   request = null,
 }: NatalChartExperienceProps) {
   const { panelOpen, selectedPointId } = useChartStore();
@@ -164,44 +164,16 @@ export function NatalChartExperience({
       {pageTab === "moon" ? <LunaDelMesPage chart={chart} dictionary={dictionary} /> : null}
 
       {pageTab === "complete" ? (
-        <PlanGate plan={plan} featureName={dictionary.result.primaryTabs.complete} dictionary={dictionary}>
-          <ChartCompletePage chart={chart} request={request} dictionary={dictionary} />
-        </PlanGate>
+        <ChartCompletePage chart={chart} request={request} dictionary={dictionary} />
       ) : null}
 
       {pageTab === "solarReturn" ? (
-        <PlanGate plan={plan} featureName={dictionary.result.primaryTabs.solarReturn} dictionary={dictionary}>
-          <ComingSoonPanel
-            title={dictionary.result.solarReturn.title}
-            subtitle={dictionary.result.solarReturn.subtitle}
-            body={dictionary.result.solarReturn.body}
-          />
-        </PlanGate>
+        <SolarReturnPage natalChart={chart} request={request} dictionary={dictionary} />
       ) : null}
 
       {pageTab === "synastry" ? (
-        <PlanGate plan={plan} featureName={dictionary.result.primaryTabs.synastry} dictionary={dictionary}>
-          <ComingSoonPanel
-            title={dictionary.result.synastry.title}
-            subtitle={dictionary.result.synastry.subtitle}
-            body={dictionary.result.synastry.body}
-          />
-        </PlanGate>
+        <SynastryPage natalChart={chart} dictionary={dictionary} />
       ) : null}
     </div>
-  );
-}
-
-function ComingSoonPanel({ title, subtitle, body }: { title: string; subtitle: string; body: string }) {
-  return (
-    <section className="mx-auto max-w-2xl py-24 text-center">
-      <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">
-        {subtitle}
-      </p>
-      <h2 className="mt-3 font-serif text-[48px] leading-tight text-ivory lg:text-[64px]">
-        {title}
-      </h2>
-      <p className="mx-auto mt-5 max-w-lg text-sm leading-7 text-ivory/58">{body}</p>
-    </section>
   );
 }
