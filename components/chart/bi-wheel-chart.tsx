@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 
 import type { ChartPoint, ChartPointId, NatalChartData } from "@/lib/chart";
-import { normalizeLongitude, zodiacSigns } from "@/lib/chart";
+import { formatSignPosition, normalizeLongitude, zodiacSigns } from "@/lib/chart";
 
 export type BiWheelVariant = "solar-return" | "synastry";
 
@@ -81,6 +81,10 @@ function describeRingSegment(startLongitude: number, endLongitude: number, inner
   ].join(" ");
 }
 
+function midpointLongitude(start: number, end: number) {
+  return normalizeLongitude(start + normalizeLongitude(end - start) / 2);
+}
+
 function visiblePoints(chart: NatalChartData) {
   return chart.points.filter((point) => DRAWABLE_IDS.has(point.id));
 }
@@ -136,7 +140,35 @@ export function BiWheelChart({
           ))}
           {innerChart.houses.map((house) => {
             const line = pointAtRadius(324, house.longitude, ascendant);
-            return <line key={house.house} x1={CENTER} y1={CENTER} x2={line.x} y2={line.y} stroke="rgba(255,255,255,0.13)" />;
+            const cuspTick = pointAtRadius(360, house.longitude, ascendant);
+            const cuspLabel = pointAtRadius(398, house.longitude, ascendant);
+            const position = formatSignPosition(house.longitude);
+            return (
+              <g key={house.house}>
+                <line x1={CENTER} y1={CENTER} x2={line.x} y2={line.y} stroke="rgba(255,255,255,0.16)" />
+                <line x1={cuspTick.x} y1={cuspTick.y} x2={cuspLabel.x} y2={cuspLabel.y} stroke="rgba(181,163,110,0.25)" />
+                <text x={cuspLabel.x} y={cuspLabel.y} textAnchor="middle" dominantBaseline="central" className="text-[8px] font-semibold" fill="rgba(181,163,110,0.52)">
+                  {position.degreeInSign}Â°
+                </text>
+              </g>
+            );
+          })}
+          {innerChart.houses.map((house, index) => {
+            const nextHouse = innerChart.houses[(index + 1) % innerChart.houses.length] ?? innerChart.houses[0]!;
+            const label = pointAtRadius(215, midpointLongitude(house.longitude, nextHouse.longitude), ascendant);
+            return (
+              <text
+                key={`house-label-${house.house}`}
+                x={label.x}
+                y={label.y}
+                textAnchor="middle"
+                dominantBaseline="central"
+                className="text-[15px] font-semibold"
+                fill="rgba(255,255,255,0.38)"
+              >
+                {house.house}
+              </text>
+            );
           })}
           {innerChart.aspects.slice(0, 32).map((aspect) => {
             const from = innerPoints.find((point) => point.id === aspect.from);
