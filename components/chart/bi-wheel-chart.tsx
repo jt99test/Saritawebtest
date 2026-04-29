@@ -9,7 +9,7 @@ export type BiWheelVariant = "solar-return" | "synastry";
 
 type BiWheelChartProps = {
   innerChart: NatalChartData;
-  outerChart: NatalChartData;
+  outerChart?: NatalChartData;
   innerLabel?: string;
   outerLabel?: string;
   variant?: BiWheelVariant;
@@ -93,7 +93,7 @@ export function BiWheelChart({
   innerChart,
   outerChart,
   innerLabel = innerChart.event.name,
-  outerLabel = outerChart.event.name,
+  outerLabel = outerChart?.event.name,
   variant = "solar-return",
   onInnerPlanetSelect,
   onOuterPlanetSelect,
@@ -104,7 +104,7 @@ export function BiWheelChart({
   const [hoveredOuter, setHoveredOuter] = useState<ChartPointId | null>(null);
   const [selectedOuter, setSelectedOuter] = useState<ChartPointId | null>(null);
   const innerPoints = useMemo(() => visiblePoints(innerChart), [innerChart]);
-  const outerPoints = useMemo(() => visiblePoints(outerChart), [outerChart]);
+  const outerPoints = useMemo(() => outerChart ? visiblePoints(outerChart) : [], [outerChart]);
   const ascendant = innerChart.meta.ascendant;
   const outerActive = hoveredOuter || selectedOuter;
   const activePoint = [...innerPoints, ...outerPoints].find(
@@ -113,7 +113,7 @@ export function BiWheelChart({
 
   return (
     <div className="relative mx-auto max-w-[860px]">
-      <svg viewBox="0 0 860 860" className="h-auto w-full" role="img" aria-label={`${innerLabel} / ${outerLabel}`}>
+      <svg viewBox="0 0 860 860" className="h-auto w-full" role="img" aria-label={outerChart ? `${innerLabel} / ${outerLabel}` : innerLabel}>
         <defs>
           <filter id="bw-glow"><feGaussianBlur stdDeviation="1.6" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
           <filter id="bw-hover-glow"><feGaussianBlur stdDeviation="3.2" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
@@ -121,7 +121,7 @@ export function BiWheelChart({
         </defs>
 
         <circle cx={CENTER} cy={CENTER} r="420" fill="rgba(255,255,255,0.018)" />
-        <circle cx={CENTER} cy={CENTER} r={OUTER_SEP_R} fill="none" stroke={colors.ring} strokeDasharray="4 8" />
+        {outerChart ? <circle cx={CENTER} cy={CENTER} r={OUTER_SEP_R} fill="none" stroke={colors.ring} strokeDasharray="4 8" /> : null}
 
         <g transform="translate(430 430) scale(0.78) translate(-430 -430)">
           <circle cx={CENTER} cy={CENTER} r="386" fill="rgba(6,8,14,0.72)" stroke="rgba(255,255,255,0.08)" />
@@ -203,14 +203,16 @@ export function BiWheelChart({
           );
         })}
 
-        <g transform="translate(300 835)">
+        <g transform={outerChart ? "translate(292 848)" : "translate(392 848)"}>
           <circle r="4" fill="rgba(255,255,255,0.5)" />
           <text x="14" y="4" className="text-[10px] font-semibold uppercase tracking-[0.2em]" fill="rgba(255,255,255,0.5)">{innerLabel}</text>
         </g>
-        <g transform="translate(500 835)">
-          <circle r="4" fill={colors.primary} />
-          <text x="14" y="4" className="text-[10px] font-semibold uppercase tracking-[0.2em]" fill={colors.primary}>{outerLabel}</text>
-        </g>
+        {outerChart ? (
+          <g transform="translate(510 848)">
+            <circle r="4" fill={colors.primary} />
+            <text x="14" y="4" className="text-[10px] font-semibold uppercase tracking-[0.2em]" fill={colors.primary}>{outerLabel}</text>
+          </g>
+        ) : null}
       </svg>
 
       {activePoint ? (

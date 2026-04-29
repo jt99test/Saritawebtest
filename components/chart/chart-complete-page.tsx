@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 
+import { BiWheelChart } from "@/components/chart/bi-wheel-chart";
 import { recalculateHouseSystemAction, type HouseSystemCode } from "@/lib/actions";
 import type { AspectId, ChartPoint, NatalChartData } from "@/lib/chart";
 import { formatSignPosition } from "@/lib/chart";
@@ -113,11 +114,13 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
   const [houseSystem, setHouseSystem] = useState<HouseSystemCode>("P");
   const [showMatrix, setShowMatrix] = useState(false);
   const [cache, setCache] = useState<Record<string, NatalChartData>>({ P: chart });
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const points = useMemo(() => uniquePoints(currentChart), [currentChart]);
   const shape = chartShape(currentChart);
 
   function switchHouseSystem(next: HouseSystemCode) {
+    setError(null);
     setHouseSystem(next);
     const cached = cache[next];
     if (cached) {
@@ -126,13 +129,18 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
     }
 
     if (!request) {
+      setError("No tengo los datos originales para recalcular este sistema en esta sesion.");
       return;
     }
 
     startTransition(async () => {
-      const recalculated = await recalculateHouseSystemAction(request, next);
-      setCache((current) => ({ ...current, [next]: recalculated }));
-      setCurrentChart(recalculated);
+      try {
+        const recalculated = await recalculateHouseSystemAction(request, next);
+        setCache((current) => ({ ...current, [next]: recalculated }));
+        setCurrentChart(recalculated);
+      } catch {
+        setError("No se pudo recalcular el sistema de casas. Intentalo otra vez.");
+      }
     });
   }
 
@@ -168,8 +176,24 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
         ))}
         {isPending ? <span className="ml-2 text-xs uppercase tracking-[0.18em] text-dusty-gold/70">...</span> : null}
       </div>
+      <p className="mt-3 text-center text-xs uppercase tracking-[0.18em] text-ivory/38">
+        Sistema activo: {dictionary.result.completeChart.houseSystems[houseSystem]}
+      </p>
+      {error ? <p className="mt-3 text-center text-sm text-amber-100/80">{error}</p> : null}
 
-      <div className="mt-10 overflow-x-auto border-y border-white/10">
+      <div className="mt-8">
+        <BiWheelChart
+          innerChart={currentChart}
+          innerLabel={currentChart.event.name}
+          variant="solar-return"
+        />
+      </div>
+
+      <details className="mt-8 border-y border-white/10">
+        <summary className="cursor-pointer list-none py-4 text-center text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-dusty-gold/82">
+          {dictionary.result.completeChart.tableTitle}
+        </summary>
+      <div className="overflow-x-auto">
         <table className="w-full min-w-[720px] border-collapse text-sm">
           <caption className="sr-only">{dictionary.result.completeChart.tableTitle}</caption>
           <thead>
@@ -200,6 +224,7 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
           </tbody>
         </table>
       </div>
+      </details>
 
       <div className="mt-8 text-center">
         <button

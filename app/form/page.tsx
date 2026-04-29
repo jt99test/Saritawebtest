@@ -11,6 +11,7 @@ import { PrimaryButton } from "@/components/ui/primary-button";
 import { Reveal } from "@/components/ui/reveal";
 import { SectionTitle } from "@/components/ui/section-title";
 import { CHART_DRAFT_KEY, CHART_RESULT_KEY, type FormValues } from "@/lib/chart-session";
+import { clampIsoDateYear } from "@/lib/date-input";
 import { getDictionary } from "@/lib/i18n";
 
 const dictionary = getDictionary("es");
@@ -86,7 +87,7 @@ export default function FormPage() {
                     type="date"
                     required
                     value={values.birthDate}
-                    onChange={(event) => setValue("birthDate", event.target.value)}
+                    onChange={(event) => setValue("birthDate", clampIsoDateYear(event.target.value))}
                     disabled={submitting}
                     className={inputClass}
                   />

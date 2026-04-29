@@ -83,6 +83,11 @@ export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturn
   const rsAscendantSign = solarChart ? dictionary.result.signs[formatSignPosition(solarChart.meta.ascendant).sign] : "";
   const rsMoon = solarChart?.points.find((point) => point.id === "moon");
   const rsSun = solarChart?.points.find((point) => point.id === "sun");
+  const solarNarrative = solarChart ? [
+    `La Revolucion Solar no habla de un destino cerrado: muestra el clima por el que tu conciencia va a moverse en este ciclo. Con Ascendente ${rsAscendantSign}, la entrada al ano pide una forma nueva de estar presente, tomar decisiones y ocupar tu energia sin esperar permiso de afuera.`,
+    `El Sol cae en casa ${rsSun?.house ?? "-"}, el territorio de ${HOUSE_AREAS[rsSun?.house ?? 1]}. Ahi se enciende la lampara principal: lo que antes era secundario puede pedir centro, cuerpo y atencion sostenida.`,
+    `La Luna en ${rsMoon ? dictionary.result.signs[rsMoon.sign] : "-"} marca el pulso intimo del ciclo. Si la mente quiere resolverlo todo rapido, el cuerpo emocional va a recordarte que este mapa tambien se escucha por dentro.`,
+  ] : [];
 
   function calculate() {
     setError(null);
@@ -128,6 +133,16 @@ export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturn
           ))}
         </div>
 
+        <div className="mx-auto mt-8 max-w-3xl border-y border-dusty-gold/14 py-7">
+          <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">lectura del ciclo</p>
+          <h3 className="mt-2 font-serif text-3xl text-ivory">Lo que este ciclo viene a abrir.</h3>
+          <div className="mt-5 space-y-4">
+            {solarNarrative.map((paragraph) => (
+              <p key={paragraph} className="text-base leading-8 text-ivory/70">{paragraph}</p>
+            ))}
+          </div>
+        </div>
+
         <div className="mx-auto mt-8 max-w-3xl border-y border-white/10 py-6">
           <p className="font-serif text-2xl text-ivory">Aspectos clave del año</p>
           <div className="mt-4 space-y-3">
@@ -159,13 +174,24 @@ export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturn
       <div className="mt-8 grid gap-5">
         <label className="block">
           <span className="text-[0.66rem] font-semibold uppercase tracking-[0.22em] text-ivory/44">Año</span>
-          <select
-            value={targetYear}
-            onChange={(event) => setTargetYear(Number(event.target.value))}
-            className="mt-2 w-full rounded-2xl border border-white/12 bg-black/25 px-4 py-3.5 text-sm text-ivory outline-none focus:border-dusty-gold/55"
-          >
-            {yearOptions.map((year) => <option key={year} value={year}>{year}</option>)}
-          </select>
+          <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-6">
+            {yearOptions.map((year) => (
+              <button
+                key={year}
+                type="button"
+                aria-pressed={targetYear === year}
+                onClick={() => setTargetYear(year)}
+                className={[
+                  "rounded-full border px-3 py-2.5 text-sm font-semibold transition",
+                  targetYear === year
+                    ? "border-dusty-gold/70 bg-dusty-gold/18 text-dusty-gold"
+                    : "border-white/12 bg-black/25 text-ivory/72 hover:border-white/24 hover:text-ivory",
+                ].join(" ")}
+              >
+                {year}
+              </button>
+            ))}
+          </div>
         </label>
         <div>
           <span className="text-[0.66rem] font-semibold uppercase tracking-[0.22em] text-ivory/44">

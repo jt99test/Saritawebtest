@@ -12,6 +12,7 @@ import {
   type SynastryPartnerInput,
 } from "@/lib/actions";
 import type { NatalChartData } from "@/lib/chart";
+import { clampIsoDateYear } from "@/lib/date-input";
 import type { PlaceSuggestion } from "@/lib/geocoding";
 import type { Dictionary } from "@/lib/i18n";
 import { calculateSynastryAspects, compatibilityLabel, type SynastryAspect } from "@/lib/synastry";
@@ -71,6 +72,17 @@ function CompatibilityRing({ aspects }: { aspects: SynastryAspect[] }) {
   );
 }
 
+function localPartnerFromForm(form: SynastryPartnerInput, chart: NatalChartData): PartnerRow {
+  return {
+    id: `local-${Date.now()}`,
+    name: form.name,
+    birth_date: form.birthDate,
+    birth_time: form.birthTime || "12:00",
+    birth_city: form.birthCity,
+    chart_data: chart,
+  };
+}
+
 export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
   const [partners, setPartners] = useState<PartnerRow[]>([]);
   const [selectedPartner, setSelectedPartner] = useState<PartnerRow | null>(null);
@@ -101,6 +113,13 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
     startTransition(async () => {
       const result = await saveAndCalculateSynastryPartnerAction(form);
       if (!result.ok) {
+        if (result.chart) {
+          const localPartner = localPartnerFromForm(form, result.chart);
+          setPartners((current) => [localPartner, ...current]);
+          setSelectedPartner(localPartner);
+          setForm({ name: "", birthDate: "", birthTime: "12:00", birthCity: "", selectedLocation: null });
+          return;
+        }
         setError(result.error ?? "No se pudo guardar la persona.");
         return;
       }
@@ -182,7 +201,9 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
                   className="border border-white/10 px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory/42"
                   onClick={() => {
                     startTransition(async () => {
-                      await deleteSynastryPartnerAction(partner.id);
+                      if (!partner.id.startsWith("local-")) {
+                        await deleteSynastryPartnerAction(partner.id);
+                      }
                       setPartners((current) => current.filter((entry) => entry.id !== partner.id));
                     });
                   }}
@@ -198,7 +219,7 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
       <div className="mt-10 grid gap-5 border-t border-dusty-gold/14 pt-8">
         <p className="font-serif text-2xl text-ivory">Añadir persona nueva</p>
         <input className="rounded-2xl border border-white/12 bg-black/25 px-4 py-3.5 text-sm text-ivory outline-none" placeholder="Nombre" value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
-        <input className="rounded-2xl border border-white/12 bg-black/25 px-4 py-3.5 text-sm text-ivory outline-none" type="date" value={form.birthDate} onChange={(event) => setForm((current) => ({ ...current, birthDate: event.target.value }))} />
+        <input className="rounded-2xl border border-white/12 bg-black/25 px-4 py-3.5 text-sm text-ivory outline-none" type="date" value={form.birthDate} onChange={(event) => setForm((current) => ({ ...current, birthDate: clampIsoDateYear(event.target.value) }))} />
         <input className="rounded-2xl border border-white/12 bg-black/25 px-4 py-3.5 text-sm text-ivory outline-none" type="time" value={form.birthTime} onChange={(event) => setForm((current) => ({ ...current, birthTime: event.target.value }))} />
         <LocationAutocomplete
           value={form.birthCity}
