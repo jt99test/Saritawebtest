@@ -38,6 +38,12 @@ function getCity(locationLabel: string) {
   return locationLabel.split(",")[0]?.trim() || locationLabel;
 }
 
+function nameSizeClass(name: string) {
+  if (name.length >= 12) return "text-[40px] sm:text-[46px] lg:text-[50px]";
+  if (name.length >= 9) return "text-[44px] sm:text-[52px] lg:text-[58px]";
+  return "text-[52px] lg:text-[72px]";
+}
+
 function formatHeaderDate(dateLabel: string) {
   const normalized = dateLabel.replace(/\s+/g, " ").trim();
   const match = normalized.match(/^(.+?)(?:,|\s+·)?\s+(\d{1,2}:\d{2})\b/);
@@ -61,6 +67,8 @@ export function NatalChartExperience({
     headerDate.time,
     getCity(chart.event.locationLabel),
   ].filter(Boolean).join(" · ");
+  const firstName = getFirstName(chart.event.name);
+  const titleNameClass = nameSizeClass(firstName);
 
   return (
     <div className="relative mx-auto max-w-[880px] pb-20 lg:max-w-[1180px]">
@@ -111,8 +119,8 @@ export function NatalChartExperience({
               <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.35)]">
                 la carta de
               </p>
-              <h1 className="-mt-1 font-serif text-[52px] font-normal leading-none text-ivory">
-                {getFirstName(chart.event.name)}
+              <h1 className={`mx-auto -mt-1 max-w-full break-words font-serif font-normal leading-none text-ivory [overflow-wrap:anywhere] ${titleNameClass}`}>
+                {firstName}
               </h1>
               <p className="mt-4 font-serif text-[14px] italic text-[rgba(255,255,255,0.5)]">
                 {headerSubtitle}
@@ -125,8 +133,8 @@ export function NatalChartExperience({
                   <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.35)]">
                     la carta de
                   </p>
-                  <h1 className="-mt-1 font-serif text-[72px] font-normal leading-none text-ivory">
-                    {getFirstName(chart.event.name)}
+                  <h1 className={`-mt-1 ml-auto max-w-[300px] break-words font-serif font-normal leading-none text-ivory [overflow-wrap:anywhere] ${titleNameClass}`}>
+                    {firstName}
                   </h1>
                   <p className="ml-auto mt-4 max-w-[260px] font-serif text-[15px] italic leading-6 text-[rgba(255,255,255,0.5)]">
                     {headerSubtitle}
