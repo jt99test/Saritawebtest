@@ -3,10 +3,12 @@
 import { useSyncExternalStore } from "react";
 import Link from "next/link";
 
+import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { YogaAstralPage } from "@/components/yoga/yoga-astral-page";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { CHART_RESULT_KEY, type ChartCalculationResult } from "@/lib/chart-session";
+import { dictionaries } from "@/lib/i18n";
 
 let cachedRawResult: string | null = null;
 let cachedParsedResult: ChartCalculationResult | null = null;
@@ -54,6 +56,8 @@ function subscribeToChartResult(onStoreChange: () => void) {
 }
 
 export default function YogaAstralRoutePage() {
+  const locale = useStoredLocale();
+  const dictionary = dictionaries[locale];
   const result = useSyncExternalStore(
     subscribeToChartResult,
     readStoredChartResult,
@@ -71,7 +75,7 @@ export default function YogaAstralRoutePage() {
               href="/resultado"
               className="text-xs font-medium uppercase tracking-[0.28em] text-ivory/54 transition hover:text-ivory"
             >
-              Volver
+              {dictionary.form.back}
             </Link>
           </div>
 
@@ -84,23 +88,23 @@ export default function YogaAstralRoutePage() {
                   yoga astral
                 </p>
                 <h1 className="mt-2 font-serif text-[48px] font-normal leading-tight text-white">
-                  Necesitamos tu carta
+                  {dictionary.standalonePages.needChartTitle}
                 </h1>
                 <p className="mx-auto mt-4 max-w-2xl font-serif text-[17px] italic leading-8 text-white/55">
-                  Genera primero tu carta o vuelve a resultado para abrir esta sección con tu contexto astrológico cargado.
+                  {dictionary.standalonePages.needChartBody}
                 </p>
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
                   <Link
                     href="/form"
                     className="font-serif text-[15px] text-dusty-gold/90 transition hover:text-dusty-gold"
                   >
-                    Ir al formulario
+                    {dictionary.standalonePages.goToForm}
                   </Link>
                   <Link
                     href="/resultado"
                     className="font-serif text-[15px] text-white/62 transition hover:text-white"
                   >
-                    Volver a resultado
+                    {dictionary.standalonePages.backToResult}
                   </Link>
                 </div>
               </div>

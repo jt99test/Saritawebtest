@@ -3,13 +3,12 @@
 import { useSyncExternalStore } from "react";
 import Link from "next/link";
 
+import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { LunaDelMesPage } from "@/components/lunar/luna-del-mes-page";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { CHART_RESULT_KEY, type ChartCalculationResult } from "@/lib/chart-session";
-import { getDictionary } from "@/lib/i18n";
-
-const dictionary = getDictionary("es");
+import { dictionaries } from "@/lib/i18n";
 
 let cachedRawResult: string | null = null;
 let cachedParsedResult: ChartCalculationResult | null = null;
@@ -57,6 +56,8 @@ function subscribeToChartResult(onStoreChange: () => void) {
 }
 
 export default function LunaDelMesRoutePage() {
+  const locale = useStoredLocale();
+  const dictionary = dictionaries[locale];
   const result = useSyncExternalStore(
     subscribeToChartResult,
     readStoredChartResult,
@@ -81,7 +82,7 @@ export default function LunaDelMesRoutePage() {
               href="/resultado"
               className="text-xs font-medium uppercase tracking-[0.28em] text-ivory/42 transition hover:text-ivory/72"
             >
-              Tu carta
+              {dictionary.standalonePages.yourChart}
             </Link>
           </div>
 
@@ -91,7 +92,7 @@ export default function LunaDelMesRoutePage() {
             <div className="flex flex-1 items-center justify-center">
               <div className="rounded-4xl border border-white/10 bg-white/[0.03] px-8 py-10 text-center shadow-[0_24px_80px_rgba(0,0,0,0.32)] backdrop-blur-xl">
                 <p className="text-sm leading-7 text-ivory/62">
-                  Vuelve al formulario para generar tu carta antes de ver la luna del mes.
+                  {dictionary.standalonePages.moonMissingChart}
                 </p>
                 <Link
                   href="/form"

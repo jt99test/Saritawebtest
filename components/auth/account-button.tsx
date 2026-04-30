@@ -1,15 +1,19 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 
+import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { clearChartSession } from "@/lib/chart-session";
+import { dictionaries } from "@/lib/i18n";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
 export function AccountButton() {
   const router = useRouter();
+  const locale = useStoredLocale();
+  const dictionary = dictionaries[locale];
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const [user, setUser] = useState<User | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -55,7 +59,7 @@ export function AccountButton() {
         onClick={openAuthModal}
         className="text-xs font-medium uppercase tracking-[0.22em] text-ivory/58 transition hover:text-ivory"
       >
-        Mi cuenta
+        {dictionary.common.account}
       </button>
     );
   }
@@ -65,36 +69,39 @@ export function AccountButton() {
       <button
         type="button"
         onClick={() => setMenuOpen((current) => !current)}
+        aria-haspopup="menu"
+        aria-expanded={menuOpen}
         className="text-xs font-medium uppercase tracking-[0.22em] text-ivory/68 transition hover:text-ivory"
       >
-        Mi cuenta
+        {dictionary.common.account}
       </button>
 
       {menuOpen ? (
-        <div className="absolute right-0 top-[calc(100%+0.75rem)] z-40 min-w-44 border border-[rgba(236,232,223,0.1)] bg-[rgba(8,11,18,0.98)] px-4 py-3 text-right shadow-[0_18px_48px_rgba(0,0,0,0.42)]">
+        <div role="menu" className="absolute right-0 top-[calc(100%+0.75rem)] z-40 min-w-44 border border-[rgba(236,232,223,0.1)] bg-[rgba(8,11,18,0.98)] px-4 py-3 text-right shadow-[0_18px_48px_rgba(0,0,0,0.42)]">
           <Link
             href="/form"
             onClick={() => setMenuOpen(false)}
             className="block border-b border-white/8 py-2 pb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-dusty-gold/88 transition hover:text-dusty-gold"
           >
-            Generar nueva lectura
+            {dictionary.common.newReading}
           </Link>
           <Link
             href="/lecturas"
             onClick={() => setMenuOpen(false)}
             className="block py-2 pt-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-ivory/62 transition hover:text-dusty-gold"
           >
-            Ver lecturas
+            {dictionary.common.viewReadings}
           </Link>
           <button
             type="button"
             onClick={signOut}
             className="block w-full py-2 text-right text-[11px] font-semibold uppercase tracking-[0.2em] text-ivory/42 transition hover:text-ivory"
           >
-            Cerrar sesión
+            {dictionary.common.signOut}
           </button>
         </div>
       ) : null}
     </div>
   );
 }
+

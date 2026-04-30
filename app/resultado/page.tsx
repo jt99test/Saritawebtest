@@ -6,13 +6,12 @@ import { useSearchParams } from "next/navigation";
 
 import { AccountButton } from "@/components/auth/account-button";
 import { NatalChartExperience } from "@/components/chart/natal-chart-experience";
+import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { mockNatalChart } from "@/lib/chart";
 import { CHART_RESULT_KEY, type ChartCalculationResult } from "@/lib/chart-session";
-import { getDictionary } from "@/lib/i18n";
-
-const dictionary = getDictionary("es");
+import { dictionaries } from "@/lib/i18n";
 
 let cachedRawResult: string | null = null;
 let cachedParsedResult: ChartCalculationResult | null = null;
@@ -61,6 +60,8 @@ function subscribeToChartResult(onStoreChange: () => void) {
 
 function ResultPageContent() {
   const searchParams = useSearchParams();
+  const locale = useStoredLocale();
+  const dictionary = dictionaries[locale];
   const checkoutStatus = searchParams.get("checkout");
   const [banner, setBanner] = useState<"success" | "cancelled" | null>(
     checkoutStatus === "success" || checkoutStatus === "cancelled" ? checkoutStatus : null,
@@ -112,7 +113,7 @@ function ResultPageContent() {
             </Link>
 
             <p className="justify-self-center text-[10px] font-semibold uppercase tracking-[0.22em] text-dusty-gold/58">
-              {result?.saved ? "Lectura guardada" : ""}
+              {result?.saved ? dictionary.standalonePages.savedReading : ""}
             </p>
 
             <div className="flex items-center gap-4 justify-self-end border-l border-white/12 pl-4">

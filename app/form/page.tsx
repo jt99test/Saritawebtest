@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
+import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { LocationAutocomplete } from "@/components/form/location-autocomplete";
 import { Container } from "@/components/ui/container";
 import { PrimaryButton } from "@/components/ui/primary-button";
@@ -12,12 +13,12 @@ import { Reveal } from "@/components/ui/reveal";
 import { SectionTitle } from "@/components/ui/section-title";
 import { CHART_DRAFT_KEY, CHART_RESULT_KEY, type FormValues } from "@/lib/chart-session";
 import { clampIsoDateYear } from "@/lib/date-input";
-import { getDictionary } from "@/lib/i18n";
-
-const dictionary = getDictionary("es");
+import { dictionaries } from "@/lib/i18n";
 
 export default function FormPage() {
   const router = useRouter();
+  const locale = useStoredLocale();
+  const dictionary = dictionaries[locale];
   const [submitting, setSubmitting] = useState(false);
   const [values, setValues] = useState<FormValues>({
     name: "",

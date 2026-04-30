@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 import { illustrations } from "@/data/illustrations";
+import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
@@ -18,9 +19,8 @@ import {
   type ChartLimitReachedResult,
   type FormValues,
 } from "@/lib/chart-session";
-import { getDictionary } from "@/lib/i18n";
+import { dictionaries } from "@/lib/i18n";
 
-const dictionary = getDictionary("es");
 const chartGenerationPromises = new Map<string, Promise<ChartActionResult>>();
 
 function getChartGenerationPromise(rawDraft: string, draft: FormValues) {
@@ -40,6 +40,8 @@ function getChartGenerationPromise(rawDraft: string, draft: FormValues) {
 
 export default function LoadingPage() {
   const router = useRouter();
+  const locale = useStoredLocale();
+  const dictionary = dictionaries[locale];
   const [stepIndex, setStepIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [limitReached, setLimitReached] = useState<ChartLimitReachedResult | null>(null);
@@ -64,6 +66,11 @@ export default function LoadingPage() {
     const timer = window.setInterval(() => {
       setStepIndex((current) => Math.min(current + 1, dictionary.loading.steps.length - 1));
     }, 1800);
+    const timeout = window.setTimeout(() => {
+      if (!cancelled) {
+        setError(dictionary.standalonePages.loadingTimeout);
+      }
+    }, 45000);
 
     (async () => {
       try {
@@ -71,6 +78,7 @@ export default function LoadingPage() {
         if (cancelled) {
           return;
         }
+        window.clearTimeout(timeout);
 
         if ("limitReached" in result) {
           setLimitReached(result);
@@ -89,14 +97,16 @@ export default function LoadingPage() {
         setError(message);
       } finally {
         window.clearInterval(timer);
+        window.clearTimeout(timeout);
       }
     })();
 
     return () => {
       cancelled = true;
       window.clearInterval(timer);
+      window.clearTimeout(timeout);
     };
-  }, [router]);
+  }, [dictionary.loading.steps.length, dictionary.standalonePages.loadingTimeout, router]);
 
   return (
     <main className="relative isolate min-h-screen overflow-hidden bg-cosmic-950">
@@ -119,9 +129,9 @@ export default function LoadingPage() {
                 {dictionary.brand.name}
               </p>
 
-              <div className="space-y-4">
+              <div className="space-y-4" aria-live="polite">
                 <p className="font-serif text-3xl leading-tight text-ivory sm:text-4xl">
-                  {dictionary.loading.steps[stepIndex] ?? "Calculando tu carta..."}
+                  {dictionary.loading.steps[stepIndex] ?? dictionary.standalonePages.loadingFallback}
                 </p>
                 <div className="flex items-center justify-center gap-2" aria-hidden="true">
                   {[0, 1, 2].map((dot) => (
@@ -137,17 +147,18 @@ export default function LoadingPage() {
               {limitReached ? (
                 <div className="mt-8 max-w-md border border-dusty-gold/18 bg-white/[0.025] px-5 py-5 text-sm text-ivory/68">
                   <p className="font-serif text-[21px] leading-tight text-ivory">
-                    Has llegado al límite de tu plan.
+                    {dictionary.standalonePages.limitTitle}
                   </p>
                   <p className="mt-3 leading-7">
-                    Has usado {limitReached.count} de {limitReached.limit} lecturas este mes.
-                    Puedes mejorar tu plan para seguir generando lecturas.
+                    {dictionary.standalonePages.limitBody
+                      .replace("{count}", String(limitReached.count))
+                      .replace("{limit}", String(limitReached.limit))}
                   </p>
                   <Link
                     href="/"
                     className="mt-5 inline-block text-xs font-medium uppercase tracking-[0.24em] text-dusty-gold/80 transition hover:text-dusty-gold"
                   >
-                    Ver opciones
+                    {dictionary.standalonePages.viewOptions}
                   </Link>
                 </div>
               ) : null}
@@ -170,3 +181,4 @@ export default function LoadingPage() {
     </main>
   );
 }
+

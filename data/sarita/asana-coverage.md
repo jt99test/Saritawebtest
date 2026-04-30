@@ -4,7 +4,7 @@ Stage 1 inventory for `Yoga astral`.
 
 Important:
 - I found **25** PNGs in `Downloads\POSES`, not 24.
-- I copied **33 usable/identifiable images** into `public/yoga/` with clean slugs.
+- I copied **38 usable/identifiable images** into `public/yoga/` with clean slugs.
 - I left **1 original file out** because it does not cleanly match a listed routine asana and is too ambiguous to name confidently without your confirmation.
 - I left **1 newly provided file out** because it is a duplicate/alternate of an already covered pose.
 - I am flagging every uncertainty explicitly instead of pretending a wrong identification is certain.
@@ -60,7 +60,15 @@ Important:
 - [x] `Camatkarasana` -> `camatkarasana.png`
 - [x] `Matsyasana` -> `matsyasana.png`
 - [x] `Setu Bandhasana con Respiracion Expansiva` -> reuse `setu-bandhasana.png`
-- [ ] `Balasana con Brazos Abiertos` - needs text-only fallback or a future photo
+- [x] `Balasana con Brazos Abiertos` -> `balasana-con-brazos-abiertos.png`
+
+### Lavado Intestinal
+
+- [x] `Tadasana` -> `tadasana.png`
+- [x] `Tiryaka Tadasana` -> `tiryaka-tadasana.png`
+- [x] `Kati Chakrasana` -> `kati-chakrasana.png`
+- [x] `Tiryaka Bhujangasana` -> `tiryaka-bhujangasana.png`
+- [x] `Udarakarshanasana` -> `udarakarshanasana.png`
 
 ## Extra / Not Used In Sarita's 4 Elemental Routines
 
@@ -97,11 +105,13 @@ Important:
 - `ardha-navasana.png`
 - `baddha-konasana.png`
 - `balasana.png`
+- `balasana-con-brazos-abiertos.png`
 - `bhujangasana-bajo.png`
 - `camatkarasana.png`
 - `dhanurasana.png`
 - `garudasana.png`
 - `gomukhasana-brazos.png`
+- `kati-chakrasana.png`
 - `marjaryasana-bitilasana.png`
 - `malasana.png`
 - `matsyasana.png`
@@ -116,7 +126,10 @@ Important:
 - `supta-baddha-konasana.png`
 - `supta-kapotasana.png`
 - `tadasana.png`
+- `tiryaka-bhujangasana.png`
+- `tiryaka-tadasana.png`
 - `urdhva-mukha-svanasana.png`
+- `udarakarshanasana.png`
 - `ustrasana.png`
 - `upavista-konasana.png`
 - `viparita-karani.png`

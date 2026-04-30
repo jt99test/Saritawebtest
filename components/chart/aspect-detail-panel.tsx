@@ -2,17 +2,18 @@
 
 import { AnimatePresence, motion } from "motion/react";
 
+import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { getAugmentedChartPoints, type NatalChartData } from "@/lib/chart";
-import { getDictionary } from "@/lib/i18n";
+import { dictionaries } from "@/lib/i18n";
 import { useChartStore } from "@/components/chart/chart-store";
-
-const dictionary = getDictionary("es");
 
 type Props = {
   chart: NatalChartData;
 };
 
 export function AspectDetailPanel({ chart }: Props) {
+  const locale = useStoredLocale();
+  const dictionary = dictionaries[locale];
   const { selectedAspect, selectAspect } = useChartStore();
 
   const allPoints = getAugmentedChartPoints(chart);

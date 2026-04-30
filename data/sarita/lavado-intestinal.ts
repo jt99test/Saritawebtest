@@ -59,7 +59,7 @@ export const lavadoIntestinal: LavadoIntestinalProtocol = {
       description: "",
       duration: "8 repeticiones",
       warning: "Mantén el abdomen suave. Evita inclinarte profundo si hay dolor lumbar, costal o vértigo.",
-      imagePath: null,
+      imagePath: asanaImages["tiryaka-tadasana"] ?? null,
     },
     {
       slug: "kati-chakrasana",
@@ -69,7 +69,7 @@ export const lavadoIntestinal: LavadoIntestinalProtocol = {
       description: "",
       duration: "8 repeticiones",
       warning: "Gira desde la cintura sin forzar cuello ni rodillas. Evita torsiones fuertes en embarazo o hernia discal.",
-      imagePath: null,
+      imagePath: asanaImages["kati-chakrasana"] ?? null,
     },
     {
       slug: "tiryaka-bhujangasana",
@@ -79,7 +79,7 @@ export const lavadoIntestinal: LavadoIntestinalProtocol = {
       description: "",
       duration: "8 repeticiones",
       warning: "Evita si hay dolor lumbar agudo, embarazo avanzado o lesión cervical. Mantén codos suaves.",
-      imagePath: null,
+      imagePath: asanaImages["tiryaka-bhujangasana"] ?? null,
     },
     {
       slug: "udarakarshanasana",
@@ -89,7 +89,7 @@ export const lavadoIntestinal: LavadoIntestinalProtocol = {
       description: "",
       duration: "8 repeticiones",
       warning: "No comprimas el abdomen con dolor digestivo intenso, embarazo, cirugía reciente o molestias de rodilla.",
-      imagePath: null,
+      imagePath: asanaImages.udarakarshanasana ?? null,
     },
   ],
   timing: {

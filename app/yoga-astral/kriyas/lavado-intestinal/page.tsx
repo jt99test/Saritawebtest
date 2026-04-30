@@ -51,7 +51,7 @@ export default async function LavadoIntestinalPage() {
               href="/yoga-astral"
               className="text-xs font-medium uppercase tracking-[0.28em] text-ivory/54 transition hover:text-ivory"
             >
-              Volver
+              {dictionary.form.back}
             </Link>
           </div>
 
@@ -104,7 +104,7 @@ export default async function LavadoIntestinalPage() {
 
             {hasAccess ? (
               <>
-            <PremiumCard className="border-t border-[rgba(181,163,110,0.15)] bg-transparent p-0 pt-10 shadow-none sm:pt-12">
+            <PremiumCard className="border-t border-[rgba(181,163,110,0.15)] bg-transparent px-5 py-8 shadow-none sm:px-7 sm:py-10">
               <h2 className="font-serif text-3xl text-ivory">Preparación</h2>
               <p className="mt-4 max-w-4xl text-sm leading-7 text-ivory/68">
                 {lavadoIntestinal.preparation}

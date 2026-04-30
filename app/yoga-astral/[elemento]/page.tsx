@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 import { illustrations } from "@/data/illustrations";
@@ -10,6 +11,7 @@ import { Container } from "@/components/ui/container";
 import { PremiumCard } from "@/components/ui/premium-card";
 import { AsanaVisual } from "@/components/yoga/asana-visual";
 import { RoutineCompletionButton } from "@/components/yoga/routine-completion-button";
+import { dictionaries, defaultLocale, isLocale, LOCALE_STORAGE_KEY } from "@/lib/i18n";
 
 type Elemento = keyof typeof yogaRoutines;
 
@@ -82,6 +84,10 @@ export default async function YogaAstralElementPage({
   params: Promise<{ elemento: string }>;
 }) {
   const { elemento } = await params;
+  const cookieStore = await cookies();
+  const cookieLocale = cookieStore.get(LOCALE_STORAGE_KEY)?.value;
+  const locale = cookieLocale && isLocale(cookieLocale) ? cookieLocale : defaultLocale;
+  const dictionary = dictionaries[locale];
 
   if (!isElemento(elemento)) {
     notFound();
@@ -101,7 +107,7 @@ export default async function YogaAstralElementPage({
               href="/yoga-astral"
               className="text-xs font-medium uppercase tracking-[0.28em] text-ivory/54 transition hover:text-ivory"
             >
-              Volver a Yoga astral
+              {dictionary.form.back} · {dictionary.result.primaryTabs.yoga}
             </Link>
           </div>
 
@@ -280,7 +286,7 @@ export default async function YogaAstralElementPage({
                 href="/yoga-astral"
                 className="text-xs font-medium uppercase tracking-[0.24em] text-ivory/54 transition hover:text-ivory"
               >
-                Volver a Yoga astral
+                {dictionary.form.back} · {dictionary.result.primaryTabs.yoga}
               </Link>
               <RoutineCompletionButton storageKey={`sarita:yoga:${elemento}:completed`} />
             </footer>

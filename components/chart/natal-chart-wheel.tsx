@@ -11,7 +11,8 @@ import {
   type ChartPointId,
   type NatalChartData,
 } from "@/lib/chart";
-import { getDictionary } from "@/lib/i18n";
+import { useStoredLocale } from "@/components/i18n/use-stored-locale";
+import { dictionaries } from "@/lib/i18n";
 import { useChartStore } from "@/components/chart/chart-store";
 
 type Props = {
@@ -25,7 +26,7 @@ type TooltipState = {
   content: string;
 };
 
-const dictionary = getDictionary("es");
+const dictionary = dictionaries.es;
 
 const SIZE = 860;
 const CX = 430;
@@ -1337,6 +1338,8 @@ export function ChartLayerRail() {
 }
 
 export function NatalChartWheel({ chart }: Props) {
+  const locale = useStoredLocale();
+  const dictionary = dictionaries[locale];
   const {
     selectedPointId,
     selectedAspect,
