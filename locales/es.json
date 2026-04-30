@@ -13,7 +13,12 @@
     "no": "No",
     "close": "Cerrar",
     "show": "Mostrar",
-    "hide": "Ocultar"
+    "hide": "Ocultar",
+    "tryAgain": "Probar de nuevo",
+    "account": "Mi cuenta",
+    "newReading": "Generar nueva lectura",
+    "viewReadings": "Ver lecturas",
+    "signOut": "Cerrar sesión"
   },
   "home": {
     "eyebrow": "Carta natal · Carta astral",
@@ -59,6 +64,24 @@
       "selected": "Lugar seleccionado"
     },
     "submit": "Ver mi carta natal"
+  },
+  "standalonePages": {
+    "savedReading": "Lectura guardada",
+    "yourChart": "Tu carta",
+    "needChartTitle": "Necesitamos tu carta",
+    "needChartBody": "Genera primero tu carta o vuelve a resultado para abrir esta sección con tu contexto astrológico cargado.",
+    "goToForm": "Ir al formulario",
+    "backToResult": "Volver a resultado",
+    "moonMissingChart": "Vuelve al formulario para generar tu carta antes de ver la luna del mes.",
+    "limitTitle": "Has llegado al límite de tu plan.",
+    "limitBody": "Has usado {count} de {limit} lecturas este mes. Puedes mejorar tu plan para seguir generando lecturas.",
+    "viewOptions": "Ver opciones",
+    "loadingFallback": "Calculando tu carta...",
+    "loadingTimeout": "El cálculo está tardando más de lo normal. Vuelve a intentarlo en un momento.",
+    "notFoundTitle": "Esta página no está en el mapa.",
+    "notFoundBody": "Vuelve al inicio para generar tu carta o abrir una lectura guardada.",
+    "errorTitle": "Algo se ha roto.",
+    "errorBody": "Prueba de nuevo. Si vuelve a pasar, vuelve al inicio y genera la carta otra vez."
   },
   "loading": {
     "errorFallback": "Ha ocurrido un problema al preparar tu carta natal.",
@@ -142,7 +165,7 @@
       "synastry": "Sinastría",
       "transits": "Tránsitos del mes",
       "premium": "Premium",
-      "upcoming": "Próximamente",
+      "upcoming": "Disponible",
       "upcomingMessage": "Esta vista ya queda preparada dentro de la experiencia, pero todavía no hemos activado su contenido."
     },
     "planGate": {
@@ -244,12 +267,12 @@
     },
     "solarReturn": {
       "title": "Revolución Solar",
-      "subtitle": "Próximamente",
+      "subtitle": "Lectura anual",
       "body": "El mapa del año se abrirá aquí: el retorno del Sol, la ciudad del cumpleaños y los temas que piden atención."
     },
     "synastry": {
       "title": "Sinastría",
-      "subtitle": "Próximamente",
+      "subtitle": "Lectura de vínculo",
       "body": "Aquí podrás comparar dos cartas como espejos de conciencia, sin reducir el vínculo a una puntuación."
     },
     "drawer": {
@@ -278,19 +301,19 @@
           "oneLiner": "Una síntesis inicial de tu Sol abre la lectura desde",
           "paragraphs": [
             "Aquí va la lectura base de identidad para orientar la experiencia general.",
-            "Este bloque queda preparado para una interpretación más amplia cuando definamos el copy final."
+            "Tu Sol marca el hilo principal: cómo decides, dónde te afirmas y qué necesitas recordar cuando dudas de ti."
           ]
         },
         "feelings": {
           "title": "Cómo sientes",
-          "fullText": "[lorem ipsum placeholder - to be replaced with Claude-generated content in next iteration]"
+          "fullText": "Tu Luna habla de tus reacciones emocionales, de lo que necesitas para sentirte a salvo y de cómo pides cuidado incluso cuando no lo dices directamente."
         },
         "love": {
           "title": "Qué le das valor",
           "oneLiner": "Tu forma de valorar, desear y elegir empieza desde",
           "paragraphs": [
             "Este bloque resume el tono afectivo, la forma de elegir vínculos y el clima relacional principal.",
-            "Podemos sustituir este texto por una lectura más cuidada cuando cerremos la narrativa final."
+            "Venus muestra qué te atrae, qué valoras y qué no deberías negociar solo para mantener la paz."
           ]
         },
         "mind": {
@@ -550,3 +573,4 @@
     }
   }
 }
+

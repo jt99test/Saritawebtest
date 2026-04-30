@@ -13,7 +13,12 @@
     "no": "No",
     "close": "Chiudi",
     "show": "Mostra",
-    "hide": "Nascondi"
+    "hide": "Nascondi",
+    "tryAgain": "Riprova",
+    "account": "Il mio account",
+    "newReading": "Genera nuova lettura",
+    "viewReadings": "Vedi letture",
+    "signOut": "Esci"
   },
   "home": {
     "eyebrow": "Carta natale · Tema natale",
@@ -59,6 +64,24 @@
       "selected": "Luogo selezionato"
     },
     "submit": "Vedi la mia carta natale"
+  },
+  "standalonePages": {
+    "savedReading": "Lettura salvata",
+    "yourChart": "La tua carta",
+    "needChartTitle": "Ci serve la tua carta",
+    "needChartBody": "Genera prima la tua carta o torna al risultato per aprire questa sezione con il tuo contesto astrologico caricato.",
+    "goToForm": "Vai al modulo",
+    "backToResult": "Torna al risultato",
+    "moonMissingChart": "Torna al modulo per generare la tua carta prima di vedere la luna del mese.",
+    "limitTitle": "Hai raggiunto il limite del tuo piano.",
+    "limitBody": "Hai usato {count} di {limit} letture questo mese. Puoi migliorare il tuo piano per continuare a generare letture.",
+    "viewOptions": "Vedi opzioni",
+    "loadingFallback": "Calcolando la tua carta...",
+    "loadingTimeout": "Il calcolo sta richiedendo più tempo del solito. Riprova tra poco.",
+    "notFoundTitle": "Questa pagina non è nella mappa.",
+    "notFoundBody": "Torna all'inizio per generare la tua carta o aprire una lettura salvata.",
+    "errorTitle": "Qualcosa si è rotto.",
+    "errorBody": "Riprova. Se succede di nuovo, torna all'inizio e genera di nuovo la carta."
   },
   "loading": {
     "errorFallback": "C'è stato un problema durante la preparazione della tua carta natale.",
@@ -142,7 +165,7 @@
       "synastry": "Sinastria",
       "transits": "Transiti del mese",
       "premium": "Premium",
-      "upcoming": "Prossimamente",
+      "upcoming": "Disponibile",
       "upcomingMessage": "Questa vista è già pronta dentro l'esperienza, ma il suo contenuto non è ancora attivo."
     },
     "planGate": {
@@ -244,12 +267,12 @@
     },
     "solarReturn": {
       "title": "Rivoluzione Solare",
-      "subtitle": "Prossimamente",
+      "subtitle": "Lettura annuale",
       "body": "Qui si aprirà la mappa dell'anno: il ritorno del Sole, la città del compleanno e i temi che chiedono attenzione."
     },
     "synastry": {
       "title": "Sinastria",
-      "subtitle": "Prossimamente",
+      "subtitle": "Lettura del legame",
       "body": "Qui potrai confrontare due carte come specchi di coscienza, senza ridurre il legame a un punteggio."
     },
     "drawer": {
@@ -278,19 +301,19 @@
           "oneLiner": "Una prima sintesi del tuo Sole parte da",
           "paragraphs": [
             "Questa è la lettura base dell'identità che orienta l'esperienza generale.",
-            "Il blocco è pronto per una interpretazione più ampia quando definiremo il copy finale."
+            "Il tuo Sole mostra il filo principale: come scegli, dove ti affermi e cosa devi ricordare quando dubiti di te."
           ]
         },
         "feelings": {
           "title": "Come senti",
-          "fullText": "[lorem ipsum placeholder - to be replaced with Claude-generated content in next iteration]"
+          "fullText": "La tua Luna parla delle tue reazioni emotive, di ciò che ti serve per sentirti al sicuro e di come chiedi cura anche quando non lo dici direttamente."
         },
         "love": {
           "title": "A cosa dai valore",
           "oneLiner": "Il tuo valore, desiderio e gusto prendono forma attraverso",
           "paragraphs": [
             "Questo blocco riassume il tono affettivo, il modo di scegliere i legami e il clima relazionale principale.",
-            "Potremo sostituire questo testo con una lettura più curata quando la narrativa finale sarà pronta."
+            "Venere mostra cosa ti attrae, a cosa dai valore e cosa non dovresti negoziare solo per mantenere la pace."
           ]
         },
         "mind": {
@@ -550,3 +573,4 @@
     }
   }
 }
+

@@ -13,7 +13,12 @@
     "no": "No",
     "close": "Close",
     "show": "Show",
-    "hide": "Hide"
+    "hide": "Hide",
+    "tryAgain": "Try again",
+    "account": "My account",
+    "newReading": "Generate new reading",
+    "viewReadings": "View readings",
+    "signOut": "Sign out"
   },
   "home": {
     "eyebrow": "Natal chart · Birth chart",
@@ -59,6 +64,24 @@
       "selected": "Selected place"
     },
     "submit": "See my natal chart"
+  },
+  "standalonePages": {
+    "savedReading": "Reading saved",
+    "yourChart": "Your chart",
+    "needChartTitle": "We need your chart",
+    "needChartBody": "Generate your chart first or return to results to open this section with your astrological context loaded.",
+    "goToForm": "Go to form",
+    "backToResult": "Back to results",
+    "moonMissingChart": "Go back to the form to generate your chart before viewing the moon of the month.",
+    "limitTitle": "You have reached your plan limit.",
+    "limitBody": "You have used {count} of {limit} readings this month. You can upgrade your plan to keep generating readings.",
+    "viewOptions": "View options",
+    "loadingFallback": "Calculating your chart...",
+    "loadingTimeout": "The calculation is taking longer than usual. Try again in a moment.",
+    "notFoundTitle": "This page is not on the map.",
+    "notFoundBody": "Go back home to generate your chart or open a saved reading.",
+    "errorTitle": "Something broke.",
+    "errorBody": "Try again. If it happens again, go back home and generate the chart again."
   },
   "loading": {
     "errorFallback": "There was a problem while preparing your natal chart.",
@@ -142,7 +165,7 @@
       "synastry": "Synastry",
       "transits": "Monthly transits",
       "premium": "Premium",
-      "upcoming": "Coming soon",
+      "upcoming": "Available",
       "upcomingMessage": "This view is already prepared inside the experience, but its content is not active yet."
     },
     "planGate": {
@@ -244,12 +267,12 @@
     },
     "solarReturn": {
       "title": "Solar Return",
-      "subtitle": "Coming soon",
+      "subtitle": "Yearly reading",
       "body": "The map of your year will open here: the Sun's return, the birthday city, and the themes asking for attention."
     },
     "synastry": {
       "title": "Synastry",
-      "subtitle": "Coming soon",
+      "subtitle": "Relationship reading",
       "body": "Here you will compare two charts as mirrors of consciousness, without reducing the bond to a score."
     },
     "drawer": {
@@ -278,19 +301,19 @@
           "oneLiner": "An initial synthesis of your Sun begins from",
           "paragraphs": [
             "This is the base identity reading that frames the overall experience.",
-            "The block is ready for a fuller interpretation once we define the final copy."
+            "Your Sun marks the main thread: how you choose, where you assert yourself, and what you need to remember when you doubt yourself."
           ]
         },
         "feelings": {
           "title": "How you feel",
-          "fullText": "[lorem ipsum placeholder - to be replaced with Claude-generated content in next iteration]"
+          "fullText": "Your Moon speaks about your emotional reactions, what you need to feel safe, and how you ask for care even when you do not say it directly."
         },
         "love": {
           "title": "What you value",
           "oneLiner": "Your values, desire, and taste begin to take shape through",
           "paragraphs": [
             "This block summarizes the emotional tone, attraction pattern, and primary relationship climate.",
-            "We can replace this text with a more polished reading once the final narrative is ready."
+            "Venus shows what attracts you, what you value, and what you should not negotiate just to keep the peace."
           ]
         },
         "mind": {
@@ -550,3 +573,4 @@
     }
   }
 }
+
