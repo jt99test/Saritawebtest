@@ -189,7 +189,7 @@ export function LocationAutocomplete({
                           {suggestion.country ? ` · ${suggestion.country}` : ""}
                         </p>
                       </div>
-                      <span className="mt-0.5 text-[0.65rem] uppercase tracking-[0.22em] text-dusty-gold/70">
+                      <span className="mt-0.5 text-[0.65rem] uppercase tracking-[0.22em] text-dusty-gold/82">
                         {suggestion.timezone}
                       </span>
                     </button>

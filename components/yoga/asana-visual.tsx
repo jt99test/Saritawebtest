@@ -54,7 +54,7 @@ export function AsanaVisual({
         <p className="mt-5 font-serif text-2xl leading-tight text-ivory/88">
           {asana.nameSanskrit}
         </p>
-        <p className="mt-3 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-ivory/40">
+        <p className="mt-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-ivory/40">
           Sin foto disponible
         </p>
       </div>

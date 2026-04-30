@@ -119,7 +119,7 @@ export function ChartPointDataCard({
                 </div>
               </div>
 
-              <p className="mt-5 max-w-md text-sm leading-7 text-ivory/70">
+              <p className="mt-5 max-w-md text-sm leading-7 text-ivory/82">
                 {dictionary.result.editorial.summaryPrefix}{" "}
                 <span className="text-ivory">
                   {dictionary.result.points[point.id]}

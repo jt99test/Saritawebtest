@@ -11,6 +11,7 @@ import { getActiveTransits } from "@/lib/transits.server";
 import { houseMessages } from "@/data/sarita/house-messages";
 import { elementRoutines } from "@/data/sarita/element-routines";
 import { transitDescriptions } from "@/data/sarita/transit-descriptions";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 type LunarReportRequest = {
   chart: NatalChartData;
@@ -18,9 +19,16 @@ type LunarReportRequest = {
   month: number;
   lunationType: LunationType;
   metadataOnly?: boolean;
+  locale?: string;
 };
 
 const ACTIONS_MARKER = "__SARITA_ACTIONS__";
+
+function langInstruction(locale?: string): string {
+  if (locale === "en") return "Write entirely in English.";
+  if (locale === "it") return "Write entirely in Italian.";
+  return "Write in Spanish from Spain. Use the 'tú' form.";
+}
 
 const SIGN_LABELS: Record<SignId, string> = {
   aries: "Aries",
@@ -65,8 +73,8 @@ const POINT_LABELS = {
   ceres: "Ceres",
 } as const;
 
-function monthLabel(year: number, month: number) {
-  return DateTime.utc(year, month, 1).setLocale("es").toFormat("LLLL yyyy");
+function monthLabel(year: number, month: number, locale?: string) {
+  return DateTime.utc(year, month, 1).setLocale(locale ?? "es").toFormat("LLLL yyyy");
 }
 
 function buildChartSummary(chart: NatalChartData) {
@@ -76,7 +84,7 @@ function buildChartSummary(chart: NatalChartData) {
   });
 
   const aspectLines = chart.aspects.map((aspect) => {
-    return `- ${POINT_LABELS[aspect.from]} ${ASPECT_LABELS[aspect.type]} ${POINT_LABELS[aspect.to]} (orbe ${aspect.orb}°)`;
+    return `- ${POINT_LABELS[aspect.from]} ${ASPECT_LABELS[aspect.type]} ${POINT_LABELS[aspect.to]} (orbe ${aspect.orb}°, ${aspect.applying ? "aplicativo" : "separativo"})`;
   });
 
   return [
@@ -126,6 +134,7 @@ function buildPrompt({
   lunationType,
   metadata,
   transitLines,
+  locale,
 }: {
   chart: NatalChartData;
   year: number;
@@ -138,8 +147,10 @@ function buildPrompt({
     house: number;
     areaOfLife: string;
     baseMessage: string;
+    eclipse?: { isEclipse: boolean; kind: "solar" | "lunar"; nodeOrb: number };
   };
   transitLines: string;
+  locale?: string;
 }) {
   const name = chart.event.name;
   const lunaLabel = lunationType === "nueva" ? "Nueva" : "Llena";
@@ -149,7 +160,8 @@ function buildPrompt({
 Tu tono: cercano, directo, útil. Como una amiga que se la sabe, no como una astróloga distante. Ejemplos concretos de cómo esta energía aparece en su día a día. Sin metáforas literarias.
 
 CONTEXTO:
-${name} tiene su Luna ${lunaLabel} de ${monthLabel(year, month)} en ${metadata.signLabel} ${metadata.degree}°${String(metadata.minutes).padStart(2, "0")}', activando su Casa ${metadata.house} (${metadata.areaOfLife}).
+${name} tiene su Luna ${lunaLabel} de ${monthLabel(year, month, locale)} en ${metadata.signLabel} ${metadata.degree}°${String(metadata.minutes).padStart(2, "0")}', activando su Casa ${metadata.house} (${metadata.areaOfLife}).
+${metadata.eclipse?.isEclipse ? `Esta lunacion es un eclipse ${metadata.eclipse.kind === "solar" ? "solar" : "lunar"}: ocurre a ${metadata.eclipse.nodeOrb} grados del eje nodal. Tratalo como una activacion mas intensa, con ecos de 6 a 18 meses, no como una luna mensual ordinaria.` : ""}
 
 El mensaje base que da la astróloga Sarita Shakti para esta casa es:
 "${metadata.baseMessage}"
@@ -166,16 +178,39 @@ Escribe una lectura personalizada para ${name} que:
 2. Expande el mensaje base de Sarita con ejemplos concretos de cómo se manifiesta en la vida cotidiana de alguien con esta carta natal específica.
 3. Si hay tránsitos activos relevantes, los menciona como "contexto adicional este mes".
 4. Cierra con consejos prácticos y accionables: qué hacer este mes, qué evitar, qué preguntarse.
+4.5. Para cada tránsito activo que menciones, describe UNA situación concreta en la que se podría notar en la vida de ${name}: una conversación, una decisión, una sensación en el cuerpo, una situación en el trabajo o en casa.
 5. Tono Spain Spanish, "tú", conversacional. 400-600 palabras. 3-4 párrafos.
 6. Incluye literalmente esta frase de Sarita una sola vez dentro del texto, sin cambiarle palabras: "${metadata.baseMessage}"
 7. No uses títulos, subtítulos, markdown, listas, emojis ni símbolos decorativos. Solo prosa corrida en párrafos.
+8. El primer carácter del texto es siempre mayúscula.
 
-No reescribas el mensaje de Sarita: úsalo como base y exprésalo en el tono amigo. La autoridad astrológica es de Sarita; tú la traduces a una conversación cercana.`;
+No reescribas el mensaje de Sarita: úsalo como base y exprésalo en el tono amigo. La autoridad astrológica es de Sarita; tú la traduces a una conversación cercana.
+
+${langInstruction(locale)}`;
 }
 
 export async function POST(request: Request) {
   try {
-    const { chart, year, month, lunationType, metadataOnly = false } =
+    const supabase = await createServerSupabaseClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if ((profile?.plan ?? "free") === "free") {
+      return new Response("Plan required", { status: 403 });
+    }
+
+    const { chart, year, month, lunationType, metadataOnly = false, locale } =
       (await request.json()) as LunarReportRequest;
 
     const monthlyData = await getMonthlyLunarData(chart, year, month);
@@ -213,6 +248,7 @@ export async function POST(request: Request) {
       baseMessage,
       element: lunation.element,
       assignedRoutine: lunation.assignedRoutine,
+      eclipse: lunation.eclipse,
       routine: {
         element: routine.element,
         bodyZone: routine.bodyZone,
@@ -245,8 +281,10 @@ export async function POST(request: Request) {
         house: lunation.activatedHouse,
         areaOfLife: houseMessage.areaOfLife,
         baseMessage,
+        eclipse: lunation.eclipse,
       },
       transitLines: transitData.lines,
+      locale,
     });
 
     const streamingPrompt = `${prompt}
@@ -257,6 +295,9 @@ ${ACTIONS_MARKER}{"hazEsto":"...","evitaEsto":"...","preguntate":"..."}
 Reglas para esa línea final:
 - No añadas texto antes ni después del JSON.
 - Cada clave debe tener 1 o 2 frases concretas y accionables.
+- "hazEsto" debe ser una acción específica con verbo y objeto. Nunca "trabaja tu interior"; sí "Escribe una lista de lo que quieres cerrar antes de fin de mes."
+- "evitaEsto" debe ser una conducta específica. Nunca "evita el exceso"; sí "No empieces proyectos nuevos si tienes tres a medias."
+- "preguntate" debe ser una pregunta que la persona pueda sentarse a responder. Nunca "¿Qué quiere tu alma?"; sí "¿Qué llevas más de seis meses diciendo que vas a hacer y no has hecho?"
 - Mantén el español de España y el tono cercano.
 - La lectura principal debe ir primero, y la línea ${ACTIONS_MARKER} al final.`;
 

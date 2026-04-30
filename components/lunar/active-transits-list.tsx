@@ -38,7 +38,7 @@ export function ActiveTransitsList({ transits, timezone }: ActiveTransitsListPro
   return (
     <section className="mx-auto max-w-[720px] lg:max-w-[800px]">
       <div className="text-center">
-        <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
           lo que también se mueve
         </p>
         <h3 className="mt-1.5 font-serif text-[32px] font-normal leading-tight text-white">
@@ -72,7 +72,7 @@ export function ActiveTransitsList({ transits, timezone }: ActiveTransitsListPro
                   )}
                 </p>
               </div>
-              <p className="col-span-2 text-[11px] uppercase leading-6 tracking-[0.14em] text-dusty-gold/70 sm:col-span-1 sm:text-right">
+              <p className="col-span-2 text-[11px] uppercase leading-6 tracking-[0.14em] text-dusty-gold/82 sm:col-span-1 sm:text-right">
                 {getThemeLabel(transit)}
               </p>
             </div>

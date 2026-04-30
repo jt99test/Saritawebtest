@@ -41,7 +41,7 @@ export function MonthlyRoutineCard({ metadata }: MonthlyRoutineCardProps) {
 
   return (
     <section className="mx-auto max-w-[720px] text-left">
-      <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">
+      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
         tu práctica este mes
       </p>
       <h3 className="mt-2 font-serif text-[36px] font-normal leading-tight text-white">

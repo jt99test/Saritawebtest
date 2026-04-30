@@ -9,6 +9,7 @@ import { getGeneralReadingCards } from "@/data/chart-readings";
 import { hashNatalChart } from "@/lib/chart-hash";
 import { GENERAL_READING_THEMES, type GeneralReadingTheme } from "@/lib/general-reading";
 import { getAllCachedReadings, setCachedReading } from "@/lib/general-reading-cache";
+import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { splitReadingParagraphs } from "@/components/ui/rendered-reading";
 
 type ChartGeneralReadingProps = {
@@ -27,6 +28,8 @@ const GATE_GLYPHS: Partial<Record<ChartPointId | "ascendant", string>> = {
   venus: "\u2640",
   mercury: "\u263f",
   northNode: "\u260a",
+  southNode: "\u260b",
+  chiron: "\u26b7",
   saturn: "\u2644",
   mars: "\u2642",
   jupiter: "\u2643",
@@ -42,6 +45,8 @@ const GATE_META_BY_THEME: Partial<Record<GeneralReadingTheme, GateMeta>> = {
   "que-das-valor": { pointId: "venus", glyph: "♀" },
   "como-piensas": { pointId: "mercury", glyph: "☿" },
   "tu-proposito": { pointId: "northNode", glyph: "☊" },
+  "lo-que-suelto": { pointId: "southNode", glyph: "☋" },
+  "tu-herida-medicina": { pointId: "chiron", glyph: "⚷" },
   "tus-desafios": { pointId: "saturn", glyph: "♄" },
   "tu-ascendente": { pointId: "ascendant", glyph: "AC" },
   "como-actuas": { pointId: "mars", glyph: "♂" },
@@ -60,6 +65,8 @@ const GATE_META_BY_TITLE: Array<{ needle: string; meta: GateMeta }> = [
   { needle: "piensas", meta: { pointId: "mercury", glyph: "☿" } },
   { needle: "propósito", meta: { pointId: "northNode", glyph: "☊" } },
   { needle: "proposito", meta: { pointId: "northNode", glyph: "☊" } },
+  { needle: "sueltas", meta: { pointId: "southNode", glyph: "☋" } },
+  { needle: "herida", meta: { pointId: "chiron", glyph: "⚷" } },
   { needle: "desafíos", meta: { pointId: "saturn", glyph: "♄" } },
   { needle: "desafios", meta: { pointId: "saturn", glyph: "♄" } },
   { needle: "actúas", meta: { pointId: "mars", glyph: "♂" } },
@@ -100,6 +107,7 @@ function subtitleFor(pointId: ChartPointId | "ascendant", chart: NatalChartData,
 }
 
 export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingProps) {
+  const locale = useStoredLocale();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [chartHash, setChartHash] = useState<string | null>(null);
   const [cachedReadings, setCachedReadings] = useState<Record<string, string>>({});
@@ -149,7 +157,7 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
       const response = await fetch("/api/general-reading", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chart, theme }),
+        body: JSON.stringify({ chart, theme, locale }),
         signal: controller.signal,
       });
 
@@ -197,7 +205,7 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
   return (
     <section className="pb-12 lg:pb-14">
       <div className="mx-auto max-w-[720px] text-center">
-        <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
           tu carta, en esencia
         </p>
         <h2 className="mt-1.5 font-serif text-[30px] font-normal leading-tight text-ivory lg:text-[36px]">

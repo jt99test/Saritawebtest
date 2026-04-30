@@ -6,7 +6,7 @@ export function Eyebrow({
 }: ComponentPropsWithoutRef<"span">) {
   return (
     <span
-      className={`text-[0.68rem] font-semibold uppercase tracking-[0.38em] text-ivory/70 ${className}`.trim()}
+      className={`text-[12px] font-semibold uppercase tracking-[0.38em] text-ivory/82 ${className}`.trim()}
       {...props}
     />
   );

@@ -21,11 +21,11 @@ export function ReadingUsageSummary({ plan, count, limit }: ReadingUsageSummaryP
       <div className="grid gap-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-ivory/45 sm:grid-cols-2">
         <p>
           {dictionary.readings.planLabel}{" "}
-          <span className="text-dusty-gold/70">{planLabel}</span>
+          <span className="text-dusty-gold/82">{planLabel}</span>
         </p>
         <p className="sm:text-right">
           {dictionary.readings.thisMonth}{" "}
-          <span className="text-dusty-gold/70">
+          <span className="text-dusty-gold/82">
             {count} / {limit}
           </span>
         </p>

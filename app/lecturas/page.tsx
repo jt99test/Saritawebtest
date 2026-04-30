@@ -38,7 +38,7 @@ export default async function ReadingsPage() {
     .eq("user_id", user.id)
     .gte("created_at", startOfMonth.toISOString());
   const plan = profile?.plan ?? "free";
-  const limit = plan === "completo" ? 50 : plan === "basico" ? 10 : 2;
+  const limit = plan === "avanzado" || plan === "completo" ? 50 : plan === "pro" || plan === "basico" ? 10 : 2;
 
   return (
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">

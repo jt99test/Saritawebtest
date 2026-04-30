@@ -1,13 +1,14 @@
-"use client";
+﻿"use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 
 import { BiWheelChart } from "@/components/chart/bi-wheel-chart";
-import { recalculateHouseSystemAction, type HouseSystemCode } from "@/lib/actions";
-import type { AspectId, ChartPoint, NatalChartData } from "@/lib/chart";
-import { formatSignPosition } from "@/lib/chart";
+import { useStoredLocale } from "@/components/i18n/use-stored-locale";
+import { calculateCurrentTransitsAction } from "@/lib/actions";
+import type { ChartPoint, ChartPointId, NatalChartData } from "@/lib/chart";
 import type { FormValues } from "@/lib/chart-session";
 import type { Dictionary } from "@/lib/i18n";
+import type { ActiveTransit } from "@/lib/transits.server";
 
 type ChartCompletePageProps = {
   chart: NatalChartData;
@@ -15,254 +16,351 @@ type ChartCompletePageProps = {
   dictionary: Dictionary;
 };
 
-const HOUSE_SYSTEMS: HouseSystemCode[] = ["P", "W", "K", "E"];
-const POINT_ORDER = [
-  "sun",
-  "moon",
-  "mercury",
-  "venus",
-  "mars",
-  "jupiter",
-  "saturn",
-  "uranus",
-  "neptune",
-  "pluto",
-  "northNode",
-  "southNode",
-  "chiron",
-  "lilith",
-  "ceres",
-  "partOfFortune",
-] as const;
-
-const ASPECT_SYMBOLS: Record<AspectId, string> = {
-  conjunction: "☌",
-  sextile: "✶",
-  square: "□",
-  trine: "△",
-  opposition: "☍",
-  quincunx: "⚻",
+type TransitResult = Awaited<ReturnType<typeof calculateCurrentTransitsAction>>;
+type TransitData = {
+  dominantTitle?: string;
+  dominantBody?: string;
+  planetLanguage?: string;
+  houses?: Array<{ house: number; title: string; body: string }>;
 };
 
-const DIGNITIES: Record<string, Partial<Record<string, string>>> = {
-  sun: { leo: "Domicilio", aquarius: "Exilio", aries: "Exaltación", libra: "Caída" },
-  moon: { cancer: "Domicilio", capricorn: "Exilio", taurus: "Exaltación", scorpio: "Caída" },
-  mercury: { gemini: "Domicilio", virgo: "Domicilio", sagittarius: "Exilio", pisces: "Exilio" },
-  venus: { taurus: "Domicilio", libra: "Domicilio", aries: "Exilio", scorpio: "Exilio", pisces: "Exaltación", virgo: "Caída" },
-  mars: { aries: "Domicilio", scorpio: "Domicilio", libra: "Exilio", taurus: "Exilio", capricorn: "Exaltación", cancer: "Caída" },
-  jupiter: { sagittarius: "Domicilio", pisces: "Domicilio", gemini: "Exilio", virgo: "Exilio", cancer: "Exaltación", capricorn: "Caída" },
-  saturn: { capricorn: "Domicilio", aquarius: "Domicilio", cancer: "Exilio", leo: "Exilio", libra: "Exaltación", aries: "Caída" },
+const SARITA_DATA_MARKER = "__SARITA_DATA__";
+
+const POINT_LABELS: Partial<Record<ChartPointId, string>> = {
+  sun: "Sol",
+  moon: "Luna",
+  mercury: "Mercurio",
+  venus: "Venus",
+  mars: "Marte",
+  jupiter: "JÃºpiter",
+  saturn: "Saturno",
+  uranus: "Urano",
+  neptune: "Neptuno",
+  pluto: "PlutÃ³n",
+  northNode: "Nodo norte",
+  southNode: "Nodo sur",
+  chiron: "QuirÃ³n",
 };
 
-const SHAPE_DESCRIPTIONS: Record<string, string> = {
-  Bundle: "La energía se concentra en una zona concreta de la vida.",
-  Locomotive: "Hay impulso propio y una dirección que empuja la carta hacia adelante.",
-  Bowl: "La carta trabaja por contraste: una mitad llena y otra que se busca completar.",
-  Bucket: "Un planeta funciona como asa y canaliza mucha presión de la carta.",
-  Seesaw: "La vida se organiza entre polos, vínculos y decisiones de equilibrio.",
-  Splay: "La carta se expresa por focos distintos, con talentos separados pero fuertes.",
-  Splash: "La energía está distribuida de forma amplia y curiosa.",
+const ASPECT_LABELS: Record<ActiveTransit["aspectType"], string> = {
+  conjunction: "toca directamente",
+  opposition: "pone en espejo",
+  square: "tensiona",
+  trine: "abre una vÃ­a fluida hacia",
+  sextile: "ofrece una oportunidad a",
+  quincunx: "pide ajustar",
 };
 
-function pointName(point: ChartPoint, dictionary: Dictionary) {
-  return dictionary.result.points[point.id as keyof typeof dictionary.result.points] ?? point.id;
+const HOUSE_AREAS: Record<number, string> = {
+  1: "identidad, cuerpo y forma de entrar en la vida",
+  2: "valor propio, dinero y seguridad interna",
+  3: "voz, mente cotidiana, aprendizaje y conversaciones",
+  4: "raÃ­z emocional, hogar, familia y pertenencia",
+  5: "deseo, creatividad, placer y expresiÃ³n personal",
+  6: "hÃ¡bitos, trabajo diario, salud y orden corporal",
+  7: "pareja, vÃ­nculos, acuerdos y espejos relacionales",
+  8: "intimidad, sombra, duelos, poder y transformaciÃ³n",
+  9: "sentido, fe, viajes, estudios y visiÃ³n de mundo",
+  10: "vocaciÃ³n, visibilidad, autoridad y direcciÃ³n vital",
+  11: "amistades, redes, comunidad y futuro compartido",
+  12: "inconsciente, descanso, cierre de ciclos y vida espiritual",
+};
+
+const PLANET_LANGUAGE: Partial<Record<ChartPointId, string>> = {
+  saturn: "Saturno pide estructura, lÃ­mites y madurez. No empuja rÃ¡pido: obliga a elegir quÃ© sostener de verdad.",
+  jupiter: "JÃºpiter amplÃ­a el campo. Muestra dÃ³nde hay crecimiento, confianza y una puerta que se abre si te atreves a ocupar mÃ¡s espacio.",
+  uranus: "Urano despierta lo que estaba dormido. Trae cambio, independencia y una necesidad de romper una forma vieja.",
+  neptune: "Neptuno sensibiliza y disuelve. Pide escuchar lo invisible, pero tambiÃ©n cuidar las fantasÃ­as que nublan la decisiÃ³n.",
+  pluto: "PlutÃ³n intensifica. Va a la raÃ­z de un patrÃ³n y empuja una transformaciÃ³n profunda, no superficial.",
+  mars: "Marte activa deseo, impulso y fricciÃ³n. Muestra dÃ³nde necesitas actuar, defenderte o mover energÃ­a estancada.",
+  venus: "Venus abre preguntas de valor, vÃ­nculo y placer. SeÃ±ala dÃ³nde algo necesita mÃ¡s belleza, reciprocidad o cuidado.",
+};
+
+function pointLabel(id: ChartPointId) {
+  return POINT_LABELS[id] ?? id;
 }
 
-function uniquePoints(chart: NatalChartData) {
-  const byId = new Map<string, ChartPoint>();
-  [...chart.points, ...(chart.extendedPoints ?? [])].forEach((point) => byId.set(point.id, point));
-  return POINT_ORDER.map((id) => byId.get(id)).filter(Boolean) as ChartPoint[];
+function findPoint(chart: NatalChartData, id: ChartPointId) {
+  return chart.points.find((point) => point.id === id) ?? chart.extendedPoints?.find((point) => point.id === id);
 }
 
-function dignity(point: ChartPoint) {
-  return DIGNITIES[point.id]?.[point.sign] ?? "—";
+function transitWeight(transit: ActiveTransit) {
+  const planetWeight: Partial<Record<ChartPointId, number>> = {
+    pluto: 6,
+    neptune: 5,
+    uranus: 5,
+    saturn: 5,
+    jupiter: 4,
+    mars: 3,
+    venus: 2,
+  };
+  const aspectWeight: Record<ActiveTransit["aspectType"], number> = {
+    conjunction: 3,
+    opposition: 2.6,
+    square: 2.4,
+    trine: 1.8,
+    sextile: 1.4,
+    quincunx: 1.6,
+  };
+  const tightness = transit.strength === "tight" ? 3 : transit.strength === "moderate" ? 2 : 1;
+  return (planetWeight[transit.transitingPlanet] ?? 1) + aspectWeight[transit.aspectType] + tightness - transit.orb;
 }
 
-function chartShape(chart: NatalChartData) {
-  const longitudes = chart.points
-    .filter((point) => POINT_ORDER.slice(0, 10).includes(point.id as (typeof POINT_ORDER)[number]))
-    .map((point) => point.longitude)
-    .sort((a, b) => a - b);
+function topTransits(transits: ActiveTransit[]) {
+  return [...transits].sort((a, b) => transitWeight(b) - transitWeight(a)).slice(0, 6);
+}
 
-  if (longitudes.length < 2) {
-    return "Splash";
-  }
+function activatedHouses(chart: NatalChartData, transits: ActiveTransit[]) {
+  const byHouse = new Map<number, { house: number; count: number; points: Set<string>; transits: ActiveTransit[] }>();
 
-  const gaps = longitudes.map((longitude, index) => {
-    const next = longitudes[(index + 1) % longitudes.length]!;
-    return (next - longitude + 360) % 360;
+  topTransits(transits).forEach((transit) => {
+    const natalPoint = findPoint(chart, transit.natalPlanet);
+    if (!natalPoint) return;
+    const current = byHouse.get(natalPoint.house) ?? {
+      house: natalPoint.house,
+      count: 0,
+      points: new Set<string>(),
+      transits: [],
+    };
+    current.count += 1;
+    current.points.add(pointLabel(natalPoint.id));
+    current.transits.push(transit);
+    byHouse.set(natalPoint.house, current);
   });
-  const largestGap = Math.max(...gaps);
-  const occupiedArc = 360 - largestGap;
 
-  if (occupiedArc <= 120) return "Bundle";
-  if (occupiedArc <= 180) return "Bowl";
-  if (largestGap >= 120) return "Locomotive";
-  if (gaps.filter((gap) => gap > 70).length >= 2) return "Seesaw";
-  if (gaps.filter((gap) => gap > 45).length >= 3) return "Splay";
-  return "Splash";
+  return [...byHouse.values()].sort((a, b) => b.count - a.count).slice(0, 3);
 }
 
-function aspectClass(type: AspectId) {
-  if (type === "trine" || type === "sextile") return "text-[#8292d6]";
-  if (type === "square" || type === "opposition") return "text-amber-200";
-  return "text-ivory";
+function transitSentence(chart: NatalChartData, transit: ActiveTransit) {
+  const natalPoint = findPoint(chart, transit.natalPlanet);
+  const house = natalPoint?.house;
+  const area = house ? HOUSE_AREAS[house] : "una zona sensible de tu carta";
+  const aspect = ASPECT_LABELS[transit.aspectType];
+
+  return `${pointLabel(transit.transitingPlanet)} ${aspect} tu ${pointLabel(transit.natalPlanet)} natal: activa ${area}.`;
+}
+
+function dateLabel(iso?: string, locale?: string) {
+  if (!iso) return "";
+  return new Intl.DateTimeFormat(locale ?? "es", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(iso));
 }
 
 export function ChartCompletePage({ chart, request, dictionary }: ChartCompletePageProps) {
-  const [currentChart, setCurrentChart] = useState(chart);
-  const [houseSystem, setHouseSystem] = useState<HouseSystemCode>("P");
-  const [showMatrix, setShowMatrix] = useState(false);
-  const [cache, setCache] = useState<Record<string, NatalChartData>>({ P: chart });
-  const [error, setError] = useState<string | null>(null);
+  const locale = useStoredLocale();
+  const transitCopy = dictionary.result.transitPage;
+  const [result, setResult] = useState<TransitResult | null>(null);
+  const [transitReading, setTransitReading] = useState("");
+  const [transitData, setTransitData] = useState<TransitData>({});
+  const [isLoadingTransitReading, setIsLoadingTransitReading] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const points = useMemo(() => uniquePoints(currentChart), [currentChart]);
-  const shape = chartShape(currentChart);
 
-  function switchHouseSystem(next: HouseSystemCode) {
-    setError(null);
-    setHouseSystem(next);
-    const cached = cache[next];
-    if (cached) {
-      setCurrentChart(cached);
-      return;
-    }
-
-    if (!request) {
-      setError("No tengo los datos originales para recalcular este sistema en esta sesion.");
-      return;
-    }
-
+  useEffect(() => {
+    let active = true;
     startTransition(async () => {
-      try {
-        const recalculated = await recalculateHouseSystemAction(request, next);
-        setCache((current) => ({ ...current, [next]: recalculated }));
-        setCurrentChart(recalculated);
-      } catch {
-        setError("No se pudo recalcular el sistema de casas. Intentalo otra vez.");
-      }
+      const next = await calculateCurrentTransitsAction(chart, request);
+      if (active) setResult(next);
     });
-  }
+    return () => {
+      active = false;
+    };
+  }, [chart, request]);
+
+  useEffect(() => {
+    if (!result?.ok || result.transits.length === 0) return;
+    let active = true;
+    const top = topTransits(result.transits).map(t => ({
+      transitingPlanet: t.transitingPlanet,
+      natalPlanet: t.natalPlanet,
+      aspectType: t.aspectType,
+      orb: t.orb,
+      strength: t.strength,
+      natalHouse: findPoint(chart, t.natalPlanet)?.house,
+    }));
+    setTransitReading("");
+    setTransitData({});
+    setIsLoadingTransitReading(true);
+    void fetch("/api/transit-reading", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chart, transits: top, locale }),
+    }).then(async (res) => {
+      if (!active || !res.ok || !res.body) { if (active) setIsLoadingTransitReading(false); return; }
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulated = "";
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        accumulated += decoder.decode(value);
+        if (active) setTransitReading(accumulated.split(SARITA_DATA_MARKER)[0] ?? accumulated);
+      }
+      if (active) {
+        const markerIdx = accumulated.indexOf(SARITA_DATA_MARKER);
+        if (markerIdx !== -1) {
+          try {
+            setTransitData(JSON.parse(accumulated.slice(markerIdx + SARITA_DATA_MARKER.length).trim()) as TransitData);
+          } catch {}
+        }
+        setIsLoadingTransitReading(false);
+      }
+    }).catch(() => { if (active) setIsLoadingTransitReading(false); });
+    return () => { active = false; };
+  }, [result, chart, locale]);
+
+  const activeTransits = useMemo(() => {
+    if (!result?.ok) return [];
+    return topTransits(result.transits);
+  }, [result]);
+
+  const houses = useMemo(() => activatedHouses(chart, activeTransits), [chart, activeTransits]);
+  const dominantTransit = activeTransits[0];
+  const proseTransitReading = transitReading.split(SARITA_DATA_MARKER)[0] ?? transitReading;
+  const waitingForTransitData = isLoadingTransitReading && !transitData.dominantTitle;
 
   return (
-    <section className="mx-auto max-w-5xl py-10">
+    <section className="mx-auto max-w-6xl py-10">
       <div className="text-center">
-        <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">
-          {dictionary.result.completeChart.eyebrow}
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/70">
+          {transitCopy.eyebrow}
         </p>
-        <h2 className="mt-2 font-serif text-[42px] leading-tight text-ivory">
-          {dictionary.result.completeChart.shape}: {shape}
+        <h2 className="mt-2 font-serif text-[42px] leading-tight text-ivory md:text-[56px]">
+          {transitCopy.title}
         </h2>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-ivory/58">
-          {SHAPE_DESCRIPTIONS[shape]}
+        <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-ivory/58">
+          {transitCopy.description}
         </p>
+        {result?.ok ? (
+          <p className="mt-4 text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold/82">
+            {transitCopy.calculatedAt} {dateLabel(result.generatedAt, locale)}
+          </p>
+        ) : null}
       </div>
 
-      <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-        {HOUSE_SYSTEMS.map((system) => (
-          <button
-            key={system}
-            type="button"
-            onClick={() => switchHouseSystem(system)}
-            className={[
-              "border px-4 py-2 text-[0.66rem] font-semibold uppercase tracking-[0.18em] transition",
-              houseSystem === system
-                ? "border-dusty-gold/50 bg-dusty-gold/10 text-dusty-gold"
-                : "border-white/10 text-ivory/48 hover:border-white/18 hover:text-ivory",
-            ].join(" ")}
-          >
-            {dictionary.result.completeChart.houseSystems[system]}
-          </button>
-        ))}
-        {isPending ? <span className="ml-2 text-xs uppercase tracking-[0.18em] text-dusty-gold/70">...</span> : null}
-      </div>
-      <p className="mt-3 text-center text-xs uppercase tracking-[0.18em] text-ivory/38">
-        Sistema activo: {dictionary.result.completeChart.houseSystems[houseSystem]}
-      </p>
-      {error ? <p className="mt-3 text-center text-sm text-amber-100/80">{error}</p> : null}
-
-      <div className="mt-8">
-        <BiWheelChart
-          innerChart={currentChart}
-          innerLabel={currentChart.event.name}
-          variant="solar-return"
-        />
+      <div className="mt-10">
+        {result?.ok ? (
+          <BiWheelChart
+            innerChart={chart}
+            outerChart={result.chart}
+            innerLabel={chart.event.name}
+            outerLabel={dictionary.result.primaryTabs.complete}
+            variant="synastry"
+          />
+        ) : (
+          <div className="mx-auto flex min-h-[420px] max-w-[860px] items-center justify-center border border-white/10 bg-white/[0.025] text-center">
+            <div>
+              <p className="font-serif text-3xl text-ivory">{isPending ? transitCopy.calculatingHeading : transitCopy.errorHeading}</p>
+              <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-ivory/52">
+                {isPending
+                  ? transitCopy.calculatingBody
+                  : transitCopy.errorBody}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
-      <details className="mt-8 border-y border-white/10">
-        <summary className="cursor-pointer list-none py-4 text-center text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-dusty-gold/82">
-          {dictionary.result.completeChart.tableTitle}
-        </summary>
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[720px] border-collapse text-sm">
-          <caption className="sr-only">{dictionary.result.completeChart.tableTitle}</caption>
-          <thead>
-            <tr className="text-left text-[0.62rem] uppercase tracking-[0.2em] text-ivory/42">
-              {dictionary.result.completeChart.columns.map((column) => (
-                <th key={column || "glyph"} className="border-b border-white/10 px-3 py-3 font-semibold">
-                  {column}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {points.map((point) => {
-              const signPosition = formatSignPosition(point.longitude);
+      {dominantTransit ? (
+        <div className="mx-auto mt-12 grid max-w-5xl gap-4 md:grid-cols-[1.05fr_0.95fr]">
+          <article className="border border-dusty-gold/20 bg-dusty-gold/[0.055] p-6 md:p-7">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-dusty-gold/88">
+              {transitCopy.mostActiveEyebrow}
+            </p>
+            <h3 className="mt-3 font-serif text-3xl leading-tight text-ivory">
+              {transitData.dominantTitle ?? (waitingForTransitData ? "..." : `${pointLabel(dominantTransit.transitingPlanet)} está activando tu ${pointLabel(dominantTransit.natalPlanet)}`)}
+            </h3>
+            <p className="mt-4 text-base leading-8 text-ivory/72">
+              {transitData.dominantBody ?? (waitingForTransitData ? <span className="animate-pulse text-ivory/35">Generando...</span> : `${transitSentence(chart, dominantTransit)} Este tránsito no describe un destino cerrado: muestra el lenguaje evolutivo del momento, la parte de ti que está siendo llamada a responder con más conciencia.`)}
+            </p>
+          </article>
 
+          <article className="border border-white/10 bg-white/[0.025] p-6 md:p-7">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-dusty-gold/82">
+              {transitCopy.planetLanguageEyebrow}
+            </p>
+            <p className="mt-4 text-base leading-8 text-ivory/68">
+              {transitData.planetLanguage ?? (waitingForTransitData ? <span className="animate-pulse text-ivory/35">Generando...</span> : PLANET_LANGUAGE[dominantTransit.transitingPlanet] ?? "Este planeta marca una zona de aprendizaje activo y pide presencia.")}
+            </p>
+            <p className="mt-5 text-sm leading-7 text-ivory/48">
+              {transitCopy.orbLabel} {dominantTransit.orb}° · {dominantTransit.strength === "tight" ? transitCopy.strengthTight : dominantTransit.strength === "moderate" ? transitCopy.strengthModerate : transitCopy.strengthLoose}
+            </p>
+          </article>
+        </div>
+      ) : result?.ok ? (
+        <div className="mx-auto mt-12 max-w-3xl border border-white/10 bg-white/[0.025] p-7 text-center">
+          <h3 className="font-serif text-3xl text-ivory">{transitCopy.silentSkyHeading}</h3>
+          <p className="mt-4 text-sm leading-7 text-ivory/58">
+            {transitCopy.silentSkyBody}
+          </p>
+        </div>
+      ) : null}
+
+      {(isLoadingTransitReading || transitReading) ? (
+        <div className="mx-auto mt-8 max-w-3xl border-y border-dusty-gold/14 py-7">
+          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">{transitCopy.readingEyebrow}</p>
+          {isLoadingTransitReading && !transitReading ? (
+            <p className="mt-4 animate-pulse text-base leading-8 text-ivory/35">{transitCopy.readingLoading}</p>
+          ) : (
+            proseTransitReading.split("\n\n").filter(Boolean).map((para, i) => (
+              <p key={i} className="mt-4 text-base leading-8 text-ivory/82">{para}</p>
+            ))
+          )}
+        </div>
+      ) : null}
+
+      {activeTransits.length > 0 ? (
+        <div className="mx-auto mt-10 max-w-5xl border-t border-white/10 pt-8">
+          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
+            {transitCopy.activatedAreasEyebrow}
+          </p>
+          <div className="mt-5 grid gap-4 md:grid-cols-3">
+            {houses.map((entry) => {
+              const aiHouse = transitData.houses?.find((house) => house.house === entry.house);
+              const housePending = isLoadingTransitReading && !aiHouse;
               return (
-                <tr key={point.id} className="border-b border-white/7 last:border-b-0">
-                  <td className="px-3 py-3 font-serif text-xl" style={{ color: point.color }}>{point.glyph}</td>
-                  <td className="px-3 py-3 text-ivory/82">{pointName(point, dictionary)}</td>
-                  <td className="px-3 py-3 text-ivory/62">{dictionary.result.signs[point.sign]}</td>
-                  <td className="px-3 py-3 text-ivory/62">{signPosition.degreeInSign}° {String(signPosition.minutesInSign).padStart(2, "0")}'</td>
-                  <td className="px-3 py-3 text-ivory/62">{point.house}</td>
-                  <td className="px-3 py-3 text-ivory/62">{point.retrograde ? "℞" : ""}</td>
-                  <td className="px-3 py-3 text-dusty-gold/70">{dignity(point)}</td>
-                </tr>
+              <article key={entry.house} className="border border-white/10 bg-white/[0.025] p-5">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold/82">
+                  casa {entry.house}
+                </p>
+                <h3 className="mt-3 font-serif text-2xl leading-tight text-ivory">
+                  {aiHouse?.title ?? (housePending ? "..." : HOUSE_AREAS[entry.house])}
+                </h3>
+                <p className="mt-4 text-sm leading-7 text-ivory/58">
+                  {aiHouse?.body ?? (housePending ? <span className="animate-pulse text-ivory/35">Generando...</span> : transitCopy.activatedAreaBody.replace("{points}", Array.from(entry.points).join(", ")))}
+                </p>
+              </article>
               );
             })}
-          </tbody>
-        </table>
-      </div>
-      </details>
-
-      <div className="mt-8 text-center">
-        <button
-          type="button"
-          onClick={() => setShowMatrix((current) => !current)}
-          className="border border-dusty-gold/28 bg-dusty-gold/[0.055] px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-dusty-gold/86"
-        >
-          {showMatrix ? dictionary.result.completeChart.hideAspects : dictionary.result.completeChart.showAspects}
-        </button>
-      </div>
-
-      {showMatrix ? (
-        <div className="mt-6 overflow-x-auto border-y border-white/10 py-4">
-          <table className="mx-auto min-w-[720px] border-collapse text-center text-xs">
-            <tbody>
-              {points.slice(0, 12).map((rowPoint) => (
-                <tr key={rowPoint.id}>
-                  <th className="sticky left-0 bg-cosmic-950 px-2 py-2 text-left font-serif text-lg text-ivory/70">
-                    {rowPoint.glyph}
-                  </th>
-                  {points.slice(0, 12).map((columnPoint) => {
-                    const aspect = currentChart.aspects.find((entry) =>
-                      (entry.from === rowPoint.id && entry.to === columnPoint.id) ||
-                      (entry.to === rowPoint.id && entry.from === columnPoint.id),
-                    );
-                    return (
-                      <td key={columnPoint.id} className="h-9 w-9 border border-white/7">
-                        {aspect ? (
-                          <span className={aspectClass(aspect.type)}>{ASPECT_SYMBOLS[aspect.type]}</span>
-                        ) : null}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          </div>
         </div>
+      ) : null}
+
+      {activeTransits.length > 0 ? (
+        <details className="mx-auto mt-10 max-w-5xl border-y border-white/10">
+          <summary className="cursor-pointer list-none py-4 text-center text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold/82">
+            {transitCopy.viewTransits}
+          </summary>
+          <div className="grid gap-3 pb-6">
+            {activeTransits.map((transit) => (
+              <div
+                key={`${transit.transitingPlanet}-${transit.natalPlanet}-${transit.aspectType}`}
+                className="grid gap-2 border border-white/8 bg-white/[0.02] p-4 md:grid-cols-[0.8fr_1.2fr]"
+              >
+                <p className="text-sm text-dusty-gold/82">
+                  {pointLabel(transit.transitingPlanet)} {ASPECT_LABELS[transit.aspectType]} {pointLabel(transit.natalPlanet)}
+                </p>
+                <p className="text-sm leading-6 text-ivory/58">
+                  {transitSentence(chart, transit)}
+                </p>
+              </div>
+            ))}
+          </div>
+        </details>
       ) : null}
     </section>
   );

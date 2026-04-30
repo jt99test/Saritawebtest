@@ -79,6 +79,7 @@ export type ChartPoint = {
   house: number;
   color: string;
   retrograde?: boolean;
+  longitudeSpeed?: number;
 };
 
 export type HouseCusp = {
@@ -92,6 +93,7 @@ export type Aspect = {
   from: ChartPointId;
   to: ChartPointId;
   orb: number;
+  applying?: boolean;
 };
 
 export type ChartMeta = {

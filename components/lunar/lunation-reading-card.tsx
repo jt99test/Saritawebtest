@@ -20,7 +20,7 @@ export function LunationReadingCard({
 }: LunationReadingCardProps) {
   return (
     <section className="mx-auto max-w-[680px] text-center">
-      <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">
+      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
         lectura personalizada
       </p>
 

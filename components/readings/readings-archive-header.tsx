@@ -36,7 +36,7 @@ export function ReadingsArchiveHeader() {
           <PrimaryButton
             href="/form"
             variant="ghostGold"
-            className="px-5 py-3 text-[0.68rem] uppercase tracking-[0.2em] sm:min-w-[210px]"
+            className="px-5 py-3 text-[12px] uppercase tracking-[0.2em] sm:min-w-[210px]"
           >
             {dictionary.readings.newReading}
           </PrimaryButton>

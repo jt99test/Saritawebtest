@@ -128,6 +128,15 @@ function pointScaleTransform(x: number, y: number, scale: number) {
   return `translate(${round(x)} ${round(y)}) scale(${scale}) translate(${-round(x)} ${-round(y)})`;
 }
 
+function displayAspectOrb(definition: (typeof DISPLAY_ASPECTS)[number], first: ChartPoint, second: ChartPoint) {
+  const hasLuminary = first.id === "sun" || first.id === "moon" || second.id === "sun" || second.id === "moon";
+  if (!hasLuminary) return definition.orb;
+  if (definition.type === "conjunction" || definition.type === "opposition") return 10;
+  if (definition.type === "square" || definition.type === "trine") return 9;
+  if (definition.type === "sextile") return 6;
+  return definition.orb;
+}
+
 function detectDisplayAspects(points: ChartPoint[]) {
   const aspects: Aspect[] = [];
 
@@ -140,7 +149,7 @@ function detectDisplayAspects(points: ChartPoint[]) {
       for (const definition of DISPLAY_ASPECTS) {
         const orb = Math.abs(angle - definition.angle);
 
-        if (orb <= definition.orb) {
+        if (orb <= displayAspectOrb(definition, first, second)) {
           aspects.push({
             id: `${first.id}-${second.id}-${definition.type}`,
             type: definition.type,
@@ -626,7 +635,7 @@ function _PlanetLayer({
             ? 1
             : 0.6
           : 1;
-        const tooltip = `${dictionary.result.points[point.id]} - ${String(point.degreeInSign).padStart(2, "0")}Ã‚Â° ${String(point.minutesInSign).padStart(2, "0")}'`;
+        const tooltip = `${dictionary.result.points[point.id]} - ${String(point.degreeInSign).padStart(2, "0")}° ${String(point.minutesInSign).padStart(2, "0")}'`;
 
         return (
           <g
@@ -856,7 +865,7 @@ function _AstroSeekPlanetLayer({
             ? 1
             : 0.6
           : 1;
-        const tooltip = `${dictionary.result.points[point.id]} - ${String(point.degreeInSign).padStart(2, "0")}Ã‚Â° ${String(point.minutesInSign).padStart(2, "0")}'`;
+        const tooltip = `${dictionary.result.points[point.id]} - ${String(point.degreeInSign).padStart(2, "0")}° ${String(point.minutesInSign).padStart(2, "0")}'`;
         const tangentX = -Math.sin(layout.angle);
         const tangentY = Math.cos(layout.angle);
         const rxX = labelX + tangentX * 20;
@@ -952,7 +961,7 @@ function _AstroSeekPlanetLayer({
                 fontWeight="500"
                 letterSpacing="0.02em"
               >
-                {String(point.degreeInSign).padStart(2, "0")}Ã‚Â° {String(point.minutesInSign).padStart(2, "0")}&apos;
+                {String(point.degreeInSign).padStart(2, "0")}° {String(point.minutesInSign).padStart(2, "0")}&apos;
               </text>
               </g>
             ) : null}

@@ -23,6 +23,8 @@ export function getGeneralReadingCards(chart: NatalChartData, dictionary: Dictio
   const neptune = points.find((point) => point.id === "neptune");
   const pluto = points.find((point) => point.id === "pluto");
   const northNode = points.find((point) => point.id === "northNode");
+  const southNode = points.find((point) => point.id === "southNode");
+  const chiron = points.find((point) => point.id === "chiron");
   const ascendantSign = dictionary.result.signs[formatSignPosition(chart.meta.ascendant).sign];
   const mcSign = dictionary.result.signs[formatSignPosition(chart.meta.mc).sign];
   const sunSign = sun ? dictionary.result.signs[sun.sign] : ascendantSign;
@@ -36,6 +38,8 @@ export function getGeneralReadingCards(chart: NatalChartData, dictionary: Dictio
   const neptuneSign = neptune ? dictionary.result.signs[neptune.sign] : dictionary.result.signs.pisces;
   const plutoSign = pluto ? dictionary.result.signs[pluto.sign] : dictionary.result.signs.scorpio;
   const nodeSign = northNode ? dictionary.result.signs[northNode.sign] : mcSign;
+  const southNodeSign = southNode ? dictionary.result.signs[southNode.sign] : dictionary.result.signs.libra;
+  const chironSign = chiron ? dictionary.result.signs[chiron.sign] : dictionary.result.signs.aries;
   const moonHouse = moon?.house ?? 4;
 
   return [
@@ -85,6 +89,26 @@ export function getGeneralReadingCards(chart: NatalChartData, dictionary: Dictio
       fullText: [
         `${dictionary.result.generalReading.cards.purpose.paragraphs[0]} El Medio Cielo en ${mcSign} y el Nodo Norte en ${nodeSign} apuntan hacia una dirección vocacional y evolutiva que pide tiempo para desplegarse.`,
         dictionary.result.generalReading.cards.purpose.paragraphs[1],
+      ],
+    },
+    {
+      id: "south-node",
+      theme: "lo-que-suelto",
+      title: "Lo que sueltas",
+      oneLiner: `Tu memoria conocida se apoya en ${southNodeSign}.`,
+      fullText: [
+        `El Nodo Sur en ${southNodeSign} muestra una zona de talento antiguo, comodidad y repeticion automatica.`,
+        "No se trata de negar ese lugar, sino de reconocerlo para que el Nodo Norte pueda abrir una direccion nueva.",
+      ],
+    },
+    {
+      id: "chiron",
+      theme: "tu-herida-medicina",
+      title: "Tu herida medicina",
+      oneLiner: `Quiron abre una sensibilidad profunda desde ${chironSign}.`,
+      fullText: [
+        `Quiron en ${chironSign} nombra una herida que no se resuelve por fuerza, sino por presencia, escucha y madurez.`,
+        "Ahi donde hubo vulnerabilidad tambien aparece una forma de acompanamiento y medicina para otros.",
       ],
     },
     {

@@ -10,25 +10,48 @@ import { AspectDetailPanel } from "@/components/chart/aspect-detail-panel";
 import { ChartBalanceSection } from "@/components/chart/chart-balance-section";
 import { ChartCompletePage } from "@/components/chart/chart-complete-page";
 import { ChartGeneralReading } from "@/components/chart/chart-general-reading";
+import { ChartSignaturesSection } from "@/components/chart/chart-signatures-section";
 import { useChartStore } from "@/components/chart/chart-store";
 import { ChartLayerRail, NatalChartWheel } from "@/components/chart/natal-chart-wheel";
 import { PlanetDetailPanel } from "@/components/chart/planet-detail-panel";
+import { PricingModal } from "@/components/paywall/pricing-modal";
 import { SolarReturnPage } from "@/components/chart/solar-return-page";
 import { SynastryPage } from "@/components/chart/synastry-page";
 import { LunaDelMesPage } from "@/components/lunar/luna-del-mes-page";
 import { YogaAstralPage } from "@/components/yoga/yoga-astral-page";
+import { usePlan } from "@/lib/use-plan";
+import type { PaidPlan } from "@/lib/stripe";
 
 type NatalChartExperienceProps = {
   chart: NatalChartData;
   dictionary: Dictionary;
   isMock?: boolean;
-  plan?: string;
   request?: FormValues | null;
 };
 
 type PageTabId = "natal" | "moon" | "yoga" | "complete" | "solarReturn" | "synastry";
 
 const PAGE_TABS: PageTabId[] = ["natal", "moon", "yoga", "complete", "solarReturn", "synastry"];
+
+const TAB_REQUIREMENTS: Partial<Record<PageTabId, PaidPlan>> = {
+  moon: "pro",
+  yoga: "pro",
+  complete: "avanzado",
+  solarReturn: "avanzado",
+  synastry: "avanzado",
+};
+
+function hasPlanAccess(currentPlan: string, requiredPlan?: PaidPlan) {
+  if (!requiredPlan) {
+    return true;
+  }
+
+  if (requiredPlan === "pro") {
+    return currentPlan === "pro" || currentPlan === "avanzado";
+  }
+
+  return currentPlan === "avanzado";
+}
 
 function getFirstName(name: string) {
   return name.trim().split(/\s+/)[0] || name;
@@ -60,7 +83,10 @@ export function NatalChartExperience({
   request = null,
 }: NatalChartExperienceProps) {
   const { panelOpen, selectedPointId } = useChartStore();
+  const { plan, loading: planLoading } = usePlan();
   const [pageTab, setPageTab] = useState<PageTabId>("natal");
+  const [pricingOpen, setPricingOpen] = useState(false);
+  const [pricingRequiredPlan, setPricingRequiredPlan] = useState<PaidPlan>("pro");
   const headerDate = formatHeaderDate(chart.event.dateLabel);
   const headerSubtitle = [
     headerDate.date,
@@ -69,20 +95,34 @@ export function NatalChartExperience({
   ].filter(Boolean).join(" · ");
   const firstName = getFirstName(chart.event.name);
   const titleNameClass = nameSizeClass(firstName);
+  const activeRequiredPlan = TAB_REQUIREMENTS[pageTab];
+  const activeTabLocked = !planLoading && !hasPlanAccess(plan, activeRequiredPlan);
+
+  function openPricing(requiredPlan: PaidPlan) {
+    setPricingRequiredPlan(requiredPlan);
+    setPricingOpen(true);
+  }
 
   return (
-    <div className="relative mx-auto max-w-[880px] pb-20 lg:max-w-[1180px]">
+    <div className="relative mx-auto max-w-[880px] px-4 pb-20 sm:px-6 lg:max-w-[1180px] lg:px-8">
       <div className="space-y-3">
-        <nav className="flex gap-0 border-b border-white/8 pb-0 pt-1">
+        <nav className="flex gap-0 overflow-x-auto border-b border-white/8 pb-0 pt-1 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
           {PAGE_TABS.map((tab) => {
             const active = pageTab === tab;
+            const requiredPlan = TAB_REQUIREMENTS[tab];
+            const locked = !planLoading && !hasPlanAccess(plan, requiredPlan);
             return (
               <button
                 key={tab}
                 type="button"
-                onClick={() => setPageTab(tab)}
+                onClick={() => {
+                  setPageTab(tab);
+                  if (locked && requiredPlan) {
+                    openPricing(requiredPlan);
+                  }
+                }}
                 className={[
-                  "group border-b-[1.5px] px-5 pb-3 pt-2 text-left transition",
+                  "group flex-shrink-0 border-b-[1.5px] px-5 pb-3 pt-2 text-left transition",
                   active
                     ? "border-dusty-gold bg-transparent"
                     : "border-transparent bg-transparent hover:border-dusty-gold/30",
@@ -90,22 +130,61 @@ export function NatalChartExperience({
               >
                 <span
                   className={[
-                    "block text-[0.65rem] font-semibold uppercase leading-none tracking-[0.22em] transition",
+                    "flex items-center gap-2 text-[0.65rem] font-semibold uppercase leading-none tracking-[0.22em] transition",
                     active ? "text-dusty-gold" : "text-ivory/52 group-hover:text-ivory/78",
                   ].join(" ")}
                 >
+                  {locked ? <span aria-hidden="true">🔒</span> : null}
                   {dictionary.result.primaryTabs[tab]}
+                  {locked && requiredPlan ? (
+                    <span className="border border-dusty-gold/20 px-1.5 py-0.5 text-[9px] tracking-[0.14em] text-dusty-gold/80">
+                      {requiredPlan === "pro" ? dictionary.paywall.lockedBadgePro : dictionary.paywall.lockedBadgeAvanzado}
+                    </span>
+                  ) : null}
                 </span>
               </button>
             );
           })}
         </nav>
 
-        {pageTab === "yoga" ? <YogaAstralPage chart={chart} /> : null}
+        {pageTab === "yoga" && !activeTabLocked ? <YogaAstralPage chart={chart} /> : null}
       </div>
 
-      {pageTab === "natal" ? (
+      {activeTabLocked && activeRequiredPlan ? (
+        <div className="mx-auto mt-16 max-w-2xl border-y border-dusty-gold/14 py-14 text-center">
+          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
+            {dictionary.result.primaryTabs[pageTab]}
+          </p>
+          <h2 className="mt-3 font-serif text-[38px] leading-tight text-ivory">
+            {dictionary.paywall.lockedTabTitle.replace(
+              "{plan}",
+              activeRequiredPlan === "pro" ? dictionary.paywall.proName : dictionary.paywall.avanzadoName,
+            )}
+          </h2>
+          <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-ivory/58">
+            {dictionary.paywall.lockedTabBody.replace(
+              "{plan}",
+              activeRequiredPlan === "pro" ? dictionary.paywall.proName : dictionary.paywall.avanzadoName,
+            )}
+          </p>
+          <button
+            type="button"
+            onClick={() => openPricing(activeRequiredPlan)}
+            className="mt-8 border border-dusty-gold/32 bg-dusty-gold/10 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold/88 transition hover:border-dusty-gold/55 hover:bg-dusty-gold/16"
+          >
+            {dictionary.paywall.lockedTabCta}
+          </button>
+        </div>
+      ) : null}
+
+      {pageTab === "natal" && !activeTabLocked ? (
         <>
+          <div className="mx-auto mt-8 max-w-2xl text-center">
+            <p className="text-sm leading-7 text-ivory/60">
+              Esta es tu carta natal: una foto del cielo exactamente en el momento en que naciste. Cada planeta marca algo tuyo — cómo piensas, qué te mueve, dónde tienes fuerza, dónde tienes fricción. Toca cualquier planeta para leer qué dice sobre ti.
+            </p>
+          </div>
+
           <section className="pt-8">
             <div className="flex flex-wrap items-center justify-center gap-3">
               {isMock ? (
@@ -117,7 +196,7 @@ export function NatalChartExperience({
 
             <div className="mt-10 mb-10 text-center lg:hidden">
               <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.35)]">
-                la carta de
+                {dictionary.result.chartHeader.eyebrow}
               </p>
               <h1 className={`mx-auto -mt-1 max-w-full break-words font-serif font-normal leading-none text-ivory [overflow-wrap:anywhere] ${titleNameClass}`}>
                 {firstName}
@@ -131,7 +210,7 @@ export function NatalChartExperience({
               <div className="space-y-6 lg:grid lg:grid-cols-[minmax(220px,1fr)_minmax(500px,640px)_minmax(140px,0.65fr)] lg:items-center lg:gap-8 lg:space-y-0">
                 <div className="hidden min-w-0 text-right lg:block">
                   <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.35)]">
-                    la carta de
+                    {dictionary.result.chartHeader.eyebrow}
                   </p>
                   <h1 className={`-mt-1 ml-auto max-w-[300px] break-words font-serif font-normal leading-none text-ivory [overflow-wrap:anywhere] ${titleNameClass}`}>
                     {firstName}
@@ -152,7 +231,7 @@ export function NatalChartExperience({
 
             {!panelOpen && !selectedPointId ? (
               <p className="mt-3 text-center font-serif text-[13px] italic text-[rgba(255,255,255,0.32)]">
-                selecciona un planeta para abrir su lectura
+                {dictionary.result.chartHeader.selectPlanet}
               </p>
             ) : null}
           </section>
@@ -160,6 +239,7 @@ export function NatalChartExperience({
           {!panelOpen && !selectedPointId ? (
             <div className="mt-12 space-y-0 lg:mt-16">
               <ChartBalanceSection chart={chart} dictionary={dictionary} />
+              <ChartSignaturesSection chart={chart} dictionary={dictionary} />
               <ChartGeneralReading chart={chart} dictionary={dictionary} />
             </div>
           ) : null}
@@ -169,19 +249,25 @@ export function NatalChartExperience({
         </>
       ) : null}
 
-      {pageTab === "moon" ? <LunaDelMesPage chart={chart} dictionary={dictionary} /> : null}
+      {pageTab === "moon" && !activeTabLocked ? <LunaDelMesPage chart={chart} dictionary={dictionary} /> : null}
 
-      {pageTab === "complete" ? (
+      {pageTab === "complete" && !activeTabLocked ? (
         <ChartCompletePage chart={chart} request={request} dictionary={dictionary} />
       ) : null}
 
-      {pageTab === "solarReturn" ? (
+      {pageTab === "solarReturn" && !activeTabLocked ? (
         <SolarReturnPage natalChart={chart} request={request} dictionary={dictionary} />
       ) : null}
 
-      {pageTab === "synastry" ? (
+      {pageTab === "synastry" && !activeTabLocked ? (
         <SynastryPage natalChart={chart} dictionary={dictionary} />
       ) : null}
+
+      <PricingModal
+        open={pricingOpen}
+        onClose={() => setPricingOpen(false)}
+        requiredPlan={pricingRequiredPlan}
+      />
     </div>
   );
 }

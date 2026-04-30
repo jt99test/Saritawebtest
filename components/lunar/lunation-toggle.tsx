@@ -72,7 +72,7 @@ export function LunationToggle({
             <span
               className={[
                 "mt-2 font-serif text-[13px] italic leading-tight transition-colors duration-[400ms]",
-                active ? "text-dusty-gold/70" : "text-white/40 group-hover:text-dusty-gold/55",
+                active ? "text-dusty-gold/82" : "text-white/40 group-hover:text-dusty-gold/55",
               ].join(" ")}
             >
               {option.date}

@@ -10,6 +10,8 @@ const PLAN_LIMITS: Record<string, number> = {
   free: 2,
   basico: 10,
   completo: 50,
+  pro: 10,
+  avanzado: 50,
 };
 
 function getStartOfMonth() {
@@ -187,6 +189,49 @@ export async function recalculateHouseSystemAction(
   });
 }
 
+export async function calculateCurrentTransitsAction(
+  natalChart: NatalChartData,
+  values: FormValues | null,
+) {
+  const access = await getReadingAccess();
+  if (!access || access.plan !== "avanzado") {
+    return { ok: false as const, error: "advanced_plan_required" };
+  }
+
+  if (!values) {
+    return { ok: false as const, error: "missing_original_request" };
+  }
+
+  const { DateTime } = await import("luxon");
+  const { geocode } = await import("./geocoding");
+  const { calculateNatalChart } = await import("./ephemeris.server");
+  const { getActiveTransits } = await import("./transits.server");
+  const geo = values.selectedLocation ? values.selectedLocation : await geocode(values.location);
+  const now = new Date();
+  const localNow = DateTime.fromJSDate(now).setZone(geo.timezone);
+
+  const chart = await calculateNatalChart({
+    name: "Tránsitos",
+    birthDate: localNow.toISODate() ?? localNow.toFormat("yyyy-MM-dd"),
+    birthTime: localNow.toFormat("HH:mm"),
+    timezone: geo.timezone,
+    displayLocation: geo.displayName,
+    lat: geo.lat,
+    lng: geo.lng,
+    daylightSaving: geo.daylightSaving,
+  });
+
+  chart.event.name = "Tránsitos";
+  chart.event.title = "Planetas en tránsito ahora";
+
+  return {
+    ok: true as const,
+    chart,
+    transits: await getActiveTransits(natalChart, now),
+    generatedAt: now.toISOString(),
+  };
+}
+
 export async function calculateSolarReturnAction(input: {
   natalChart: NatalChartData;
   request?: FormValues | null;
@@ -196,6 +241,10 @@ export async function calculateSolarReturnAction(input: {
   lng?: number;
 }) {
   const access = await getReadingAccess();
+  if (!access || access.plan !== "avanzado") {
+    return { ok: false as const, error: "advanced_plan_required" };
+  }
+
   const { calculateSolarReturn } = await import("./ephemeris.server");
   const sun = input.natalChart.points.find((point) => point.id === "sun");
 
@@ -286,6 +335,16 @@ export async function saveAndCalculateSynastryPartnerAction(input: SynastryPartn
 
   if (!user) {
     return { ok: false as const, error: "not_authenticated" };
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (profile?.plan !== "avanzado") {
+    return { ok: false as const, error: "advanced_plan_required" };
   }
 
   const { geocode } = await import("./geocoding");

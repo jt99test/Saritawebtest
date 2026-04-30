@@ -23,6 +23,11 @@ export type LunarReportMetadata = {
   baseMessage: string;
   element: "fire" | "earth" | "air" | "water";
   assignedRoutine: "fuego" | "tierra" | "agua" | "aire";
+  eclipse?: {
+    isEclipse: boolean;
+    kind: "solar" | "lunar";
+    nodeOrb: number;
+  };
   routine: {
     element: "fuego" | "tierra" | "agua" | "aire";
     bodyZone: string;

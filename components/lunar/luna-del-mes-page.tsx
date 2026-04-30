@@ -17,6 +17,7 @@ import {
   getAllCachedLunarReports,
   setCachedLunarReport,
 } from "@/lib/lunar-report-cache";
+import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { LunationToggle } from "@/components/lunar/lunation-toggle";
 import { LunationHeaderCard } from "@/components/lunar/lunation-header-card";
 import { LunationReadingCard } from "@/components/lunar/lunation-reading-card";
@@ -77,6 +78,7 @@ async function fetchPreview(
   year: number,
   month: number,
   lunationType: LunationType,
+  locale: string,
 ) {
   const response = await fetch("/api/lunar-report", {
     method: "POST",
@@ -87,6 +89,7 @@ async function fetchPreview(
       month,
       lunationType,
       metadataOnly: true,
+      locale,
     }),
   });
 
@@ -98,6 +101,7 @@ async function fetchPreview(
 }
 
 export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
+  const locale = useStoredLocale();
   const currentMonth = useMemo(() => monthDateForChart(chart), [chart]);
   const year = currentMonth.year;
   const month = currentMonth.month;
@@ -149,8 +153,8 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
 
       try {
         const [nueva, llena] = await Promise.all([
-          fetchPreview(chart, year, month, "nueva"),
-          fetchPreview(chart, year, month, "llena"),
+          fetchPreview(chart, year, month, "nueva", locale),
+          fetchPreview(chart, year, month, "llena", locale),
         ]);
 
         if (cancelled) {
@@ -174,7 +178,7 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
     return () => {
       cancelled = true;
     };
-  }, [chart, month, timezone, year]);
+  }, [chart, locale, month, timezone, year]);
 
   const selectedMetadata = previews[selectedType] ?? null;
   const selectedReportKey = reportKeyFor(year, month, selectedType);
@@ -201,6 +205,7 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
         year,
         month,
         lunationType: type,
+        locale,
       }),
     }).catch(() => null);
 
@@ -327,8 +332,14 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
 
   return (
     <div className="mx-auto max-w-[1080px] pb-0 pt-8 lg:pt-10">
+      <div className="mx-auto mb-8 max-w-2xl text-center">
+        <p className="text-sm leading-7 text-ivory/60">
+          Cada mes hay dos lunas importantes: la Luna Nueva, que abre un ciclo, y la Luna Llena, que lo cierra. Según dónde cae cada una en tu carta, activa un área distinta de tu vida. Aquí ves qué te toca este mes y qué hacer con eso.
+        </p>
+      </div>
+
       <header className="text-center">
-        <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
           luna del mes
         </p>
         <h1 className="mt-1.5 font-serif text-[52px] font-normal leading-none tracking-[-0.01em] text-white lg:text-[68px]">

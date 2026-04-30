@@ -27,6 +27,7 @@ function subscribe(onStoreChange: () => void) {
 
 export function setStoredLocale(locale: Locale) {
   window.localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+  document.cookie = `${LOCALE_STORAGE_KEY}=${locale}; path=/; max-age=31536000; samesite=lax`;
   window.dispatchEvent(new Event(LOCALE_CHANGE_EVENT));
 }
 

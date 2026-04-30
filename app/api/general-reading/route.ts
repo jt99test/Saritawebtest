@@ -6,10 +6,17 @@ import {
   getThemeInstruction,
   type GeneralReadingTheme,
 } from "@/lib/general-reading";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-function buildPrompt(chart: NatalChartData, theme: GeneralReadingTheme) {
+function langInstruction(locale?: string): string {
+  if (locale === "en") return "Write entirely in English.";
+  if (locale === "it") return "Write entirely in Italian.";
+  return "Write in Spanish from Spain. Use the 'tú' form.";
+}
+
+function buildPrompt(chart: NatalChartData, theme: GeneralReadingTheme, locale?: string) {
   const chartSummary = getChartSummaryForPrompt(chart);
   const themeInstruction = getThemeInstruction(chart, theme);
 
@@ -35,14 +42,36 @@ Voice and format requirements for all 6 prompts:
 Formato:
 - 3 párrafos fluidos, sin subtítulos.
 - 350-500 palabras.
-- Cierra con una observación práctica o útil.`;
+- Cierra con una observación práctica o útil.
+
+${langInstruction(locale)}`;
 }
 
 export async function POST(request: Request) {
   try {
-    const { chart, theme } = (await request.json()) as {
+    const supabase = await createServerSupabaseClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if ((profile?.plan ?? "free") === "free") {
+      return new Response("Plan required", { status: 403 });
+    }
+
+    const { chart, theme, locale } = (await request.json()) as {
       chart: NatalChartData;
       theme: GeneralReadingTheme;
+      locale?: string;
     };
 
     if (!process.env.ANTHROPIC_API_KEY) {
@@ -53,7 +82,7 @@ export async function POST(request: Request) {
       return new Response("Unknown theme", { status: 400 });
     }
 
-    const prompt = buildPrompt(chart, theme);
+    const prompt = buildPrompt(chart, theme, locale);
     const stream = client.messages.stream({
       model: "claude-sonnet-4-6",
       max_tokens: 1200,

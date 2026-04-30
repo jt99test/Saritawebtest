@@ -162,16 +162,19 @@ function getHouseForLongitude(
   latitude: number,
   houses: WasmHouses,
   obliquityOfDate: number,
-  eclipticLatitude = 0,
+  houseSystem: ChartInput["houseSystem"] = "P",
   applyFiveDegreeCuspRule = false,
 ) {
+  // Match standard chart-wheel practice and Astro.com style placement:
+  // house membership is read from ecliptic longitude on the zodiac circle,
+  // not from the body's ecliptic latitude / mundane position.
   const housePosition = se.house_pos(
     houses.ascmc[2]!,  // ARMC
     latitude,
     obliquityOfDate,
-    "P",
+    houseSystem,
     longitude,
-    eclipticLatitude,
+    0,
   );
   const house = clampHouse(housePosition);
 
@@ -195,6 +198,7 @@ function buildPoint(
   houses: WasmHouses,
   latitude: number,
   obliquityOfDate: number,
+  houseSystem: ChartInput["houseSystem"],
 ): ChartPoint {
   const longitude = normalizeLongitude(result.longitude);
   return {
@@ -212,11 +216,12 @@ function buildPoint(
       latitude,
       houses,
       obliquityOfDate,
-      result.latitude,
+      houseSystem,
       FIVE_DEGREE_CUSP_POINT_IDS.has(config.id),
     ),
     color: config.color,
     retrograde: result.longitudeSpeed < 0,
+    longitudeSpeed: result.longitudeSpeed,
   };
 }
 
@@ -229,8 +234,10 @@ function buildDerivedPoint(
   houses: WasmHouses,
   latitude: number,
   obliquityOfDate: number,
+  houseSystem: ChartInput["houseSystem"],
   retrograde = false,
   applyFiveDegreeCuspRule = false,
+  longitudeSpeed = 0,
 ): ChartPoint {
   const normalized = normalizeLongitude(longitude);
   return {
@@ -248,12 +255,32 @@ function buildDerivedPoint(
       latitude,
       houses,
       obliquityOfDate,
-      0,
+      houseSystem,
       applyFiveDegreeCuspRule,
     ),
     color,
     retrograde,
+    longitudeSpeed,
   };
+}
+
+function aspectOrb(def: (typeof ASPECT_DEFS)[number], first: ChartPoint, second: ChartPoint) {
+  const hasLuminary = first.id === "sun" || first.id === "moon" || second.id === "sun" || second.id === "moon";
+  if (!hasLuminary) return def.orb;
+  if (def.type === "conjunction" || def.type === "opposition") return 10;
+  if (def.type === "square" || def.type === "trine") return 9;
+  if (def.type === "sextile") return 6;
+  return def.orb;
+}
+
+function aspectDelta(firstLongitude: number, secondLongitude: number, targetAngle: number) {
+  return Math.abs(circularDistance(firstLongitude, secondLongitude) - targetAngle);
+}
+
+function isApplying(first: ChartPoint, second: ChartPoint, targetAngle: number, currentOrb: number) {
+  const futureFirst = normalizeLongitude(first.longitude + (first.longitudeSpeed ?? 0));
+  const futureSecond = normalizeLongitude(second.longitude + (second.longitudeSpeed ?? 0));
+  return aspectDelta(futureFirst, futureSecond, targetAngle) < currentOrb;
 }
 
 function detectAspects(points: ChartPoint[]): Aspect[] {
@@ -273,13 +300,14 @@ function detectAspects(points: ChartPoint[]): Aspect[] {
       const angle = circularDistance(first.longitude, second.longitude);
       for (const def of ASPECT_DEFS) {
         const orb = Math.abs(angle - def.angle);
-        if (orb <= def.orb) {
+        if (orb <= aspectOrb(def, first, second)) {
           aspects.push({
             id: `${first.id}-${second.id}-${def.type}`,
             type: def.type,
             from: first.id,
             to: second.id,
             orb: Math.round(orb * 10) / 10,
+            applying: isApplying(first, second, def.angle, orb),
           });
           break;
         }
@@ -323,7 +351,7 @@ export async function calculateNatalChart(input: ChartInput): Promise<NatalChart
 
   const eps = obliquity(julianDayUt);
   const points = PLANET_CONFIG.map((config) =>
-    buildPoint(se, config, calcUt(se, julianDayUt, config.body, flags), rawHouses, input.lat, eps),
+    buildPoint(se, config, calcUt(se, julianDayUt, config.body, flags), rawHouses, input.lat, eps, houseSystem),
   );
 
   const northNode = points.find((p) => p.id === "northNode");
@@ -332,7 +360,7 @@ export async function calculateNatalChart(input: ChartInput): Promise<NatalChart
 
   if (northNode) {
     points.push(buildDerivedPoint(se, "southNode", "☋", northNode.longitude + 180, "#8f8798",
-      rawHouses, input.lat, eps, northNode.retrograde, true));
+      rawHouses, input.lat, eps, houseSystem, northNode.retrograde, true, northNode.longitudeSpeed ?? 0));
   }
 
   if (sun && moon) {
@@ -341,14 +369,14 @@ export async function calculateNatalChart(input: ChartInput): Promise<NatalChart
       ? rawHouses.ascmc[0]! + moon.longitude - sun.longitude
       : rawHouses.ascmc[0]! + sun.longitude - moon.longitude;
     points.push(buildDerivedPoint(se, "partOfFortune", "⊗", partOfFortuneLongitude, "#f1d28f",
-      rawHouses, input.lat, eps));
+      rawHouses, input.lat, eps, houseSystem));
   }
 
   // Ceres is optional in SARITA's extended data layer; it stays out of core points
   // until a view explicitly chooses to render extended points.
   const ceresResult = calcUt(se, julianDayUt, SE_CERES, flags);
   const ceres = buildDerivedPoint(se, "ceres", "⚳", ceresResult.longitude, "#cdbf8d",
-    rawHouses, input.lat, eps, ceresResult.longitudeSpeed < 0);
+    rawHouses, input.lat, eps, houseSystem, ceresResult.longitudeSpeed < 0, false, ceresResult.longitudeSpeed);
   const extendedPoints = [...points, ceres];
 
   const aspects = detectAspects(points);

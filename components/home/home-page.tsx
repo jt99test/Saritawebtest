@@ -54,7 +54,7 @@ export function HomePage() {
             <div className="min-w-0 flex-1 pt-2">
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="h-px w-10 shrink-0 bg-gradient-to-r from-dusty-gold/70 to-transparent sm:w-14" />
-                <p className="truncate text-[0.56rem] uppercase tracking-[0.28em] text-dusty-gold/80 sm:text-[0.68rem] sm:tracking-[0.38em]">
+                <p className="truncate text-[0.56rem] uppercase tracking-[0.28em] text-dusty-gold/80 sm:text-[12px] sm:tracking-[0.38em]">
                   {dictionary.home.eyebrow}
                 </p>
               </div>

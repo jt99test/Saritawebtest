@@ -2,6 +2,7 @@ import SwissEph from "swisseph-wasm";
 import { DateTime } from "luxon";
 
 import type { HouseCusp, NatalChartData, SignId } from "@/lib/chart";
+import { distanceToNodeAxis } from "@/lib/chart-insights";
 import {
   getDegreeInSign,
   getMinutesInSign,
@@ -10,7 +11,7 @@ import {
   zodiacSigns,
 } from "@/lib/chart";
 
-const SE_SUN = 0, SE_MOON = 1;
+const SE_SUN = 0, SE_MOON = 1, SE_TRUE_NODE = 11;
 const SEFLG_SPEED = 256, SEFLG_SWIEPH = 2;
 
 let _se: SwissEph | null = null;
@@ -49,6 +50,11 @@ export type MonthlyLunarActivation = {
   activatedHouse: number;
   element: "fire" | "earth" | "air" | "water";
   assignedRoutine: ElementRoutineId;
+  eclipse?: {
+    isEclipse: boolean;
+    kind: "solar" | "lunar";
+    nodeOrb: number;
+  };
 };
 
 export type MonthlyLunarData = {
@@ -154,14 +160,27 @@ function getLunationsForMonth(se: SwissEph, year: number, month: number, type: L
   return matches.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
 }
 
-function toActivation(point: LunationPoint, natalHouses: HouseCusp[]): MonthlyLunarActivation {
+function getEclipseInfo(se: SwissEph, point: LunationPoint, type: LunationKind) {
+  const jd = toJulianDay(se, new Date(point.timestamp));
+  const nodeArr = se.calc_ut(jd, SE_TRUE_NODE, ephemerisFlag()) as Float64Array;
+  const nodeOrb = distanceToNodeAxis(point.longitude, normalizeLongitude(nodeArr[0]!));
+  return {
+    isEclipse: nodeOrb <= 18,
+    kind: type === "nueva" ? "solar" as const : "lunar" as const,
+    nodeOrb: Math.round(nodeOrb * 10) / 10,
+  };
+}
+
+function toActivation(se: SwissEph, point: LunationPoint, natalHouses: HouseCusp[], type: LunationKind): MonthlyLunarActivation {
   const element = getElementForSign(point.sign);
+  const eclipse = getEclipseInfo(se, point, type);
   return {
     timestamp: point.timestamp,
     position: { sign: point.sign, degree: point.degreeInSign, minutes: point.minutesInSign, longitude: point.longitude },
     activatedHouse: getActivatedHouse(point.longitude, natalHouses),
     element,
     assignedRoutine: getRoutineForElement(element),
+    eclipse: eclipse.isEclipse ? eclipse : undefined,
   };
 }
 
@@ -213,9 +232,9 @@ export async function getMonthlyLunarData(
   const lunasNuevas = getLunationsForMonth(se, year, month, "nueva");
   const lunasLlenas = getLunationsForMonth(se, year, month, "llena");
   return {
-    lunaNueva:          lunasNuevas[0] ? toActivation(lunasNuevas[0], natalChart.houses) : null,
-    lunaNuevaSecondary: lunasNuevas[1] ? toActivation(lunasNuevas[1], natalChart.houses) : null,
-    lunaLlena:          lunasLlenas[0] ? toActivation(lunasLlenas[0], natalChart.houses) : null,
-    lunaLlenaSecondary: lunasLlenas[1] ? toActivation(lunasLlenas[1], natalChart.houses) : null,
+    lunaNueva:          lunasNuevas[0] ? toActivation(se, lunasNuevas[0], natalChart.houses, "nueva") : null,
+    lunaNuevaSecondary: lunasNuevas[1] ? toActivation(se, lunasNuevas[1], natalChart.houses, "nueva") : null,
+    lunaLlena:          lunasLlenas[0] ? toActivation(se, lunasLlenas[0], natalChart.houses, "llena") : null,
+    lunaLlenaSecondary: lunasLlenas[1] ? toActivation(se, lunasLlenas[1], natalChart.houses, "llena") : null,
   };
 }

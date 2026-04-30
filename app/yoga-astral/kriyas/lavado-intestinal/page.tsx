@@ -1,11 +1,15 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { cookies } from "next/headers";
 
 import { lavadoIntestinal } from "@/data/sarita/lavado-intestinal";
+import { LavadoBuyButton } from "@/components/paywall/lavado-buy-button";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { PremiumCard } from "@/components/ui/premium-card";
 import { AsanaVisual } from "@/components/yoga/asana-visual";
+import { dictionaries, defaultLocale, isLocale, LOCALE_STORAGE_KEY } from "@/lib/i18n";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 function SectionHeader({ children }: { children: ReactNode }) {
   return (
@@ -18,7 +22,24 @@ function SectionHeader({ children }: { children: ReactNode }) {
   );
 }
 
-export default function LavadoIntestinalPage() {
+export default async function LavadoIntestinalPage() {
+  const cookieStore = await cookies();
+  const cookieLocale = cookieStore.get(LOCALE_STORAGE_KEY)?.value;
+  const locale = cookieLocale && isLocale(cookieLocale) ? cookieLocale : defaultLocale;
+  const dictionary = dictionaries[locale];
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { data: profile } = user
+    ? await supabase
+        .from("profiles")
+        .select("billing_period,lavado_purchased")
+        .eq("id", user.id)
+        .maybeSingle()
+    : { data: null };
+  const hasAccess = Boolean(profile?.lavado_purchased) || profile?.billing_period === "yearly";
+
   return (
     <main className="relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
@@ -49,6 +70,40 @@ export default function LavadoIntestinalPage() {
               </div>
             </PremiumCard>
 
+            <section className="border border-amber-300/30 bg-amber-300/[0.08] p-5 sm:p-6">
+              <p className="text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-amber-200/90">
+                Precaucion importante
+              </p>
+              <p className="mt-3 max-w-4xl text-sm leading-7 text-amber-50/78">
+                {lavadoIntestinal.precautions}
+              </p>
+            </section>
+
+            {!hasAccess ? (
+              <section className="mx-auto max-w-2xl border-y border-dusty-gold/18 py-10 text-center">
+                <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
+                  {dictionary.paywall.lavado.gateTitle}
+                </p>
+                <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-ivory/62">
+                  {dictionary.paywall.lavado.gateBody}
+                </p>
+                <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                  <LavadoBuyButton
+                    label={dictionary.paywall.lavado.gateOnetimeCta}
+                    loadingLabel={dictionary.paywall.checkoutLoading}
+                  />
+                  <Link
+                    href="/resultado"
+                    className="border border-white/10 px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-ivory/62 transition hover:border-white/20 hover:text-ivory"
+                  >
+                    {dictionary.paywall.lavado.gatePlansCta}
+                  </Link>
+                </div>
+              </section>
+            ) : null}
+
+            {hasAccess ? (
+              <>
             <PremiumCard className="border-t border-[rgba(181,163,110,0.15)] bg-transparent p-0 pt-10 shadow-none sm:pt-12">
               <h2 className="font-serif text-3xl text-ivory">Preparación</h2>
               <p className="mt-4 max-w-4xl text-sm leading-7 text-ivory/68">
@@ -110,6 +165,16 @@ export default function LavadoIntestinalPage() {
                               <p className="mt-5 text-sm leading-7 text-ivory/68">
                                 {asana.description}
                               </p>
+                            ) : null}
+                            {asana.warning ? (
+                              <div className="mt-5 border border-amber-300/28 bg-amber-300/[0.08] px-4 py-3">
+                                <p className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-amber-200/86">
+                                  Precaucion
+                                </p>
+                                <p className="mt-2 text-sm leading-6 text-amber-50/72">
+                                  {asana.warning}
+                                </p>
+                              </div>
                             ) : null}
                           </div>
                         </div>
@@ -190,6 +255,8 @@ export default function LavadoIntestinalPage() {
             <footer className="border-t border-white/10 pt-6 text-center text-xs font-medium uppercase tracking-[0.24em] text-ivory/48">
               Método S.A.R.I.T.A.® · Sarita Shakti
             </footer>
+              </>
+            ) : null}
           </div>
         </Container>
       </section>

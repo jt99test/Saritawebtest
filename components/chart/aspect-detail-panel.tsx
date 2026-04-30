@@ -62,7 +62,7 @@ export function AspectDetailPanel({ chart }: Props) {
                 <span className="text-[9px] font-semibold uppercase tracking-[0.22em] text-ivory/50">
                   {dictionary.result.aspectTypes[selectedAspect.type]}
                 </span>
-                <span className="text-[11px] text-dusty-gold/70">
+                <span className="text-[11px] text-dusty-gold/82">
                   {selectedAspect.orb.toFixed(1)}°
                 </span>
               </div>

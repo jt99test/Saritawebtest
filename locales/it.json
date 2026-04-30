@@ -90,8 +90,41 @@
     "planNames": {
       "free": "Gratis",
       "basico": "Base",
-      "completo": "Completo"
+      "completo": "Completo",
+      "pro": "Pro",
+      "avanzado": "Avanzato"
     }
+  },
+  "paywall": {
+    "monthly": "Mensile",
+    "yearly": "Annuale",
+    "savesBadge": "Risparmia €{amount}/anno",
+    "mostPopular": "Più popolare",
+    "perMonth": "/mese",
+    "perYear": "/anno",
+    "billedYearly": "Fatturato annualmente",
+    "currentPlan": "Il tuo piano attuale",
+    "upgrade": "Inizia ora",
+    "lockedBadgePro": "Pro",
+    "lockedBadgeAvanzado": "Avanzato",
+    "lockedTabTitle": "Questa funzione richiede il piano {plan}",
+    "lockedTabBody": "Sblocca {plan} per accedere a questo contenuto.",
+    "lockedTabCta": "Vedi i piani",
+    "proName": "Pro",
+    "avanzadoName": "Avanzato",
+    "proFeatures": ["Luna del mese personalizzata", "Yoga astrale secondo la tua carta", "Lavaggio intestinale gratis con piano annuale"],
+    "avanzadoFeatures": ["Tutto incluso nel piano Pro", "Transiti in tempo reale", "Rivoluzione Solare", "Sinastria", "Lavaggio intestinale gratis con piano annuale"],
+    "lavadoFreeHighlight": "Gratis con piano annuale",
+    "checkoutLoading": "Reindirizzamento...",
+    "lavado": {
+      "gateTitle": "Contenuto esclusivo",
+      "gateBody": "Incluso gratis nei piani annuali Pro e Avanzato.",
+      "gateOnetimeCta": "Acquista accesso · €49,99",
+      "gatePlansCta": "Vedi piani annuali"
+    },
+    "successBanner": "Piano attivato. Hai ora accesso completo.",
+    "cancelBanner": "Pagamento annullato. Puoi riprendere quando vuoi.",
+    "manageSubscription": "Gestisci abbonamento"
   },
   "result": {
     "intro": "Così erano allineati i pianeti quando sei nato.",
@@ -104,7 +137,7 @@
       "natal": "La tua carta",
       "moon": "Luna del mese",
       "yoga": "Yoga astrale",
-      "complete": "Carta completa",
+      "complete": "Transiti",
       "solarReturn": "Rivoluzione Solare",
       "synastry": "Sinastria",
       "transits": "Transiti del mese",
@@ -117,6 +150,81 @@
       "title": "Sblocca {featureName}",
       "description": "Questo livello apre letture più profonde della tua carta e dei tuoi legami. È incluso nei piani a pagamento.",
       "cta": "Vedi piani"
+    },
+    "chartHeader": {
+      "eyebrow": "la carta di",
+      "selectPlanet": "tocca un pianeta per leggere la sua storia"
+    },
+    "solarReturnPage": {
+      "eyebrow": "rivoluzione solare",
+      "title": "La mappa del tuo anno.",
+      "intro": "La Rivoluzione Solare è una nuova carta calcolata per il momento in cui il Sole torna al punto esatto in cui si trovava quando sei nato: il tuo compleanno. Questa carta descrive il clima dell'anno che inizia: quale area di vita chiederà più attenzione, quali emozioni saranno protagoniste e che tipo di movimento porta il ciclo. Non è destino: è la mappa dell'anno.",
+      "cityQuestion": "In quale città passerai il tuo compleanno?",
+      "cityHint": "La città conta: cambia l'Ascendente dell'anno.",
+      "calculating": "Calcolando...",
+      "viewYear": "Vedi il mio anno {year}",
+      "readingEyebrow": "lettura del ciclo",
+      "readingTitle": "Quello che questo ciclo viene ad aprire.",
+      "readingLoading": "Generando la tua lettura del ciclo...",
+      "changeYear": "Vedere un altro anno",
+      "themeCard": "Il tema dell'anno",
+      "areaCard": "Area di vita",
+      "toneCard": "Tono emotivo",
+      "priorityTitle": "Aree da privilegiare",
+      "yogaTitle": "Yoga per ogni stagione dell'anno",
+      "errorMessage": "Impossibile calcolare la Rivoluzione Solare."
+    },
+    "synastryPage": {
+      "eyebrow": "sinastria",
+      "title": "Due carte, un campo.",
+      "intro": "La sinastria confronta due carte natali per vedere come si incastrano. Non è un punteggio di compatibilità: è una mappa di come funziona il legame tra due persone, dove scorre facilmente, dove c'è tensione e cosa quella relazione viene a insegnare. Inserisci i dati di nascita dell'altra persona per vedere l'analisi.",
+      "addPerson": "Aggiungi nuova persona",
+      "saving": "Salvando...",
+      "saveAndCompare": "Salva e confronta",
+      "compare": "Confronta",
+      "delete": "Elimina",
+      "flipCharts": "Inverti le carte",
+      "mainConnections": "Connessioni principali",
+      "readingEyebrow": "lettura della relazione",
+      "readingLoading": "Generando lettura...",
+      "compareAnother": "Confronta con un'altra persona",
+      "orb": "orbo",
+      "aspectQuality": {
+        "harmonious": "armonico",
+        "tense": "teso",
+        "neutral": "neutro"
+      },
+      "layerTitles": {
+        "fisico": "Fisico",
+        "sexual": "Sessuale",
+        "emocional": "Emotivo",
+        "mental": "Mentale",
+        "profesional": "Professionale",
+        "evolutivo": "Evolutivo"
+      }
+    },
+    "transitPage": {
+      "eyebrow": "quello che sta succedendo nel tuo cielo adesso",
+      "title": "La tua carta in questo momento.",
+      "description": "Al centro c'è la tua carta natale, quella di sempre. Fuori ci sono i pianeti di oggi. Quando un pianeta di oggi cade su uno tuo, si attiva qualcosa nella tua vita. Questa vista ti dice esattamente quale area della tua vita sta rispondendo adesso.",
+      "calculatingHeading": "Calcolando il cielo attuale...",
+      "calculatingBody": "Sto costruendo la carta dei transiti da sovrapporre alla tua carta natale.",
+      "errorHeading": "Non ho potuto calcolare i transiti.",
+      "errorBody": "Ho bisogno dei dati di nascita originali e del luogo per costruire questa ruota correttamente.",
+      "mostActiveEyebrow": "più attivo adesso",
+      "planetLanguageEyebrow": "il linguaggio del pianeta",
+      "calculatedAt": "Cielo calcolato:",
+      "readingEyebrow": "lettura del momento",
+      "readingLoading": "Generando lettura...",
+      "activatedAreasEyebrow": "aree di vita attivate",
+      "activatedAreaBody": "Si attiva attraverso {points}. Leggi questa casa come una scena: il transito non muove solo eventi, chiede anche un modo nuovo di stare nella tua vita.",
+      "viewTransits": "vedi le attivazioni principali",
+      "strengthTight": "attivazione molto vicina",
+      "strengthModerate": "attivazione presente",
+      "strengthLoose": "attivazione di fondo",
+      "silentSkyHeading": "Un cielo più silenzioso.",
+      "silentSkyBody": "Non ci sono transiti maggiori esatti sui principali pianeti natali in questo momento. Indica che l'enfasi è meno concentrata e può sembrare più un'integrazione che un cambiamento visibile.",
+      "orbLabel": "Orbo"
     },
     "completeChart": {
       "eyebrow": "carta completa",

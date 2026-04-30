@@ -17,7 +17,7 @@ export function PlanGate({ plan, featureName, dictionary, children }: PlanGatePr
 
   return (
     <div className="mx-auto mt-12 max-w-2xl border-y border-dusty-gold/14 py-14 text-center">
-      <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">
+      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
         {dictionary.result.planGate.eyebrow}
       </p>
       <h2 className="mt-3 font-serif text-[42px] font-normal leading-tight text-ivory lg:text-[56px]">

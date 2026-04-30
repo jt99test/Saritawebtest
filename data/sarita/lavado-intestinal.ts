@@ -102,7 +102,7 @@ export const lavadoIntestinal: LavadoIntestinalProtocol = {
       "No se requieren restricciones alimentarias especiales antes ni después de esta práctica corta.",
   },
   precautions:
-    "No forzar el movimiento intestinal en ningún momento: debe ser completamente natural. Las contraindicaciones son las mismas que para la técnica completa de Shankhaprakshala. Consultar con un especialista si existe cualquier condición de salud preexistente.",
+    "Esta practica pertenece a una categoria de limpieza digestiva, no a una secuencia regular de asanas. Puede alterar hidratacion y equilibrio de sales si se fuerza o se repite sin criterio. No practicar en embarazo, menstruacion, hernias, ulceras, enfermedad intestinal inflamatoria, enfermedad cardiaca o renal, hipertension no controlada, recuperacion postquirurgica, dolor abdominal agudo o cualquier condicion medica digestiva. Detenerse si aparece mareo, debilidad, nauseas intensas, palpitaciones o dolor. No forzar el movimiento intestinal en ningun momento y consultar con un profesional de salud si existe cualquier duda.",
   benefits:
     "A diferencia del método completo que vacía todo el sistema digestivo, el lavado corto estimula el funcionamiento normal de los intestinos. Es un método excelente, sencillo y suave que puede incorporarse como práctica habitual de higiene digestiva.\n\nPrácticas adicionales opcionales: Kunjal Kriya y Jala Neti pueden realizarse inmediatamente después de completar la técnica.",
   threeDayDiet: {

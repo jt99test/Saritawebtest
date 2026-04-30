@@ -5,7 +5,28 @@ import { zodiacSigns } from "@/lib/chart";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-function buildPrompt(chart: NatalChartData, pointId: ChartPointId): string {
+function langInstruction(locale?: string): string {
+  if (locale === "en") return "Write entirely in English.";
+  if (locale === "it") return "Write entirely in Italian.";
+  return "Write in Spanish from Spain. Use the 'tú' form.";
+}
+
+const SIGN_LABELS = {
+  aries: "Aries",
+  taurus: "Tauro",
+  gemini: "Géminis",
+  cancer: "Cáncer",
+  leo: "Leo",
+  virgo: "Virgo",
+  libra: "Libra",
+  scorpio: "Escorpio",
+  sagittarius: "Sagitario",
+  capricorn: "Capricornio",
+  aquarius: "Acuario",
+  pisces: "Piscis",
+} as const;
+
+function buildPrompt(chart: NatalChartData, pointId: ChartPointId, locale?: string): string {
   const point = chart.points.find((entry) => entry.id === pointId);
 
   if (!point) {
@@ -13,40 +34,9 @@ function buildPrompt(chart: NatalChartData, pointId: ChartPointId): string {
   }
 
   const sign = zodiacSigns.find((entry) => entry.id === point.sign);
-  const signName = point.sign.charAt(0).toUpperCase() + point.sign.slice(1);
+  const signName = SIGN_LABELS[point.sign];
   const element = sign?.element ?? "";
   const modality = sign?.modality ?? "";
-
-  const allPoints = chart.points
-    .map((entry) => {
-      const signLabel = entry.sign.charAt(0).toUpperCase() + entry.sign.slice(1);
-      return `• ${entry.id.charAt(0).toUpperCase() + entry.id.slice(1)} en ${signLabel} ${entry.degreeInSign}°, casa ${entry.house}${entry.retrograde ? " (Rx)" : ""}`;
-    })
-    .join("\n");
-
-  const pointAspects = chart.aspects
-    .filter((aspect) => aspect.from === pointId || aspect.to === pointId)
-    .map((aspect) => {
-      const otherId = aspect.from === pointId ? aspect.to : aspect.from;
-      const other = chart.points.find((entry) => entry.id === otherId);
-      const otherSign = other ? other.sign.charAt(0).toUpperCase() + other.sign.slice(1) : "";
-      const aspectName = {
-        conjunction: "Conjunción",
-        sextile: "Sextil",
-        square: "Cuadratura",
-        trine: "Trígono",
-        opposition: "Oposición",
-        quincunx: "Quincuncio",
-      }[aspect.type];
-
-      return `  - ${aspectName} con ${otherId} en ${otherSign} (orbe ${aspect.orb}°)`;
-    })
-    .join("\n");
-
-  const ascSign = zodiacSigns.find(
-    (entry) => entry.start <= chart.meta.ascendant && chart.meta.ascendant < entry.start + 30,
-  )?.id ?? "unknown";
-  const risingName = ascSign.charAt(0).toUpperCase() + ascSign.slice(1);
 
   const pointName: Record<ChartPointId, string> = {
     sun: "Sol",
@@ -68,55 +58,99 @@ function buildPrompt(chart: NatalChartData, pointId: ChartPointId): string {
   };
 
   const houseNames: Record<number, string> = {
-    1: "Casa 1 (Identidad)",
-    2: "Casa 2 (Recursos)",
-    3: "Casa 3 (Comunicación)",
-    4: "Casa 4 (Hogar)",
-    5: "Casa 5 (Creatividad)",
-    6: "Casa 6 (Servicio)",
-    7: "Casa 7 (Relaciones)",
-    8: "Casa 8 (Transformación)",
-    9: "Casa 9 (Filosofía)",
-    10: "Casa 10 (Carrera)",
-    11: "Casa 11 (Ideales)",
-    12: "Casa 12 (Inconsciente)",
+    1: "Casa 1 (identidad, cuerpo y forma de presentarte)",
+    2: "Casa 2 (dinero, valor propio y seguridad)",
+    3: "Casa 3 (mente, palabra, estudios y entorno cercano)",
+    4: "Casa 4 (familia, hogar y raíz emocional)",
+    5: "Casa 5 (deseo, creatividad, placer e hijos)",
+    6: "Casa 6 (rutina, trabajo diario, salud y hábitos)",
+    7: "Casa 7 (pareja, socios y acuerdos)",
+    8: "Casa 8 (intimidad, dinero compartido, crisis y control)",
+    9: "Casa 9 (creencias, viajes, estudios y dirección)",
+    10: "Casa 10 (trabajo, vocación, imagen pública y autoridad)",
+    11: "Casa 11 (amistades, grupos, redes y proyectos futuros)",
+    12: "Casa 12 (descanso, inconsciente, cierre y lo que escondes)",
   };
 
-  return `Eres SARITA, una astróloga excepcional con décadas de experiencia. Escribes interpretaciones íntimas, poéticas y psicológicamente precisas. Tu estilo es elegante: cercano pero no superficial, revelador pero no abrumador.
+  const allPoints = chart.points
+    .map((entry) => {
+      const signLabel = SIGN_LABELS[entry.sign];
+      return `• ${pointName[entry.id]} en ${signLabel} ${entry.degreeInSign}°, casa ${entry.house}${entry.retrograde ? " (Rx)" : ""}`;
+    })
+    .join("\n");
 
-Estás leyendo la carta natal de ${chart.event.name}, nacido/a el ${chart.event.dateLabel} en ${chart.event.locationLabel}.
+  const pointAspects = chart.aspects
+    .filter((aspect) => aspect.from === pointId || aspect.to === pointId)
+    .map((aspect) => {
+      const otherId = aspect.from === pointId ? aspect.to : aspect.from;
+      const other = chart.points.find((entry) => entry.id === otherId);
+      const otherSign = other ? SIGN_LABELS[other.sign] : "";
+      const aspectName = {
+        conjunction: "Conjunción",
+        sextile: "Sextil",
+        square: "Cuadratura",
+        trine: "Trígono",
+        opposition: "Oposición",
+        quincunx: "Quincuncio",
+      }[aspect.type];
 
-CARTA NATAL COMPLETA:
-Ascendente: ${risingName}
+      return `  - ${aspectName} con ${pointName[otherId]} en ${otherSign} (orbe ${aspect.orb}°)`;
+    })
+    .join("\n");
+
+  return `Eres SARITA, astróloga amiga de ${chart.event.name}. Escribes
+de forma directa, sin rodeos y sin poesía. Tu objetivo es que
+${chart.event.name} lea esto y piense "claro, eso soy yo."
+
+Estás leyendo el ${pointName[pointId]} de ${chart.event.name}:
+${signName} ${point.degreeInSign}°, ${houseNames[point.house]}.
+${point.retrograde ? "Está retrógrado." : ""}
+
+Aspectos activos:
+${pointAspects || "Sin aspectos principales"}
+
+Carta natal completa:
 ${allPoints}
 
-ASPECTO A INTERPRETAR:
-${pointName[pointId]} en ${signName} ${point.degreeInSign}° ${point.minutesInSign}′, ${houseNames[point.house] ?? `Casa ${point.house}`}${point.retrograde ? " — Retrógrado" : ""}
-Signo: ${element.charAt(0).toUpperCase() + element.slice(1)} / ${modality.charAt(0).toUpperCase() + modality.slice(1)}
+Escribe 4 párrafos. El primero describe cómo se nota este
+planeta en el carácter o los patrones cotidianos de esta persona.
+Los siguientes profundizan — salen zonas de tensión, dónde
+funciona bien y dónde se complica. El último cierra con algo
+concreto y útil que ${chart.event.name} puede hacer con esto.
 
-ASPECTOS ACTIVOS:
-${pointAspects || "  - Sin aspectos principales"}
+Modelo de tono:
+  "Tu Saturno en Capricornio en Casa 6 significa que eres de
+  las personas que si no tienen una rutina, se desmoronan un
+  poco. No porque seas rígida — sino porque tu sistema nervioso
+  necesita estructura para relajarse. Cuando eso falla, aparece
+  la autocrítica antes que el descanso."
 
-Escribe una interpretación personal, íntima y profunda para ${chart.event.name}.
-- Escribe en segunda persona ("tu ${pointName[pointId].toLowerCase()}...").
-- Menciona el contexto de los aspectos cuando enriquezca la lectura.
-- No uses jerga técnica en exceso; prefiere el lenguaje psicológico y poético.
-- 4 párrafos, fluidos y sin subtítulos.
-- Escribe en español de España.`;
+Reglas:
+- Segunda persona, "tú", España.
+- Sin metáforas poéticas. Sin "energía", "vibración", "alma".
+- Menciona situaciones reconocibles: trabajo, relaciones,
+  cuerpo, hábitos, reacciones emocionales.
+- La respuesta empieza directamente con el contenido. El primer carácter es siempre mayúscula.
+- 300-400 palabras. Sin subtítulos ni markdown.
+
+Datos técnicos internos si ayudan: ${element} / ${modality}.
+
+${langInstruction(locale)}`;
 }
 
 export async function POST(request: Request) {
   try {
-    const { chart, pointId } = (await request.json()) as {
+    const { chart, pointId, locale } = (await request.json()) as {
       chart: NatalChartData;
       pointId: ChartPointId;
+      locale?: string;
     };
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
     }
 
-    const prompt = buildPrompt(chart, pointId);
+    const prompt = buildPrompt(chart, pointId, locale);
 
     if (!prompt) {
       return new Response("Unknown point", { status: 400 });

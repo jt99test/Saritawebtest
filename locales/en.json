@@ -90,8 +90,41 @@
     "planNames": {
       "free": "Free",
       "basico": "Basic",
-      "completo": "Complete"
+      "completo": "Complete",
+      "pro": "Pro",
+      "avanzado": "Advanced"
     }
+  },
+  "paywall": {
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "savesBadge": "Save €{amount}/year",
+    "mostPopular": "Most popular",
+    "perMonth": "/mo",
+    "perYear": "/yr",
+    "billedYearly": "Billed annually",
+    "currentPlan": "Your current plan",
+    "upgrade": "Get started",
+    "lockedBadgePro": "Pro",
+    "lockedBadgeAvanzado": "Advanced",
+    "lockedTabTitle": "This feature requires the {plan} plan",
+    "lockedTabBody": "Unlock {plan} to access this content.",
+    "lockedTabCta": "View plans",
+    "proName": "Pro",
+    "avanzadoName": "Advanced",
+    "proFeatures": ["Personalised moon of the month", "Astral yoga based on your chart", "Intestinal cleanse free with yearly plan"],
+    "avanzadoFeatures": ["Everything in Pro", "Real-time transits", "Solar Return", "Synastry", "Intestinal cleanse free with yearly plan"],
+    "lavadoFreeHighlight": "Free with yearly plan",
+    "checkoutLoading": "Redirecting...",
+    "lavado": {
+      "gateTitle": "Exclusive content",
+      "gateBody": "Included free with Pro and Advanced yearly plans.",
+      "gateOnetimeCta": "Buy access · €49.99",
+      "gatePlansCta": "View yearly plans"
+    },
+    "successBanner": "Plan activated. You now have full access.",
+    "cancelBanner": "Payment cancelled. Come back whenever you're ready.",
+    "manageSubscription": "Manage subscription"
   },
   "result": {
     "intro": "This is how the planets were aligned when you were born.",
@@ -104,7 +137,7 @@
       "natal": "Your chart",
       "moon": "Moon of the month",
       "yoga": "Astral yoga",
-      "complete": "Full chart",
+      "complete": "Transits",
       "solarReturn": "Solar Return",
       "synastry": "Synastry",
       "transits": "Monthly transits",
@@ -117,6 +150,81 @@
       "title": "Unlock {featureName}",
       "description": "This layer opens deeper readings of your chart and relationships. It is included in the paid plans.",
       "cta": "See plans"
+    },
+    "chartHeader": {
+      "eyebrow": "the chart of",
+      "selectPlanet": "tap a planet to read its story"
+    },
+    "solarReturnPage": {
+      "eyebrow": "solar return",
+      "title": "The map of your year.",
+      "intro": "The Solar Return is a new chart calculated for the moment the Sun returns to the exact point it occupied when you were born: your birthday. That chart describes the climate of the year ahead: which area of life asks for more attention, which emotions become central, and what kind of movement the cycle brings. It is not destiny: it is the map of the year.",
+      "cityQuestion": "In which city will you spend your birthday?",
+      "cityHint": "The city matters: it changes the Ascendant of the year.",
+      "calculating": "Calculating...",
+      "viewYear": "See my year {year}",
+      "readingEyebrow": "cycle reading",
+      "readingTitle": "What this cycle is here to open.",
+      "readingLoading": "Generating your cycle reading...",
+      "changeYear": "View another year",
+      "themeCard": "The theme of the year",
+      "areaCard": "Area of life",
+      "toneCard": "Emotional tone",
+      "priorityTitle": "Areas worth prioritising",
+      "yogaTitle": "Yoga for each season of the year",
+      "errorMessage": "Could not calculate the Solar Return."
+    },
+    "synastryPage": {
+      "eyebrow": "synastry",
+      "title": "Two charts, one field.",
+      "intro": "Synastry compares two natal charts to see how they fit together. It is not a compatibility score: it is a map of how the bond works between two people, where it flows easily, where there is tension, and what the relationship is here to teach. Enter the other person's birth details to see the analysis.",
+      "addPerson": "Add new person",
+      "saving": "Saving...",
+      "saveAndCompare": "Save and compare",
+      "compare": "Compare",
+      "delete": "Delete",
+      "flipCharts": "Flip charts",
+      "mainConnections": "Main connections",
+      "readingEyebrow": "relationship reading",
+      "readingLoading": "Generating reading...",
+      "compareAnother": "Compare with another person",
+      "orb": "orb",
+      "aspectQuality": {
+        "harmonious": "harmonious",
+        "tense": "tense",
+        "neutral": "neutral"
+      },
+      "layerTitles": {
+        "fisico": "Physical",
+        "sexual": "Sexual",
+        "emocional": "Emotional",
+        "mental": "Mental",
+        "profesional": "Professional",
+        "evolutivo": "Evolutionary"
+      }
+    },
+    "transitPage": {
+      "eyebrow": "what's happening in your sky right now",
+      "title": "Your chart right now.",
+      "description": "In the centre is your natal chart, as always. Outside are today's planets. When a planet today falls on one of yours, something gets activated in your life. This view tells you exactly which area of your life is responding right now.",
+      "calculatingHeading": "Calculating the current sky...",
+      "calculatingBody": "I'm building the transit chart to overlay on your natal chart.",
+      "errorHeading": "I couldn't calculate the transits.",
+      "errorBody": "I need the original birth data and location to build this wheel correctly.",
+      "mostActiveEyebrow": "most active right now",
+      "planetLanguageEyebrow": "the planet's language",
+      "calculatedAt": "Sky calculated:",
+      "readingEyebrow": "reading of the moment",
+      "readingLoading": "Generating reading...",
+      "activatedAreasEyebrow": "activated life areas",
+      "activatedAreaBody": "This is activated through {points}. Read this house as a stage: the transit is not only moving events, it is also asking for a new way of showing up in your life.",
+      "viewTransits": "see main activations",
+      "strengthTight": "very close activation",
+      "strengthModerate": "active activation",
+      "strengthLoose": "background activation",
+      "silentSkyHeading": "A quieter sky.",
+      "silentSkyBody": "There are no exact major transits on the main natal planets right now. This suggests the emphasis is less concentrated and may feel more like integration than a visible shift.",
+      "orbLabel": "Orb"
     },
     "completeChart": {
       "eyebrow": "full chart",

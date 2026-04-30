@@ -1,7 +1,8 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { Suspense, useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 import { AccountButton } from "@/components/auth/account-button";
 import { NatalChartExperience } from "@/components/chart/natal-chart-experience";
@@ -58,7 +59,12 @@ function subscribeToChartResult(onStoreChange: () => void) {
   return () => window.removeEventListener("storage", handleStorage);
 }
 
-export default function ResultPage() {
+function ResultPageContent() {
+  const searchParams = useSearchParams();
+  const checkoutStatus = searchParams.get("checkout");
+  const [banner, setBanner] = useState<"success" | "cancelled" | null>(
+    checkoutStatus === "success" || checkoutStatus === "cancelled" ? checkoutStatus : null,
+  );
   const result = useSyncExternalStore(
     subscribeToChartResult,
     readStoredChartResult,
@@ -67,7 +73,16 @@ export default function ResultPage() {
 
   const chart = result?.chart ?? mockNatalChart;
   const isMock = result?.isMock ?? true;
-  const plan = result?.usage?.plan ?? "free";
+
+  useEffect(() => {
+    if (checkoutStatus === "success" || checkoutStatus === "cancelled") {
+      setBanner(checkoutStatus);
+      const timeout = window.setTimeout(() => setBanner(null), 4000);
+      return () => window.clearTimeout(timeout);
+    }
+
+    return undefined;
+  }, [checkoutStatus]);
 
   return (
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
@@ -75,6 +90,19 @@ export default function ResultPage() {
 
       <section className="relative min-h-screen py-5 sm:py-6">
         <Container className="relative flex min-h-screen flex-col">
+          {banner ? (
+            <div className="mb-4 flex items-center justify-between gap-4 border border-dusty-gold/20 bg-dusty-gold/10 px-4 py-3 text-sm text-ivory/78">
+              <span>{banner === "success" ? dictionary.paywall.successBanner : dictionary.paywall.cancelBanner}</span>
+              <button
+                type="button"
+                onClick={() => setBanner(null)}
+                className="text-xs font-semibold uppercase tracking-[0.18em] text-dusty-gold/80"
+              >
+                {dictionary.common.close}
+              </button>
+            </div>
+          ) : null}
+
           <div className="mb-4 grid min-h-10 grid-cols-[1fr_auto_1fr] items-center gap-4 border-b border-white/8 pb-3 pt-1">
             <Link
               href="/"
@@ -103,7 +131,6 @@ export default function ResultPage() {
               chart={chart}
               dictionary={dictionary}
               isMock={isMock}
-              plan={plan}
               request={result.request}
             />
           ) : (
@@ -122,5 +149,13 @@ export default function ResultPage() {
         </Container>
       </section>
     </main>
+  );
+}
+
+export default function ResultPage() {
+  return (
+    <Suspense fallback={null}>
+      <ResultPageContent />
+    </Suspense>
   );
 }

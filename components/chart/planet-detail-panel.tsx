@@ -15,6 +15,7 @@ import {
 import type { Dictionary } from "@/lib/i18n";
 
 import { useChartStore } from "@/components/chart/chart-store";
+import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { RenderedReading, splitReadingParagraphs } from "@/components/ui/rendered-reading";
 
 type Props = {
@@ -73,6 +74,7 @@ function formatAspectLabel(dictionary: Dictionary, aspect: Aspect, pointId: Char
 }
 
 export function PlanetDetailPanel({ chart, dictionary }: Props) {
+  const locale = useStoredLocale();
   const {
     selectedPointId,
     hoveredAspectId,
@@ -133,7 +135,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
         const response = await fetch("/api/reading", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chart, pointId: selectedPointId }),
+          body: JSON.stringify({ chart, pointId: selectedPointId, locale }),
           signal: controller.signal,
         });
 
@@ -165,7 +167,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
     })();
 
     return () => controller.abort();
-  }, [chart, dictionary.loading.errorFallback, hoverAspect, panelOpen, selectedPointId]);
+  }, [chart, dictionary.loading.errorFallback, hoverAspect, locale, panelOpen, selectedPointId]);
 
   useEffect(() => {
     if (!panelOpen) {
@@ -315,7 +317,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                         type="button"
                         onClick={() => setDetailTab(tab.id)}
                         className={[
-                          "rounded-full border px-3.5 py-2 text-[0.66rem] font-semibold uppercase tracking-[0.24em] transition",
+                          "rounded-full border px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.24em] transition",
                           active
                             ? "border-dusty-gold/48 bg-dusty-gold/12 text-ivory"
                             : "border-[rgba(236,232,223,0.08)] bg-transparent text-ivory/52 hover:border-white/16 hover:text-ivory",
@@ -369,7 +371,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                     <SectionLabel>{dictionary.result.editorial.technicalSheet}</SectionLabel>
                     {point.id === "northNode" || point.id === "southNode" ? (
                       <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-dusty-gold/20 bg-dusty-gold/8 px-3 py-2 text-xs leading-6 text-ivory/72">
-                        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-dusty-gold/30 text-[0.68rem] text-dusty-gold/90">
+                        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-dusty-gold/30 text-[12px] text-dusty-gold/90">
                           ⓘ
                         </span>
                         <span>{dictionary.result.messages.meanNodeNote}</span>
@@ -424,7 +426,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                                   {dictionary.result.points[point.id]} · {counterpart}
                                 </p>
                               </div>
-                              <span className="rounded-full border border-white/10 px-3 py-1 text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-dusty-gold/82">
+                              <span className="rounded-full border border-white/10 px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold/82">
                                 {aspect.orb.toFixed(1)}°
                               </span>
                             </div>
@@ -469,7 +471,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                           <button
                             type="button"
                             onClick={() => setReadingExpanded((current) => !current)}
-                            className="mt-6 rounded-full border border-dusty-gold/24 px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.22em] text-dusty-gold/86 transition hover:border-dusty-gold/42 hover:text-ivory"
+                            className="mt-6 rounded-full border border-dusty-gold/24 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.22em] text-dusty-gold/86 transition hover:border-dusty-gold/42 hover:text-ivory"
                           >
                             {readingExpanded ? dictionary.common.hide : dictionary.result.drawer.readMore}
                           </button>

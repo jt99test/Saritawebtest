@@ -16,7 +16,7 @@ type ChartSidePanelProps = {
 function SectionLabel({ children }: { children: string }) {
   return (
     <div className="flex items-center gap-3">
-      <p className="shrink-0 text-[0.68rem] font-semibold uppercase tracking-[0.3em] text-dusty-gold/78">
+      <p className="shrink-0 text-[12px] font-semibold uppercase tracking-[0.3em] text-dusty-gold/78">
         {children}
       </p>
       <div className="h-px w-full bg-gradient-to-r from-white/12 to-transparent" />
@@ -161,7 +161,7 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                       <span className="text-[1.35rem]" style={{ color: point.color }}>
                         {point.glyph}
                       </span>
-                      <span className="text-[0.64rem] uppercase tracking-[0.22em] text-ivory/38">
+                      <span className="text-[12px] uppercase tracking-[0.22em] text-ivory/38">
                         {point.house}
                       </span>
                     </div>
@@ -243,7 +243,7 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
           <section>
             <SectionLabel>{dictionary.result.panels.positions}</SectionLabel>
             <div className="mt-4 overflow-hidden rounded-[1.6rem] border border-white/10 bg-white/[0.03]">
-              <div className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_auto_auto] gap-3 border-b border-white/8 px-4 py-3 text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-ivory/42">
+              <div className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_auto_auto] gap-3 border-b border-white/8 px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.22em] text-ivory/42">
                 <span>{dictionary.result.fields.point}</span>
                 <span>{dictionary.result.fields.sign}</span>
                 <span>{dictionary.result.fields.house}</span>
@@ -272,7 +272,7 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
             <SectionLabel>{dictionary.result.panels.aspectSummary}</SectionLabel>
             {visibleAspects.length > 0 ? (
               <div className="mt-4 overflow-hidden rounded-[1.6rem] border border-white/10 bg-white/[0.03]">
-                <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] gap-3 border-b border-white/8 px-4 py-3 text-[0.64rem] font-semibold uppercase tracking-[0.22em] text-ivory/42">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] gap-3 border-b border-white/8 px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.22em] text-ivory/42">
                   <span>{dictionary.result.fields.aspect}</span>
                   <span>{dictionary.result.fields.orb}</span>
                   <span>{dictionary.result.fields.pointsPair}</span>

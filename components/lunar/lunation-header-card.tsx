@@ -39,6 +39,16 @@ export function LunationHeaderCard({
         <span aria-hidden="true">·</span>
         <span>{dateLabel}</span>
       </p>
+      {metadata.eclipse?.isEclipse ? (
+        <div className="mt-5 border border-amber-300/28 bg-amber-300/[0.08] px-4 py-3">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-amber-200/82">
+            {metadata.eclipse.kind === "solar" ? "Eclipse solar" : "Eclipse lunar"}
+          </p>
+          <p className="mt-2 text-sm leading-6 text-amber-50/72">
+            Esta lunacion cae a {metadata.eclipse.nodeOrb} grados del eje nodal. Su lectura es mas intensa y puede desplegarse durante varios meses.
+          </p>
+        </div>
+      ) : null}
     </section>
   );
 }

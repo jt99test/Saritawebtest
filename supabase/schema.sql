@@ -4,10 +4,12 @@
 create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
   email text,
-  plan text default 'free' check (plan in ('free', 'basico', 'completo')),
+  plan text default 'free' check (plan in ('free', 'pro', 'avanzado')),
   limpieza_unlocked boolean default false,
   stripe_customer_id text,
   stripe_subscription_id text,
+  billing_period text check (billing_period in ('monthly', 'yearly')),
+  lavado_purchased boolean default false,
   created_at timestamptz default now()
 );
 
@@ -61,11 +63,6 @@ for select
 using (auth.uid() = id);
 
 drop policy if exists "Profiles are updatable by owner" on public.profiles;
-create policy "Profiles are updatable by owner"
-on public.profiles
-for update
-using (auth.uid() = id)
-with check (auth.uid() = id);
 
 drop policy if exists "Readings are viewable by owner" on public.readings;
 create policy "Readings are viewable by owner"

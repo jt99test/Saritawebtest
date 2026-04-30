@@ -1,4 +1,5 @@
 import { getAugmentedChartPoints, zodiacSigns, type ChartPointId, type NatalChartData } from "@/lib/chart";
+import { detectChartPatterns, getChartRuler } from "@/lib/chart-insights";
 
 export const GENERAL_READING_THEMES = [
   "tu-esencia",
@@ -6,6 +7,8 @@ export const GENERAL_READING_THEMES = [
   "que-das-valor",
   "como-piensas",
   "tu-proposito",
+  "lo-que-suelto",
+  "tu-herida-medicina",
   "tus-desafios",
   "tu-ascendente",
   "como-actuas",
@@ -112,18 +115,25 @@ export function getChartSummaryForPrompt(chart: NatalChartData) {
     .map((aspect) => {
       const from = POINT_LABELS[aspect.from] ?? aspect.from;
       const to = POINT_LABELS[aspect.to] ?? aspect.to;
-      return `• ${ASPECT_LABELS[aspect.type]} entre ${from} y ${to} (orbe ${aspect.orb.toFixed(1)}°)`;
+      return `• ${ASPECT_LABELS[aspect.type]} entre ${from} y ${to} (orbe ${aspect.orb.toFixed(1)}°, ${aspect.applying ? "aplicativo" : "separativo"})`;
     })
+    .join("\n");
+  const ruler = getChartRuler(chart);
+  const patternSummary = detectChartPatterns(chart)
+    .map((pattern) => `• ${pattern.title}: ${pattern.description}`)
     .join("\n");
 
   return [
     `Medio Cielo en ${getSignName(mcSignId)} ${Math.floor(chart.meta.mc % 30)}° ${Math.round((chart.meta.mc % 1) * 60)
       .toString()
       .padStart(2, "0")}'`,
+    `Regente de la carta: ${ruler.label}${ruler.primary ? ` en ${getSignName(ruler.primary.sign)}, casa ${ruler.primary.house}` : ""}`,
     "Puntos principales:",
     pointsSummary,
     "Aspectos clave:",
     aspectsSummary || "• Sin aspectos destacados",
+    "Patrones mayores:",
+    patternSummary || "• Sin patrones mayores detectados",
   ].join("\n");
 }
 
@@ -140,6 +150,8 @@ export function getThemeInstruction(chart: NatalChartData, theme: GeneralReading
   const neptune = points.find((point) => point.id === "neptune");
   const pluto = points.find((point) => point.id === "pluto");
   const northNode = points.find((point) => point.id === "northNode");
+  const southNode = points.find((point) => point.id === "southNode");
+  const chiron = points.find((point) => point.id === "chiron");
   const ascSign = getSignName(
     zodiacSigns.find((sign) => sign.start <= chart.meta.ascendant && chart.meta.ascendant < sign.start + 30)?.id ?? "aries",
   );
@@ -160,8 +172,10 @@ export function getThemeInstruction(chart: NatalChartData, theme: GeneralReading
     "que-das-valor": `Escribe sobre lo que ${chart.event.name} valora a través de su Venus en ${getSignName(venus?.sign ?? "libra")} en la casa ${venus?.house ?? 7}, y la energía de su casa 7 (regida por ${RULERS[seventhHouseSign]}). Enfoca Venus como deseo, gusto, valor personal, placer, belleza, vínculos y aquello que elige cuidar.`,
     "como-piensas": `Escribe sobre cómo piensa y se comunica ${chart.event.name} a través de su Mercurio en ${getSignName(mercury?.sign ?? "gemini")} en la casa ${mercury?.house ?? 3}, y la energía de su casa 3 en ${getSignName(thirdHouseSign)}. Cómo procesa información, cómo se expresa, qué tipo de mente tiene.`,
     "tu-proposito": `Escribe sobre el propósito de vida de ${chart.event.name} a través de su Medio Cielo en ${mcSign}, la casa 10, y su Nodo Norte en ${getSignName(northNode?.sign ?? "aries")} en la casa ${northNode?.house ?? 10}. Hacia dónde se dirige su evolución, qué debe desarrollar, qué legado puede construir.`,
+    "lo-que-suelto": `Escribe sobre el Nodo Sur de ${chart.event.name} en ${getSignName(southNode?.sign ?? "libra")} en la casa ${southNode?.house ?? 4}. Interpreta este punto como memoria, zona conocida, talento antiguo, mecanismo automático y patrón que se está aprendiendo a soltar. Conecta siempre con el Nodo Norte: no como rechazo del pasado, sino como integración consciente.`,
+    "tu-herida-medicina": `Escribe sobre Quirón de ${chart.event.name} en ${getSignName(chiron?.sign ?? "aries")} en la casa ${chiron?.house ?? 1}. Enfócalo como herida central, sensibilidad terapéutica y medicina que nace de haber atravesado esa vulnerabilidad. Tono psicológico, cuidadoso y no fatalista.`,
     "tus-desafios": `Escribe sobre los desafíos centrales de ${chart.event.name} a través de Saturno en ${getSignName(saturn?.sign ?? "capricorn")} en la casa ${saturn?.house ?? 10}, y las cuadraturas/oposiciones más significativas de su carta (${hardAspects || "sin aspectos duros especialmente cerrados"}). Qué fricciones le piden madurar, qué patrones debe trabajar, qué le costará pero le hará crecer.`,
-    "tu-ascendente": `Escribe sobre el Ascendente de ${chart.event.name} en ${ascSign}. Enfócate por completo en cómo moldea su personalidad externa, primeras impresiones y manera de entrar en la vida. Explica cómo dialoga con su Sol en ${getSignName(sun?.sign ?? "leo")} y su Luna en ${getSignName(moon?.sign ?? "cancer")}.`,
+    "tu-ascendente": `Escribe sobre el Ascendente de ${chart.event.name} en ${ascSign}. Enfócate por completo en cómo moldea su personalidad externa, primeras impresiones y manera de entrar en la vida. Incluye el regente de la carta indicado en el resumen general y explica cómo dialoga con su Sol en ${getSignName(sun?.sign ?? "leo")} y su Luna en ${getSignName(moon?.sign ?? "cancer")}.`,
     "como-actuas": `Escribe sobre cómo actúa ${chart.event.name} a través de Marte en ${getSignName(mars?.sign ?? "aries")} en la casa ${mars?.house ?? 1}. Describe impulso, deseo, energía física, enojo, coraje, iniciativa y estilo de conflicto.`,
     "donde-creces": `Escribe sobre dónde crece ${chart.event.name} a través de Júpiter en ${getSignName(jupiter?.sign ?? "sagittarius")} en la casa ${jupiter?.house ?? 9}. Describe expansión, oportunidades, abundancia, fe, suerte y aprendizaje.`,
     "donde-rompes-esquemas": `Escribe sobre dónde rompe esquemas ${chart.event.name} a través de Urano en ${getSignName(uranus?.sign ?? "aquarius")} en la casa ${uranus?.house ?? 11}. Describe independencia, cambio, innovación, rebeldía y necesidad de libertad.`,

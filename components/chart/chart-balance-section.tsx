@@ -196,7 +196,7 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
               className="pointer-events-none absolute left-1/2 top-1/2 z-20 w-56 -translate-x-1/2 -translate-y-1/2 border border-white/12 p-3 text-left text-xs leading-5 text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]"
               style={{ backgroundColor: ELEMENT_COLORS[hoveredElement] }}
             >
-              <p className="mb-1 text-[0.62rem] font-semibold uppercase tracking-[0.2em] text-white/78">
+              <p className="mb-1 text-[12px] font-semibold uppercase tracking-[0.2em] text-white/78">
                 {dictionary.result.elements[hoveredElement]}
               </p>
               {ELEMENT_TOOLTIPS[hoveredElement]}
