@@ -75,7 +75,7 @@ export function AccountButton() {
       <button
         type="button"
         onClick={openAuthModal}
-        className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1e1a2e] transition hover:text-[#6f613a]"
+        className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1e1a2e] transition hover:text-[#5c4a24]"
       >
         {dictionary.common.account}
       </button>
@@ -89,7 +89,7 @@ export function AccountButton() {
         onClick={() => setMenuOpen((current) => !current)}
         aria-haspopup="menu"
         aria-expanded={menuOpen}
-        className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1e1a2e] transition hover:text-[#6f613a]"
+        className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1e1a2e] transition hover:text-[#5c4a24]"
       >
         {dictionary.common.account}
       </button>
@@ -99,7 +99,7 @@ export function AccountButton() {
           <Link
             href="/form"
             onClick={() => setMenuOpen(false)}
-            className="block border-b border-black/10 py-2 pb-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#6f613a] transition hover:text-ivory"
+            className="block border-b border-black/10 py-2 pb-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24] transition hover:text-ivory"
           >
             {dictionary.common.newReading}
           </Link>

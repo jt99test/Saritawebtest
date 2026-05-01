@@ -1,141 +1,134 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { motion } from "motion/react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { formatSignPosition, type ChartPointId, type NatalChartData } from "@/lib/chart";
-import type { Dictionary } from "@/lib/i18n";
 import { getGeneralReadingCards } from "@/data/chart-readings";
 import { hashNatalChart } from "@/lib/chart-hash";
 import { GENERAL_READING_THEMES, type GeneralReadingTheme } from "@/lib/general-reading";
 import { getAllCachedReadings, setCachedReading } from "@/lib/general-reading-cache";
+import type { NatalChartData } from "@/lib/chart";
+import type { Dictionary } from "@/lib/i18n";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
-import { splitReadingParagraphs } from "@/components/ui/rendered-reading";
 
 type ChartGeneralReadingProps = {
   chart: NatalChartData;
   dictionary: Dictionary;
 };
 
-type GateMeta = {
-  pointId: ChartPointId | "ascendant";
-  glyph: string;
-};
-
-const GATE_GLYPHS: Partial<Record<ChartPointId | "ascendant", string>> = {
-  sun: "\u2609",
-  moon: "\u263d",
-  venus: "\u2640",
-  mercury: "\u263f",
-  northNode: "\u260a",
-  southNode: "\u260b",
-  chiron: "\u26b7",
-  saturn: "\u2644",
-  mars: "\u2642",
-  jupiter: "\u2643",
-  uranus: "\u2645",
-  neptune: "\u2646",
-  pluto: "\u2647",
-  ascendant: "AC",
-};
-
-const GLYPH_COLORS: Partial<Record<ChartPointId | "ascendant", string>> = {
-  sun: "#b88400",
-  moon: "#6c7286",
-  venus: "#9b5fb7",
-  mercury: "#3a8a76",
-  mars: "#b74337",
-  jupiter: "#8a6a25",
-  saturn: "#77724d",
-  uranus: "#347f91",
-  neptune: "#4d61b2",
-  pluto: "#7e4b91",
-  northNode: "#b88400",
-  southNode: "#a87900",
-  chiron: "#6e8b55",
-  ascendant: "#b88400",
-};
-
-const GATE_META_BY_THEME: Partial<Record<GeneralReadingTheme, GateMeta>> = {
-  "tu-esencia": { pointId: "sun", glyph: "☉" },
-  "como-sientes": { pointId: "moon", glyph: "☽" },
-  "que-das-valor": { pointId: "venus", glyph: "♀" },
-  "como-piensas": { pointId: "mercury", glyph: "☿" },
-  "tu-proposito": { pointId: "northNode", glyph: "☊" },
-  "lo-que-suelto": { pointId: "southNode", glyph: "☋" },
-  "tu-herida-medicina": { pointId: "chiron", glyph: "⚷" },
-  "tus-desafios": { pointId: "saturn", glyph: "♄" },
-  "tu-ascendente": { pointId: "ascendant", glyph: "AC" },
-  "como-actuas": { pointId: "mars", glyph: "♂" },
-  "donde-creces": { pointId: "jupiter", glyph: "♃" },
-  "donde-rompes-esquemas": { pointId: "uranus", glyph: "♅" },
-  "donde-suenas": { pointId: "neptune", glyph: "♆" },
-  "donde-transformas": { pointId: "pluto", glyph: "♇" },
-};
-
-const GATE_META_BY_TITLE: Array<{ needle: string; meta: GateMeta }> = [
-  { needle: "esencia", meta: { pointId: "sun", glyph: "☉" } },
-  { needle: "ascendente", meta: { pointId: "ascendant", glyph: "AC" } },
-  { needle: "sientes", meta: { pointId: "moon", glyph: "☽" } },
-  { needle: "amas", meta: { pointId: "venus", glyph: "♀" } },
-  { needle: "valor", meta: { pointId: "venus", glyph: "♀" } },
-  { needle: "piensas", meta: { pointId: "mercury", glyph: "☿" } },
-  { needle: "propósito", meta: { pointId: "northNode", glyph: "☊" } },
-  { needle: "proposito", meta: { pointId: "northNode", glyph: "☊" } },
-  { needle: "sueltas", meta: { pointId: "southNode", glyph: "☋" } },
-  { needle: "herida", meta: { pointId: "chiron", glyph: "⚷" } },
-  { needle: "desafíos", meta: { pointId: "saturn", glyph: "♄" } },
-  { needle: "desafios", meta: { pointId: "saturn", glyph: "♄" } },
-  { needle: "actúas", meta: { pointId: "mars", glyph: "♂" } },
-  { needle: "actuas", meta: { pointId: "mars", glyph: "♂" } },
-  { needle: "creces", meta: { pointId: "jupiter", glyph: "♃" } },
-  { needle: "rompes", meta: { pointId: "uranus", glyph: "♅" } },
-  { needle: "sueñas", meta: { pointId: "neptune", glyph: "♆" } },
-  { needle: "suenas", meta: { pointId: "neptune", glyph: "♆" } },
-  { needle: "transformas", meta: { pointId: "pluto", glyph: "♇" } },
-];
-
-function gateMetaFor(theme: GeneralReadingTheme, title: string): GateMeta {
-  const byTheme = GATE_META_BY_THEME[theme];
-  if (byTheme) {
-    return byTheme;
+function splitReading(text: string): { headline: string; body: string } {
+  const trimmed = text.trim();
+  const match = trimmed.match(/^(.+?[.!?])\s+([\s\S]+)$/);
+  if (match) {
+    return { headline: match[1].trim(), body: match[2].trim() };
   }
-
-  const normalized = title.toLowerCase();
-  return GATE_META_BY_TITLE.find((entry) => normalized.includes(entry.needle))?.meta ?? {
-    pointId: "sun",
-    glyph: "☉",
-  };
+  return { headline: trimmed, body: "" };
 }
 
-function subtitleFor(pointId: ChartPointId | "ascendant", chart: NatalChartData, dictionary: Dictionary) {
-  if (pointId === "ascendant") {
-    const sign = dictionary.result.signs[formatSignPosition(chart.meta.ascendant).sign];
-    return sign ? `Ascendente en ${sign}` : "Ascendente";
-  }
+const THEME_META: Record<GeneralReadingTheme, { glyph: string; label: string }> = {
+  "tu-esencia": { glyph: "☉", label: "Esencia" },
+  "como-sientes": { glyph: "☽", label: "Emociones" },
+  "que-das-valor": { glyph: "♀", label: "Valores" },
+  "como-piensas": { glyph: "☿", label: "Mente" },
+  "tu-proposito": { glyph: "☊", label: "Propósito" },
+  "lo-que-suelto": { glyph: "☋", label: "Lo que sueltas" },
+  "tu-herida-medicina": { glyph: "⚷", label: "Herida" },
+  "tus-desafios": { glyph: "♄", label: "Desafíos" },
+  "tu-ascendente": { glyph: "AC", label: "Ascendente" },
+  "como-actuas": { glyph: "♂", label: "Acción" },
+  "donde-creces": { glyph: "♃", label: "Crecimiento" },
+  "donde-rompes-esquemas": { glyph: "♅", label: "Cambio" },
+  "donde-suenas": { glyph: "♆", label: "Sueños" },
+  "donde-transformas": { glyph: "♇", label: "Transformación" },
+};
 
-  const point = chart.points.find((entry) => entry.id === pointId);
-
-  if (!point) {
-    return "";
-  }
-
-  return `${dictionary.result.points[point.id]} en ${dictionary.result.signs[point.sign]} · Casa ${point.house}`;
+function ReadingPanelSkeleton() {
+  return (
+    <article className="mt-4 min-h-[160px] animate-pulse border border-black/10 bg-white p-6">
+      <div className="h-3 w-24 rounded bg-black/8" />
+      <div className="mt-3 h-6 w-3/4 rounded bg-black/8" />
+      <div className="mt-3 space-y-2">
+        <div className="h-3 w-full rounded bg-black/6" />
+        <div className="h-3 w-5/6 rounded bg-black/6" />
+        <div className="h-3 w-4/6 rounded bg-black/6" />
+      </div>
+    </article>
+  );
 }
 
 export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingProps) {
   const locale = useStoredLocale();
-  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [chartHash, setChartHash] = useState<string | null>(null);
-  const [cachedReadings, setCachedReadings] = useState<Record<string, string>>({});
-  const [streamingReadings, setStreamingReadings] = useState<Record<string, string>>({});
-  const [loadingThemes, setLoadingThemes] = useState<Record<string, boolean>>({});
+  const [readings, setReadings] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState<Record<string, boolean>>({});
   const [errors, setErrors] = useState<Record<string, string | null>>({});
+  const [selectedTheme, setSelectedTheme] = useState<GeneralReadingTheme>(GENERAL_READING_THEMES[0]);
   const controllersRef = useRef<Record<string, AbortController>>({});
-  const cards = getGeneralReadingCards(chart, dictionary);
+  const cards = useMemo(() => getGeneralReadingCards(chart, dictionary), [chart, dictionary]);
+  const cardByTheme = useMemo(() => new Map(cards.map((card) => [card.theme, card])), [cards]);
+
+  const fetchReading = useCallback(
+    async (theme: GeneralReadingTheme, currentHash: string) => {
+      if (controllersRef.current[theme]) {
+        return;
+      }
+
+      const controller = new AbortController();
+      controllersRef.current[theme] = controller;
+
+      setLoading((current) => ({ ...current, [theme]: true }));
+      setErrors((current) => ({ ...current, [theme]: null }));
+      setReadings((current) => ({ ...current, [theme]: current[theme] ?? "" }));
+
+      try {
+        const response = await fetch("/api/general-reading", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chart, theme, locale }),
+          signal: controller.signal,
+        });
+
+        if (!response.ok || !response.body) {
+          throw new Error(dictionary.chart.generateError);
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let content = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) {
+            break;
+          }
+
+          content += decoder.decode(value, { stream: true });
+          setReadings((current) => ({ ...current, [theme]: content }));
+        }
+
+        const finalContent = content.trim();
+        if (!finalContent) {
+          throw new Error(dictionary.chart.generateError);
+        }
+
+        setCachedReading(currentHash, theme, finalContent);
+        setReadings((current) => ({ ...current, [theme]: finalContent }));
+      } catch (error) {
+        if ((error as Error).name !== "AbortError") {
+          setErrors((current) => ({ ...current, [theme]: dictionary.chart.generateError }));
+        }
+      } finally {
+        delete controllersRef.current[theme];
+        setLoading((current) => ({ ...current, [theme]: false }));
+      }
+    },
+    [chart, dictionary.chart.generateError, locale],
+  );
 
   useEffect(() => {
     let cancelled = false;
+
+    Object.values(controllersRef.current).forEach((controller) => controller.abort());
+    controllersRef.current = {};
 
     (async () => {
       const nextHash = await hashNatalChart(chart);
@@ -143,12 +136,21 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
         return;
       }
 
+      const cached = getAllCachedReadings(nextHash);
+      const missingThemes = GENERAL_READING_THEMES
+        .filter((theme) => !cached[theme]);
+
       setChartHash(nextHash);
-      setCachedReadings(getAllCachedReadings(nextHash));
-      setStreamingReadings({});
-      setLoadingThemes({});
+      setReadings(cached);
       setErrors({});
-      setExpandedId(null);
+      setLoading(
+        missingThemes.reduce<Record<string, boolean>>((nextLoading, theme) => {
+          nextLoading[theme] = true;
+          return nextLoading;
+        }, {}),
+      );
+
+      await Promise.all(missingThemes.map((theme) => fetchReading(theme, nextHash)));
     })();
 
     return () => {
@@ -156,196 +158,90 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
       Object.values(controllersRef.current).forEach((controller) => controller.abort());
       controllersRef.current = {};
     };
-  }, [chart]);
+  }, [chart, fetchReading]);
 
-  async function generateReading(theme: GeneralReadingTheme) {
-    if (!chartHash || loadingThemes[theme]) {
-      return false;
-    }
-
-    const controller = new AbortController();
-    controllersRef.current[theme] = controller;
-
-    setLoadingThemes((current) => ({ ...current, [theme]: true }));
-    setErrors((current) => ({ ...current, [theme]: null }));
-    setStreamingReadings((current) => ({ ...current, [theme]: "" }));
-
-    try {
-      const response = await fetch("/api/general-reading", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chart, theme, locale }),
-        signal: controller.signal,
-      });
-
-      if (!response.ok || !response.body) {
-        throw new Error("No se pudo generar");
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-
-      const readStream = async (content: string): Promise<string> => {
-        const { done, value } = await reader.read();
-
-        if (done) {
-          return content;
-        }
-
-        const nextContent = content + decoder.decode(value, { stream: true });
-        setStreamingReadings((current) => ({ ...current, [theme]: nextContent }));
-        return readStream(nextContent);
-      };
-
-      const finalContent = (await readStream("")).trim();
-
-      if (!finalContent) {
-        throw new Error("No se pudo generar");
-      }
-
-      setCachedReading(chartHash, theme, finalContent);
-      setCachedReadings((current) => ({ ...current, [theme]: finalContent }));
-      setStreamingReadings((current) => ({ ...current, [theme]: finalContent }));
-      return true;
-    } catch (error) {
-      if ((error as Error).name !== "AbortError") {
-        setErrors((current) => ({ ...current, [theme]: "No se pudo generar. Intentar de nuevo" }));
-      }
-
-      return false;
-    } finally {
-      delete controllersRef.current[theme];
-      setLoadingThemes((current) => ({ ...current, [theme]: false }));
-    }
-  }
+  const selectedCard = cardByTheme.get(selectedTheme) ?? cards[0];
+  const selectedReading = readings[selectedTheme] ?? "";
+  const selectedError = errors[selectedTheme];
+  const selectedLoading = loading[selectedTheme] && !selectedReading;
+  const selectedSplit = splitReading(selectedReading);
 
   return (
     <section className="pb-12 lg:pb-14">
       <div className="mx-auto max-w-[720px] text-center">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
-          tu carta, en esencia
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
+          {dictionary.result.generalReading.eyebrow}
         </p>
         <h2 className="mt-1.5 font-serif text-[30px] font-normal leading-tight text-ivory lg:text-[36px]">
-          Puertas de entrada
+          {dictionary.result.generalReading.title}
         </h2>
       </div>
 
-      <div className="mx-auto mt-7 max-w-[760px] lg:mt-8">
-        {cards.map((card, index) => {
-          const expanded = expandedId === card.id;
-          const cachedContent = cachedReadings[card.theme] ?? "";
-          const streamingContent = streamingReadings[card.theme] ?? "";
-          const loading = !!loadingThemes[card.theme];
-          const error = errors[card.theme];
-          const fullReading = cachedContent || streamingContent;
-          const paragraphs = fullReading ? splitReadingParagraphs(fullReading) : [];
-          const gateMeta = gateMetaFor(card.theme, card.title);
-          const actionLabel = loading
-            ? dictionary.result.generalReading.generating
-            : cachedContent
-              ? expanded
-                ? "Leer —"
-                : "Leer +"
-              : expanded
-                ? "Generar —"
-                : "Generar +";
-
-          return (
-            <article
-              key={card.id}
-              className={[
-                "border-t border-black/12",
-                index === cards.length - 1 ? "border-b-[0.5px]" : "",
-              ].join(" ")}
-            >
+      <div className="mx-auto mt-10 max-w-[760px]">
+        <div className="grid grid-cols-5 gap-3 md:grid-cols-7">
+          {GENERAL_READING_THEMES.map((theme) => {
+            const meta = THEME_META[theme];
+            const active = selectedTheme === theme;
+            return (
               <button
+                key={theme}
                 type="button"
-                className="group grid w-full cursor-pointer grid-cols-[56px_minmax(0,1fr)_112px] items-center gap-4 py-5 text-left transition duration-200 hover:bg-black/[0.035] sm:grid-cols-[64px_minmax(0,1fr)_140px] lg:grid-cols-[72px_minmax(0,1fr)_144px] lg:py-6"
-                onClick={() => {
-                  setExpandedId(expanded ? null : card.id);
-                  if (!cachedContent && !streamingContent && !loading) {
-                    void generateReading(card.theme);
-                  }
-                }}
-                aria-expanded={expanded}
+                onClick={() => setSelectedTheme(theme)}
+                className="flex min-w-0 flex-col items-center gap-1 p-2"
+                aria-pressed={active}
               >
-                <span
-                  className="text-center font-serif text-[34px] leading-none lg:text-[40px]"
-                  style={{ color: GLYPH_COLORS[gateMeta.pointId] }}
-                >
-                  {GATE_GLYPHS[gateMeta.pointId] ?? gateMeta.glyph}
-                </span>
-                <span>
-                  <span className="block font-serif text-[25px] font-normal leading-tight text-ivory lg:text-[28px]">
-                    {card.title}
-                  </span>
-                  <span className="mt-1.5 block font-serif text-[15px] italic leading-6 text-[#3a3048] lg:text-base">
-                    {subtitleFor(gateMeta.pointId, chart, dictionary)}
-                  </span>
-                </span>
                 <span
                   className={[
-                    "inline-flex min-h-9 items-center justify-center px-3 text-center text-[12px] font-semibold uppercase tracking-[0.16em] transition",
-                    loading
-                      ? "border-transparent bg-transparent px-0 text-[#6f613a]"
-                      : cachedContent
-                        ? "border border-black/20 bg-transparent text-ivory group-hover:bg-black/[0.05]"
-                        : "border border-dusty-gold/60 bg-dusty-gold/[0.07] text-dusty-gold shadow-[0_12px_32px_rgba(0,0,0,0.12)] group-hover:border-dusty-gold group-hover:bg-dusty-gold/[0.11]",
+                    "flex h-12 w-12 items-center justify-center rounded-full font-serif text-xl transition",
+                    active
+                      ? "border border-dusty-gold/60 bg-dusty-gold/[0.07] text-[#5c4a24]"
+                      : "border border-black/10 bg-white text-[#3a3048] hover:bg-black/[0.02]",
                   ].join(" ")}
                 >
-                  {actionLabel}
+                  {meta.glyph}
+                </span>
+                <span className="max-w-12 truncate text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-[#3a3048]">
+                  {meta.label}
                 </span>
               </button>
+            );
+          })}
+        </div>
 
-              <motion.div
-                initial={false}
-                animate={expanded ? "open" : "closed"}
-                variants={{
-                  open: { height: "auto", opacity: 1 },
-                  closed: { height: 0, opacity: 0 },
-                }}
-                transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                className="overflow-hidden"
-              >
-                <div className="max-w-[600px] pb-5 pl-[64px] sm:pl-[76px] lg:pl-[84px]">
-                  {error ? (
-                    <div className="space-y-4">
-                      <p className="font-serif text-[17px] leading-[1.75] text-ivory lg:text-lg lg:leading-[1.8]">
-                        {error}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => void generateReading(card.theme)}
-                        className="inline-flex items-center justify-center border border-dusty-gold/60 bg-dusty-gold/[0.07] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-dusty-gold transition hover:border-dusty-gold hover:bg-dusty-gold/[0.11]"
-                      >
-                        {dictionary.result.generalReading.retry} ↓
-                      </button>
-                    </div>
-                  ) : fullReading ? (
-                    <div className="space-y-5">
-                      <div className="space-y-5">
-                        {paragraphs.map((paragraph, paragraphIndex) => (
-                          <p
-                            key={`${card.id}-${paragraphIndex}`}
-                            className="font-serif text-[17px] leading-[1.75] text-ivory lg:text-lg lg:leading-[1.8]"
-                          >
-                            {paragraph}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="font-serif text-[17px] leading-[1.75] text-[#3a3048] lg:text-lg lg:leading-[1.8]">
-                      {GENERAL_READING_THEMES.includes(card.theme)
-                        ? dictionary.result.generalReading.placeholder
-                        : ""}
-                    </p>
-                  )}
-                </div>
-              </motion.div>
-            </article>
-          );
-        })}
+        {selectedLoading ? (
+          <ReadingPanelSkeleton />
+        ) : (
+          <article className="mt-4 min-h-[160px] border border-black/10 bg-white p-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+              {(selectedCard?.title ?? THEME_META[selectedTheme].label).toUpperCase()}
+            </p>
+            {selectedError ? (
+              <div className="mt-3">
+                <p className="text-sm leading-7 text-[#3a3048]">{selectedError}</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (chartHash) {
+                      void fetchReading(selectedTheme, chartHash);
+                    }
+                  }}
+                  className="mt-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] underline underline-offset-4"
+                >
+                  {dictionary.chart.retry}
+                </button>
+              </div>
+            ) : (
+              <>
+                <h3 className="mt-2 font-serif text-[24px] leading-snug text-ivory">
+                  {selectedSplit.headline}
+                </h3>
+                {selectedSplit.body ? (
+                  <p className="mt-3 text-sm leading-7 text-[#3a3048]">{selectedSplit.body}</p>
+                ) : null}
+              </>
+            )}
+          </article>
+        )}
       </div>
     </section>
   );

@@ -96,7 +96,7 @@ export default function LunaDelMesRoutePage() {
                 </p>
                 <Link
                   href="/form"
-                  className="mt-5 inline-block text-xs font-medium uppercase tracking-[0.24em] text-[#6f613a] transition hover:text-dusty-gold"
+                  className="mt-5 inline-block text-xs font-medium uppercase tracking-[0.24em] text-[#5c4a24] transition hover:text-dusty-gold"
                 >
                   {dictionary.form.back}
                 </Link>

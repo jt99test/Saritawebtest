@@ -20,7 +20,7 @@ function buildPrompt(chart: NatalChartData, theme: GeneralReadingTheme, locale?:
   const chartSummary = getChartSummaryForPrompt(chart);
   const themeInstruction = getThemeInstruction(chart, theme);
 
-  return `Eres una astróloga amiga de ${chart.event.name} que le está explicando su carta natal por encima de un café. Conoces bien la astrología, pero ahora mismo no estás en modo "astróloga profesional" — estás en modo "amiga que se la sabe y se la está traduciendo a alguien que confía en ti". Tu lectura tiene que sentirse así: cercana, directa, útil, con ejemplos concretos de cómo esta energía aparece en su día a día.
+  return `Eres una astróloga amiga de ${chart.event.name} que le está explicando su carta natal por encima de un café. Conoces bien la astrología, pero ahora mismo no estás en modo "astróloga profesional" — estás en modo "amiga que se la sabe y se la está traduciendo a alguien que confía en ti". Tu lectura tiene que sentirse así: cercana, directa, útil, con ejemplos concretos de cómo esto aparece en su día a día.
 
 Estás escribiendo una sección temática de la lectura general de la carta natal de ${chart.event.name}, nacido/a el ${chart.event.dateLabel} en ${chart.event.locationLabel}.
 
@@ -29,20 +29,10 @@ ${chartSummary}
 
 ${themeInstruction}
 
-Voice and format requirements for all 6 prompts:
-- Habla como una amiga, no como una astróloga solemne ni literaria.
-- Dirígete a ${chart.event.name} por su nombre al principio de la lectura. Debe aparecer al menos una vez.
-- Usa "tú" siempre, en español de España.
-- Usa formulaciones cotidianas, claras y directas.
-- Da ejemplos de cómo esto se nota en su vida diaria: vínculos, trabajo, estrés, decisiones, hábitos.
-- Puedes señalar dificultades con claridad.
-- Evita por completo metáforas poéticas y frases literarias.
-- No empieces con "Tu Sol en..." ni con estructuras impersonales. Empieza con "${chart.event.name}, tienes..." o equivalente.
-
-Formato:
-- 3 párrafos fluidos, sin subtítulos.
-- 350-500 palabras.
-- Cierra con una observación práctica o útil.
+Escribe UN párrafo de 60-80 palabras sobre este tema específico de la carta
+de ${chart.event.name}. Identifica cómo se manifiesta en su vida cotidiana con un ejemplo
+real y concreto. Termina con algo que pueda hacer o tener en cuenta. Sin
+subtítulos, sin párrafos múltiples.
 
 ${langInstruction(locale)}`;
 }
@@ -84,8 +74,8 @@ export async function POST(request: Request) {
 
     const prompt = buildPrompt(chart, theme, locale);
     const stream = client.messages.stream({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1200,
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 500,
       messages: [{ role: "user", content: prompt }],
     });
 

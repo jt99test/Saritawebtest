@@ -135,7 +135,7 @@ export default async function YogaAstralElementPage({
                       <span className="border border-black/10 bg-white px-3 py-1.5 text-xs leading-5 text-[#3a3048]">
                         {routine.bodyZone}
                       </span>
-                      <span className="border border-dusty-gold/18 bg-dusty-gold/[0.055] px-3 py-1.5 font-serif text-xs italic leading-5 text-[#6f613a]">
+                      <span className="border border-dusty-gold/18 bg-dusty-gold/[0.055] px-3 py-1.5 font-serif text-xs italic leading-5 text-[#5c4a24]">
                         {ELEMENT_META[elemento].emotional}
                       </span>
                     </div>
@@ -230,7 +230,7 @@ export default async function YogaAstralElementPage({
                               >
                                 {asana.element}
                               </span>
-                              <span className="rounded-full border border-dusty-gold/25 bg-dusty-gold/12 px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#6f613a]">
+                              <span className="rounded-full border border-dusty-gold/25 bg-dusty-gold/12 px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24]">
                                 {asana.duration}
                               </span>
                             </div>

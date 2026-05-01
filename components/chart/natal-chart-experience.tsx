@@ -142,7 +142,7 @@ export function NatalChartExperience({
                   {locked ? <span aria-hidden="true">🔒</span> : null}
                   {dictionary.result.primaryTabs[tab]}
                   {locked && requiredPlan ? (
-                    <span className="border border-dusty-gold/20 px-1.5 py-0.5 text-[12px] tracking-[0.14em] text-[#6f613a]">
+                    <span className="border border-dusty-gold/20 px-1.5 py-0.5 text-[12px] tracking-[0.14em] text-[#5c4a24]">
                       {requiredPlan === "pro" ? dictionary.paywall.lockedBadgePro : dictionary.paywall.lockedBadgeAvanzado}
                     </span>
                   ) : null}
@@ -160,7 +160,7 @@ export function NatalChartExperience({
 
       {activeTabLocked && activeRequiredPlan ? (
         <div className="mx-auto mt-16 max-w-2xl border-y border-dusty-gold/14 py-14 text-center">
-          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
+          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
             {dictionary.result.primaryTabs[pageTab]}
           </p>
           <h2 className="mt-3 font-serif text-[38px] leading-tight text-ivory">
@@ -178,7 +178,7 @@ export function NatalChartExperience({
           <button
             type="button"
             onClick={() => openPricing(activeRequiredPlan)}
-            className="mt-8 border border-dusty-gold/32 bg-dusty-gold/10 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#6f613a] transition hover:border-dusty-gold/55 hover:bg-dusty-gold/16"
+            className="mt-8 border border-dusty-gold/32 bg-dusty-gold/10 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24] transition hover:border-dusty-gold/55 hover:bg-dusty-gold/16"
           >
             {dictionary.paywall.lockedTabCta}
           </button>
@@ -196,7 +196,7 @@ export function NatalChartExperience({
           <section className="pt-8">
             <div className="flex flex-wrap items-center justify-center gap-3">
               {isMock ? (
-                <div className="rounded-full border border-dusty-gold/18 bg-dusty-gold/8 px-4 py-2 text-xs uppercase tracking-[0.24em] text-[#6f613a]">
+                <div className="rounded-full border border-dusty-gold/18 bg-dusty-gold/8 px-4 py-2 text-xs uppercase tracking-[0.24em] text-[#5c4a24]">
                   {dictionary.result.messages.mockNotice}
                 </div>
               ) : null}

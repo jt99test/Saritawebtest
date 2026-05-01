@@ -47,7 +47,7 @@ export function AccountSettings({ dictionary, email, confirmWord }: AccountSetti
           {dictionary.account.changePassword}
         </button>
         {passwordSent ? (
-          <p className="mt-3 text-sm text-[#6f613a]">{dictionary.account.passwordSent}</p>
+          <p className="mt-3 text-sm text-[#5c4a24]">{dictionary.account.passwordSent}</p>
         ) : null}
       </section>
 

@@ -1,7 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
+import type { Message } from "@anthropic-ai/sdk/resources/messages";
 import { DateTime } from "luxon";
 
-import type { NatalChartData, SignId } from "@/lib/chart";
+import type { NatalChartData } from "@/lib/chart";
 import type {
   LunarReportActionSet,
   LunationType,
@@ -12,6 +13,7 @@ import { houseMessages } from "@/data/sarita/house-messages";
 import { elementRoutines } from "@/data/sarita/element-routines";
 import { transitDescriptions } from "@/data/sarita/transit-descriptions";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { ASPECT_LABELS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
 
 type LunarReportRequest = {
   chart: NatalChartData;
@@ -29,49 +31,6 @@ function langInstruction(locale?: string): string {
   if (locale === "it") return "Write entirely in Italian.";
   return "Write in Spanish from Spain. Use the 'tú' form.";
 }
-
-const SIGN_LABELS: Record<SignId, string> = {
-  aries: "Aries",
-  taurus: "Tauro",
-  gemini: "Géminis",
-  cancer: "Cáncer",
-  leo: "Leo",
-  virgo: "Virgo",
-  libra: "Libra",
-  scorpio: "Escorpio",
-  sagittarius: "Sagitario",
-  capricorn: "Capricornio",
-  aquarius: "Acuario",
-  pisces: "Piscis",
-};
-
-const ASPECT_LABELS = {
-  conjunction: "Conjunción",
-  sextile: "Sextil",
-  square: "Cuadratura",
-  trine: "Trígono",
-  opposition: "Oposición",
-  quincunx: "Quincuncio",
-} as const;
-
-const POINT_LABELS = {
-  sun: "Sol",
-  moon: "Luna",
-  mercury: "Mercurio",
-  venus: "Venus",
-  mars: "Marte",
-  jupiter: "Júpiter",
-  saturn: "Saturno",
-  uranus: "Urano",
-  neptune: "Neptuno",
-  pluto: "Plutón",
-  northNode: "Nodo Norte",
-  southNode: "Nodo Sur",
-  chiron: "Quirón",
-  partOfFortune: "Parte de la Fortuna",
-  lilith: "Lilith",
-  ceres: "Ceres",
-} as const;
 
 function monthLabel(year: number, month: number, locale?: string) {
   return DateTime.utc(year, month, 1).setLocale(locale ?? "es").toFormat("LLLL yyyy");
@@ -127,6 +86,76 @@ async function buildTransitList(chart: NatalChartData, lunationTimestamp: string
   };
 }
 
+type LunarTransitSummaryInput = Awaited<ReturnType<typeof buildTransitList>>["structured"];
+
+function extractTextContent(message: Message) {
+  return message.content
+    .map((block) => block.type === "text" ? block.text : "")
+    .join("")
+    .trim();
+}
+
+async function enrichTransitSummaries({
+  client,
+  chart,
+  transits,
+  locale,
+}: {
+  client: Anthropic;
+  chart: NatalChartData;
+  transits: LunarTransitSummaryInput;
+  locale?: string;
+}) {
+  const visibleTransits = transits.slice(0, 3);
+
+  if (visibleTransits.length === 0) {
+    return transits;
+  }
+
+  const prompt = `Escribe microlecturas prÃ¡cticas para los trÃ¡nsitos activos de ${chart.event.name}.
+
+Cada microlectura debe:
+- Hablarle directamente a ${chart.event.name} en segunda persona.
+- Explicar quÃ© significa en la vida diaria, no repetir el nombre del trÃ¡nsito.
+- Tener mÃ¡ximo 18 palabras.
+- Ser concreta y Ãºtil: una decisiÃ³n, ajuste, conversaciÃ³n o conducta.
+- No usar misticismos, emojis, markdown ni listas fuera del JSON.
+
+TrÃ¡nsitos, en orden:
+${visibleTransits.map((transit, index) => `${index + 1}. ${transit.transitingPlanetLabel} ${transit.aspectLabel} ${transit.natalPlanetLabel}. Contexto base: ${transit.relevance || transit.description}`).join("\n")}
+
+Devuelve solo JSON vÃ¡lido en una lÃ­nea con esta forma:
+{"summaries":["...", "...", "..."]}
+
+${langInstruction(locale)}`;
+
+  try {
+    const message = await client.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 220,
+      messages: [{ role: "user", content: prompt }],
+    });
+    const parsed = JSON.parse(extractTextContent(message)) as { summaries?: unknown };
+    const summaries = Array.isArray(parsed.summaries) ? parsed.summaries : [];
+
+    return transits.map((transit, index) => {
+      const summary = summaries[index];
+
+      if (typeof summary !== "string" || !summary.trim()) {
+        return transit;
+      }
+
+      return {
+        ...transit,
+        practicalSummary: summary.trim(),
+      };
+    });
+  } catch (error) {
+    console.error("Could not generate lunar transit summaries:", error);
+    return transits;
+  }
+}
+
 function buildPrompt({
   chart,
   year,
@@ -157,7 +186,7 @@ function buildPrompt({
 
   return `Eres una astróloga amiga de ${name} que le está explicando qué le toca este mes según la Luna ${lunaLabel} en su carta.
 
-Tu tono: cercano, directo, útil. Como una amiga que se la sabe, no como una astróloga distante. Ejemplos concretos de cómo esta energía aparece en su día a día. Sin metáforas literarias.
+Tu tono: cercano, directo, útil. Como una amiga que se la sabe, no como una astróloga distante. Ejemplos concretos de cómo esto aparece en su día a día. Sin metáforas literarias.
 
 CONTEXTO:
 ${name} tiene su Luna ${lunaLabel} de ${monthLabel(year, month, locale)} en ${metadata.signLabel} ${metadata.degree}°${String(metadata.minutes).padStart(2, "0")}', activando su Casa ${metadata.house} (${metadata.areaOfLife}).
@@ -173,16 +202,10 @@ Contexto astrológico completo de la persona:
 ${buildChartSummary(chart)}
 
 TU TAREA:
-Escribe una lectura personalizada para ${name} que:
-1. Empieza con su nombre y la observación directa: qué Luna es, en qué signo, qué casa activa.
-2. Expande el mensaje base de Sarita con ejemplos concretos de cómo se manifiesta en la vida cotidiana de alguien con esta carta natal específica.
-3. Si hay tránsitos activos relevantes, los menciona como "contexto adicional este mes".
-4. Cierra con consejos prácticos y accionables: qué hacer este mes, qué evitar, qué preguntarse.
-4.5. Para cada tránsito activo que menciones, describe UNA situación concreta en la que se podría notar en la vida de ${name}: una conversación, una decisión, una sensación en el cuerpo, una situación en el trabajo o en casa.
-5. Tono Spain Spanish, "tú", conversacional. 400-600 palabras. 3-4 párrafos.
-6. Incluye literalmente esta frase de Sarita una sola vez dentro del texto, sin cambiarle palabras: "${metadata.baseMessage}"
-7. No uses títulos, subtítulos, markdown, listas, emojis ni símbolos decorativos. Solo prosa corrida en párrafos.
-8. El primer carácter del texto es siempre mayúscula.
+Escribe UN párrafo de 80-100 palabras. Empieza con qué Luna es y qué casa
+activa. Di cómo se va a notar ese mes en la vida de ${name} con un ejemplo
+real. Menciona brevemente el tránsito más relevante si lo hay. Termina con
+algo concreto que hacer o evitar. Sin subtítulos. Sin párrafos múltiples.
 
 No reescribas el mensaje de Sarita: úsalo como base y exprésalo en el tono amigo. La autoridad astrológica es de Sarita; tú la traduces a una conversación cercana.
 
@@ -228,6 +251,17 @@ export async function POST(request: Request) {
 
     const routine = elementRoutines[lunation.assignedRoutine];
     const transitData = await buildTransitList(chart, lunation.timestamp);
+    const client = process.env.ANTHROPIC_API_KEY
+      ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+      : null;
+    const activeTransits = client
+      ? await enrichTransitSummaries({
+          client,
+          chart,
+          transits: transitData.structured,
+          locale,
+        })
+      : transitData.structured;
     const baseMessage =
       lunationType === "nueva"
         ? houseMessage.lunaNueva.baseMessage
@@ -256,18 +290,16 @@ export async function POST(request: Request) {
         intention: routine.intention,
         totalDuration: routine.totalDuration,
       },
-      activeTransits: transitData.structured,
+      activeTransits,
     };
 
     if (metadataOnly) {
       return Response.json(metadata);
     }
 
-    if (!process.env.ANTHROPIC_API_KEY) {
+    if (!client) {
       return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
     }
-
-    const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
     const prompt = buildPrompt({
       chart,
@@ -302,8 +334,8 @@ Reglas para esa línea final:
 - La lectura principal debe ir primero, y la línea ${ACTIONS_MARKER} al final.`;
 
     const stream = client.messages.stream({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1200,
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 600,
       messages: [{ role: "user", content: streamingPrompt }],
     });
 

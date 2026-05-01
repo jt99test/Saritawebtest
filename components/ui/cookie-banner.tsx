@@ -31,7 +31,7 @@ export function CookieBanner() {
       <div className="mx-auto flex max-w-5xl flex-col gap-3 text-sm text-[#3a3048] sm:flex-row sm:items-center sm:justify-between">
         <p>
           {dictionary.legal.cookieMessage}{" "}
-          <Link href="/privacidad" className="text-[#6f613a] underline underline-offset-4">
+          <Link href="/privacidad" className="text-[#5c4a24] underline underline-offset-4">
             {dictionary.legal.cookiePrivacy}
           </Link>
         </p>

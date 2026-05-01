@@ -19,7 +19,7 @@ type ChartPointDataCardProps = {
 
 function SectionLabel({ children }: { children: string }) {
   return (
-    <p className="mb-4 text-[12px] font-semibold uppercase tracking-[0.3em] text-[#6f613a]">
+    <p className="mb-4 text-[12px] font-semibold uppercase tracking-[0.3em] text-[#5c4a24]">
       {children}
     </p>
   );
@@ -99,7 +99,7 @@ export function ChartPointDataCard({
     <div className="space-y-8">
       <section className="overflow-hidden rounded-[1.9rem] border border-black/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))]">
         <div className="border-b border-black/10 px-5 py-5">
-          <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#6f613a]">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#5c4a24]">
             {dictionary.result.panels.selectedPoint}
           </p>
 

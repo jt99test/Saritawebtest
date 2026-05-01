@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 import type { Dictionary } from "@/lib/i18n";
 import {
   getSignFromLongitude,
@@ -34,28 +32,10 @@ const ELEMENT_COLORS: Record<Element, string> = {
   water: "#6b6ba8",
 };
 
-const ELEMENT_STATEMENTS: Record<Element, string> = {
-  air: "tu energía vive en la cabeza. Piensas, comunicas, intercambias — y necesitas iniciar las cosas tú mismo o te ahogas.",
-  fire: "tu energía empuja hacia adelante. Inicias, ardes, te lanzas — y necesitas un cauce o te quemas.",
-  earth: "tu energía construye despacio. Aterrizas, sostienes, das forma — y necesitas tiempo o te tensas.",
-  water: "tu energía se mueve por debajo. Sientes, intuyes, absorbes — y necesitas refugio o te disuelves.",
-};
-
-const ELEMENT_TOOLTIPS: Record<Element, string> = {
-  fire: "Fuego habla de impulso, deseo y vitalidad. En una carta natal muestra dónde nace la acción y qué enciende el coraje.",
-  earth: "Tierra habla de cuerpo, sostén y realidad concreta. Muestra cómo construyes seguridad, hábitos y presencia.",
-  air: "Aire habla de mente, palabra y vínculo social. Muestra cómo piensas, comunicas y conectas ideas con personas.",
-  water: "Agua habla de emoción, memoria e intuición. Muestra cómo sientes, absorbes y necesitas proteger tu mundo interno.",
-};
-
 type ChartBalanceSectionProps = {
   chart: NatalChartData;
   dictionary: Dictionary;
 };
-
-function getFirstName(name: string) {
-  return name.trim().split(/\s+/)[0] || name;
-}
 
 function percent(count: number, total: number) {
   return total > 0 ? Math.round((count / total) * 100) : 0;
@@ -85,7 +65,6 @@ function arcPath(startAngle: number, endAngle: number) {
 }
 
 export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionProps) {
-  const [hoveredElement, setHoveredElement] = useState<Element | null>(null);
   const balancePoints = chart.points.filter((point) =>
     BALANCE_POINT_IDS.includes(point.id as (typeof BALANCE_POINT_IDS)[number]),
   );
@@ -118,7 +97,6 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
 
   const dominantElement = dominantKey(elementCounts, ELEMENT_ORDER);
   const dominantModality = dominantKey(modalityCounts, MODALITY_ORDER);
-  const firstName = getFirstName(chart.event.name);
   const modalityLine = MODALITY_ORDER.map(
     (modality) => `${dictionary.result.modalities[modality]} ${percent(modalityCounts[modality], total)}%`,
   ).join(" · ");
@@ -143,30 +121,20 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
 
       <div className="mx-auto mt-8 grid max-w-[720px] gap-8 md:grid-cols-[200px_minmax(0,1fr)] md:items-center lg:mt-10 lg:max-w-[820px] lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-14">
         <div className="text-center">
-          <div className="relative inline-block">
           <svg viewBox="0 0 240 240" className="h-[200px] w-[200px] lg:h-[270px] lg:w-[270px]" role="img" aria-label="Equilibrio de elementos">
             {quadrants.map(({ element, start, end, labelAngle }) => {
               const elementPercent = percent(elementCounts[element], total);
               const labelPoint = polarPoint(80, labelAngle);
               const active = element === dominantElement;
-              const hovered = element === hoveredElement;
 
               return (
-                <g
-                  key={element}
-                  className="cursor-help transition"
-                  onMouseEnter={() => setHoveredElement(element)}
-                  onMouseLeave={() => setHoveredElement(null)}
-                  onFocus={() => setHoveredElement(element)}
-                  onBlur={() => setHoveredElement(null)}
-                  tabIndex={0}
-                >
+                <g key={element}>
                   <path
                     d={arcPath(start, end)}
                     fill="none"
                     stroke={ELEMENT_COLORS[element]}
-                    strokeWidth={hovered ? "46" : "40"}
-                    opacity={hovered ? 1 : Math.min(1, Math.max(0.25, elementPercent / 50))}
+                    strokeWidth={active ? "46" : "40"}
+                    opacity={Math.min(1, Math.max(0.25, elementPercent / 50))}
                     className="transition-all duration-200"
                   />
                   <text
@@ -191,27 +159,31 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
               );
             })}
           </svg>
-          {hoveredElement ? (
-            <div
-              className="pointer-events-none absolute left-1/2 top-1/2 z-20 w-56 -translate-x-1/2 -translate-y-1/2 border border-black/15 p-3 text-left text-xs leading-5 text-ivory shadow-[0_18px_50px_rgba(0,0,0,0.35)]"
-              style={{ backgroundColor: ELEMENT_COLORS[hoveredElement] }}
-            >
-              <p className="mb-1 text-[12px] font-semibold uppercase tracking-[0.2em] text-ivory/78">
-                {dictionary.result.elements[hoveredElement]}
-              </p>
-              {ELEMENT_TOOLTIPS[hoveredElement]}
-            </div>
-          ) : null}
-          </div>
           <p className="mt-3 text-center text-xs leading-6 text-[#3a3048] lg:hidden">
             {modalityLine}
           </p>
         </div>
 
-        <div>
-          <p className="font-serif text-[18px] leading-[1.65] text-ivory lg:max-w-[440px] lg:text-[21px] lg:leading-[1.58]">
-            {firstName}, {ELEMENT_STATEMENTS[dominantElement]}
-          </p>
+        <div className="grid gap-3">
+          {ELEMENT_ORDER.map((element) => {
+            const active = element === dominantElement;
+            return (
+              <div
+                key={element}
+                className={[
+                  "flex items-center justify-between border-b border-black/10 py-3 last:border-b-0",
+                  active ? "text-ivory" : "text-[#3a3048]",
+                ].join(" ")}
+              >
+                <span className="text-[11px] font-semibold uppercase tracking-[0.22em]">
+                  {dictionary.result.elements[element]}
+                </span>
+                <span className="font-serif text-[22px] leading-none">
+                  {percent(elementCounts[element], total)}%
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
 

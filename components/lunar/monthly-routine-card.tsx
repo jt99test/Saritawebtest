@@ -1,9 +1,11 @@
 import { PrimaryButton } from "@/components/ui/primary-button";
 import type { LunarReportMetadata } from "@/lib/lunar-report";
+import type { Dictionary } from "@/lib/i18n";
 import { yogaRoutines } from "@/data/sarita/yoga-routines";
 
 type MonthlyRoutineCardProps = {
   metadata: LunarReportMetadata;
+  dictionary: Dictionary;
 };
 
 const ELEMENT_LABELS = {
@@ -31,7 +33,7 @@ const ELEMENT_COPY: Record<LunarReportMetadata["assignedRoutine"], string> = {
     "Esta luna te pide soltar. La rutina del Agua disuelve la coraza y devuelve la fluidez.",
 };
 
-export function MonthlyRoutineCard({ metadata }: MonthlyRoutineCardProps) {
+export function MonthlyRoutineCard({ metadata, dictionary }: MonthlyRoutineCardProps) {
   const routine = yogaRoutines[metadata.assignedRoutine];
   const routineNames = routine.asanas
     .slice(0, 3)
@@ -41,11 +43,11 @@ export function MonthlyRoutineCard({ metadata }: MonthlyRoutineCardProps) {
 
   return (
     <section className="mx-auto max-w-[720px] text-left">
-      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
-        tu práctica este mes
+      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
+        {dictionary.lunar.practiceThisMonth}
       </p>
       <h3 className="mt-2 font-serif text-[36px] font-normal leading-tight text-ivory">
-        {`Elemento ${ELEMENT_LABELS[metadata.element]}`}
+        {dictionary.lunar.elementLabel.replace("{element}", ELEMENT_LABELS[metadata.element])}
       </h3>
 
       <p className="mt-7 max-w-[560px] font-serif text-[21px] leading-[1.6] text-ivory/82">
@@ -61,7 +63,7 @@ export function MonthlyRoutineCard({ metadata }: MonthlyRoutineCardProps) {
         variant="ghostGold"
         className="mt-8 px-6 py-3 text-[12px] uppercase tracking-[0.2em]"
       >
-        Ver rutina completa
+        {dictionary.lunar.seeRoutine}
       </PrimaryButton>
     </section>
   );

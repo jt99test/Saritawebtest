@@ -149,7 +149,7 @@ export function LocationAutocomplete({
       />
 
       {selectedLocation ? (
-        <p className="mt-2 text-xs leading-5 text-[#6f613a]">
+        <p className="mt-2 text-xs leading-5 text-[#5c4a24]">
           {dictionary.form.locationStatus.selected}: {selectedLocation.displayName}
         </p>
       ) : (
@@ -189,7 +189,7 @@ export function LocationAutocomplete({
                           {suggestion.country ? ` · ${suggestion.country}` : ""}
                         </p>
                       </div>
-                      <span className="mt-0.5 text-[12px] uppercase tracking-[0.22em] text-[#6f613a]">
+                      <span className="mt-0.5 text-[12px] uppercase tracking-[0.22em] text-[#5c4a24]">
                         {suggestion.timezone}
                       </span>
                     </button>

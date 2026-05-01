@@ -156,7 +156,7 @@ export default function LoadingPage() {
                   </p>
                   <Link
                     href="/"
-                    className="mt-5 inline-block text-xs font-medium uppercase tracking-[0.24em] text-[#6f613a] transition hover:text-dusty-gold"
+                    className="mt-5 inline-block text-xs font-medium uppercase tracking-[0.24em] text-[#5c4a24] transition hover:text-dusty-gold"
                   >
                     {dictionary.standalonePages.viewOptions}
                   </Link>
@@ -168,7 +168,7 @@ export default function LoadingPage() {
                   <p>{error}</p>
                   <Link
                     href="/form"
-                    className="mt-4 inline-block text-xs font-medium uppercase tracking-[0.24em] text-[#6f613a] transition hover:text-dusty-gold"
+                    className="mt-4 inline-block text-xs font-medium uppercase tracking-[0.24em] text-[#5c4a24] transition hover:text-dusty-gold"
                   >
                     {dictionary.form.back}
                   </Link>

@@ -165,6 +165,25 @@
   "yogaAstral": {
     "asanas": "asanas"
   },
+  "lunar": {
+    "eyebrow": "luna del mes",
+    "intro": "Cada mes hay dos lunas importantes: la Luna Nueva, que abre un ciclo, y la Luna Llena, que lo cierra. Según dónde cae cada una en tu carta, activa un área distinta de tu vida. Aquí ves qué te toca este mes y qué hacer con eso.",
+    "subtitle": "Dos lunas marcan este mes. Tócalas para entrar.",
+    "newMoon": "Luna Nueva",
+    "fullMoon": "Luna Llena",
+    "calculating": "Calculando tu luna del mes...",
+    "calculateError": "No se pudo calcular la luna del mes.",
+    "emptyMonth": "No hemos encontrado lunaciones para este mes.",
+    "quietMonth": "Mes tranquilo. Sin tránsitos activos.",
+    "personalizedReading": "lectura personalizada",
+    "generatingReading": "Generando lectura",
+    "generateReading": "Generar lectura",
+    "emptyReading": "Esta luna tiene algo que decirte.",
+    "practiceThisMonth": "tu práctica este mes",
+    "elementLabel": "Elemento {element}",
+    "seeRoutine": "Ver rutina completa",
+    "moonIllustrationAlt": "Ilustración de {moon}"
+  },
   "result": {
     "intro": "Así estaban alineados los planetas cuando naciste.",
     "back": "Volver al inicio",
@@ -230,6 +249,9 @@
       "legendTense": "Tenso",
       "legendNeutral": "Neutro",
       "compareAnother": "Comparar con otra persona",
+      "compatibilityAria": "Dinámica de compatibilidad",
+      "aspectsCount": "aspectos",
+      "saveError": "No se pudo guardar la persona.",
       "orb": "orbe",
       "aspectQuality": {
         "harmonious": "armónico",
@@ -243,6 +265,14 @@
         "mental": "Mental",
         "profesional": "Profesional",
         "evolutivo": "Evolutivo"
+      },
+      "layerEmpty": {
+        "fisico": "No hay una firma física dominante por aspectos cerrados. La atracción puede existir, pero no es el centro técnico de esta comparación.",
+        "sexual": "No aparece una activación sexual fuerte en los aspectos principales. Eso no niega deseo: solo indica que no es la capa astrológica más insistente.",
+        "emocional": "La capa emocional no está especialmente marcada por aspectos cerrados. Conviene leerla desde la comunicación real y el cuidado cotidiano.",
+        "mental": "La conexión mental no domina la carta comparada. Puede haber conversación, pero el vínculo se activa más por otras vías.",
+        "profesional": "No se ve una dinámica profesional especialmente fuerte en los aspectos principales. Si trabajan juntos, habría que cuidar estructura y expectativas fuera de la carta.",
+        "evolutivo": "No hay una firma evolutiva dominante por aspectos cerrados. El vínculo puede enseñar, pero no parece empujar desde una presión importante."
       }
     },
     "transitPage": {
@@ -728,8 +758,17 @@
     "freePlanNote": "Puedes mejorar tu plan cuando quieras."
   },
   "chart": {
+    "generate": "Generar +",
+    "collapse": "Cerrar —",
+    "read": "Leer +",
+    "retry": "Intentar de nuevo",
+    "generateError": "No se pudo generar. Intentar de nuevo.",
+    "usageBanner": "Has usado {used} de {limit} lecturas este mes.",
+    "seePlans": "Ver planes",
     "share": "Compartir carta",
     "download": "Descargar",
+    "creatingLink": "Creando enlace...",
+    "shareError": "No se pudo crear el enlace. Intenta de nuevo.",
     "linkCopied": "¡Enlace copiado!",
     "shareTitle": "Tu carta natal",
     "shareSubtitle": "Comparte tu carta con quien quieras.",

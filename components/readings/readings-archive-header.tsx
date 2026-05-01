@@ -26,7 +26,7 @@ export function ReadingsArchiveHeader() {
       <div className="mx-auto max-w-3xl">
         <div className="grid gap-6 sm:grid-cols-[1fr_auto] sm:items-end">
           <div>
-            <p className="mb-3 text-[12px] font-semibold uppercase tracking-[0.24em] text-[#6f613a]">
+            <p className="mb-3 text-[12px] font-semibold uppercase tracking-[0.24em] text-[#5c4a24]">
               {dictionary.readings.eyebrow}
             </p>
             <h1 className="font-serif text-[48px] font-normal leading-none text-ivory">

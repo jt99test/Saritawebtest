@@ -1,20 +1,25 @@
+"use client";
+
+import { useState } from "react";
 import { DateTime } from "luxon";
 
+import type { Dictionary } from "@/lib/i18n";
 import type { LunarReportMetadata } from "@/lib/lunar-report";
 
 type ActiveTransitsListProps = {
   transits: LunarReportMetadata["activeTransits"];
   timezone: string;
+  dictionary: Dictionary;
 };
 
 const SLOW_PLANETS = new Set(["Saturno", "Júpiter", "Urano", "Neptuno", "Plutón"]);
 
 const PLANET_GLYPHS: Record<string, string> = {
   Saturno: "♄",
-  "Júpiter": "♃",
+  Júpiter: "♃",
   Urano: "⛢",
   Neptuno: "♆",
-  "Plutón": "♇",
+  Plutón: "♇",
   Marte: "♂",
   Venus: "♀",
 };
@@ -29,16 +34,31 @@ function getTransitWindowLabel(exactnessDate: string, planet: string, timezone: 
 }
 
 function getThemeLabel(transit: LunarReportMetadata["activeTransits"][number]) {
+  if (transit.practicalSummary?.trim()) {
+    return transit.practicalSummary.trim();
+  }
+
   const source = transit.relevance || transit.description;
   const [first] = source.split(",");
   return first.trim() || "movimiento";
 }
 
-export function ActiveTransitsList({ transits, timezone }: ActiveTransitsListProps) {
+function getThemeBody(transit: LunarReportMetadata["activeTransits"][number]) {
+  return (
+    transit.practicalSummary?.trim() ||
+    transit.relevance?.trim() ||
+    transit.description?.trim() ||
+    getThemeLabel(transit)
+  );
+}
+
+export function ActiveTransitsList({ transits, timezone, dictionary }: ActiveTransitsListProps) {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
   return (
     <section className="mx-auto max-w-[720px] lg:max-w-[800px]">
       <div className="text-center">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
           lo que también se mueve
         </p>
         <h3 className="mt-1.5 font-serif text-[32px] font-normal leading-tight text-ivory">
@@ -48,36 +68,49 @@ export function ActiveTransitsList({ transits, timezone }: ActiveTransitsListPro
 
       {transits.length === 0 ? (
         <p className="mt-8 text-center font-serif text-base italic text-[#3a3048]">
-          Mes tranquilo en el cielo. Aprovecha la calma.
+          {dictionary.lunar.quietMonth}
         </p>
       ) : (
-        <div className="mt-8">
-          {transits.slice(0, 3).map((transit) => (
-            <div
-              key={`${transit.transitingPlanet}-${transit.natalPlanet}-${transit.aspectType}`}
-              className="grid grid-cols-[42px_minmax(0,1fr)] gap-5 border-t-[0.5px] border-dusty-gold/12 py-4.5 last:border-b-[0.5px] sm:grid-cols-[42px_minmax(0,1fr)_140px] lg:grid-cols-[56px_minmax(0,1fr)_180px] lg:gap-6 lg:py-5"
-            >
-              <p className="text-center font-serif text-2xl leading-none text-ivory/85 lg:text-[28px]">
-                {PLANET_GLYPHS[transit.transitingPlanetLabel] ?? "•"}
-              </p>
-              <div>
-                <p className="font-serif text-lg leading-tight text-ivory lg:text-[21px]">
+        <>
+          <div className="mt-6 flex flex-wrap gap-2">
+            {transits.slice(0, 3).map((transit, index) => {
+              const active = selectedIndex === index;
+              return (
+                <button
+                  key={`${transit.transitingPlanet}-${transit.natalPlanet}-${transit.aspectType}`}
+                  type="button"
+                  onClick={() => setSelectedIndex(index)}
+                  className={[
+                    "border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition",
+                    active
+                      ? "border-dusty-gold/60 bg-dusty-gold/[0.07] text-[#5c4a24]"
+                      : "border-black/10 bg-white text-[#3a3048] hover:bg-black/[0.02]",
+                  ].join(" ")}
+                >
+                  {`${PLANET_GLYPHS[transit.transitingPlanetLabel] ?? "•"} ${transit.transitingPlanetLabel}`}
+                </button>
+              );
+            })}
+          </div>
+
+          {(() => {
+            const transit = transits[selectedIndex];
+            if (!transit) return null;
+            return (
+              <article className="mt-4 border border-black/10 bg-white p-6">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
                   {`${transit.transitingPlanetLabel} ${transit.aspectLabel.toLowerCase()} ${transit.natalPlanetLabel}`}
                 </p>
-                <p className="mt-1 font-serif text-[13px] italic leading-6 text-[#3a3048]">
-                  {getTransitWindowLabel(
-                    transit.exactnessDate,
-                    transit.transitingPlanetLabel,
-                    timezone,
-                  )}
+                <p className="mt-1 font-serif text-[13px] italic text-[#3a3048]">
+                  {getTransitWindowLabel(transit.exactnessDate, transit.transitingPlanetLabel, timezone)}
                 </p>
-              </div>
-              <p className="col-span-2 text-[12px] uppercase leading-6 tracking-[0.14em] text-[#3a3048] sm:col-span-1 sm:text-right">
-                {getThemeLabel(transit)}
-              </p>
-            </div>
-          ))}
-        </div>
+                <p className="mt-4 text-sm leading-7 text-[#3a3048]">
+                  {getThemeBody(transit)}
+                </p>
+              </article>
+            );
+          })()}
+        </>
       )}
     </section>
   );

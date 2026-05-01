@@ -22,7 +22,7 @@ export default async function PricingPage() {
       <section className="relative py-10 sm:py-14">
         <Container className="min-h-screen">
           <div className="mx-auto max-w-5xl text-center">
-            <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
+            <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
               {dictionary.pricing.eyebrow}
             </p>
             <h1 className="mt-3 font-serif text-[48px] leading-tight text-ivory sm:text-[72px]">

@@ -23,6 +23,25 @@ type Props = {
   dictionary: Dictionary;
 };
 
+const PANEL_POINT_COLORS: Partial<Record<ChartPointId, string>> = {
+  sun: "#b88400",
+  moon: "#6c7286",
+  mercury: "#3a8a76",
+  venus: "#9b5fb7",
+  mars: "#b74337",
+  jupiter: "#8a6a25",
+  saturn: "#77724d",
+  uranus: "#347f91",
+  neptune: "#4d61b2",
+  pluto: "#7e4b91",
+  northNode: "#b88400",
+  southNode: "#a87900",
+  chiron: "#6e8b55",
+  partOfFortune: "#8a6a25",
+  lilith: "#7e4b91",
+  ceres: "#6e8b55",
+};
+
 function useDesktopBreakpoint() {
   const [isDesktop, setIsDesktop] = useState(false);
 
@@ -44,7 +63,7 @@ function useDesktopBreakpoint() {
 function SectionLabel({ children }: { children: string }) {
   return (
     <div>
-      <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#3a3048]">
+      <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#5c4a24]">
         {children}
       </p>
     </div>
@@ -218,6 +237,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
 
   const signMeta = getSignMeta(point.sign);
   const signGlyph = zodiacSigns.find((sign) => sign.id === point.sign)?.glyph ?? "";
+  const pointColor = PANEL_POINT_COLORS[point.id] ?? point.color;
   const position = formatSignPosition(point.longitude);
   const selectedHouseArea = houseArea(dictionary, point.house);
   const paragraphs = splitReadingParagraphs(reading);
@@ -252,10 +272,10 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
             exit={isDesktop ? { x: "100%", opacity: 0.92 } : { y: "100%", opacity: 0.92 }}
             transition={{ type: "spring", damping: 28, stiffness: 240 }}
             className={[
-              "fixed z-40 overflow-hidden border-[rgba(236,232,223,0.08)] bg-[rgba(10,14,22,0.96)] backdrop-blur-[12px]",
+              "fixed z-40 overflow-hidden border-black/10 bg-cosmic-950/97 text-ivory backdrop-blur-[12px]",
               isDesktop
-                ? "right-0 top-0 h-screen w-[380px] border-l shadow-[-24px_0_90px_rgba(0,0,0,0.42)]"
-                : "inset-x-0 bottom-0 h-[58vh] rounded-t-[2rem] border-t shadow-[0_-24px_90px_rgba(0,0,0,0.42)]",
+                ? "right-0 top-0 h-screen w-[380px] border-l shadow-[-24px_0_90px_rgba(0,0,0,0.18)]"
+                : "inset-x-0 bottom-0 h-[58vh] rounded-t-[2rem] border-t shadow-[0_-24px_90px_rgba(0,0,0,0.18)]",
             ].join(" ")}
             aria-modal="false"
             role="dialog"
@@ -263,15 +283,15 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
           >
             <div ref={panelRef} className="flex h-full flex-col">
               <div className="border-b border-black/10 px-5 pb-4 pt-4 sm:px-6">
-                {!isDesktop ? <div className="mx-auto mb-4 h-1.5 w-14 rounded-full bg-white/14" /> : null}
+                {!isDesktop ? <div className="mx-auto mb-4 h-1.5 w-14 rounded-full bg-black/12" /> : null}
 
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#3a3048]">
+                    <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#5c4a24]">
                       {dictionary.result.panels.selectedPoint}
                     </p>
                     <div className="mt-3 flex items-center gap-3">
-                      <span className="text-[2.25rem] leading-none" style={{ color: point.color }}>
+                      <span className="text-[2.25rem] leading-none" style={{ color: pointColor }}>
                         {point.glyph}
                       </span>
                       <div className="min-w-0">
@@ -290,7 +310,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                     ref={closeButtonRef}
                     type="button"
                     onClick={closePanel}
-                    className="rounded-full border border-black/10 p-2.5 text-[#3a3048] transition hover:border-black/10 hover:text-ivory"
+                    className="rounded-full border border-black/10 bg-white/70 p-2.5 text-[#3a3048] transition hover:border-black/15 hover:bg-white hover:text-ivory"
                     aria-label={dictionary.common.close}
                   >
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -319,8 +339,8 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                         className={[
                           "rounded-full border px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.24em] transition",
                           active
-                            ? "border-dusty-gold/48 bg-dusty-gold/12 text-ivory"
-                            : "border-black/10 bg-transparent text-[#3a3048] hover:border-black/15 hover:text-ivory",
+                            ? "border-dusty-gold/55 bg-dusty-gold/14 text-[#5c4a24]"
+                            : "border-black/10 bg-white/45 text-[#3a3048] hover:border-black/15 hover:bg-white hover:text-ivory",
                         ].join(" ")}
                         aria-pressed={active}
                       >
@@ -335,7 +355,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                 {detailTab === "essence" ? (
                   <div className="space-y-6">
                     <div className="grid gap-4">
-                      <section className="rounded-[1.6rem] border border-[rgba(236,232,223,0.08)] bg-[rgba(255,255,255,0.025)] p-5 shadow-none">
+                      <section className="rounded-[1.6rem] border border-black/10 bg-white p-5 shadow-none">
                         <SectionLabel>{dictionary.result.editorial.signFocus}</SectionLabel>
                         <h3 className="mt-4 font-serif text-2xl text-ivory">
                           {dictionary.result.signs[point.sign]}
@@ -350,7 +370,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                         </ul>
                       </section>
 
-                      <section className="rounded-[1.6rem] border border-[rgba(236,232,223,0.08)] bg-[rgba(255,255,255,0.025)] p-5 shadow-none">
+                      <section className="rounded-[1.6rem] border border-black/10 bg-white p-5 shadow-none">
                         <SectionLabel>{dictionary.result.editorial.houseFocus}</SectionLabel>
                         <h3 className="mt-4 font-serif text-2xl text-ivory">{selectedHouseArea}</h3>
                         <ul className="mt-4 space-y-2 text-sm leading-7 text-[#3a3048]">
@@ -367,11 +387,11 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                 ) : null}
 
                 {detailTab === "data" ? (
-                  <section className="rounded-[1.6rem] border border-[rgba(236,232,223,0.08)] bg-[rgba(255,255,255,0.025)] p-5 shadow-none">
+                  <section className="rounded-[1.6rem] border border-black/10 bg-white p-5 shadow-none">
                     <SectionLabel>{dictionary.result.editorial.technicalSheet}</SectionLabel>
                     {point.id === "northNode" || point.id === "southNode" ? (
                       <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-dusty-gold/20 bg-dusty-gold/8 px-3 py-2 text-xs leading-6 text-[#3a3048]">
-                        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-dusty-gold/30 text-[12px] text-[#6f613a]">
+                        <span className="inline-flex h-5 w-5 items-center justify-center rounded-full border border-dusty-gold/30 text-[12px] text-[#5c4a24]">
                           ⓘ
                         </span>
                         <span>{dictionary.result.messages.meanNodeNote}</span>
@@ -415,8 +435,8 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                             className={[
                               "w-full rounded-[1.45rem] border p-4 text-left transition",
                               active
-                                ? "border-dusty-gold/52 bg-dusty-gold/12 shadow-[0_0_0_1px_rgba(232,197,71,0.15)]"
-                                : "border-[rgba(236,232,223,0.08)] bg-[rgba(255,255,255,0.025)] shadow-none hover:border-black/10 hover:bg-black/[0.05]",
+                                ? "border-dusty-gold/55 bg-dusty-gold/12 shadow-[0_0_0_1px_rgba(111,90,42,0.1)]"
+                                : "border-black/10 bg-white shadow-none hover:border-black/15 hover:bg-black/[0.04]",
                             ].join(" ")}
                           >
                             <div className="flex items-start justify-between gap-4">
@@ -426,7 +446,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                                   {dictionary.result.points[point.id]} · {counterpart}
                                 </p>
                               </div>
-                              <span className="rounded-full border border-black/10 px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#6f613a]">
+                              <span className="rounded-full border border-black/10 px-3 py-1 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24]">
                                 {aspect.orb.toFixed(1)}°
                               </span>
                             </div>
@@ -442,7 +462,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                 ) : null}
 
                 {detailTab === "reading" ? (
-                  <section className="rounded-[1.6rem] border border-[rgba(236,232,223,0.08)] bg-[rgba(255,255,255,0.025)] p-5 shadow-none">
+                  <section className="rounded-[1.6rem] border border-black/10 bg-white p-5 shadow-none">
                     <SectionLabel>{dictionary.result.drawer.readingLabel}</SectionLabel>
 
                     {loading ? (
@@ -450,7 +470,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                         {[88, 76, 91, 64].map((width) => (
                           <div
                             key={width}
-                            className="h-3 animate-pulse rounded-full bg-white/8"
+                            className="h-3 animate-pulse rounded-full bg-black/10"
                             style={{ width: `${width}%` }}
                           />
                         ))}
@@ -471,7 +491,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
                           <button
                             type="button"
                             onClick={() => setReadingExpanded((current) => !current)}
-                            className="mt-6 rounded-full border border-dusty-gold/24 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.22em] text-[#6f613a] transition hover:border-dusty-gold/42 hover:text-ivory"
+                            className="mt-6 rounded-full border border-dusty-gold/24 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5c4a24] transition hover:border-dusty-gold/42 hover:text-ivory"
                           >
                             {readingExpanded ? dictionary.common.hide : dictionary.result.drawer.readMore}
                           </button>

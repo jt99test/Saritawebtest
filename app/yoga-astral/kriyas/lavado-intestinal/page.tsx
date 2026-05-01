@@ -81,7 +81,7 @@ export default async function LavadoIntestinalPage() {
 
             {!hasAccess ? (
               <section className="mx-auto max-w-2xl border-y border-dusty-gold/18 py-10 text-center">
-                <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
+                <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
                   {dictionary.paywall.lavado.gateTitle}
                 </p>
                 <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-[#3a3048]">
@@ -151,7 +151,7 @@ export default async function LavadoIntestinalPage() {
                               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#e8c547]/28 bg-[#e8c547]/10 font-serif text-xl text-[#e8c547]">
                                 {index + 1}
                               </span>
-                              <span className="rounded-full border border-dusty-gold/25 bg-dusty-gold/12 px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#6f613a]">
+                              <span className="rounded-full border border-dusty-gold/25 bg-dusty-gold/12 px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24]">
                                 {asana.duration}
                               </span>
                             </div>

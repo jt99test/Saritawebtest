@@ -24,7 +24,7 @@ export default async function TermsPage() {
             {dictionary.result.back}
           </Link>
           <div className="mx-auto mt-14 max-w-3xl">
-            <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
+            <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
               {dictionary.legal.terms}
             </p>
             <h1 className="mt-3 font-serif text-[44px] leading-tight text-ivory sm:text-[64px]">
@@ -45,7 +45,7 @@ export default async function TermsPage() {
             </div>
 
             <div className="mt-10 border-t border-dusty-gold/16 pt-6">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#6f613a]">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5c4a24]">
                 {dictionary.legal.contact}
               </p>
               <a href="mailto:hola@saritashakti.com" className="mt-3 inline-block text-base text-ivory underline underline-offset-4">

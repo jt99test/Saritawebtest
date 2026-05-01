@@ -30,7 +30,6 @@ const ELEMENT_LABELS = {
 export type ChartPattern = {
   type: "t-square" | "grand-trine" | "yod" | "stellium-sign" | "stellium-house";
   title: string;
-  description: string;
   points: ChartPointId[];
 };
 
@@ -81,7 +80,6 @@ export function detectChartPatterns(chart: NatalChartData): ChartPattern[] {
           patterns.push({
             type: "t-square",
             title: `T-cuadrada con foco en ${focal.glyph}`,
-            description: "Dos tensiones descargan en un planeta focal: una firma de presion, logro y aprendizaje por friccion.",
             points: uniqueIds([focal.id, first.id, second.id]),
           });
         }
@@ -102,7 +100,6 @@ export function detectChartPatterns(chart: NatalChartData): ChartPattern[] {
           patterns.push({
             type: "grand-trine",
             title: `Gran trigono${element ? ` de ${ELEMENT_LABELS[element]}` : ""}`,
-            description: "Talento natural y fluidez energetica: algo en la carta sabe circular sin tanto esfuerzo.",
             points: trio.map((point) => point.id),
           });
         }
@@ -120,7 +117,6 @@ export function detectChartPatterns(chart: NatalChartData): ChartPattern[] {
           patterns.push({
             type: "yod",
             title: `Yod con apex en ${apex.glyph}`,
-            description: "Energia insistente y dificil de ignorar: pide ajustes finos hasta encontrar una salida consciente.",
             points: uniqueIds([apex.id, first.id, second.id]),
           });
         }
@@ -140,7 +136,6 @@ export function detectChartPatterns(chart: NatalChartData): ChartPattern[] {
       patterns.push({
         type: "stellium-sign",
         title: `Stellium en ${sign}`,
-        description: "Tres o mas planetas en un signo concentran ahi una gran parte de la identidad psiquica.",
         points: signPoints.map((point) => point.id),
       });
     }
@@ -151,7 +146,6 @@ export function detectChartPatterns(chart: NatalChartData): ChartPattern[] {
       patterns.push({
         type: "stellium-house",
         title: `Stellium en casa ${house}`,
-        description: "Tres o mas planetas en una casa convierten esa area de vida en un escenario central.",
         points: housePoints.map((point) => point.id),
       });
     }

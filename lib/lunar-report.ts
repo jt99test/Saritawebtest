@@ -47,6 +47,7 @@ export type LunarReportMetadata = {
     aspectLabel: string;
     description: string;
     relevance: string;
+    practicalSummary?: string;
   }>;
 };
 

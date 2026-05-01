@@ -84,7 +84,7 @@ export default function YogaAstralRoutePage() {
           ) : (
             <div className="flex flex-1 items-center justify-center">
               <div className="max-w-3xl text-center">
-                <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#6f613a]">
+                <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
                   yoga astral
                 </p>
                 <h1 className="mt-2 font-serif text-[48px] font-normal leading-tight text-ivory">
@@ -96,7 +96,7 @@ export default function YogaAstralRoutePage() {
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
                   <Link
                     href="/form"
-                    className="font-serif text-[15px] text-[#6f613a] transition hover:text-dusty-gold"
+                    className="font-serif text-[15px] text-[#5c4a24] transition hover:text-dusty-gold"
                   >
                     {dictionary.standalonePages.goToForm}
                   </Link>

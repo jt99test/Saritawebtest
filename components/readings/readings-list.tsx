@@ -151,7 +151,7 @@ export function ReadingsList({ readings }: { readings: StoredReading[] }) {
                       window.sessionStorage.setItem(CHART_RESULT_KEY, JSON.stringify(result));
                       router.push("/resultado");
                     }}
-                    className="inline-flex min-w-24 items-center justify-center border border-dusty-gold/24 bg-dusty-gold/[0.055] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#6f613a] transition hover:border-dusty-gold/42 hover:bg-dusty-gold/[0.085] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex min-w-24 items-center justify-center border border-dusty-gold/24 bg-dusty-gold/[0.055] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24] transition hover:border-dusty-gold/42 hover:bg-dusty-gold/[0.085] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {dictionary.readings.open}
                   </button>

@@ -51,10 +51,10 @@ function reportKeyFor(year: number, month: number, type: LunationType) {
   return `${DateTime.utc(year, month, 1).toFormat(REPORT_MONTH_FORMAT)}-${type}`;
 }
 
-function formatToggleDate(timestamp: string, timezone: string) {
+function formatToggleDate(timestamp: string, timezone: string, locale: string) {
   return DateTime.fromISO(timestamp, { zone: "utc" })
     .setZone(timezone)
-    .setLocale("es")
+    .setLocale(locale)
     .toFormat("d 'de' LLLL");
 }
 
@@ -164,9 +164,9 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
         const nextPreviews = { nueva, llena };
         setPreviews(nextPreviews);
         setSelectedType(getClosestType(nextPreviews, timezone));
-      } catch (error) {
+      } catch {
         if (!cancelled) {
-          setPreviewError((error as Error).message);
+          setPreviewError(dictionary.lunar.calculateError);
         }
       } finally {
         if (!cancelled) {
@@ -187,7 +187,15 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
   const prose = activeStream.prose || cachedEntry?.prose || "";
   const actions = activeStream.actions ?? cachedEntry?.actions ?? null;
 
-  async function generateReport(type: LunationType) {
+  useEffect(() => {
+    if (!chartHash || !selectedMetadata || prose || activeStream.loading || activeStream.error) {
+      return;
+    }
+
+    void loadReport(selectedType);
+  }, [activeStream.error, activeStream.loading, chartHash, prose, selectedMetadata, selectedType]);
+
+  async function loadReport(type: LunationType) {
     if (!chartHash) {
       return;
     }
@@ -216,7 +224,7 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
           prose: "",
           actions: null,
           loading: false,
-          error: "No se pudo generar. Inténtalo de nuevo.",
+          error: dictionary.chart.generateError,
         },
       }));
       return;
@@ -287,7 +295,7 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
           prose: "",
           actions: null,
           loading: false,
-          error: "No se pudo generar. Inténtalo de nuevo.",
+          error: dictionary.chart.generateError,
         },
       }));
       return;
@@ -324,8 +332,8 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
     return [
       {
         id: type,
-        label: type === "nueva" ? "Luna Nueva" : "Luna Llena",
-        date: formatToggleDate(metadata.timestamp, timezone),
+        label: type === "nueva" ? dictionary.lunar.newMoon : dictionary.lunar.fullMoon,
+        date: formatToggleDate(metadata.timestamp, timezone, locale),
       },
     ];
   });
@@ -334,19 +342,19 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
     <div className="mx-auto max-w-[1080px] pb-0 pt-8 lg:pt-10">
       <div className="mx-auto mb-8 max-w-2xl text-center">
         <p className="text-sm leading-7 text-[#3a3048]">
-          Cada mes hay dos lunas importantes: la Luna Nueva, que abre un ciclo, y la Luna Llena, que lo cierra. Según dónde cae cada una en tu carta, activa un área distinta de tu vida. Aquí ves qué te toca este mes y qué hacer con eso.
+          {dictionary.lunar.intro}
         </p>
       </div>
 
       <header className="text-center">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
-          luna del mes
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
+          {dictionary.lunar.eyebrow}
         </p>
         <h1 className="mt-1.5 font-serif text-[52px] font-normal leading-none tracking-[-0.01em] text-ivory lg:text-[68px]">
-          {currentMonth.setLocale("es").toFormat("LLLL yyyy").toLowerCase()}
+          {currentMonth.setLocale(locale).toFormat("LLLL yyyy").toLowerCase()}
         </h1>
         <p className="mx-auto mt-3 max-w-[480px] font-serif text-[15px] italic leading-7 text-[#3a3048] lg:max-w-[540px]">
-          Dos lunas marcan este mes. Tócalas para entrar.
+          {dictionary.lunar.subtitle}
         </p>
 
         <div className="mt-10 lg:mt-12">
@@ -355,6 +363,7 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
               options={toggleOptions}
               value={selectedType}
               onChange={setSelectedType}
+              dictionary={dictionary}
             />
           ) : null}
         </div>
@@ -362,7 +371,7 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
 
       {previewLoading ? (
         <p className="mt-12 text-center font-serif text-sm italic leading-7 text-[#3a3048]">
-          Calculando tu luna del mes...
+          {dictionary.lunar.calculating}
         </p>
       ) : previewError ? (
         <p className="mt-12 text-center font-serif text-sm italic leading-7 text-[#3a3048]">
@@ -383,7 +392,8 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
               prose={prose}
               loading={activeStream.loading}
               error={activeStream.error}
-              onGenerate={() => void generateReport(selectedType)}
+              onRetry={() => void loadReport(selectedType)}
+              dictionary={dictionary}
             />
           </div>
 
@@ -391,20 +401,21 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
             <ActiveTransitsList
               transits={selectedMetadata.activeTransits}
               timezone={timezone}
+              dictionary={dictionary}
             />
-          </div>
-
-          <div className="mt-16 lg:mt-20">
-            <MonthlyRoutineCard metadata={selectedMetadata} />
           </div>
 
           <div className="mt-10 lg:mt-12">
             <PracticalActions actions={actions} loading={activeStream.loading} />
           </div>
+
+          <div className="mt-16 lg:mt-20">
+            <MonthlyRoutineCard metadata={selectedMetadata} dictionary={dictionary} />
+          </div>
         </div>
       ) : (
         <p className="mt-12 text-center font-serif text-sm italic leading-7 text-[#3a3048]">
-          No hemos encontrado lunaciones para este mes.
+          {dictionary.lunar.emptyMonth}
         </p>
       )}
     </div>

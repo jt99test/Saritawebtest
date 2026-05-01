@@ -16,7 +16,7 @@ type ChartSidePanelProps = {
 function SectionLabel({ children }: { children: string }) {
   return (
     <div className="flex items-center gap-3">
-      <p className="shrink-0 text-[12px] font-semibold uppercase tracking-[0.3em] text-[#6f613a]">
+      <p className="shrink-0 text-[12px] font-semibold uppercase tracking-[0.3em] text-[#5c4a24]">
         {children}
       </p>
       <div className="h-px w-full bg-gradient-to-r from-white/12 to-transparent" />
@@ -226,7 +226,7 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                 <PanelCard key={angle.id} compact>
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#6f613a]">
+                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#5c4a24]">
                         {dictionary.result.fields[angle.id]}
                       </p>
                       <p className="mt-1 text-sm text-ivory">{formatChartPosition(dictionary, angle.longitude)}</p>
@@ -387,7 +387,7 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                         {formatChartPosition(dictionary, house.longitude)}
                       </p>
                     </div>
-                    <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6f613a]">
+                    <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#5c4a24]">
                       {house.house}
                     </span>
                   </div>

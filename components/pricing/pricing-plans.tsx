@@ -130,7 +130,7 @@ export function PricingPlans({ dictionary }: PricingPlansProps) {
               <tr key={row} className="border-b border-black/10 last:border-b-0">
                 <td className="py-4 pr-4 text-ivory/78">{row}</td>
                 {PLAN_IDS.map((plan) => (
-                  <td key={plan} className="px-4 py-4 text-center text-[#6f613a]">
+                  <td key={plan} className="px-4 py-4 text-center text-[#5c4a24]">
                     {accessLabel(FEATURE_ACCESS[plan][rowIndex], dictionary)}
                   </td>
                 ))}

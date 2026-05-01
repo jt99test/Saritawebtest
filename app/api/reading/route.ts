@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 import type { ChartPointId, NatalChartData } from "@/lib/chart";
 import { zodiacSigns } from "@/lib/chart";
+import { ASPECT_LABELS, HOUSE_AREAS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -10,21 +11,6 @@ function langInstruction(locale?: string): string {
   if (locale === "it") return "Write entirely in Italian.";
   return "Write in Spanish from Spain. Use the 'tú' form.";
 }
-
-const SIGN_LABELS = {
-  aries: "Aries",
-  taurus: "Tauro",
-  gemini: "Géminis",
-  cancer: "Cáncer",
-  leo: "Leo",
-  virgo: "Virgo",
-  libra: "Libra",
-  scorpio: "Escorpio",
-  sagittarius: "Sagitario",
-  capricorn: "Capricornio",
-  aquarius: "Acuario",
-  pisces: "Piscis",
-} as const;
 
 function buildPrompt(chart: NatalChartData, pointId: ChartPointId, locale?: string): string {
   const point = chart.points.find((entry) => entry.id === pointId);
@@ -38,44 +24,10 @@ function buildPrompt(chart: NatalChartData, pointId: ChartPointId, locale?: stri
   const element = sign?.element ?? "";
   const modality = sign?.modality ?? "";
 
-  const pointName: Record<ChartPointId, string> = {
-    sun: "Sol",
-    moon: "Luna",
-    mercury: "Mercurio",
-    venus: "Venus",
-    mars: "Marte",
-    jupiter: "Júpiter",
-    saturn: "Saturno",
-    uranus: "Urano",
-    neptune: "Neptuno",
-    pluto: "Plutón",
-    northNode: "Nodo Norte",
-    southNode: "Nodo Sur",
-    chiron: "Quirón",
-    partOfFortune: "Parte de la Fortuna",
-    lilith: "Lilith",
-    ceres: "Ceres",
-  };
-
-  const houseNames: Record<number, string> = {
-    1: "Casa 1 (identidad, cuerpo y forma de presentarte)",
-    2: "Casa 2 (dinero, valor propio y seguridad)",
-    3: "Casa 3 (mente, palabra, estudios y entorno cercano)",
-    4: "Casa 4 (familia, hogar y raíz emocional)",
-    5: "Casa 5 (deseo, creatividad, placer e hijos)",
-    6: "Casa 6 (rutina, trabajo diario, salud y hábitos)",
-    7: "Casa 7 (pareja, socios y acuerdos)",
-    8: "Casa 8 (intimidad, dinero compartido, crisis y control)",
-    9: "Casa 9 (creencias, viajes, estudios y dirección)",
-    10: "Casa 10 (trabajo, vocación, imagen pública y autoridad)",
-    11: "Casa 11 (amistades, grupos, redes y proyectos futuros)",
-    12: "Casa 12 (descanso, inconsciente, cierre y lo que escondes)",
-  };
-
   const allPoints = chart.points
     .map((entry) => {
       const signLabel = SIGN_LABELS[entry.sign];
-      return `• ${pointName[entry.id]} en ${signLabel} ${entry.degreeInSign}°, casa ${entry.house}${entry.retrograde ? " (Rx)" : ""}`;
+      return `• ${POINT_LABELS[entry.id]} en ${signLabel} ${entry.degreeInSign}°, casa ${entry.house}${entry.retrograde ? " (Rx)" : ""}`;
     })
     .join("\n");
 
@@ -85,16 +37,9 @@ function buildPrompt(chart: NatalChartData, pointId: ChartPointId, locale?: stri
       const otherId = aspect.from === pointId ? aspect.to : aspect.from;
       const other = chart.points.find((entry) => entry.id === otherId);
       const otherSign = other ? SIGN_LABELS[other.sign] : "";
-      const aspectName = {
-        conjunction: "Conjunción",
-        sextile: "Sextil",
-        square: "Cuadratura",
-        trine: "Trígono",
-        opposition: "Oposición",
-        quincunx: "Quincuncio",
-      }[aspect.type];
+      const aspectName = ASPECT_LABELS[aspect.type];
 
-      return `  - ${aspectName} con ${pointName[otherId]} en ${otherSign} (orbe ${aspect.orb}°)`;
+      return `  - ${aspectName} con ${POINT_LABELS[otherId]} en ${otherSign} (orbe ${aspect.orb}°)`;
     })
     .join("\n");
 
@@ -102,8 +47,8 @@ function buildPrompt(chart: NatalChartData, pointId: ChartPointId, locale?: stri
 de forma directa, sin rodeos y sin poesía. Tu objetivo es que
 ${chart.event.name} lea esto y piense "claro, eso soy yo."
 
-Estás leyendo el ${pointName[pointId]} de ${chart.event.name}:
-${signName} ${point.degreeInSign}°, ${houseNames[point.house]}.
+Estás leyendo el ${POINT_LABELS[pointId]} de ${chart.event.name}:
+${signName} ${point.degreeInSign}°, Casa ${point.house} (${HOUSE_AREAS[point.house]}).
 ${point.retrograde ? "Está retrógrado." : ""}
 
 Aspectos activos:
@@ -112,26 +57,11 @@ ${pointAspects || "Sin aspectos principales"}
 Carta natal completa:
 ${allPoints}
 
-Escribe 4 párrafos. El primero describe cómo se nota este
-planeta en el carácter o los patrones cotidianos de esta persona.
-Los siguientes profundizan — salen zonas de tensión, dónde
-funciona bien y dónde se complica. El último cierra con algo
-concreto y útil que ${chart.event.name} puede hacer con esto.
-
-Modelo de tono:
-  "Tu Saturno en Capricornio en Casa 6 significa que eres de
-  las personas que si no tienen una rutina, se desmoronan un
-  poco. No porque seas rígida — sino porque tu sistema nervioso
-  necesita estructura para relajarse. Cuando eso falla, aparece
-  la autocrítica antes que el descanso."
-
-Reglas:
-- Segunda persona, "tú", España.
-- Sin metáforas poéticas. Sin "energía", "vibración", "alma".
-- Menciona situaciones reconocibles: trabajo, relaciones,
-  cuerpo, hábitos, reacciones emocionales.
-- La respuesta empieza directamente con el contenido. El primer carácter es siempre mayúscula.
-- 300-400 palabras. Sin subtítulos ni markdown.
+Escribe UN párrafo de 60-80 palabras. Empieza con una observación directa
+sobre cómo se nota este planeta en el día a día de ${chart.event.name}. Da un ejemplo
+concreto — una situación en el trabajo, en casa, en sus relaciones o en cómo
+reacciona ante algo. Termina con algo que le ayude a entender qué hacer con
+esto. Sin subtítulos. Sin párrafos múltiples. Sin metáforas poéticas.
 
 Datos técnicos internos si ayudan: ${element} / ${modality}.
 
@@ -157,8 +87,8 @@ export async function POST(request: Request) {
     }
 
     const stream = client.messages.stream({
-      model: "claude-sonnet-4-6",
-      max_tokens: 900,
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 350,
       messages: [{ role: "user", content: prompt }],
     });
 

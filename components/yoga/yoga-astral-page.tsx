@@ -73,10 +73,10 @@ const ELEMENT_ESSENCE: Record<RoutineElement, string> = {
 };
 
 const ELEMENT_BADGE_CLASSES: Record<RoutineElement, string> = {
-  fuego: "border-red-300/28 bg-red-300/10 text-red-100/82",
-  tierra: "border-emerald-300/28 bg-emerald-300/10 text-emerald-100/82",
-  agua: "border-sky-300/28 bg-sky-300/10 text-sky-100/82",
-  aire: "border-cyan-300/28 bg-cyan-300/10 text-cyan-100/82",
+  fuego: "border-red-700/25 bg-red-50 text-red-800",
+  tierra: "border-emerald-700/25 bg-emerald-50 text-emerald-800",
+  agua: "border-sky-700/25 bg-sky-50 text-sky-800",
+  aire: "border-teal-700/25 bg-teal-50 text-teal-800",
 };
 
 const ANCHOR_REASON: Record<Element, string> = {
@@ -410,7 +410,7 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
       </div>
 
       <header className="text-center">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
           yoga astral
         </p>
         <h1 className="mt-2 font-serif text-[64px] font-normal leading-none tracking-[-0.01em] text-ivory lg:text-[88px]">
@@ -422,7 +422,7 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
       </header>
 
       <section className="mx-auto mt-16 max-w-[1040px] border-t-[0.5px] border-dusty-gold/12 pt-10 lg:mt-20 lg:max-w-[1080px]">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
           tu rutina del mes
         </p>
 
@@ -505,7 +505,7 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
 
       <section className="mx-auto mt-16 max-w-[960px] border-t-[0.5px] border-dusty-gold/12 pt-10 lg:mt-20 lg:max-w-[1080px]">
         <div className="text-center">
-          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
+          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
             las cuatro rutinas
           </p>
           <h2 className="mt-2 font-serif text-[36px] font-normal leading-tight text-ivory lg:text-[48px]">
@@ -547,7 +547,7 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
 
       <section className="mt-16 w-full border-t-[0.5px] border-dusty-gold/12 pt-10 lg:mt-20">
         <div className="text-center">
-          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
+          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
             tu postura ancla
           </p>
           <p className="mx-auto mt-3 max-w-[480px] font-serif text-[15px] italic leading-7 text-[#3a3048]">
@@ -574,7 +574,7 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
             <h2 className="mt-2 font-serif text-[40px] font-normal leading-tight text-ivory lg:text-[52px]">
               {anchorName}
             </h2>
-            <p className="mt-1 font-serif text-sm italic lowercase tracking-[0.1em] text-[#6f613a]">
+            <p className="mt-1 font-serif text-sm italic lowercase tracking-[0.1em] text-[#5c4a24]">
               {anchorSpanish}
             </p>
             <p className="mt-8 max-w-[380px] font-serif text-[17px] leading-[1.7] text-ivory/85 lg:max-w-[440px] lg:text-[19px]">
@@ -590,7 +590,7 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
       <section className="mx-auto mt-24 max-w-[720px] border-t-[0.5px] border-dusty-gold/12 pt-8 lg:mt-[120px]">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
+            <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
               kriya
             </p>
             <h2 className="mt-1 font-serif text-2xl font-normal leading-tight text-ivory lg:text-[26px]">

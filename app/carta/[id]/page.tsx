@@ -37,7 +37,7 @@ export default async function SharedChartPage({ params }: { params: Promise<{ id
       <AtmosphericBackground variant="page" />
       <section className="relative py-10 sm:py-14">
         <Container className="min-h-screen text-center">
-          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
+          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
             {dictionary.chart.shareTitle}
           </p>
           <h1 className="mt-3 font-serif text-[48px] leading-tight text-ivory sm:text-[72px]">

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 
 import { BiWheelChart } from "@/components/chart/bi-wheel-chart";
+import { BiWheelInfoPanel } from "@/components/chart/bi-wheel-info-panel";
 import { LocationAutocomplete } from "@/components/form/location-autocomplete";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { PrimaryButton } from "@/components/ui/primary-button";
@@ -30,6 +31,7 @@ type SynastryData = {
 };
 
 const SARITA_DATA_MARKER = "__SARITA_DATA__";
+const READING_TIMEOUT_MS = 45000;
 
 type PartnerRow = {
   id: string;
@@ -40,30 +42,28 @@ type PartnerRow = {
   chart_data: NatalChartData | null;
 };
 
-const ASPECT_SYMBOLS = {
-  conjunction: "☌",
-  opposition: "☍",
-  trine: "△",
-  square: "□",
-  sextile: "✶",
-  quincunx: "⚻",
-} as const;
-
 type SynastryLayerId = "fisico" | "sexual" | "emocional" | "mental" | "profesional" | "evolutivo";
 
 const LAYERS: Array<{
   id: SynastryLayerId;
-  title: string;
   points: ChartPointId[];
-  empty: string;
 }> = [
-  { id: "fisico", title: "Físico", points: ["venus", "mars", "sun", "moon"], empty: "No hay una firma física dominante por aspectos cerrados. La atracción puede existir, pero no es el centro técnico de esta comparación." },
-  { id: "sexual", title: "Sexual", points: ["venus", "mars", "pluto", "moon"], empty: "No aparece una activación sexual fuerte en los aspectos principales. Eso no niega deseo: solo indica que no es la capa astrológica más insistente." },
-  { id: "emocional", title: "Emocional", points: ["moon", "venus", "neptune"], empty: "La capa emocional no está especialmente marcada por aspectos cerrados. Conviene leerla desde la comunicación real y el cuidado cotidiano." },
-  { id: "mental", title: "Mental", points: ["mercury", "jupiter", "uranus"], empty: "La conexión mental no domina la carta comparada. Puede haber conversación, pero el vínculo se activa más por otras vías." },
-  { id: "profesional", title: "Profesional", points: ["sun", "mercury", "jupiter", "saturn", "mars"], empty: "No se ve una dinámica profesional especialmente fuerte en los aspectos principales. Si trabajan juntos, habría que cuidar estructura y expectativas fuera de la carta." },
-  { id: "evolutivo", title: "Evolutivo", points: ["northNode", "saturn", "pluto", "uranus", "neptune"], empty: "No hay una firma evolutiva dominante por aspectos cerrados. El vínculo puede enseñar, pero no parece empujar desde una presión kármica principal." },
+  { id: "fisico", points: ["venus", "mars", "sun", "moon"] },
+  { id: "sexual", points: ["venus", "mars", "pluto", "moon"] },
+  { id: "emocional", points: ["moon", "venus", "neptune"] },
+  { id: "mental", points: ["mercury", "jupiter", "uranus"] },
+  { id: "profesional", points: ["sun", "mercury", "jupiter", "saturn", "mars"] },
+  { id: "evolutivo", points: ["northNode", "saturn", "pluto", "uranus", "neptune"] },
 ];
+
+function splitReading(text: string): { headline: string; body: string } {
+  const trimmed = text.trim();
+  const match = trimmed.match(/^(.+?[.!?])\s+([\s\S]+)$/);
+  if (match) {
+    return { headline: match[1].trim(), body: match[2].trim() };
+  }
+  return { headline: trimmed, body: "" };
+}
 
 function qualityBreakdown(aspects: SynastryAspect[]) {
   const total = Math.max(1, aspects.length);
@@ -77,7 +77,7 @@ function qualityBreakdown(aspects: SynastryAspect[]) {
   };
 }
 
-function CompatibilityRing({ aspects }: { aspects: SynastryAspect[] }) {
+function CompatibilityRing({ aspects, dictionary }: { aspects: SynastryAspect[]; dictionary: Dictionary }) {
   const breakdown = qualityBreakdown(aspects);
   const radius = 64;
   const circumference = 2 * Math.PI * radius;
@@ -86,13 +86,13 @@ function CompatibilityRing({ aspects }: { aspects: SynastryAspect[] }) {
   const neutralLength = Math.max(0, circumference - harmoniousLength - tenseLength);
 
   return (
-    <svg viewBox="0 0 170 170" className="mx-auto h-40 w-40" role="img" aria-label="Dinámica de compatibilidad">
+    <svg viewBox="0 0 170 170" className="mx-auto h-40 w-40" role="img" aria-label={dictionary.result.synastryPage.compatibilityAria}>
       <circle cx="85" cy="85" r={radius} fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="16" />
       <circle cx="85" cy="85" r={radius} fill="none" stroke="rgba(130,146,214,0.88)" strokeWidth="16" strokeDasharray={`${harmoniousLength} ${circumference}`} transform="rotate(-90 85 85)" />
       <circle cx="85" cy="85" r={radius} fill="none" stroke="rgba(245,190,105,0.78)" strokeWidth="16" strokeDasharray={`${tenseLength} ${circumference}`} strokeDashoffset={-harmoniousLength} transform="rotate(-90 85 85)" />
       <circle cx="85" cy="85" r={radius} fill="none" stroke="rgba(181,163,110,0.78)" strokeWidth="16" strokeDasharray={`${neutralLength} ${circumference}`} strokeDashoffset={-(harmoniousLength + tenseLength)} transform="rotate(-90 85 85)" />
       <text x="85" y="80" textAnchor="middle" className="font-serif text-[22px]" fill="#1e1a2e">{aspects.length}</text>
-      <text x="85" y="101" textAnchor="middle" className="text-[12px] uppercase tracking-[0.16em]" fill="#3a3048">aspectos</text>
+      <text x="85" y="101" textAnchor="middle" className="text-[12px] uppercase tracking-[0.16em]" fill="#3a3048">{dictionary.result.synastryPage.aspectsCount}</text>
     </svg>
   );
 }
@@ -117,61 +117,34 @@ function aspectsForLayer(aspects: SynastryAspect[], layer: (typeof LAYERS)[numbe
   return aspects.filter((aspect) => layerPoints.has(aspect.pointA) || layerPoints.has(aspect.pointB)).slice(0, 4);
 }
 
-function hasPoint(aspects: SynastryAspect[], point: ChartPointId) {
-  return aspects.some((aspect) => aspect.pointA === point || aspect.pointB === point);
-}
-
-function hasTense(aspects: SynastryAspect[]) {
-  return aspects.some((aspect) => aspect.quality === "tense");
-}
-
-function hasHarmony(aspects: SynastryAspect[]) {
-  return aspects.some((aspect) => aspect.quality === "harmonious");
-}
-
 function layerReading(
   aspects: SynastryAspect[],
   layer: (typeof LAYERS)[number],
-  innerName: string,
-  outerName: string,
+  dictionary: Dictionary,
 ) {
-  const selected = aspectsForLayer(aspects, layer);
-  if (!selected.length) return layer.empty;
+  const personalPoints = new Set<ChartPointId>(["sun", "moon", "venus", "mars"]);
+  const selected = aspectsForLayer(aspects, layer)
+    .filter((aspect) => personalPoints.has(aspect.pointA) || personalPoints.has(aspect.pointB))
+    .slice(0, 2);
 
-  const harmonious = hasHarmony(selected);
-  const tense = hasTense(selected);
-  const intensity = selected.length >= 3 ? "muy marcada" : "presente";
+  if (!selected.length) return "";
 
-  if (layer.id === "fisico") {
-    const body = hasPoint(selected, "mars")
-      ? "hay reacción corporal rápida: se activan, se provocan y se mueven mutuamente"
-      : "el contacto se percibe más por comodidad, presencia y familiaridad que por impulso directo";
-    return `En lo físico, ${innerName} y ${outerName} tienen una conexión ${intensity}. ${body}. ${tense ? "Puede sentirse estimulante, pero también impaciente: el cuerpo responde antes de que la mente entienda." : "La sensación tiende a ser fácil de habitar, como si el cuerpo reconociera un ritmo compartido."}`;
+  return "";
+}
+
+function cleanJsonPayload(rawPayload: string) {
+  const withoutFence = rawPayload
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```\s*$/, "")
+    .trim();
+  const start = withoutFence.indexOf("{");
+  const end = withoutFence.lastIndexOf("}");
+
+  if (start !== -1 && end !== -1 && end > start) {
+    return withoutFence.slice(start, end + 1);
   }
 
-  if (layer.id === "sexual") {
-    const pluto = hasPoint(selected, "pluto");
-    const mars = hasPoint(selected, "mars");
-    return `En lo sexual, la carta habla de ${pluto ? "magnetismo profundo, deseo que toca sombra y una atracción difícil de dejar en superficie" : mars ? "chispa, iniciativa y deseo que necesita movimiento" : "sensualidad más suave, que crece cuando hay confianza"}. ${tense ? "La intensidad puede mezclar deseo con pulso de poder, celos o necesidad de control si no se habla claro." : "Cuando hay cuidado, esta capa puede sentirse nutritiva y naturalmente atractiva."}`;
-  }
-
-  if (layer.id === "emocional") {
-    const moon = hasPoint(selected, "moon");
-    return `En lo emocional, ${moon ? "se tocan zonas sensibles y necesidades de apego: no es una relación neutra para el sistema nervioso" : "la emoción aparece como clima de fondo más que como tema principal"}. ${harmonious ? "Hay capacidad de ternura, reparación y escucha si ambos bajan la defensa." : "La carta pide aprender a no reaccionar desde la herida: lo que uno siente puede despertar defensas en el otro."}`;
-  }
-
-  if (layer.id === "mental") {
-    const uranus = hasPoint(selected, "uranus");
-    return `En lo mental, la relación ${uranus ? "despierta ideas, cambios de perspectiva y conversaciones que pueden romper esquemas" : "se activa por la palabra, las creencias y la forma de interpretar lo que sucede"}. ${tense ? "El reto es no convertir cada diferencia en debate o juicio." : "Cuando se escuchan de verdad, pueden ayudarse a ordenar pensamientos y abrir posibilidades."}`;
-  }
-
-  if (layer.id === "profesional") {
-    const saturn = hasPoint(selected, "saturn");
-    const jupiter = hasPoint(selected, "jupiter");
-    return `En lo profesional, esta combinación muestra ${saturn ? "capacidad para construir con disciplina, aunque también puede traer exigencia, presión o sensación de evaluación" : jupiter ? "crecimiento, visión y posibilidad de abrir puertas juntos" : "activación de objetivos, iniciativa y dirección compartida"}. ${tense ? "Para que funcione, conviene pactar roles, tiempos y expectativas desde el principio." : "Puede ser una alianza fértil si mantienen foco y una estructura simple."}`;
-  }
-
-  return `En lo evolutivo, el vínculo no aparece solo para estar cómodos: mueve decisiones y patrones importantes. ${hasPoint(selected, "northNode") ? "Hay sensación de camino, aprendizaje o destino compartido, como si una persona empujara a la otra hacia una versión más despierta de sí misma." : "La transformación llega por contraste: el otro muestra partes que estaban dormidas, idealizadas o resistidas."} ${tense ? "No siempre se siente fácil, pero si se trabaja con honestidad puede volverse profundamente revelador." : "La evolución aquí puede sentirse inspiradora, menos forzada y más natural."}`;
+  return withoutFence;
 }
 
 export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
@@ -191,7 +164,10 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
   const [flipped, setFlipped] = useState(false);
   const [synastryReading, setSynastryReading] = useState("");
   const [synastryData, setSynastryData] = useState<SynastryData>({});
+  const [synastryReadingError, setSynastryReadingError] = useState<string | null>(null);
   const [isLoadingReading, setIsLoadingReading] = useState(false);
+  const [selectedLayerId, setSelectedLayerId] = useState<SynastryLayerId>("fisico");
+  const [biWheelSelected, setBiWheelSelected] = useState<{ id: ChartPointId; ring: "inner" | "outer" } | null>(null);
   const partnerChart = selectedPartner?.chart_data ?? null;
   const innerChart = flipped && partnerChart ? partnerChart : natalChart;
   const outerChart = flipped && partnerChart ? natalChart : partnerChart;
@@ -210,11 +186,18 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
   }, []);
 
   useEffect(() => {
+    setBiWheelSelected(null);
+  }, [selectedPartner]);
+
+  useEffect(() => {
     if (!selectedPartner || !partnerChart || aspects.length === 0) return;
     let active = true;
     setSynastryReading("");
     setSynastryData({});
+    setSynastryReadingError(null);
     setIsLoadingReading(true);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), READING_TIMEOUT_MS);
     void fetch("/api/synastry-reading", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -225,8 +208,16 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
         aspects,
         locale,
       }),
+      signal: controller.signal,
     }).then(async (res) => {
-      if (!active || !res.ok || !res.body) { if (active) setIsLoadingReading(false); return; }
+      if (!active || !res.ok || !res.body) {
+        clearTimeout(timeout);
+        if (active) {
+          setSynastryReadingError(`Synastry reading failed: ${res.status}`);
+          setIsLoadingReading(false);
+        }
+        return;
+      }
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let accumulated = "";
@@ -237,16 +228,30 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
         if (active) setSynastryReading(accumulated.split(SARITA_DATA_MARKER)[0] ?? accumulated);
       }
       if (active) {
-        const jsonPayload = accumulated.split(SARITA_DATA_MARKER)[1]?.trim();
+        const rawPayload = accumulated.split(SARITA_DATA_MARKER)[1]?.trim() ?? "";
+        const jsonPayload = cleanJsonPayload(rawPayload);
         if (jsonPayload) {
           try {
             setSynastryData(JSON.parse(jsonPayload) as SynastryData);
-          } catch {}
+          } catch {
+            // JSON parse failed — synastryData stays empty until a valid payload arrives
+          }
         }
         setIsLoadingReading(false);
       }
-    }).catch(() => { if (active) setIsLoadingReading(false); });
-    return () => { active = false; };
+      clearTimeout(timeout);
+    }).catch(() => {
+      clearTimeout(timeout);
+      if (active) {
+        setSynastryReadingError("Synastry reading request failed or timed out.");
+        setIsLoadingReading(false);
+      }
+    });
+    return () => {
+      active = false;
+      controller.abort();
+      clearTimeout(timeout);
+    };
   }, [aspects, selectedPartner, partnerChart, natalChart, locale]);
 
   function savePartner() {
@@ -262,7 +267,7 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
           setForm({ name: "", birthDate: "", birthTime: "12:00", birthCity: "", selectedLocation: null });
           return;
         }
-        setError(result.error ?? "No se pudo guardar la persona.");
+        setError(result.error ?? synastryCopy.saveError);
         return;
       }
       const nextPartner = result.partner as PartnerRow;
@@ -278,9 +283,8 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
     return (
       <section className="py-10">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">{synastryCopy.eyebrow}</p>
+          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">{synastryCopy.eyebrow}</p>
           <h2 className="mt-2 font-serif text-[30px] leading-tight text-ivory sm:text-[48px]">{synastryData.compatibilityLabel ?? label.label}</h2>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#3a3048]">{synastryData.compatibilityDescription ?? label.description}</p>
         </div>
         <div className="mt-8">
           <BiWheelChart
@@ -289,18 +293,33 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
             innerLabel={innerName}
             outerLabel={outerName}
             variant="synastry"
+            onInnerPlanetSelect={(id) => setBiWheelSelected({ id, ring: "inner" })}
+            onOuterPlanetSelect={(id) => setBiWheelSelected({ id, ring: "outer" })}
           />
+          {biWheelSelected ? (
+            <BiWheelInfoPanel
+              variant="synastry"
+              selectedId={biWheelSelected.id}
+              ring={biWheelSelected.ring}
+              innerChart={innerChart}
+              outerChart={outerChart ?? null}
+              synastryAspects={aspects}
+              innerName={innerName}
+              outerName={outerName}
+              onClose={() => setBiWheelSelected(null)}
+            />
+          ) : null}
         </div>
         <div className="mt-4 flex justify-center">
           <button
             type="button"
             onClick={() => setFlipped((current) => !current)}
-            className="border border-[#8292d6]/30 bg-[#8292d6]/10 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#b8c2ff] transition hover:border-[#8292d6]/55 hover:bg-[#8292d6]/16"
+            className="border border-dusty-gold/30 bg-dusty-gold/[0.06] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/55 hover:bg-dusty-gold/12"
           >
             {synastryCopy.flipCharts}
           </button>
         </div>
-        <CompatibilityRing aspects={aspects} />
+        <CompatibilityRing aspects={aspects} dictionary={dictionary} />
         <div className="mt-4 flex justify-center gap-6">
           {[
             { color: "bg-[rgba(130,146,214,0.88)]", label: synastryCopy.legendHarmonious },
@@ -313,40 +332,70 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
             </div>
           ))}
         </div>
-        <div className="mx-auto mt-10 max-w-5xl border-t border-black/[0.07]" />
-        {(isLoadingReading || synastryReading) ? (
-          <div className="mx-auto mt-6 max-w-3xl border-y border-[#8292d6]/18 py-6">
-            <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#8292d6]/60">{synastryCopy.readingEyebrow}</p>
-            {isLoadingReading && !synastryReading ? (
-              <p className="mt-4 animate-pulse text-base leading-8 text-[#3a3048]">{synastryCopy.readingLoading}</p>
-            ) : (
-              synastryReading.split(SARITA_DATA_MARKER)[0].split("\n\n").filter(Boolean).map((para, i) => (
-                <p key={i} className="mt-4 text-base leading-8 text-ivory/82">{para}</p>
-              ))
-            )}
-          </div>
-        ) : null}
-        <div className="mx-auto mt-10 max-w-5xl border-t border-black/[0.07]" />
-        <div className="mx-auto mt-8 max-w-3xl border-y border-black/10 py-6">
-          <p className="font-serif text-2xl text-ivory">{synastryCopy.mainConnections}</p>
-          <div className="mt-4 space-y-3">
-            {aspects.slice(0, 6).map((aspect) => (
-              <p key={`${aspect.pointA}-${aspect.pointB}-${aspect.type}`} className="text-sm leading-7 text-[#3a3048]">
-                <span className="text-dusty-gold">{pointLabel(aspect.pointA, dictionary)}</span>{" "}
-                {ASPECT_SYMBOLS[aspect.type]}{" "}
-                <span className="text-[#8292d6]">{pointLabel(aspect.pointB, dictionary)}</span> · {synastryCopy.aspectQuality[aspect.quality]} · {synastryCopy.orb} {aspect.orb}°.
-              </p>
-            ))}
-          </div>
-          <div className="mt-6 grid gap-3 md:grid-cols-2">
-            {LAYERS.map((layer) => (
-              <details key={layer.id} className="border border-black/12 bg-white p-4 shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
-                <summary className="cursor-pointer font-serif text-lg text-ivory">{synastryCopy.layerTitles[layer.id]}</summary>
-                <p className="mt-3 text-sm leading-7 text-[#3a3048]">
-                  {synastryData.layers?.[layer.id] ?? layerReading(aspects, layer, innerName, outerName)}
-                </p>
-              </details>
-            ))}
+        <div className="mx-auto mt-10 max-w-5xl">
+          <article className="border border-black/10 bg-white p-5 shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+              VÍNCULO
+            </p>
+            <h3 className="mt-2 font-serif text-[22px] leading-snug text-ivory">
+              {synastryData.compatibilityLabel ?? label.label}
+            </h3>
+            <p className="mt-3 text-sm leading-7 text-[#3a3048]">
+              {synastryData.compatibilityDescription ?? label.description}
+            </p>
+          </article>
+          <div className="mt-10">
+            <div className="grid grid-cols-3 gap-2">
+              {LAYERS.map((layer) => {
+                const active = selectedLayerId === layer.id;
+                return (
+                  <button
+                    key={layer.id}
+                    type="button"
+                    onClick={() => setSelectedLayerId(layer.id)}
+                    className={[
+                      "border py-2 text-center text-[11px] font-semibold uppercase tracking-[0.2em] transition",
+                      active
+                        ? "border-dusty-gold/60 bg-dusty-gold/[0.07] text-[#5c4a24]"
+                        : "border-black/10 bg-white text-[#3a3048] hover:bg-black/[0.02]",
+                    ].join(" ")}
+                  >
+                    {synastryCopy.layerTitles[layer.id]}
+                  </button>
+                );
+              })}
+            </div>
+            {(() => {
+              const selectedLayer = LAYERS.find((layer) => layer.id === selectedLayerId) ?? LAYERS[0]!;
+              const layerText = synastryData.layers?.[selectedLayer.id] ?? layerReading(aspects, selectedLayer, dictionary);
+              const { headline, body } = splitReading(layerText);
+
+              return (
+                <article className="mt-4 min-h-[160px] border border-black/10 bg-white p-6">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                    {synastryCopy.layerTitles[selectedLayer.id].toUpperCase()}
+                  </p>
+                  {isLoadingReading && !layerText ? (
+                    <div className="mt-3 animate-pulse space-y-2">
+                      <div className="h-6 w-3/4 rounded bg-black/8" />
+                      <div className="h-3 w-full rounded bg-black/6" />
+                      <div className="h-3 w-5/6 rounded bg-black/6" />
+                    </div>
+                  ) : synastryReadingError && !layerText ? (
+                    <p className="mt-3 text-sm leading-7 text-red-700">{synastryReadingError}</p>
+                  ) : (
+                    <>
+                      {headline ? (
+                        <h3 className="mt-2 font-serif text-[24px] leading-snug text-ivory">
+                          {headline}
+                        </h3>
+                      ) : null}
+                      {body ? <p className="mt-3 text-sm leading-7 text-[#3a3048]">{body}</p> : null}
+                    </>
+                  )}
+                </article>
+              );
+            })()}
           </div>
           <PrimaryButton
             type="button"
@@ -368,7 +417,7 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
           {synastryCopy.intro}
         </p>
       </div>
-      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">{synastryCopy.eyebrow}</p>
+      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">{synastryCopy.eyebrow}</p>
       <h2 className="mt-2 font-serif text-[34px] leading-tight text-ivory sm:text-[52px]">{synastryCopy.title}</h2>
       {partners.length ? (
         <div className="mt-8 border-y border-black/10">
@@ -402,7 +451,7 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
 
       <div className="mt-10 grid gap-5 border-t border-dusty-gold/14 pt-8">
         <p className="font-serif text-2xl text-ivory">{synastryCopy.addPerson}</p>
-        <input className="rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-sm text-ivory outline-none transition placeholder:text-muted-ivory hover:border-black/25" placeholder="Nombre" value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
+        <input className="rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-sm text-ivory outline-none transition placeholder:text-muted-ivory hover:border-black/25" placeholder={dictionary.form.fields.name} value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
         <input className="rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-sm text-ivory outline-none transition placeholder:text-muted-ivory hover:border-black/25" type="date" value={form.birthDate} onChange={(event) => setForm((current) => ({ ...current, birthDate: clampIsoDateYear(event.target.value) }))} />
         <input className="rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-sm text-ivory outline-none transition placeholder:text-muted-ivory hover:border-black/25" type="time" value={form.birthTime} onChange={(event) => setForm((current) => ({ ...current, birthTime: event.target.value }))} />
         <LocationAutocomplete

@@ -120,7 +120,7 @@ export function getChartSummaryForPrompt(chart: NatalChartData) {
     .join("\n");
   const ruler = getChartRuler(chart);
   const patternSummary = detectChartPatterns(chart)
-    .map((pattern) => `• ${pattern.title}: ${pattern.description}`)
+    .map((pattern) => `• ${pattern.title}`)
     .join("\n");
 
   return [

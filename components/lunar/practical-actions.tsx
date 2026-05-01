@@ -24,7 +24,7 @@ export function PracticalActions({ actions }: PracticalActionsProps) {
   return (
     <section className="mx-auto max-w-[720px] pb-16 lg:pb-20">
       <div className="text-center">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
           bájalo a tierra
         </p>
         <h3 className="mt-1.5 font-serif text-[32px] font-normal leading-tight text-ivory">
@@ -39,7 +39,7 @@ export function PracticalActions({ actions }: PracticalActionsProps) {
               key={card.id}
               className="relative border-t-[0.5px] border-dusty-gold/12 py-6 text-left first:border-t-0 first:pt-0 last:border-b-[0.5px]"
             >
-              <p className="text-[12px] uppercase tracking-[0.16em] text-[#6f613a]">
+              <p className="text-[12px] uppercase tracking-[0.16em] text-[#5c4a24]">
                 {card.title}
               </p>
               <p className="mt-3 pr-10 font-serif text-[21px] font-normal leading-[1.5] text-ivory">

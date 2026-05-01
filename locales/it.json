@@ -165,6 +165,25 @@
   "yogaAstral": {
     "asanas": "asana"
   },
+  "lunar": {
+    "eyebrow": "luna del mese",
+    "intro": "Ogni mese ha due lune importanti: la Luna Nuova, che apre un ciclo, e la Luna Piena, che lo chiude. A seconda di dove cade ciascuna nella tua carta, attiva una diversa area della vita. Qui vedi cosa ti tocca questo mese e cosa farne.",
+    "subtitle": "Due lune segnano questo mese. Toccale per entrare.",
+    "newMoon": "Luna Nuova",
+    "fullMoon": "Luna Piena",
+    "calculating": "Calcolando la tua luna del mese...",
+    "calculateError": "Impossibile calcolare la luna del mese.",
+    "emptyMonth": "Non abbiamo trovato lunazioni per questo mese.",
+    "quietMonth": "Mese tranquillo. Nessun transito attivo.",
+    "personalizedReading": "lettura personalizzata",
+    "generatingReading": "Generando lettura",
+    "generateReading": "Genera lettura",
+    "emptyReading": "Questa luna ha qualcosa da dirti.",
+    "practiceThisMonth": "la tua pratica questo mese",
+    "elementLabel": "Elemento {element}",
+    "seeRoutine": "Vedi routine",
+    "moonIllustrationAlt": "Illustrazione di {moon}"
+  },
   "result": {
     "intro": "Così erano allineati i pianeti quando sei nato.",
     "back": "Torna all'inizio",
@@ -230,6 +249,9 @@
       "legendTense": "Teso",
       "legendNeutral": "Neutro",
       "compareAnother": "Confronta con un'altra persona",
+      "compatibilityAria": "Dinamica di compatibilità",
+      "aspectsCount": "aspetti",
+      "saveError": "Impossibile salvare questa persona.",
       "orb": "orbo",
       "aspectQuality": {
         "harmonious": "armonico",
@@ -243,6 +265,14 @@
         "mental": "Mentale",
         "profesional": "Professionale",
         "evolutivo": "Evolutivo"
+      },
+      "layerEmpty": {
+        "fisico": "Non c'è una firma fisica dominante negli aspetti stretti. L'attrazione può esserci, ma non è il centro tecnico di questo confronto.",
+        "sexual": "Non compare una forte attivazione sessuale negli aspetti principali. Questo non nega il desiderio: indica solo che non è lo strato astrologico più insistente.",
+        "emocional": "Lo strato emotivo non è particolarmente marcato dagli aspetti stretti. Conviene leggerlo attraverso la comunicazione reale e la cura quotidiana.",
+        "mental": "La connessione mentale non domina la carta comparata. Può esserci conversazione, ma il legame si attiva di più attraverso altre vie.",
+        "profesional": "Non si vede una dinamica professionale particolarmente forte negli aspetti principali. Se lavorate insieme, struttura e aspettative vanno curate fuori dalla carta.",
+        "evolutivo": "Non c'è una firma evolutiva dominante negli aspetti stretti. Il legame può insegnare, ma non sembra spingere da una pressione principale."
       }
     },
     "transitPage": {
@@ -728,8 +758,17 @@
     "freePlanNote": "Puoi migliorare il piano quando vuoi."
   },
   "chart": {
+    "generate": "Genera +",
+    "collapse": "Chiudi —",
+    "read": "Leggi +",
+    "retry": "Riprova",
+    "generateError": "Generazione fallita. Riprova.",
+    "usageBanner": "Hai usato {used} di {limit} letture questo mese.",
+    "seePlans": "Vedi piani",
     "share": "Condividi carta",
     "download": "Scarica",
+    "creatingLink": "Creazione link...",
+    "shareError": "Impossibile creare il link. Riprova.",
     "linkCopied": "Link copiato!",
     "shareTitle": "La tua carta natale",
     "shareSubtitle": "Condividi la tua carta con chiunque.",

@@ -28,7 +28,7 @@ export function LunationHeaderCard({
 
   return (
     <section className="mx-auto max-w-[720px] border-l border-dusty-gold/18 pl-5 text-left sm:pl-7">
-      <p className="text-xs uppercase tracking-[0.22em] text-[#6f613a]">{signLabel}</p>
+      <p className="text-xs uppercase tracking-[0.22em] text-[#5c4a24]">{signLabel}</p>
       <h2 className="mt-1 font-serif text-[72px] font-normal leading-none text-ivory">
         {degreeLabel}
       </h2>
@@ -40,14 +40,9 @@ export function LunationHeaderCard({
         <span>{dateLabel}</span>
       </p>
       {metadata.eclipse?.isEclipse ? (
-        <div className="mt-5 border border-amber-300/28 bg-amber-300/[0.08] px-4 py-3">
-          <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-amber-200/82">
-            {metadata.eclipse.kind === "solar" ? "Eclipse solar" : "Eclipse lunar"}
-          </p>
-          <p className="mt-2 text-sm leading-6 text-amber-50/72">
-            Esta lunacion cae a {metadata.eclipse.nodeOrb} grados del eje nodal. Su lectura es mas intensa y puede desplegarse durante varios meses.
-          </p>
-        </div>
+        <p className="mt-5 inline-flex border border-amber-300/28 bg-amber-300/[0.08] px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.22em] text-amber-200/82">
+          {metadata.eclipse.kind === "solar" ? "Eclipse solar" : "Eclipse lunar"}
+        </p>
       ) : null}
     </section>
   );

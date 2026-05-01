@@ -242,7 +242,8 @@ export function BiWheelChart({
                   onInnerPlanetSelect?.(point.id);
                 }}
                 opacity={outerActive && !active ? 0.45 : 1}
-                className="cursor-pointer"
+                className="cursor-pointer outline-none"
+                style={{ outline: "none" }}
               >
                 <circle cx={position.x} cy={position.y} r={active ? "30" : "25"} fill={point.color} opacity={active ? "0.18" : "0.1"} filter="url(#bw-soft-halo)" />
                 <circle cx={position.x} cy={position.y} r="18" fill="#fffaf0" stroke={active ? point.color : "rgba(138,122,78,0.42)"} strokeWidth={active ? "1.6" : "1"} filter={active ? "url(#bw-hover-glow)" : "url(#bw-glow)"} />
@@ -271,7 +272,8 @@ export function BiWheelChart({
                 setSelectedInner(null);
                 onOuterPlanetSelect?.(point.id);
               }}
-              className="cursor-pointer"
+              className="cursor-pointer outline-none"
+              style={{ outline: "none" }}
             >
               <line x1={tickStart.x} y1={tickStart.y} x2={tickEnd.x} y2={tickEnd.y} stroke={active ? colors.primary : colors.ring} strokeWidth={active ? "1.8" : "1.1"} />
               <circle cx={position.x} cy={position.y} r={active ? "32" : "26"} fill={colors.primary} opacity={active ? "0.18" : "0.09"} filter="url(#bw-soft-halo)" />
@@ -285,12 +287,12 @@ export function BiWheelChart({
       </svg>
 
       <div className="mx-auto mt-8 flex flex-wrap items-center justify-center gap-3 px-4">
-        <span className="inline-flex items-center gap-2 rounded-full border border-black/12 bg-white px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#1e1a2e] shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#1e1a2e]" />
+        <span className="inline-flex items-center gap-2 rounded-full border border-black/12 bg-white px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-ivory shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+          <span className="h-2.5 w-2.5 rounded-full bg-ivory" />
           {innerLabel}
         </span>
         {outerChart ? (
-          <span className="inline-flex items-center gap-2 rounded-full border border-black/12 bg-white px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#1e1a2e] shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+          <span className="inline-flex items-center gap-2 rounded-full border border-black/12 bg-white px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-ivory shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
             <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: colors.primary }} />
             {outerLabel}
           </span>
@@ -299,7 +301,7 @@ export function BiWheelChart({
 
       {activePoint ? (
         <div className="pointer-events-none absolute left-1/2 top-6 -translate-x-1/2 rounded-2xl border border-dusty-gold/45 bg-[#fffaf0] px-4 py-2 text-center shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
-          <p className="font-serif text-lg font-semibold text-[#1e1a2e]">{activePoint.glyph} {degreeLabel(activePoint)}</p>
+          <p className="font-serif text-lg font-semibold text-ivory">{activePoint.glyph} {degreeLabel(activePoint)}</p>
         </div>
       ) : null}
     </div>

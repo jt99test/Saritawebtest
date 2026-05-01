@@ -165,6 +165,25 @@
   "yogaAstral": {
     "asanas": "asanas"
   },
+  "lunar": {
+    "eyebrow": "moon of the month",
+    "intro": "Each month has two important moons: the New Moon, which opens a cycle, and the Full Moon, which closes it. Depending on where each one falls in your chart, it activates a different area of life. Here you can see what this month brings and what to do with it.",
+    "subtitle": "Two moons mark this month. Tap them to enter.",
+    "newMoon": "New Moon",
+    "fullMoon": "Full Moon",
+    "calculating": "Calculating your moon of the month...",
+    "calculateError": "Could not calculate the moon of the month.",
+    "emptyMonth": "We could not find lunations for this month.",
+    "quietMonth": "Quiet month. No active transits.",
+    "personalizedReading": "personalized reading",
+    "generatingReading": "Generating reading",
+    "generateReading": "Generate reading",
+    "emptyReading": "This moon has something to tell you.",
+    "practiceThisMonth": "your practice this month",
+    "elementLabel": "{element} element",
+    "seeRoutine": "See full routine",
+    "moonIllustrationAlt": "Illustration of {moon}"
+  },
   "result": {
     "intro": "This is how the planets were aligned when you were born.",
     "back": "Back to home",
@@ -230,6 +249,9 @@
       "legendTense": "Tense",
       "legendNeutral": "Neutral",
       "compareAnother": "Compare with another person",
+      "compatibilityAria": "Compatibility dynamic",
+      "aspectsCount": "aspects",
+      "saveError": "Could not save this person.",
       "orb": "orb",
       "aspectQuality": {
         "harmonious": "harmonious",
@@ -243,6 +265,14 @@
         "mental": "Mental",
         "profesional": "Professional",
         "evolutivo": "Evolutionary"
+      },
+      "layerEmpty": {
+        "fisico": "There is no dominant physical signature through close aspects. Attraction may exist, but it is not the technical centre of this comparison.",
+        "sexual": "There is no strong sexual activation in the main aspects. That does not deny desire: it only shows this is not the most insistent astrological layer.",
+        "emocional": "The emotional layer is not especially marked by close aspects. It is better read through real communication and everyday care.",
+        "mental": "The mental connection does not dominate the compared chart. There may be conversation, but the bond is activated more through other routes.",
+        "profesional": "There is no especially strong professional dynamic in the main aspects. If you work together, structure and expectations need care outside the chart.",
+        "evolutivo": "There is no dominant evolutionary signature through close aspects. The bond may teach, but it does not seem to push from a major pressure point."
       }
     },
     "transitPage": {
@@ -728,8 +758,17 @@
     "freePlanNote": "You can upgrade your plan anytime."
   },
   "chart": {
+    "generate": "Generate +",
+    "collapse": "Collapse —",
+    "read": "Read +",
+    "retry": "Try again",
+    "generateError": "Could not generate. Try again.",
+    "usageBanner": "You've used {used} of {limit} readings this month.",
+    "seePlans": "See plans",
     "share": "Share chart",
     "download": "Download",
+    "creatingLink": "Creating link...",
+    "shareError": "Could not create the link. Try again.",
     "linkCopied": "Link copied!",
     "shareTitle": "Your natal chart",
     "shareSubtitle": "Share your chart with anyone.",

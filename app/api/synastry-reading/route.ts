@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
-import type { NatalChartData, ChartPointId } from "@/lib/chart";
+import type { NatalChartData, ChartPointId, SignId } from "@/lib/chart";
 import type { SynastryAspect } from "@/lib/synastry";
+import { ASPECT_LABELS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -11,25 +12,8 @@ function langInstruction(locale?: string): string {
   return "Write in Spanish from Spain. Use the 'tú' form.";
 }
 
-const POINT_LABELS: Partial<Record<ChartPointId, string>> = {
-  sun: "Sol", moon: "Luna", mercury: "Mercurio", venus: "Venus", mars: "Marte",
-  jupiter: "Júpiter", saturn: "Saturno", uranus: "Urano", neptune: "Neptuno",
-  pluto: "Plutón", northNode: "Nodo Norte",
-};
-
-const ASPECT_LABELS: Record<string, string> = {
-  conjunction: "conjunción", trine: "trígono", sextile: "sextil",
-  square: "cuadratura", opposition: "oposición", quincunx: "quincuncio",
-};
-
-const SIGN_LABELS: Record<string, string> = {
-  aries: "Aries", taurus: "Tauro", gemini: "Géminis", cancer: "Cáncer",
-  leo: "Leo", virgo: "Virgo", libra: "Libra", scorpio: "Escorpio",
-  sagittarius: "Sagitario", capricorn: "Capricornio", aquarius: "Acuario", pisces: "Piscis",
-};
-
 function pl(id: ChartPointId) { return POINT_LABELS[id] ?? id; }
-function sl(sign: string) { return SIGN_LABELS[sign] ?? sign; }
+function sl(sign: SignId) { return SIGN_LABELS[sign] ?? sign; }
 
 function keyPoints(chart: NatalChartData) {
   const get = (id: ChartPointId) => chart.points.find(p => p.id === id);
@@ -84,15 +68,14 @@ export async function POST(request: Request) {
 
 ${context}
 
-Escribe 3 párrafos. Cada uno responde a una pregunta real:
+Escribe UN párrafo de 80-100 palabras sobre la relación de ${name} con
+${partnerName}. Usa los 2 aspectos más fuertes para describir la dinámica
+central: qué se siente, dónde hay tensión, dónde hay facilidad. Da un
+ejemplo real de cómo aparece esto en la convivencia. Termina con algo
+concreto que ${name} puede hacer para llevarse mejor con ${partnerName}. Sin
+subtítulos ni párrafos múltiples.
 
-Párrafo 1 — La dinámica central: ¿Qué siente ${name} con ${partnerName} y por qué? Usa los 2-3 aspectos más fuertes. Explica en qué se nota en la vida real: en la conversación, la atracción, los momentos de fricción.
-
-Párrafo 2 — Lo que funciona y lo que tensa: Menciona aspectos armónicos concretos y di qué facilitan. Luego aspectos tensos y di qué fricciones generan. No como algo malo, sino como una descripción honesta de cómo funciona esta relación.
-
-Párrafo 3 — Lo que puede hacer ${name}: Qué actitud o acción concreta le ayuda a llevarse mejor con ${partnerName} según estos aspectos. Que nazca de los datos, no un consejo genérico.
-
-Después de los 3 párrafos, escribe exactamente esta línea de separación:
+Después de la lectura principal, escribe exactamente esta línea de separación:
 
 __SARITA_DATA__
 
@@ -107,17 +90,16 @@ Una sola línea de JSON, sin saltos de línea dentro del JSON.
 Reglas estrictas:
 - Habla siempre a ${name} directamente
 - El primer carácter es siempre mayúscula
-- Máximo 380 palabras
-- Español de España, tuteo
-- Sin listas, sin subtítulos, prosa fluida en 3 párrafos separados por línea en blanco
+- La prosa debe respetar el párrafo único indicado antes
+- Sin listas ni subtítulos en la prosa
 - Tono SARITA: directo, práctico, como una amiga que sabe astrología. Sin solemnidad.
-- Sin palabras como "espejos", "karma", "cosmos", "universo", "el cielo te invita", "energía cósmica" ni lenguaje New Age
+- Sin frases vagas, misticismos ni lenguaje New Age
 
 ${langInstruction(locale)}`;
 
   const stream = client.messages.stream({
-    model: "claude-sonnet-4-6",
-    max_tokens: 1400,
+    model: "claude-sonnet-4-20250514",
+      max_tokens: 700,
     messages: [{ role: "user", content: prompt }],
   });
 
@@ -126,8 +108,15 @@ ${langInstruction(locale)}`;
     start(controller) {
       let closed = false;
       const closeSafely = () => { if (!closed) { closed = true; controller.close(); } };
+      const failSafely = (error: unknown) => {
+        console.error("Synastry reading stream failed", error);
+        if (!closed) {
+          closed = true;
+          controller.error(error);
+        }
+      };
       stream.on("text", (text) => { if (!closed) controller.enqueue(encoder.encode(text)); });
-      stream.finalMessage().then(closeSafely).catch(closeSafely);
+      stream.finalMessage().then(closeSafely).catch(failSafely);
     },
     cancel() { stream.abort(); },
   });

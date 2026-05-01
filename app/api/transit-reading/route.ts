@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { NatalChartData, ChartPointId } from "@/lib/chart";
+import { ASPECT_LABELS, HOUSE_AREAS, POINT_LABELS } from "@/lib/chart-labels";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -9,24 +10,6 @@ function langInstruction(locale?: string): string {
   if (locale === "it") return "Write entirely in Italian.";
   return "Write in Spanish from Spain. Use the 'tú' form.";
 }
-
-const POINT_LABELS: Partial<Record<ChartPointId, string>> = {
-  sun: "Sol", moon: "Luna", mercury: "Mercurio", venus: "Venus", mars: "Marte",
-  jupiter: "Júpiter", saturn: "Saturno", uranus: "Urano", neptune: "Neptuno",
-  pluto: "Plutón", northNode: "Nodo Norte", southNode: "Nodo Sur", chiron: "Quirón",
-};
-
-const ASPECT_LABELS: Record<string, string> = {
-  conjunction: "conjunción", trine: "trígono", sextile: "sextil",
-  square: "cuadratura", opposition: "oposición", quincunx: "quincuncio",
-};
-
-const HOUSE_AREAS: Record<number, string> = {
-  1: "identidad y cuerpo", 2: "dinero y recursos", 3: "comunicación y mente",
-  4: "hogar y familia", 5: "creatividad y placer", 6: "trabajo y salud",
-  7: "pareja y vínculos", 8: "transformación e intimidad", 9: "viajes y sentido",
-  10: "carrera y vocación", 11: "amigos y proyectos", 12: "descanso e inconsciente",
-};
 
 type TransitInput = {
   transitingPlanet: ChartPointId;
@@ -71,13 +54,12 @@ Carta natal de ${name}:
 Tránsitos activos ahora mismo:
 ${transitLines}
 
-Escribe 2 párrafos concretos dirigidos a ${name}:
+Escribe UN párrafo de 60-80 palabras. Nombra el tránsito más fuerte, di en
+qué área de la vida de ${name} se va a notar y da un ejemplo real de cómo
+puede aparecer en los próximos días. Termina con una recomendación concreta:
+qué hacer o qué evitar ahora mismo. Sin subtítulos ni párrafos múltiples.
 
-Párrafo 1 — Qué está pasando ahora: Explica el tránsito más fuerte. Di qué área de vida está siendo activada y cómo puede notarlo en el día a día. Da un ejemplo real.
-
-Párrafo 2 — Qué hacer con esto: Una recomendación práctica para este momento concreto. Qué conviene hacer, qué conviene evitar.
-
-Después de los 2 párrafos, escribe exactamente esta línea de separación:
+Después de la lectura principal, escribe exactamente esta línea de separación:
 
 __SARITA_DATA__
 
@@ -90,16 +72,16 @@ Los valores "house" en el array deben ser los números: ${houseHint} (las casas 
 Reglas:
 - Tono SARITA: directo, práctico, como una amiga que sabe astrología. Sin solemnidad.
 - El primer carácter de cada campo de texto es siempre mayúscula
-- Máximo 300 palabras en los párrafos de prosa, sin contar el JSON
+- La prosa debe respetar el párrafo único indicado antes, sin contar el JSON
 - Sin listas ni subtítulos en la prosa
-- Sin "el universo te pide", "el cosmos", "el cielo te invita", "karma", "energía cósmica" ni misticismos
+- Sin frases vagas ni misticismos
 - El JSON debe ir en una sola línea, sin saltos de línea internos
 
 ${langInstruction(locale)}`;
 
   const stream = client.messages.stream({
-    model: "claude-sonnet-4-6",
-    max_tokens: 1000,
+    model: "claude-sonnet-4-20250514",
+      max_tokens: 500,
     messages: [{ role: "user", content: prompt }],
   });
 
@@ -108,8 +90,15 @@ ${langInstruction(locale)}`;
     start(controller) {
       let closed = false;
       const closeSafely = () => { if (!closed) { closed = true; controller.close(); } };
+      const failSafely = (error: unknown) => {
+        console.error("Transit reading stream failed", error);
+        if (!closed) {
+          closed = true;
+          controller.error(error);
+        }
+      };
       stream.on("text", (text) => { if (!closed) controller.enqueue(encoder.encode(text)); });
-      stream.finalMessage().then(closeSafely).catch(closeSafely);
+      stream.finalMessage().then(closeSafely).catch(failSafely);
     },
     cancel() { stream.abort(); },
   });

@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import { illustrations } from "@/data/illustrations";
 import type { LunationType } from "@/lib/lunar-report";
+import type { Dictionary } from "@/lib/i18n";
 
 type LunationToggleOption = {
   id: LunationType;
@@ -15,12 +16,14 @@ type LunationToggleProps = {
   options: LunationToggleOption[];
   value: LunationType;
   onChange: (value: LunationType) => void;
+  dictionary: Dictionary;
 };
 
 export function LunationToggle({
   options,
   value,
   onChange,
+  dictionary,
 }: LunationToggleProps) {
   return (
     <div className="flex flex-wrap items-start justify-center gap-8 min-[420px]:flex-nowrap md:gap-14 lg:gap-20">
@@ -28,7 +31,7 @@ export function LunationToggle({
         const active = option.id === value;
         const moonSrc =
           option.id === "nueva" ? illustrations.moons.nueva : illustrations.moons.llena;
-        const moonName = option.id === "nueva" ? "Luna Nueva" : "Luna Llena";
+        const moonName = option.id === "nueva" ? dictionary.lunar.newMoon : dictionary.lunar.fullMoon;
 
         return (
           <button
@@ -53,7 +56,7 @@ export function LunationToggle({
             >
               <Image
                 src={moonSrc}
-                alt={`Ilustración de ${moonName}`}
+                alt={dictionary.lunar.moonIllustrationAlt.replace("{moon}", moonName)}
                 width={280}
                 height={280}
                 priority
@@ -72,7 +75,7 @@ export function LunationToggle({
             <span
               className={[
                 "mt-2 font-serif text-[13px] italic leading-tight transition-colors duration-[400ms]",
-                active ? "text-[#6f613a]" : "text-[#3a3048] group-hover:text-[#6f613a]",
+                active ? "text-[#5c4a24]" : "text-[#3a3048] group-hover:text-[#5c4a24]",
               ].join(" ")}
             >
               {option.date}

@@ -97,7 +97,7 @@ function ResultPageContent() {
               <button
                 type="button"
                 onClick={() => setBanner(null)}
-                className="text-xs font-semibold uppercase tracking-[0.18em] text-[#6f613a]"
+                className="text-xs font-semibold uppercase tracking-[0.18em] text-[#5c4a24]"
               >
                 {dictionary.common.close}
               </button>
@@ -112,7 +112,7 @@ function ResultPageContent() {
               ← {dictionary.result.back}
             </Link>
 
-            <p className="justify-self-center text-[12px] font-semibold uppercase tracking-[0.22em] text-[#6f613a]">
+            <p className="justify-self-center text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5c4a24]">
               {result?.saved ? dictionary.standalonePages.savedReading : ""}
             </p>
 
@@ -140,7 +140,7 @@ function ResultPageContent() {
                 <p className="text-sm leading-7 text-[#3a3048]">{dictionary.result.messages.missingResult}</p>
                 <Link
                   href="/form"
-                  className="mt-5 inline-block text-xs font-medium uppercase tracking-[0.24em] text-[#6f613a] transition hover:text-dusty-gold"
+                  className="mt-5 inline-block text-xs font-medium uppercase tracking-[0.24em] text-[#5c4a24] transition hover:text-dusty-gold"
                 >
                   {dictionary.form.back}
                 </Link>

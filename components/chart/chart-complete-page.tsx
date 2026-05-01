@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 
 import { BiWheelChart } from "@/components/chart/bi-wheel-chart";
+import { BiWheelInfoPanel } from "@/components/chart/bi-wheel-info-panel";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { calculateCurrentTransitsAction } from "@/lib/actions";
 import type { ChartPoint, ChartPointId, NatalChartData } from "@/lib/chart";
@@ -25,6 +26,7 @@ type TransitData = {
 };
 
 const SARITA_DATA_MARKER = "__SARITA_DATA__";
+const READING_TIMEOUT_MS = 45000;
 
 const POINT_LABELS: Partial<Record<ChartPointId, string>> = {
   sun: "Sol",
@@ -66,18 +68,37 @@ const HOUSE_AREAS: Record<number, string> = {
   12: "inconsciente, descanso, cierre de ciclos y vida espiritual",
 };
 
-const PLANET_LANGUAGE: Partial<Record<ChartPointId, string>> = {
-  saturn: "Saturno pide estructura, límites y madurez. No empuja rápido: obliga a elegir qué sostener de verdad.",
-  jupiter: "Júpiter amplía el campo. Muestra dónde hay crecimiento, confianza y una puerta que se abre si te atreves a ocupar más espacio.",
-  uranus: "Urano despierta lo que estaba dormido. Trae cambio, independencia y una necesidad de romper una forma vieja.",
-  neptune: "Neptuno sensibiliza y disuelve. Pide escuchar lo invisible, pero también cuidar las fantasías que nublan la decisión.",
-  pluto: "Plutón intensifica. Va a la raíz de un patrón y empuja una transformación profunda, no superficial.",
-  mars: "Marte activa deseo, impulso y fricción. Muestra dónde necesitas actuar, defenderte o mover energía estancada.",
-  venus: "Venus abre preguntas de valor, vínculo y placer. Señala dónde algo necesita más belleza, reciprocidad o cuidado.",
-};
+function ReadingSkeleton() {
+  return (
+    <article className="mt-4 min-h-[160px] animate-pulse border border-black/10 bg-white p-6">
+      <div className="h-3 w-24 rounded bg-black/8" />
+      <div className="mt-3 h-6 w-3/4 rounded bg-black/8" />
+      <div className="mt-3 space-y-2">
+        <div className="h-3 w-full rounded bg-black/6" />
+        <div className="h-3 w-5/6 rounded bg-black/6" />
+        <div className="h-3 w-4/6 rounded bg-black/6" />
+      </div>
+    </article>
+  );
+}
 
 function pointLabel(id: ChartPointId) {
   return POINT_LABELS[id] ?? id;
+}
+
+function cleanJsonPayload(rawPayload: string) {
+  const withoutFence = rawPayload
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```\s*$/, "")
+    .trim();
+  const start = withoutFence.indexOf("{");
+  const end = withoutFence.lastIndexOf("}");
+
+  if (start !== -1 && end !== -1 && end > start) {
+    return withoutFence.slice(start, end + 1);
+  }
+
+  return withoutFence;
 }
 
 function findPoint(chart: NatalChartData, id: ChartPointId) {
@@ -157,7 +178,10 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
   const [result, setResult] = useState<TransitResult | null>(null);
   const [transitReading, setTransitReading] = useState("");
   const [transitData, setTransitData] = useState<TransitData>({});
+  const [transitReadingError, setTransitReadingError] = useState<string | null>(null);
   const [isLoadingTransitReading, setIsLoadingTransitReading] = useState(false);
+  const [selectedHouse, setSelectedHouse] = useState<number | null>(null);
+  const [biWheelSelected, setBiWheelSelected] = useState<{ id: ChartPointId; ring: "inner" | "outer" } | null>(null);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -174,6 +198,8 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
   useEffect(() => {
     if (!result?.ok || result.transits.length === 0) return;
     let active = true;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), READING_TIMEOUT_MS);
     const top = topTransits(result.transits).map(t => ({
       transitingPlanet: t.transitingPlanet,
       natalPlanet: t.natalPlanet,
@@ -184,13 +210,22 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
     }));
     setTransitReading("");
     setTransitData({});
+    setTransitReadingError(null);
     setIsLoadingTransitReading(true);
     void fetch("/api/transit-reading", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chart, transits: top, locale }),
+      signal: controller.signal,
     }).then(async (res) => {
-      if (!active || !res.ok || !res.body) { if (active) setIsLoadingTransitReading(false); return; }
+      if (!active || !res.ok || !res.body) {
+        clearTimeout(timeout);
+        if (active) {
+          setTransitReadingError(`Transit reading failed: ${res.status}`);
+          setIsLoadingTransitReading(false);
+        }
+        return;
+      }
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let accumulated = "";
@@ -203,14 +238,30 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
       if (active) {
         const markerIdx = accumulated.indexOf(SARITA_DATA_MARKER);
         if (markerIdx !== -1) {
+          const jsonPayload = cleanJsonPayload(accumulated.slice(markerIdx + SARITA_DATA_MARKER.length).trim());
           try {
-            setTransitData(JSON.parse(accumulated.slice(markerIdx + SARITA_DATA_MARKER.length).trim()) as TransitData);
-          } catch {}
+            setTransitData(JSON.parse(jsonPayload) as TransitData);
+          } catch {
+            setTransitReadingError("Transit reading JSON could not be parsed.");
+          }
+        } else {
+          setTransitReadingError("Transit reading response did not include SARITA data.");
         }
         setIsLoadingTransitReading(false);
       }
-    }).catch(() => { if (active) setIsLoadingTransitReading(false); });
-    return () => { active = false; };
+      clearTimeout(timeout);
+    }).catch(() => {
+      clearTimeout(timeout);
+      if (active) {
+        setTransitReadingError("Transit reading request failed or timed out.");
+        setIsLoadingTransitReading(false);
+      }
+    });
+    return () => {
+      active = false;
+      controller.abort();
+      clearTimeout(timeout);
+    };
   }, [result, chart, locale]);
 
   const activeTransits = useMemo(() => {
@@ -220,13 +271,24 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
 
   const houses = useMemo(() => activatedHouses(chart, activeTransits), [chart, activeTransits]);
   const dominantTransit = activeTransits[0];
-  const proseTransitReading = transitReading.split(SARITA_DATA_MARKER)[0] ?? transitReading;
-  const waitingForTransitData = isLoadingTransitReading && !transitData.dominantTitle;
+  const aiHouses = useMemo(() => transitData.houses ?? [], [transitData.houses]);
+  const selectedAiHouse = aiHouses.find((house) => house.house === selectedHouse) ?? aiHouses[0] ?? null;
+
+  useEffect(() => {
+    if (!aiHouses.length) {
+      setSelectedHouse(null);
+      return;
+    }
+
+    setSelectedHouse((current) => (
+      current && aiHouses.some((house) => house.house === current) ? current : aiHouses[0]!.house
+    ));
+  }, [aiHouses]);
 
   return (
     <section className="mx-auto max-w-6xl py-10">
       <div className="text-center">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
           {transitCopy.eyebrow}
         </p>
         <h2 className="mt-2 font-serif text-[42px] leading-tight text-ivory md:text-[56px]">
@@ -236,7 +298,7 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
           {transitCopy.description}
         </p>
         {result?.ok ? (
-          <p className="mt-4 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#6f613a]">
+          <p className="mt-4 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24]">
             {transitCopy.calculatedAt} {dateLabel(result.generatedAt, locale)}
           </p>
         ) : null}
@@ -244,13 +306,28 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
 
       <div className="mt-10">
         {result?.ok ? (
-          <BiWheelChart
-            innerChart={chart}
-            outerChart={result.chart}
-            innerLabel={chart.event.name}
-            outerLabel={dictionary.result.primaryTabs.complete}
-            variant="synastry"
-          />
+          <>
+            <BiWheelChart
+              innerChart={chart}
+              outerChart={result.chart}
+              innerLabel={chart.event.name}
+              outerLabel={dictionary.result.primaryTabs.complete}
+              variant="synastry"
+              onInnerPlanetSelect={(id) => setBiWheelSelected({ id, ring: "inner" })}
+              onOuterPlanetSelect={(id) => setBiWheelSelected({ id, ring: "outer" })}
+            />
+            {biWheelSelected ? (
+              <BiWheelInfoPanel
+                variant="transits"
+                selectedId={biWheelSelected.id}
+                ring={biWheelSelected.ring}
+                innerChart={chart}
+                outerChart={result.chart}
+                activeTransits={activeTransits}
+                onClose={() => setBiWheelSelected(null)}
+              />
+            ) : null}
+          </>
         ) : (
           <div className="mx-auto flex min-h-[420px] max-w-[860px] items-center justify-center border border-black/10 bg-white text-center shadow-[0_4px_16px_rgba(0,0,0,0.2)]">
             <div>
@@ -265,30 +342,49 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
         )}
       </div>
 
-      <div className="mx-auto mt-10 max-w-5xl border-t border-black/[0.07]" />
-
       {dominantTransit ? (
         <div className="mx-auto mt-12 grid max-w-5xl gap-4 md:grid-cols-[1.05fr_0.95fr]">
-          <article className="border border-black/12 bg-white p-6 shadow-[0_8px_24px_rgba(0,0,0,0.08)] md:p-7">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#6f613a]">
+          <article className="border border-black/10 bg-white p-5 shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
               {transitCopy.mostActiveEyebrow}
             </p>
-            <h3 className="mt-3 font-serif text-3xl leading-tight text-ivory">
-              {transitData.dominantTitle ?? (waitingForTransitData ? "..." : `${pointLabel(dominantTransit.transitingPlanet)} está activando tu ${pointLabel(dominantTransit.natalPlanet)}`)}
-            </h3>
-            <p className="mt-4 text-base leading-8 text-[#3a3048]">
-              {transitData.dominantBody ?? (waitingForTransitData ? <span className="animate-pulse text-[#3a3048]">Generando...</span> : `${transitSentence(chart, dominantTransit)} Este tránsito no describe un destino cerrado: muestra el lenguaje evolutivo del momento, la parte de ti que está siendo llamada a responder con más conciencia.`)}
-            </p>
+            {isLoadingTransitReading && !transitData.dominantTitle ? (
+              <div className="mt-3 animate-pulse space-y-2">
+                <div className="h-6 w-3/4 rounded bg-black/8" />
+                <div className="h-3 w-full rounded bg-black/6" />
+                <div className="h-3 w-5/6 rounded bg-black/6" />
+              </div>
+            ) : transitReadingError && !transitData.dominantTitle ? (
+              <p className="mt-3 text-sm leading-7 text-red-700">{transitReadingError}</p>
+            ) : (
+              <>
+                <h3 className="mt-2 font-serif text-[22px] leading-snug text-ivory">
+                  {transitData.dominantTitle ?? `${pointLabel(dominantTransit.transitingPlanet)} está activando tu ${pointLabel(dominantTransit.natalPlanet)}`}
+                </h3>
+                <p className="mt-3 text-sm leading-7 text-[#3a3048]">
+                  {transitData.dominantBody ?? transitSentence(chart, dominantTransit)}
+                </p>
+              </>
+            )}
           </article>
 
-          <article className="border border-black/12 bg-white p-6 shadow-[0_8px_24px_rgba(0,0,0,0.08)] md:p-7">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#6f613a]">
+          <article className="border border-black/10 bg-white p-5 shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
               {transitCopy.planetLanguageEyebrow}
             </p>
-            <p className="mt-4 text-base leading-8 text-[#3a3048]">
-              {transitData.planetLanguage ?? (waitingForTransitData ? <span className="animate-pulse text-[#3a3048]">Generando...</span> : PLANET_LANGUAGE[dominantTransit.transitingPlanet] ?? "Este planeta marca una zona de aprendizaje activo y pide presencia.")}
-            </p>
-            <p className="mt-5 text-sm leading-7 text-[#3a3048]">
+            {isLoadingTransitReading && !transitData.planetLanguage ? (
+              <div className="mt-3 animate-pulse space-y-2">
+                <div className="h-3 w-full rounded bg-black/6" />
+                <div className="h-3 w-5/6 rounded bg-black/6" />
+              </div>
+            ) : transitReadingError && !transitData.planetLanguage ? (
+              <p className="mt-3 text-sm leading-7 text-red-700">{transitReadingError}</p>
+            ) : (
+              <p className="mt-3 text-sm leading-7 text-[#3a3048]">
+                {transitData.planetLanguage ?? "Este planeta marca una zona de aprendizaje activo y pide presencia."}
+              </p>
+            )}
+            <p className="mt-4 text-sm leading-7 text-[#3a3048]">
               {transitCopy.orbLabel} {dominantTransit.orb}° · {dominantTransit.strength === "tight" ? transitCopy.strengthTight : dominantTransit.strength === "moderate" ? transitCopy.strengthModerate : transitCopy.strengthLoose}
             </p>
           </article>
@@ -302,74 +398,75 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
         </div>
       ) : null}
 
-      <div className="mx-auto mt-10 max-w-5xl border-t border-black/[0.07]" />
-
-      {(isLoadingTransitReading || transitReading) ? (
-        <div className="mx-auto mt-8 max-w-3xl border-y border-dusty-gold/14 py-7">
-          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">{transitCopy.readingEyebrow}</p>
-          {isLoadingTransitReading && !transitReading ? (
-            <p className="mt-4 animate-pulse text-base leading-8 text-[#3a3048]">{transitCopy.readingLoading}</p>
-          ) : (
-            proseTransitReading.split("\n\n").filter(Boolean).map((para, i) => (
-              <p key={i} className="mt-4 text-base leading-8 text-[#2f293b]">{para}</p>
-            ))
-          )}
-        </div>
-      ) : null}
-
-      <div className="mx-auto mt-10 max-w-5xl border-t border-black/[0.07]" />
-
       {activeTransits.length > 0 ? (
-        <div className="mx-auto mt-10 max-w-5xl border-t border-black/10 pt-8">
-          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
+        <div className="mx-auto mt-12 max-w-5xl">
+          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
             {transitCopy.activatedAreasEyebrow}
           </p>
-          <div className="mt-5 grid gap-4 md:grid-cols-3">
-            {houses.map((entry) => {
-              const aiHouse = transitData.houses?.find((house) => house.house === entry.house);
-              const housePending = isLoadingTransitReading && !aiHouse;
-              return (
-              <article key={entry.house} className="border border-black/12 bg-white p-5 shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
-                <div className="mb-3 flex items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center border border-dusty-gold/30 bg-dusty-gold/[0.08] font-serif text-lg text-[#6f613a]">
-                    {entry.house}
-                  </span>
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#6f613a]">
-                    {transitCopy.houseLabel ?? "Casa"}
-                  </p>
-                </div>
-                <h3 className="mt-3 font-serif text-2xl leading-tight text-ivory">
-                  {aiHouse?.title ?? (housePending ? "..." : HOUSE_AREAS[entry.house])}
-                </h3>
-                <p className="mt-4 text-sm leading-7 text-[#3a3048]">
-                  {aiHouse?.body ?? (housePending ? <span className="animate-pulse text-[#3a3048]">Generando...</span> : transitCopy.activatedAreaBody.replace("{points}", Array.from(entry.points).join(", ")))}
-                </p>
-              </article>
-              );
-            })}
+          <div className="mt-5 flex flex-wrap gap-2">
+            {isLoadingTransitReading && !aiHouses.length
+              ? houses.slice(0, 3).map((entry) => (
+                  <span key={entry.house} className="h-9 w-24 animate-pulse border border-black/10 bg-white" />
+                ))
+              : aiHouses.map((house) => {
+                  const active = selectedAiHouse?.house === house.house;
+                  return (
+                    <button
+                      key={house.house}
+                      type="button"
+                      onClick={() => setSelectedHouse(house.house)}
+                      className={[
+                        "border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition",
+                        active
+                          ? "border-dusty-gold/60 bg-dusty-gold/[0.07] text-[#5c4a24]"
+                          : "border-black/10 bg-white text-[#3a3048] hover:bg-black/[0.02]",
+                      ].join(" ")}
+                    >
+                      CASA {house.house}
+                    </button>
+                  );
+                })}
           </div>
+          {isLoadingTransitReading && !selectedAiHouse ? (
+            <ReadingSkeleton />
+          ) : transitReadingError && !selectedAiHouse ? (
+            <article className="mt-4 min-h-[160px] border border-black/10 bg-white p-6">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                {transitCopy.activatedAreasEyebrow}
+              </p>
+              <p className="mt-3 text-sm leading-7 text-red-700">{transitReadingError}</p>
+            </article>
+          ) : selectedAiHouse ? (
+            <article className="mt-4 min-h-[160px] border border-black/10 bg-white p-6">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                CASA {selectedAiHouse.house} · {HOUSE_AREAS[selectedAiHouse.house]}
+              </p>
+              <h3 className="mt-2 font-serif text-[24px] leading-snug text-ivory">
+                {selectedAiHouse.title}
+              </h3>
+              <p className="mt-3 text-sm leading-7 text-[#3a3048]">{selectedAiHouse.body}</p>
+            </article>
+          ) : null}
         </div>
       ) : null}
-
-      <div className="mx-auto mt-10 max-w-5xl border-t border-black/[0.07]" />
 
       {activeTransits.length > 0 ? (
         <details className="mx-auto mt-10 max-w-5xl border-y border-black/10">
-          <summary className="cursor-pointer list-none py-4 text-center text-[12px] font-semibold uppercase tracking-[0.2em] text-[#6f613a]">
+          <summary className="cursor-pointer list-none py-4 text-center text-[12px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24]">
             {transitCopy.viewTransits}
           </summary>
           <div className="grid gap-3 pb-6">
             {activeTransits.map((transit) => (
               <div
                 key={`${transit.transitingPlanet}-${transit.natalPlanet}-${transit.aspectType}`}
-                className="grid gap-2 border border-black/12 bg-white p-4 md:grid-cols-[0.8fr_1.2fr]"
+                className="flex items-center justify-between gap-4 border border-black/12 bg-white px-4 py-3"
               >
-                <p className="text-sm text-[#6f613a]">
-                  {pointLabel(transit.transitingPlanet)} {ASPECT_LABELS[transit.aspectType]} {pointLabel(transit.natalPlanet)}
+                <p className="text-sm text-[#5c4a24]">
+                  {pointLabel(transit.transitingPlanet)} {ASPECT_LABELS[transit.aspectType].toLowerCase()} {pointLabel(transit.natalPlanet)}
                 </p>
-                <p className="text-sm leading-6 text-[#3a3048]">
-                  {transitSentence(chart, transit)}
-                </p>
+                <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#8a7a4e]">
+                  {transit.orb.toFixed(1)}°
+                </span>
               </div>
             ))}
           </div>

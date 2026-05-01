@@ -67,7 +67,7 @@ export default async function AccountPage() {
 
             <div className="mt-10 space-y-8">
               <section className="border border-black/10 bg-white p-6 shadow-[0_4px_16px_rgba(0,0,0,0.2)]">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#6f613a]">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5c4a24]">
                   {dictionary.account.plan}
                 </p>
                 <h2 className="mt-3 font-serif text-4xl text-ivory">{planLabel}</h2>

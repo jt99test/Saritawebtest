@@ -38,7 +38,7 @@ export function ChartShareActions({ chart, dictionary, plan }: ChartShareActions
 
     if (!response) {
       setPending(false);
-      setError("No se pudo crear el enlace. Intenta de nuevo.");
+      setError(dictionary.chart.shareError);
       return;
     }
 
@@ -51,14 +51,14 @@ export function ChartShareActions({ chart, dictionary, plan }: ChartShareActions
     if (!response.ok) {
       setPending(false);
       const message = await response.text().catch(() => "");
-      setError(message || "No se pudo crear el enlace. Intenta de nuevo.");
+      setError(message || dictionary.chart.shareError);
       return;
     }
 
     const { id } = (await response.json()) as { id?: string };
     if (!id) {
       setPending(false);
-      setError("No se pudo crear el enlace. Intenta de nuevo.");
+      setError(dictionary.chart.shareError);
       return;
     }
     setShareUrl(`${window.location.origin}/carta/${id}`);
@@ -100,7 +100,7 @@ export function ChartShareActions({ chart, dictionary, plan }: ChartShareActions
           disabled={pending}
           className="border border-black/20 bg-transparent px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-ivory transition hover:bg-black/[0.05] disabled:opacity-50"
         >
-          {pending ? "Creando enlace..." : dictionary.chart.share}
+          {pending ? dictionary.chart.creatingLink : dictionary.chart.share}
         </button>
         <button
           type="button"

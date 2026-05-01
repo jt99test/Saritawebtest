@@ -54,7 +54,7 @@ export function HomePage() {
             <div className="min-w-0 flex-1 pt-2">
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="h-px w-10 shrink-0 bg-gradient-to-r from-dusty-gold to-transparent sm:w-14" />
-                <p className="truncate text-[12px] font-semibold uppercase tracking-[0.24em] text-[#6f613a] sm:text-[12px] sm:tracking-[0.32em]">
+                <p className="truncate text-[12px] font-semibold uppercase tracking-[0.24em] text-[#5c4a24] sm:text-[12px] sm:tracking-[0.32em]">
                   {dictionary.home.eyebrow}
                 </p>
               </div>
@@ -63,7 +63,7 @@ export function HomePage() {
             <div className="ml-auto flex items-center gap-3 sm:gap-4">
               <Link
                 href="/precios"
-                className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-[#1e1a2e] transition hover:text-[#6f613a] sm:inline"
+                className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-[#1e1a2e] transition hover:text-[#5c4a24] sm:inline"
               >
                 {dictionary.nav.pricing}
               </Link>
@@ -139,10 +139,10 @@ export function HomePage() {
                   href={feature.href}
                   className="group block border-l border-black/10 px-4 py-2 text-left transition hover:border-dusty-gold/45 hover:bg-white"
                 >
-                  <span className="mb-3 block text-2xl text-[#6f613a]">
+                  <span className="mb-3 block text-2xl text-[#5c4a24]">
                     {["☽", "☉", "♄"][index] ?? "☽"}
                   </span>
-                  <span className="block text-[12px] font-semibold uppercase tracking-[0.24em] text-[#3a3048] transition group-hover:text-[#6f613a]">
+                  <span className="block text-[12px] font-semibold uppercase tracking-[0.24em] text-[#3a3048] transition group-hover:text-[#5c4a24]">
                     {feature.title}
                   </span>
                   <span className="mt-1 block text-xs leading-5 text-[#3a3048] transition group-hover:text-[#3a3048]">

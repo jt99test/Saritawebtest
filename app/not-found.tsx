@@ -16,7 +16,7 @@ export default async function NotFound() {
       <AtmosphericBackground variant="page" />
       <Container className="relative flex min-h-screen items-center justify-center py-10">
         <section className="max-w-2xl border border-black/10 bg-white px-6 py-10 text-center shadow-[0_24px_90px_rgba(0,0,0,0.35)] sm:px-10">
-          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
+          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
             404
           </p>
           <h1 className="mt-3 font-serif text-[42px] leading-tight text-ivory sm:text-[58px]">
@@ -27,7 +27,7 @@ export default async function NotFound() {
           </p>
           <Link
             href="/"
-            className="mt-8 inline-block rounded-full border border-dusty-gold/35 bg-dusty-gold/12 px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-[#6f613a] transition hover:border-dusty-gold/60 hover:bg-dusty-gold/18"
+            className="mt-8 inline-block rounded-full border border-dusty-gold/35 bg-dusty-gold/12 px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-[#5c4a24] transition hover:border-dusty-gold/60 hover:bg-dusty-gold/18"
           >
             {dictionary.result.back}
           </Link>

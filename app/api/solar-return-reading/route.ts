@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
-import type { NatalChartData, ChartPointId } from "@/lib/chart";
+import type { NatalChartData, ChartPointId, SignId } from "@/lib/chart";
+import { HOUSE_AREAS, SIGN_LABELS } from "@/lib/chart-labels";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -10,25 +11,12 @@ function langInstruction(locale?: string): string {
   return "Write in Spanish from Spain. Use the 'tú' form.";
 }
 
-const SIGN_LABELS: Record<string, string> = {
-  aries: "Aries", taurus: "Tauro", gemini: "Géminis", cancer: "Cáncer",
-  leo: "Leo", virgo: "Virgo", libra: "Libra", scorpio: "Escorpio",
-  sagittarius: "Sagitario", capricorn: "Capricornio", aquarius: "Acuario", pisces: "Piscis",
-};
-
-const HOUSE_AREAS: Record<number, string> = {
-  1: "identidad y cuerpo", 2: "dinero y recursos", 3: "comunicación y mente",
-  4: "hogar y familia", 5: "creatividad y placer", 6: "trabajo y salud",
-  7: "pareja y vínculos", 8: "transformación e intimidad", 9: "viajes y sentido de vida",
-  10: "carrera y vocación", 11: "amigos y proyectos", 12: "descanso e inconsciente",
-};
-
-function signLabel(sign: string) {
+function signLabel(sign: SignId) {
   return SIGN_LABELS[sign] ?? sign;
 }
 
-function ascendantSign(deg: number): string {
-  const signs = ["aries","taurus","gemini","cancer","leo","virgo","libra","scorpio","sagittarius","capricorn","aquarius","pisces"];
+function ascendantSign(deg: number): SignId {
+  const signs: SignId[] = ["aries","taurus","gemini","cancer","leo","virgo","libra","scorpio","sagittarius","capricorn","aquarius","pisces"];
   return signs[Math.floor(((deg % 360) + 360) % 360 / 30)] ?? "aries";
 }
 
@@ -89,19 +77,17 @@ export async function POST(request: Request) {
   const name = natalChartData.event.name;
   const context = buildContext(natalChartData, solarReturnData);
 
-  const prompt = `Eres Sarita, una astróloga que habla con ${name} como lo haría una amiga muy bien informada. Directo, claro, útil. Sin frases vagas, sin "el cosmos te invita", sin misticismos. Solo información concreta sobre lo que le toca este año.
+  const prompt = `Eres Sarita, una astróloga que habla con ${name} como lo haría una amiga muy bien informada. Directo, claro, útil. Sin frases vagas ni misticismos. Solo información concreta sobre lo que le toca este año.
 
 ${context}
 
-Escribe 3 párrafos sobre el año de ${name}. Cada párrafo responde a una pregunta:
+Escribe UN párrafo de 80-100 palabras sobre el año de ${name}. Usa el
+Ascendente RS y el Sol RS para decir cuál es el tema central del año. Da un
+ejemplo concreto de cómo puede notarlo en su vida. Termina con una o dos
+cosas prácticas que le ayudarán a aprovechar bien este año. Sin subtítulos
+ni párrafos múltiples.
 
-Párrafo 1 — Qué pide este año: Explica el tema principal del año usando el Ascendente RS y el Sol RS. Di en qué se va a notar en la vida real de ${name}. Pon un ejemplo de cómo puede manifestarse en el día a día.
-
-Párrafo 2 — Cómo lo va a sentir emocionalmente: Explica la Luna RS. Qué necesidades internas van a estar más presentes este año y por qué importa escucharlas.
-
-Párrafo 3 — Qué hacer con esto: Dos o tres cosas concretas y prácticas que ${name} puede hacer para aprovechar bien este año, que nazcan directamente de los datos.
-
-Después de los 3 párrafos, escribe exactamente esta línea de separación:
+Después de la lectura principal, escribe exactamente esta línea de separación:
 
 __SARITA_DATA__
 
@@ -114,18 +100,17 @@ Las 3 prioridades deben nacer directamente de los datos: Ascendente RS, Sol RS, 
 Reglas estrictas:
 - La respuesta empieza directamente, sin presentarte ni saludar
 - El primer carácter es siempre mayúscula
-- Máximo 380 palabras
-- Español de España, tuteo
-- Sin listas, sin subtítulos, prosa fluida en 3 párrafos separados por línea en blanco
+- La prosa debe respetar el párrafo único indicado antes
+- Sin listas ni subtítulos en la prosa
 - Que parezca escrito para esta persona, no una plantilla
 - Tono SARITA: directo, práctico, como una amiga que sabe astrología. Sin solemnidad.
-- Reglas para el JSON: primer carácter de cada campo de texto siempre mayúscula, sin misticismos ni "el universo", una sola línea de JSON sin saltos de línea internos
+- Reglas para el JSON: primer carácter de cada campo de texto siempre mayúscula, sin misticismos, una sola línea de JSON sin saltos de línea internos
 
 ${langInstruction(locale)}`;
 
   const stream = client.messages.stream({
-    model: "claude-sonnet-4-6",
-    max_tokens: 1200,
+    model: "claude-sonnet-4-20250514",
+      max_tokens: 1100,
     messages: [{ role: "user", content: prompt }],
   });
 
@@ -134,8 +119,15 @@ ${langInstruction(locale)}`;
     start(controller) {
       let closed = false;
       const closeSafely = () => { if (!closed) { closed = true; controller.close(); } };
+      const failSafely = (error: unknown) => {
+        console.error("Solar return reading stream failed", error);
+        if (!closed) {
+          closed = true;
+          controller.error(error);
+        }
+      };
       stream.on("text", (text) => { if (!closed) controller.enqueue(encoder.encode(text)); });
-      stream.finalMessage().then(closeSafely).catch(closeSafely);
+      stream.finalMessage().then(closeSafely).catch(failSafely);
     },
     cancel() { stream.abort(); },
   });
