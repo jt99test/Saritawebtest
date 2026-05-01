@@ -15,7 +15,13 @@
       "Bash(curl -s http://localhost:3000 -o /dev/null -w \"%{http_code}\")",
       "Bash(curl -s http://localhost:3002 -o /dev/null -w \"%{http_code}\")",
       "Bash(curl -s http://localhost:3002/form -o /dev/null -w \"%{http_code}\")",
-      "Bash(curl -s http://localhost:3002/resultado -o /dev/null -w \"%{http_code}\")"
+      "Bash(curl -s http://localhost:3002/resultado -o /dev/null -w \"%{http_code}\")",
+      "Bash(xargs grep *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(node -e ' *)",
+      "Bash(git commit -m 'Fix UTF-8 BOM in locale JSON files causing 500 on checkout *)"
     ]
   }
 }

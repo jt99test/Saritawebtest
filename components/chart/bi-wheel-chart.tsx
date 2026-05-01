@@ -123,7 +123,8 @@ export function BiWheelChart({
 
   return (
     <div className="relative mx-auto max-w-[860px]">
-      <svg viewBox="0 0 860 860" className="h-auto w-full" role="img" aria-label={outerChart ? `${innerLabel} / ${outerLabel}` : innerLabel}>
+      <div aria-hidden="true" className="absolute inset-0 rounded-full bg-chart-surface" />
+      <svg viewBox="0 0 860 860" className="relative h-auto w-full overflow-visible" role="img" aria-label={outerChart ? `${innerLabel} / ${outerLabel}` : innerLabel}>
         <defs>
           <radialGradient id="bw-field-glow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="rgba(145,168,255,0.055)" />
@@ -224,7 +225,7 @@ export function BiWheelChart({
                 <circle cx={position.x} cy={position.y} r={active ? "30" : "25"} fill={point.color} opacity={active ? "0.22" : "0.12"} filter="url(#bw-soft-halo)" />
                 <circle cx={position.x} cy={position.y} r="18" fill="rgba(6,8,14,0.9)" stroke={active ? point.color : "rgba(255,255,255,0.26)"} strokeWidth={active ? "1.6" : "1"} filter={active ? "url(#bw-hover-glow)" : "url(#bw-glow)"} />
                 <text x={position.x} y={position.y + 1} textAnchor="middle" dominantBaseline="central" className="font-serif text-[22px]" fill={active ? point.color : "rgba(255,255,255,0.88)"}>{point.glyph}</text>
-                {active ? <text x={label.x} y={label.y} textAnchor="middle" className="text-[10px] font-semibold" fill="rgba(255,255,255,0.82)">{degreeLabel(point)}</text> : null}
+                {active ? <text x={label.x} y={label.y} textAnchor="middle" className="text-[12px] font-semibold" fill="rgba(255,255,255,0.82)">{degreeLabel(point)}</text> : null}
               </g>
             );
           })}
@@ -254,25 +255,25 @@ export function BiWheelChart({
               <circle cx={position.x} cy={position.y} r={active ? "32" : "26"} fill={colors.primary} opacity={active ? "0.2" : "0.1"} filter="url(#bw-soft-halo)" />
               <circle cx={position.x} cy={position.y} r="19" fill="rgba(6,8,14,0.94)" stroke={active ? colors.primary : colors.ring} strokeWidth={active ? "1.7" : "1.1"} filter={active ? "url(#bw-outer-glow)" : "url(#bw-glow)"} />
               <text x={position.x} y={position.y + 1} textAnchor="middle" dominantBaseline="central" className="font-serif text-[22px]" fill={active ? colors.primary : colors.muted}>{point.glyph}</text>
-              {active ? <text x={label.x} y={label.y} textAnchor="middle" className="text-[9px] font-semibold" fill={colors.primary}>{degreeLabel(point)}</text> : null}
+              {active ? <text x={label.x} y={label.y} textAnchor="middle" className="text-[12px] font-semibold" fill={colors.primary}>{degreeLabel(point)}</text> : null}
             </g>
           );
         })}
 
         <g transform={outerChart ? "translate(332 872)" : "translate(392 872)"}>
           <circle r="4" fill="rgba(255,255,255,0.5)" />
-          <text x="14" y="4" className="text-[10px] font-semibold uppercase tracking-[0.2em]" fill="rgba(255,255,255,0.5)">{innerLabel}</text>
+          <text x="14" y="4" className="text-[12px] font-semibold uppercase tracking-[0.2em]" fill="rgba(255,255,255,0.5)">{innerLabel}</text>
         </g>
         {outerChart ? (
           <g transform="translate(474 872)">
             <circle r="4" fill={colors.primary} />
-            <text x="14" y="4" className="text-[10px] font-semibold uppercase tracking-[0.2em]" fill={colors.primary}>{outerLabel}</text>
+            <text x="14" y="4" className="text-[12px] font-semibold uppercase tracking-[0.2em]" fill={colors.primary}>{outerLabel}</text>
           </g>
         ) : null}
       </svg>
 
       {activePoint ? (
-        <div className="pointer-events-none absolute left-1/2 top-6 -translate-x-1/2 border border-white/10 bg-cosmic-950/92 px-4 py-2 text-center shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
+        <div className="pointer-events-none absolute left-1/2 top-6 -translate-x-1/2 border border-black/10 bg-overlay/92 px-4 py-2 text-center shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
           <p className="font-serif text-lg text-ivory">{activePoint.glyph} {degreeLabel(activePoint)}</p>
         </div>
       ) : null}

@@ -73,14 +73,14 @@ export default function LunaDelMesRoutePage() {
           <div className="mb-4 flex items-center justify-between gap-4 pt-1">
             <Link
               href="/"
-              className="text-xs font-medium uppercase tracking-[0.28em] text-ivory/54 transition hover:text-ivory"
+              className="text-xs font-medium uppercase tracking-[0.28em] text-[#3a3048] transition hover:text-ivory"
             >
               {dictionary.result.back}
             </Link>
 
             <Link
               href="/resultado"
-              className="text-xs font-medium uppercase tracking-[0.28em] text-ivory/42 transition hover:text-ivory/72"
+              className="text-xs font-medium uppercase tracking-[0.28em] text-[#3a3048] transition hover:text-[#3a3048]"
             >
               {dictionary.standalonePages.yourChart}
             </Link>
@@ -90,13 +90,13 @@ export default function LunaDelMesRoutePage() {
             <LunaDelMesPage chart={result.chart} dictionary={dictionary} />
           ) : (
             <div className="flex flex-1 items-center justify-center">
-              <div className="rounded-4xl border border-white/10 bg-white/[0.03] px-8 py-10 text-center shadow-[0_24px_80px_rgba(0,0,0,0.32)] backdrop-blur-xl">
-                <p className="text-sm leading-7 text-ivory/62">
+              <div className="rounded-4xl border border-black/10 bg-white px-8 py-10 text-center shadow-[0_24px_80px_rgba(0,0,0,0.32)] backdrop-blur-xl">
+                <p className="text-sm leading-7 text-[#3a3048]">
                   {dictionary.standalonePages.moonMissingChart}
                 </p>
                 <Link
                   href="/form"
-                  className="mt-5 inline-block text-xs font-medium uppercase tracking-[0.24em] text-dusty-gold/80 transition hover:text-dusty-gold"
+                  className="mt-5 inline-block text-xs font-medium uppercase tracking-[0.24em] text-[#6f613a] transition hover:text-dusty-gold"
                 >
                   {dictionary.form.back}
                 </Link>

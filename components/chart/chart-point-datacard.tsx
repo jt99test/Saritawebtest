@@ -19,7 +19,7 @@ type ChartPointDataCardProps = {
 
 function SectionLabel({ children }: { children: string }) {
   return (
-    <p className="mb-4 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-dusty-gold/72">
+    <p className="mb-4 text-[12px] font-semibold uppercase tracking-[0.3em] text-[#6f613a]">
       {children}
     </p>
   );
@@ -34,7 +34,7 @@ function InfoRow({
 }) {
   return (
     <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 py-3">
-      <dt className="text-sm text-ivory/46">{label}</dt>
+      <dt className="text-sm text-[#3a3048]">{label}</dt>
       <dd className="text-right text-sm text-ivory/88">{value}</dd>
     </div>
   );
@@ -48,9 +48,9 @@ function DetailList({
   items: string[];
 }) {
   return (
-    <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.03] px-4 py-4">
+    <div className="rounded-[1.5rem] border border-black/10 bg-white px-4 py-4">
       <p className="text-lg text-ivory">{title}</p>
-      <ul className="mt-4 space-y-2 text-sm leading-6 text-ivory/68">
+      <ul className="mt-4 space-y-2 text-sm leading-6 text-[#3a3048]">
         {items.map((item) => (
           <li key={item} className="flex gap-2">
             <span className="mt-[0.35rem] h-1.5 w-1.5 rounded-full bg-dusty-gold/70" />
@@ -97,9 +97,9 @@ export function ChartPointDataCard({
 
   return (
     <div className="space-y-8">
-      <section className="overflow-hidden rounded-[1.9rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))]">
-        <div className="border-b border-white/10 px-5 py-5">
-          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-dusty-gold/72">
+      <section className="overflow-hidden rounded-[1.9rem] border border-black/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))]">
+        <div className="border-b border-black/10 px-5 py-5">
+          <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#6f613a]">
             {dictionary.result.panels.selectedPoint}
           </p>
 
@@ -113,7 +113,7 @@ export function ChartPointDataCard({
                   <p className="font-serif text-[1.9rem] leading-none text-ivory">
                     {dictionary.result.points[point.id]}
                   </p>
-                  <p className="mt-2 text-sm text-ivory/58">
+                  <p className="mt-2 text-sm text-[#3a3048]">
                     {dictionary.result.signs[point.sign]} · {houseLabel(dictionary, point.house)}
                   </p>
                 </div>
@@ -136,7 +136,7 @@ export function ChartPointDataCard({
             </div>
 
             <div
-              className="hidden h-16 w-16 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-[2rem] md:flex"
+              className="hidden h-16 w-16 shrink-0 items-center justify-center rounded-full border border-black/10 bg-black/[0.05] text-[2rem] md:flex"
               style={{ color: point.color }}
             >
               {point.glyph}
@@ -145,7 +145,7 @@ export function ChartPointDataCard({
         </div>
 
         <div className="grid gap-0 md:grid-cols-2">
-          <div className="border-b border-white/10 px-5 py-5 md:border-b-0 md:border-r">
+          <div className="border-b border-black/10 px-5 py-5 md:border-b-0 md:border-r">
             <SectionLabel>{dictionary.result.editorial.signFocus}</SectionLabel>
             <DetailList title={dictionary.result.signs[point.sign]} items={signLens} />
           </div>
@@ -158,7 +158,7 @@ export function ChartPointDataCard({
 
       <section>
         <SectionLabel>{dictionary.result.editorial.technicalSheet}</SectionLabel>
-        <div className="overflow-hidden rounded-[1.7rem] border border-white/10 bg-white/[0.03]">
+        <div className="overflow-hidden rounded-[1.7rem] border border-black/10 bg-white">
           <dl className="divide-y divide-white/8 px-4">
             <InfoRow label={dictionary.result.fields.position} value={point.degreeLabel} />
             <InfoRow
@@ -198,10 +198,10 @@ export function ChartPointDataCard({
                 <>
                   <div className="min-w-0">
                     <p className="text-sm text-ivory">{dictionary.result.aspectTypes[aspect.type]}</p>
-                    <p className="mt-1 text-xs text-ivory/52">
+                    <p className="mt-1 text-xs text-[#3a3048]">
                       {dictionary.result.points[point.id]} / {dictionary.result.points[otherPoint.id]}
                     </p>
-                    <p className="mt-1 text-xs text-ivory/38">
+                    <p className="mt-1 text-xs text-[#3a3048]">
                       {dictionary.result.fields.orb}: {aspect.orb.toFixed(1)}°
                     </p>
                   </div>
@@ -215,7 +215,7 @@ export function ChartPointDataCard({
                 return (
                   <div
                     key={aspect.id}
-                    className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3"
+                    className="flex items-center justify-between rounded-2xl border border-black/10 bg-white px-4 py-3"
                   >
                     {content}
                   </div>
@@ -227,7 +227,7 @@ export function ChartPointDataCard({
                   key={aspect.id}
                   type="button"
                   onClick={() => onSelectPoint(otherPoint.id)}
-                  className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left transition hover:border-white/18 hover:bg-white/[0.05]"
+                  className="flex w-full items-center justify-between rounded-2xl border border-black/10 bg-white px-4 py-3 text-left transition hover:border-black/15 hover:bg-black/[0.05]"
                 >
                   {content}
                 </button>
@@ -235,7 +235,7 @@ export function ChartPointDataCard({
             })}
           </div>
         ) : (
-          <p className="rounded-2xl border border-dashed border-white/10 px-4 py-4 text-sm text-ivory/52">
+          <p className="rounded-2xl border border-dashed border-black/10 px-4 py-4 text-sm text-[#3a3048]">
             {dictionary.result.messages.noAspectSelected}
           </p>
         )}

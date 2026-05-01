@@ -19,13 +19,13 @@ type NativeButtonProps = SharedProps &
 type PrimaryButtonProps = LinkButtonProps | NativeButtonProps;
 
 const baseClassName =
-  "group relative inline-flex items-center justify-center overflow-hidden rounded-full px-6 py-3.5 text-sm font-semibold transition";
+  "group relative inline-flex items-center justify-center overflow-hidden rounded-full px-6 py-4 text-sm font-semibold transition";
 
 const variants = {
   solid:
-    "border border-[#d7ccb0]/30 bg-[linear-gradient(180deg,#f0ebe0,#d8d1c4)] text-cosmic-950 shadow-[0_12px_40px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.72)] hover:brightness-[1.03]",
+    "border border-black/15 bg-[linear-gradient(180deg,#ffffff,#eee7d9)] text-ivory shadow-[0_10px_28px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.72)] hover:brightness-[1.03]",
   ghostGold:
-    "border border-dusty-gold/45 bg-[linear-gradient(180deg,rgba(181,163,110,0.08),rgba(181,163,110,0.02))] text-ivory shadow-[0_18px_60px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.06)] hover:border-dusty-gold/72 hover:bg-[linear-gradient(180deg,rgba(181,163,110,0.14),rgba(181,163,110,0.04))] hover:text-white",
+    "border border-dusty-gold/60 bg-[linear-gradient(180deg,rgba(138,122,78,0.1),rgba(138,122,78,0.04))] text-ivory shadow-[0_10px_28px_rgba(0,0,0,0.1)] hover:border-dusty-gold hover:bg-[linear-gradient(180deg,rgba(138,122,78,0.16),rgba(138,122,78,0.06))] hover:text-ivory",
 } as const;
 
 export function PrimaryButton(props: PrimaryButtonProps) {

@@ -398,8 +398,8 @@ function AxisLines({ chart, ascendant }: { chart: NatalChartData; ascendant: num
       {axes.map((axis) => {
         const [x1, y1] = pointAtRadius(ZODIAC_OUTER + 2, axis.longitude, ascendant);
         const [x2, y2] = pointAtRadius(ZODIAC_OUTER + 2, axis.longitude + 180, ascendant);
-        const [labelStartX, labelStartY] = pointAtRadius(ZODIAC_OUTER + 22, axis.longitude, ascendant);
-        const [labelEndX, labelEndY] = pointAtRadius(ZODIAC_OUTER + 22, axis.longitude + 180, ascendant);
+        const [labelStartX, labelStartY] = pointAtRadius(ZODIAC_OUTER - 12, axis.longitude, ascendant);
+        const [labelEndX, labelEndY] = pointAtRadius(ZODIAC_OUTER - 12, axis.longitude + 180, ascendant);
 
         return (
           <g key={`axis-${axis.longitude}`}>
@@ -412,30 +412,50 @@ function AxisLines({ chart, ascendant }: { chart: NatalChartData; ascendant: num
               strokeWidth={axis.weight}
             />
             <g transform={`translate(${round(labelStartX)} ${round(labelStartY)})`}>
+              <rect
+                x={-20}
+                y={-11}
+                width={40}
+                height={22}
+                rx={11}
+                fill="rgba(10,15,23,0.96)"
+                stroke="rgba(220,195,120,0.82)"
+                strokeWidth="1"
+              />
               <text
                 textAnchor="middle"
                 dominantBaseline="central"
-                fill="rgba(232,224,240,0.85)"
+                fill="rgba(255,250,238,0.96)"
                 fontFamily="'Spectral', serif"
-                fontSize="13"
-                letterSpacing="0.08em"
+                fontSize="14"
+                fontWeight="700"
+                letterSpacing="0.04em"
               >
                 {axis.start}
               </text>
-              <line x1={-9} y1={10} x2={9} y2={10} stroke="rgba(232,197,71,0.72)" strokeWidth={1} />
             </g>
             <g transform={`translate(${round(labelEndX)} ${round(labelEndY)})`}>
+              <rect
+                x={-20}
+                y={-11}
+                width={40}
+                height={22}
+                rx={11}
+                fill="rgba(10,15,23,0.96)"
+                stroke="rgba(220,195,120,0.82)"
+                strokeWidth="1"
+              />
               <text
                 textAnchor="middle"
                 dominantBaseline="central"
-                fill="rgba(232,224,240,0.85)"
+                fill="rgba(255,250,238,0.96)"
                 fontFamily="'Spectral', serif"
-                fontSize="13"
-                letterSpacing="0.08em"
+                fontSize="14"
+                fontWeight="700"
+                letterSpacing="0.04em"
               >
                 {axis.end}
               </text>
-              <line x1={-9} y1={10} x2={9} y2={10} stroke="rgba(232,197,71,0.72)" strokeWidth={1} />
             </g>
           </g>
         );
@@ -1299,8 +1319,8 @@ export function ChartLayerRail() {
   ];
 
   return (
-    <div className="mx-auto flex w-full max-w-[34rem] flex-col border-t-[0.5px] border-[rgba(232,197,71,0.13)] pt-4 lg:mx-0 lg:w-auto lg:min-w-[10rem] lg:border-t-0 lg:pt-0">
-      <p className="mb-3 text-center font-serif text-[12px] italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.5)] lg:text-left">
+    <div className="mx-auto flex w-full max-w-[34rem] flex-col border border-black/12 bg-white/85 p-4 shadow-[0_8px_24px_rgba(0,0,0,0.08)] lg:mx-0 lg:w-auto lg:min-w-[12rem]">
+      <p className="mb-3 text-center font-serif text-[14px] italic lowercase tracking-[0.15em] text-[#6f613a] lg:text-left">
         vista
       </p>
       <div className="grid grid-cols-2 gap-x-4 gap-y-3 lg:flex lg:flex-col lg:gap-3">
@@ -1309,23 +1329,23 @@ export function ChartLayerRail() {
             key={control.id}
             type="button"
             onClick={control.onClick}
-            className="flex items-center gap-2.5 text-left transition focus-visible:outline-none"
+            className="flex items-center gap-3 py-1 text-left transition focus-visible:outline-none"
             aria-pressed={control.active}
             aria-label={control.label}
           >
             <span
               aria-hidden="true"
               className={[
-                "h-1.5 w-1.5 shrink-0 rounded-full",
+                "h-2.5 w-2.5 shrink-0 rounded-full",
                 control.active
-                  ? "bg-[#e8c547]"
-                  : "border-[0.5px] border-[rgba(232,197,71,0.55)] bg-transparent",
+                  ? "bg-dusty-gold"
+                  : "border border-dusty-gold/70 bg-dusty-gold/15",
               ].join(" ")}
             />
             <span
               className={[
-                "text-[12px] leading-none",
-                control.active ? "text-white" : "text-[rgba(255,255,255,0.55)]",
+                "text-[13px] font-semibold leading-5",
+                control.active ? "text-ivory" : "text-[#3a3048]",
               ].join(" ")}
             >
               {control.label}
@@ -1413,7 +1433,7 @@ export function NatalChartWheel({ chart }: Props) {
   }
 
   return (
-    <div className="relative aspect-square w-full max-w-[54rem] lg:w-[640px]">
+    <div className="relative aspect-square w-full max-w-[54rem] rounded-full bg-chart-surface lg:w-[640px]">
       {tooltip ? (
         <div
           className="pointer-events-none absolute z-30 hidden -translate-x-1/2 -translate-y-[calc(100%+0.85rem)] rounded-2xl border border-[rgba(236,232,223,0.08)] bg-[rgba(10,14,22,0.96)] px-3 py-2 text-xs leading-6 text-ivory/86 shadow-[0_18px_45px_rgba(0,0,0,0.28)] backdrop-blur-[10px] md:block"

@@ -41,25 +41,25 @@ export function MonthlyRoutineCard({ metadata }: MonthlyRoutineCardProps) {
 
   return (
     <section className="mx-auto max-w-[720px] text-left">
-      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
+      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
         tu práctica este mes
       </p>
-      <h3 className="mt-2 font-serif text-[36px] font-normal leading-tight text-white">
+      <h3 className="mt-2 font-serif text-[36px] font-normal leading-tight text-ivory">
         {`Elemento ${ELEMENT_LABELS[metadata.element]}`}
       </h3>
 
-      <p className="mt-7 max-w-[560px] font-serif text-[21px] leading-[1.6] text-white/82">
+      <p className="mt-7 max-w-[560px] font-serif text-[21px] leading-[1.6] text-ivory/82">
         {ELEMENT_COPY[metadata.assignedRoutine]}
       </p>
 
-      <p className="mt-5 max-w-[620px] font-serif text-sm italic leading-7 text-white/50">
+      <p className="mt-5 max-w-[620px] font-serif text-sm italic leading-7 text-[#3a3048]">
         {[routineNames, mantra, metadata.routine.totalDuration].filter(Boolean).join(" · ")}
       </p>
 
       <PrimaryButton
         href={`/yoga-astral/${ROUTE_SEGMENTS[metadata.assignedRoutine]}`}
         variant="ghostGold"
-        className="mt-8 px-6 py-3 text-[0.72rem] uppercase tracking-[0.2em]"
+        className="mt-8 px-6 py-3 text-[12px] uppercase tracking-[0.2em]"
       >
         Ver rutina completa
       </PrimaryButton>

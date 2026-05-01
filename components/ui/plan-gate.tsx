@@ -17,16 +17,16 @@ export function PlanGate({ plan, featureName, dictionary, children }: PlanGatePr
 
   return (
     <div className="mx-auto mt-12 max-w-2xl border-y border-dusty-gold/14 py-14 text-center">
-      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
+      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
         {dictionary.result.planGate.eyebrow}
       </p>
       <h2 className="mt-3 font-serif text-[42px] font-normal leading-tight text-ivory lg:text-[56px]">
         {dictionary.result.planGate.title.replace("{featureName}", featureName)}
       </h2>
-      <p className="mx-auto mt-5 max-w-md text-sm leading-7 text-ivory/58">
+      <p className="mx-auto mt-5 max-w-md text-sm leading-7 text-[#3a3048]">
         {dictionary.result.planGate.description}
       </p>
-      <PrimaryButton href="/#planes" className="mt-8 px-6 py-3 text-[0.72rem] uppercase tracking-[0.2em]">
+      <PrimaryButton href="/#planes" className="mt-8 px-6 py-3 text-[12px] uppercase tracking-[0.2em]">
         {dictionary.result.planGate.cta}
       </PrimaryButton>
     </div>

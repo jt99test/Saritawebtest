@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -119,13 +119,13 @@ export default function LoadingPage() {
         className="cosmos-slow-zoom pointer-events-none object-cover opacity-50 saturate-[0.78]"
         sizes="100vw"
       />
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(5,7,13,0.48),rgba(5,7,13,0.65)_55%,#05070d)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04),rgba(0,0,0,0.04)_55%,#f5f0e6)]" />
 
       <section className="relative min-h-screen py-8 sm:py-10">
         <Container className="relative flex min-h-screen items-center justify-center">
           <Reveal mode="immediate" className="mx-auto w-full max-w-[720px] text-center">
             <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-6 sm:min-h-0">
-              <p className="text-xs font-medium uppercase tracking-[0.28em] text-ivory/46">
+              <p className="text-xs font-medium uppercase tracking-[0.28em] text-[#3a3048]">
                 {dictionary.brand.name}
               </p>
 
@@ -145,7 +145,7 @@ export default function LoadingPage() {
               </div>
 
               {limitReached ? (
-                <div className="mt-8 max-w-md border border-dusty-gold/18 bg-white/[0.025] px-5 py-5 text-sm text-ivory/68">
+                <div className="mt-8 max-w-md border border-dusty-gold/18 bg-white px-5 py-5 text-sm text-[#3a3048]">
                   <p className="font-serif text-[21px] leading-tight text-ivory">
                     {dictionary.standalonePages.limitTitle}
                   </p>
@@ -156,7 +156,7 @@ export default function LoadingPage() {
                   </p>
                   <Link
                     href="/"
-                    className="mt-5 inline-block text-xs font-medium uppercase tracking-[0.24em] text-dusty-gold/80 transition hover:text-dusty-gold"
+                    className="mt-5 inline-block text-xs font-medium uppercase tracking-[0.24em] text-[#6f613a] transition hover:text-dusty-gold"
                   >
                     {dictionary.standalonePages.viewOptions}
                   </Link>
@@ -164,11 +164,11 @@ export default function LoadingPage() {
               ) : null}
 
               {error ? (
-                <div className="mt-8 rounded-2xl border border-white/10 bg-white/4 px-4 py-4 text-sm text-ivory/60">
+                <div className="mt-8 rounded-2xl border border-black/10 bg-white/70 px-4 py-4 text-sm text-[#3a3048]">
                   <p>{error}</p>
                   <Link
                     href="/form"
-                    className="mt-4 inline-block text-xs font-medium uppercase tracking-[0.24em] text-dusty-gold/80 transition hover:text-dusty-gold"
+                    className="mt-4 inline-block text-xs font-medium uppercase tracking-[0.24em] text-[#6f613a] transition hover:text-dusty-gold"
                   >
                     {dictionary.form.back}
                   </Link>

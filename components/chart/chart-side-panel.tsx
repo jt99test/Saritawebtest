@@ -16,7 +16,7 @@ type ChartSidePanelProps = {
 function SectionLabel({ children }: { children: string }) {
   return (
     <div className="flex items-center gap-3">
-      <p className="shrink-0 text-[12px] font-semibold uppercase tracking-[0.3em] text-dusty-gold/78">
+      <p className="shrink-0 text-[12px] font-semibold uppercase tracking-[0.3em] text-[#6f613a]">
         {children}
       </p>
       <div className="h-px w-full bg-gradient-to-r from-white/12 to-transparent" />
@@ -33,7 +33,7 @@ function InfoRow({
 }) {
   return (
     <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 py-2.5">
-      <dt className="text-sm text-ivory/52">{label}</dt>
+      <dt className="text-sm text-[#3a3048]">{label}</dt>
       <dd className="text-right text-sm text-ivory">{value}</dd>
     </div>
   );
@@ -49,7 +49,7 @@ function PanelCard({
   return (
     <div
       className={[
-        "rounded-[1.6rem] border border-white/10 bg-white/[0.04]",
+        "rounded-[1.6rem] border border-black/10 bg-black/[0.04]",
         compact ? "px-3 py-2" : "px-4 py-3",
       ].join(" ")}
     >
@@ -98,9 +98,9 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
   ] as const;
 
   return (
-    <PremiumCard className="overflow-hidden border-white/12 bg-[linear-gradient(180deg,rgba(10,12,20,0.9),rgba(8,10,18,0.78))] shadow-[0_30px_100px_rgba(0,0,0,0.42)] backdrop-blur-xl xl:sticky xl:top-6">
-      <div className="border-b border-white/10 px-5 py-4">
-        <div className="inline-flex rounded-full border border-white/10 bg-white/5 p-1">
+    <PremiumCard className="overflow-hidden border-black/15 bg-[linear-gradient(180deg,rgba(10,12,20,0.9),rgba(8,10,18,0.78))] shadow-[0_30px_100px_rgba(0,0,0,0.42)] backdrop-blur-xl xl:sticky xl:top-6">
+      <div className="border-b border-black/10 px-5 py-4">
+        <div className="inline-flex rounded-full border border-black/10 bg-white/70 p-1">
           {(["details", "settings"] as const).map((panel) => {
             const active = activePanel === panel;
 
@@ -110,8 +110,8 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                 type="button"
                 onClick={() => setActivePanel(panel)}
                 className={[
-                  "rounded-full px-4 py-2 text-[0.72rem] font-semibold uppercase tracking-[0.22em] transition",
-                  active ? "bg-white text-cosmic-950" : "text-ivory/62 hover:text-ivory",
+                  "rounded-full px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.22em] transition",
+                  active ? "bg-white text-cosmic-950" : "text-[#3a3048] hover:text-ivory",
                 ].join(" ")}
               >
                 {dictionary.result.panels[panel]}
@@ -130,7 +130,7 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
               dictionary={dictionary}
               onSelectPoint={selectPoint}
             />
-            <p className="mt-3 text-sm leading-6 text-ivory/54">{dictionary.result.messages.detailsHint}</p>
+            <p className="mt-3 text-sm leading-6 text-[#3a3048]">{dictionary.result.messages.detailsHint}</p>
           </section>
 
           <section>
@@ -145,15 +145,15 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                     type="button"
                     onClick={() => selectPoint(point.id)}
                     className={[
-                      "flex items-center justify-between rounded-2xl border px-4 py-3.5 text-left transition",
+                      "flex items-center justify-between rounded-2xl border px-4 py-4 text-left transition",
                       active
-                        ? "border-white/20 bg-white/[0.07]"
-                        : "border-white/8 bg-white/[0.02] hover:border-white/16 hover:bg-white/[0.04]",
+                        ? "border-black/15 bg-white/[0.07]"
+                        : "border-black/10 bg-white hover:border-black/15 hover:bg-black/[0.04]",
                     ].join(" ")}
                   >
                     <div>
                       <p className="text-sm text-ivory">{dictionary.result.points[point.id]}</p>
-                      <p className="mt-1 text-xs text-ivory/50">
+                      <p className="mt-1 text-xs text-[#3a3048]">
                         {formatChartPosition(dictionary, point.longitude)}
                       </p>
                     </div>
@@ -161,7 +161,7 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                       <span className="text-[1.35rem]" style={{ color: point.color }}>
                         {point.glyph}
                       </span>
-                      <span className="text-[12px] uppercase tracking-[0.22em] text-ivory/38">
+                      <span className="text-[12px] uppercase tracking-[0.22em] text-[#3a3048]">
                         {point.house}
                       </span>
                     </div>
@@ -175,7 +175,7 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
         <div className="space-y-8 px-5 py-5">
           <section>
             <SectionLabel>{dictionary.result.panels.overview}</SectionLabel>
-            <dl className="mt-4 divide-y divide-white/8 rounded-[1.6rem] border border-white/10 bg-white/4 px-4">
+            <dl className="mt-4 divide-y divide-black/10 rounded-[1.6rem] border border-black/10 bg-white/700 px-4">
               <InfoRow
                 label={dictionary.result.fields.chartMethod}
                 value={dictionary.result.settingsValues[chart.settings.chartMethod]}
@@ -204,7 +204,7 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
 
           <section>
             <SectionLabel>{dictionary.result.panels.event}</SectionLabel>
-            <dl className="mt-4 divide-y divide-white/8 rounded-[1.6rem] border border-white/10 bg-white/4 px-4">
+            <dl className="mt-4 divide-y divide-black/10 rounded-[1.6rem] border border-black/10 bg-white/700 px-4">
               <InfoRow label={dictionary.result.fields.date} value={chart.event.dateLabel} />
               <InfoRow label={dictionary.result.fields.location} value={chart.event.locationLabel} />
               <InfoRow label={dictionary.result.fields.latitude} value={chart.event.latitude} />
@@ -226,12 +226,12 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                 <PanelCard key={angle.id} compact>
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-dusty-gold/72">
+                      <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#6f613a]">
                         {dictionary.result.fields[angle.id]}
                       </p>
                       <p className="mt-1 text-sm text-ivory">{formatChartPosition(dictionary, angle.longitude)}</p>
                     </div>
-                    <span className="rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-ivory/62">
+                    <span className="rounded-full border border-black/10 bg-black/[0.05] px-2.5 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-[#3a3048]">
                       {angle.short}
                     </span>
                   </div>
@@ -242,8 +242,8 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
 
           <section>
             <SectionLabel>{dictionary.result.panels.positions}</SectionLabel>
-            <div className="mt-4 overflow-hidden rounded-[1.6rem] border border-white/10 bg-white/[0.03]">
-              <div className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_auto_auto] gap-3 border-b border-white/8 px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.22em] text-ivory/42">
+            <div className="mt-4 overflow-hidden rounded-[1.6rem] border border-black/10 bg-white">
+              <div className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_auto_auto] gap-3 border-b border-black/10 px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.22em] text-[#3a3048]">
                 <span>{dictionary.result.fields.point}</span>
                 <span>{dictionary.result.fields.sign}</span>
                 <span>{dictionary.result.fields.house}</span>
@@ -254,15 +254,15 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                   key={point.id}
                   type="button"
                   onClick={() => selectPoint(point.id)}
-                  className="grid w-full grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_auto_auto] gap-3 border-b border-white/8 px-4 py-3 text-left transition last:border-b-0 hover:bg-white/[0.04]"
+                  className="grid w-full grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_auto_auto] gap-3 border-b border-black/10 px-4 py-3 text-left transition last:border-b-0 hover:bg-black/[0.04]"
                 >
                   <span className="min-w-0">
                     <span className="block truncate text-sm text-ivory">{dictionary.result.points[point.id]}</span>
-                    <span className="mt-1 block text-xs text-ivory/45">{point.glyph}</span>
+                    <span className="mt-1 block text-xs text-[#3a3048]">{point.glyph}</span>
                   </span>
                   <span className="text-sm text-ivory/78">{formatChartPosition(dictionary, point.longitude)}</span>
-                  <span className="text-sm text-ivory/62">{point.house}</span>
-                  <span className="text-sm text-ivory/62">{point.retrograde ? "Rx" : "—"}</span>
+                  <span className="text-sm text-[#3a3048]">{point.house}</span>
+                  <span className="text-sm text-[#3a3048]">{point.retrograde ? "Rx" : "—"}</span>
                 </button>
               ))}
             </div>
@@ -271,8 +271,8 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
           <section>
             <SectionLabel>{dictionary.result.panels.aspectSummary}</SectionLabel>
             {visibleAspects.length > 0 ? (
-              <div className="mt-4 overflow-hidden rounded-[1.6rem] border border-white/10 bg-white/[0.03]">
-                <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] gap-3 border-b border-white/8 px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.22em] text-ivory/42">
+              <div className="mt-4 overflow-hidden rounded-[1.6rem] border border-black/10 bg-white">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] gap-3 border-b border-black/10 px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.22em] text-[#3a3048]">
                   <span>{dictionary.result.fields.aspect}</span>
                   <span>{dictionary.result.fields.orb}</span>
                   <span>{dictionary.result.fields.pointsPair}</span>
@@ -293,13 +293,13 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                         key={aspect.id}
                         type="button"
                         onClick={() => selectPoint(aspect.from)}
-                        className="grid w-full grid-cols-[minmax(0,1fr)_auto_auto] gap-3 border-b border-white/8 px-4 py-3 text-left transition last:border-b-0 hover:bg-white/[0.04]"
+                        className="grid w-full grid-cols-[minmax(0,1fr)_auto_auto] gap-3 border-b border-black/10 px-4 py-3 text-left transition last:border-b-0 hover:bg-black/[0.04]"
                       >
                         <span className="min-w-0 text-sm text-ivory">
                           {dictionary.result.aspectTypes[aspect.type]}
                         </span>
-                        <span className="text-sm text-ivory/62">{aspect.orb.toFixed(1)}°</span>
-                        <span className="text-xs text-ivory/58">
+                        <span className="text-sm text-[#3a3048]">{aspect.orb.toFixed(1)}°</span>
+                        <span className="text-xs text-[#3a3048]">
                           {dictionary.result.points[aspect.from]} / {dictionary.result.points[aspect.to]}
                         </span>
                       </button>
@@ -307,7 +307,7 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                   })}
               </div>
             ) : (
-              <p className="mt-4 rounded-2xl border border-dashed border-white/10 px-4 py-4 text-sm text-ivory/52">
+              <p className="mt-4 rounded-2xl border border-dashed border-black/10 px-4 py-4 text-sm text-[#3a3048]">
                 {dictionary.result.messages.noAspectSelected}
               </p>
             )}
@@ -315,10 +315,10 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
 
           <section>
             <SectionLabel>{dictionary.result.panels.aspectMatrix}</SectionLabel>
-            <div className="mt-4 overflow-x-auto rounded-[1.6rem] border border-white/10 bg-white/[0.03]">
+            <div className="mt-4 overflow-x-auto rounded-[1.6rem] border border-black/10 bg-white">
               <table className="min-w-full border-collapse text-xs">
                 <thead>
-                  <tr className="border-b border-white/8 text-ivory/42">
+                  <tr className="border-b border-black/10 text-[#3a3048]">
                     <th className="px-3 py-3 text-left font-semibold uppercase tracking-[0.22em]">
                       {dictionary.result.fields.point}
                     </th>
@@ -335,8 +335,8 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                 </thead>
                 <tbody>
                   {visiblePoints.map((rowPoint) => (
-                    <tr key={`row-${rowPoint.id}`} className="border-b border-white/8 last:border-b-0">
-                      <th className="px-3 py-3 text-left font-medium text-ivory/72">
+                    <tr key={`row-${rowPoint.id}`} className="border-b border-black/10 last:border-b-0">
+                      <th className="px-3 py-3 text-left font-medium text-[#3a3048]">
                         {dictionary.result.points[rowPoint.id]}
                       </th>
                       {visiblePoints.map((columnPoint) => {
@@ -357,7 +357,7 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                         return (
                           <td
                             key={`${rowPoint.id}-${columnPoint.id}`}
-                            className="px-2 py-3 text-center text-ivory/62"
+                            className="px-2 py-3 text-center text-[#3a3048]"
                             title={
                               aspect
                                 ? `${dictionary.result.aspectTypes[aspect.type]} · ${aspect.orb.toFixed(1)}°`
@@ -383,11 +383,11 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-sm text-ivory">{houseLabel(dictionary, house.house)}</p>
-                      <p className="mt-1 text-xs text-ivory/52">
+                      <p className="mt-1 text-xs text-[#3a3048]">
                         {formatChartPosition(dictionary, house.longitude)}
                       </p>
                     </div>
-                    <span className="text-xs font-semibold uppercase tracking-[0.22em] text-dusty-gold/72">
+                    <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[#6f613a]">
                       {house.house}
                     </span>
                   </div>
@@ -415,11 +415,11 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                   key={toggle.label}
                   type="button"
                   onClick={toggle.onToggle}
-                  className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left transition hover:border-white/18 hover:bg-white/[0.05]"
+                  className="flex w-full items-center justify-between rounded-2xl border border-black/10 bg-white px-4 py-3 text-left transition hover:border-black/15 hover:bg-black/[0.05]"
                 >
                   <div>
                     <p className="text-sm text-ivory">{toggle.label}</p>
-                    <p className="mt-1 text-xs text-ivory/50">
+                    <p className="mt-1 text-xs text-[#3a3048]">
                       {toggle.active ? dictionary.common.show : dictionary.common.hide}
                     </p>
                   </div>
@@ -439,7 +439,7 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                 </button>
               ))}
             </div>
-            <p className="mt-3 text-sm leading-6 text-ivory/54">{dictionary.result.messages.settingsHint}</p>
+            <p className="mt-3 text-sm leading-6 text-[#3a3048]">{dictionary.result.messages.settingsHint}</p>
           </section>
         </div>
       )}

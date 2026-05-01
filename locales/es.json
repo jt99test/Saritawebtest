@@ -135,8 +135,20 @@
     "lockedTabCta": "Ver planes",
     "proName": "Pro",
     "avanzadoName": "Avanzado",
-    "proFeatures": ["Luna del mes personalizada", "Yoga astral según tu carta", "Lavado intestinal gratis con plan anual"],
-    "avanzadoFeatures": ["Todo lo incluido en Pro", "Tránsitos en tiempo real", "Revolución Solar", "Sinastría", "Lavado intestinal gratis con plan anual"],
+    "proTagline": "Luna, yoga y tu carta completa",
+    "avanzadoTagline": "Todo. Tránsitos, revolución solar y sinastría.",
+    "proFeatures": [
+      "Luna del mes personalizada",
+      "Yoga astral según tu carta",
+      "Lavado intestinal gratis con plan anual"
+    ],
+    "avanzadoFeatures": [
+      "Todo lo incluido en Pro",
+      "Tránsitos en tiempo real",
+      "Revolución Solar",
+      "Sinastría",
+      "Lavado intestinal gratis con plan anual"
+    ],
     "lavadoFreeHighlight": "Gratis con plan anual",
     "checkoutLoading": "Redirigiendo...",
     "lavado": {
@@ -147,7 +159,11 @@
     },
     "successBanner": "Plan activado. Ya tienes acceso completo.",
     "cancelBanner": "Pago cancelado. Puedes retomar cuando quieras.",
-    "manageSubscription": "Gestionar suscripción"
+    "manageSubscription": "Gestionar suscripción",
+    "cancelAnytime": "Cancela cuando quieras"
+  },
+  "yogaAstral": {
+    "asanas": "asanas"
   },
   "result": {
     "intro": "Así estaban alineados los planetas cuando naciste.",
@@ -210,6 +226,9 @@
       "mainConnections": "Conexiones principales",
       "readingEyebrow": "lectura de la relación",
       "readingLoading": "Generando lectura...",
+      "legendHarmonious": "Armónico",
+      "legendTense": "Tenso",
+      "legendNeutral": "Neutro",
       "compareAnother": "Comparar con otra persona",
       "orb": "orbe",
       "aspectQuality": {
@@ -241,6 +260,7 @@
       "readingLoading": "Generando lectura...",
       "activatedAreasEyebrow": "áreas de vida activadas",
       "activatedAreaBody": "Se activa a través de {points}. Mira esta casa como un escenario: ahí el tránsito no solo mueve acontecimientos, también empuja una forma nueva de estar en tu vida.",
+      "houseLabel": "Casa",
       "viewTransits": "ver activaciones principales",
       "strengthTight": "activación muy cercana",
       "strengthModerate": "activación presente",
@@ -257,7 +277,15 @@
       "aspectTitle": "Matriz de aspectos",
       "showAspects": "Mostrar matriz",
       "hideAspects": "Ocultar matriz",
-      "columns": ["", "Nombre", "Signo", "Grado", "Casa", "℞", "Dignidad"],
+      "columns": [
+        "",
+        "Nombre",
+        "Signo",
+        "Grado",
+        "Casa",
+        "℞",
+        "Dignidad"
+      ],
       "houseSystems": {
         "P": "Placidus",
         "W": "Signos Enteros",
@@ -571,6 +599,164 @@
       "equal": "Casas Iguales",
       "geocentric": "Geocéntrico"
     }
+  },
+  "legal": {
+    "cookieMessage": "Usamos cookies para mejorar tu experiencia.",
+    "cookieAccept": "Aceptar",
+    "cookieDecline": "Rechazar",
+    "cookiePrivacy": "Política de privacidad",
+    "privacy": "Privacidad",
+    "terms": "Términos",
+    "lastUpdated": "Última actualización",
+    "updatedDate": "1 de mayo de 2026",
+    "contact": "Contacto",
+    "privacyTitle": "Política de privacidad",
+    "privacyIntro": "Cuidamos tus datos con el mismo respeto con el que tratamos tu carta: solo usamos lo necesario para darte el servicio.",
+    "privacySections": [
+      {
+        "title": "Datos que recogemos",
+        "body": "Podemos recoger tu nombre, fecha de nacimiento, ciudad de nacimiento, correo electrónico y los datos técnicos necesarios para crear y guardar tu cuenta."
+      },
+      {
+        "title": "Para qué los usamos",
+        "body": "Usamos estos datos para calcular tu carta natal, crear y proteger tu cuenta, guardar tus lecturas y gestionar pagos o suscripciones cuando eliges un plan de pago."
+      },
+      {
+        "title": "Con quién los compartimos",
+        "body": "Trabajamos con Supabase para autenticación y base de datos, Stripe para pagos y Anthropic para generar lecturas con IA. Solo compartimos la información necesaria para cada función."
+      },
+      {
+        "title": "Tus derechos",
+        "body": "Puedes pedir acceso, eliminación o portabilidad de tus datos escribiendo a hola@saritashakti.com."
+      }
+    ],
+    "termsTitle": "Términos de servicio",
+    "termsIntro": "Estos términos explican cómo puedes usar SARITA y qué puedes esperar de la plataforma.",
+    "termsSections": [
+      {
+        "title": "Descripción del servicio",
+        "body": "SARITA ofrece cálculo de carta natal, lecturas astrológicas, Luna del Mes, Yoga Astral, tránsitos, Revolución Solar, sinastría y contenidos digitales relacionados."
+      },
+      {
+        "title": "Suscripciones",
+        "body": "Los planes Pro y Avanzado se cobran de forma mensual o anual según la opción elegida. Puedes cancelar la renovación desde la gestión de suscripción."
+      },
+      {
+        "title": "Compras únicas",
+        "body": "Algunos contenidos, como Lavado Intestinal, pueden comprarse como acceso digital único cuando no están incluidos en tu plan."
+      },
+      {
+        "title": "Reembolsos",
+        "body": "El contenido digital no es reembolsable salvo cuando la ley aplicable lo exija."
+      },
+      {
+        "title": "Uso aceptable",
+        "body": "No puedes usar SARITA para abuso, scraping, redistribución no autorizada, ingeniería inversa o cualquier actividad ilegal."
+      },
+      {
+        "title": "Ley aplicable",
+        "body": "Estos términos se rigen por la legislación de España."
+      }
+    ]
+  },
+  "pricing": {
+    "eyebrow": "planes",
+    "headline": "Elige tu plan",
+    "subtitle": "Sin sorpresas. Cancela cuando quieras.",
+    "free": "Gratis",
+    "startFree": "Empieza gratis",
+    "faqTitle": "Preguntas frecuentes",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "current": "Actual",
+    "choose": "Elegir plan",
+    "includedYearly": "anual",
+    "limited": "limitado",
+    "notIncluded": "—",
+    "tableTitle": "Comparativa completa",
+    "rows": [
+      "Carta natal completa",
+      "Lecturas de planetas",
+      "Luna del mes",
+      "Yoga astral",
+      "Tránsitos en tiempo real",
+      "Revolución Solar",
+      "Sinastría",
+      "Lavado Intestinal"
+    ],
+    "faqs": [
+      {
+        "question": "¿Puedo cancelar cuando quiera?",
+        "answer": "Sí, desde los ajustes de tu cuenta. Sin preguntas."
+      },
+      {
+        "question": "¿Qué pasa cuando cancelo?",
+        "answer": "Mantienes el acceso hasta el final de tu periodo de facturación."
+      },
+      {
+        "question": "¿Lavado Intestinal está incluido?",
+        "answer": "Gratis con cualquier plan anual. Si no, cuesta €49,99 como compra única."
+      },
+      {
+        "question": "¿Cuál es la diferencia entre Pro y Avanzado?",
+        "answer": "Pro incluye Luna del Mes y Yoga Astral. Avanzado añade Tránsitos, Revolución Solar y Sinastría."
+      },
+      {
+        "question": "¿Ofrecéis reembolsos?",
+        "answer": "El contenido digital no es reembolsable salvo cuando la ley lo exija."
+      }
+    ]
+  },
+  "account": {
+    "title": "Mi cuenta",
+    "plan": "Plan actual",
+    "manageBilling": "Gestionar facturación",
+    "upgradePlan": "Mejorar plan",
+    "email": "Correo electrónico",
+    "changePassword": "Cambiar contraseña",
+    "passwordSent": "Te hemos enviado un enlace a tu correo.",
+    "dangerZone": "Zona de peligro",
+    "deleteAccount": "Eliminar cuenta",
+    "deleteConfirmTitle": "¿Eliminar tu cuenta?",
+    "deleteConfirmBody": "Perderás todos tus datos. Esta acción no se puede deshacer.",
+    "deleteConfirmWord": "ELIMINAR",
+    "deleteConfirmPlaceholder": "Escribe ELIMINAR para confirmar",
+    "deleteButton": "Eliminar permanentemente",
+    "billingPeriod": "Facturación",
+    "renewalDate": "Renovación",
+    "noRenewalDate": "No disponible",
+    "freePlanNote": "Puedes mejorar tu plan cuando quieras."
+  },
+  "chart": {
+    "share": "Compartir carta",
+    "download": "Descargar",
+    "linkCopied": "¡Enlace copiado!",
+    "shareTitle": "Tu carta natal",
+    "shareSubtitle": "Comparte tu carta con quien quieras.",
+    "copyLink": "Copiar enlace",
+    "downloadLockedTooltip": "Disponible en plan Pro",
+    "createCta": "Crea tu carta en SARITA",
+    "sharedNotFound": "No encontramos esta carta compartida.",
+    "ascendantLabel": "Ascendente"
+  },
+  "usage": {
+    "limitNotice": "Has usado {count} de {limit} lecturas este mes.",
+    "upgrade": "Ver planes"
+  },
+  "auth": {
+    "signUp": "Crear cuenta",
+    "signIn": "Iniciar sesión",
+    "email": "Email",
+    "password": "Contraseña",
+    "emailPlaceholder": "tu@email.com",
+    "passwordPlaceholder": "mínimo 6 caracteres",
+    "processing": "Procesando",
+    "continueWithGoogle": "Continuar con Google",
+    "or": "o"
+  },
+  "nav": {
+    "pricing": "Precios",
+    "help": "Ayuda",
+    "account": "Cuenta"
   }
 }
-

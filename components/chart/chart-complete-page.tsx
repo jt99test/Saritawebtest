@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 
@@ -226,17 +226,17 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
   return (
     <section className="mx-auto max-w-6xl py-10">
       <div className="text-center">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/70">
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
           {transitCopy.eyebrow}
         </p>
         <h2 className="mt-2 font-serif text-[42px] leading-tight text-ivory md:text-[56px]">
           {transitCopy.title}
         </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-ivory/58">
+        <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[#3a3048]">
           {transitCopy.description}
         </p>
         {result?.ok ? (
-          <p className="mt-4 text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold/82">
+          <p className="mt-4 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#6f613a]">
             {transitCopy.calculatedAt} {dateLabel(result.generatedAt, locale)}
           </p>
         ) : null}
@@ -252,10 +252,10 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
             variant="synastry"
           />
         ) : (
-          <div className="mx-auto flex min-h-[420px] max-w-[860px] items-center justify-center border border-white/10 bg-white/[0.025] text-center">
+          <div className="mx-auto flex min-h-[420px] max-w-[860px] items-center justify-center border border-black/10 bg-white text-center shadow-[0_4px_16px_rgba(0,0,0,0.2)]">
             <div>
               <p className="font-serif text-3xl text-ivory">{isPending ? transitCopy.calculatingHeading : transitCopy.errorHeading}</p>
-              <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-ivory/52">
+              <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#3a3048]">
                 {isPending
                   ? transitCopy.calculatingBody
                   : transitCopy.errorBody}
@@ -265,57 +265,63 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
         )}
       </div>
 
+      <div className="mx-auto mt-10 max-w-5xl border-t border-black/[0.07]" />
+
       {dominantTransit ? (
         <div className="mx-auto mt-12 grid max-w-5xl gap-4 md:grid-cols-[1.05fr_0.95fr]">
-          <article className="border border-dusty-gold/20 bg-dusty-gold/[0.055] p-6 md:p-7">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-dusty-gold/88">
+          <article className="border border-black/12 bg-white p-6 shadow-[0_8px_24px_rgba(0,0,0,0.08)] md:p-7">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#6f613a]">
               {transitCopy.mostActiveEyebrow}
             </p>
             <h3 className="mt-3 font-serif text-3xl leading-tight text-ivory">
               {transitData.dominantTitle ?? (waitingForTransitData ? "..." : `${pointLabel(dominantTransit.transitingPlanet)} está activando tu ${pointLabel(dominantTransit.natalPlanet)}`)}
             </h3>
-            <p className="mt-4 text-base leading-8 text-ivory/72">
-              {transitData.dominantBody ?? (waitingForTransitData ? <span className="animate-pulse text-ivory/35">Generando...</span> : `${transitSentence(chart, dominantTransit)} Este tránsito no describe un destino cerrado: muestra el lenguaje evolutivo del momento, la parte de ti que está siendo llamada a responder con más conciencia.`)}
+            <p className="mt-4 text-base leading-8 text-[#3a3048]">
+              {transitData.dominantBody ?? (waitingForTransitData ? <span className="animate-pulse text-[#3a3048]">Generando...</span> : `${transitSentence(chart, dominantTransit)} Este tránsito no describe un destino cerrado: muestra el lenguaje evolutivo del momento, la parte de ti que está siendo llamada a responder con más conciencia.`)}
             </p>
           </article>
 
-          <article className="border border-white/10 bg-white/[0.025] p-6 md:p-7">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-dusty-gold/82">
+          <article className="border border-black/12 bg-white p-6 shadow-[0_8px_24px_rgba(0,0,0,0.08)] md:p-7">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#6f613a]">
               {transitCopy.planetLanguageEyebrow}
             </p>
-            <p className="mt-4 text-base leading-8 text-ivory/68">
-              {transitData.planetLanguage ?? (waitingForTransitData ? <span className="animate-pulse text-ivory/35">Generando...</span> : PLANET_LANGUAGE[dominantTransit.transitingPlanet] ?? "Este planeta marca una zona de aprendizaje activo y pide presencia.")}
+            <p className="mt-4 text-base leading-8 text-[#3a3048]">
+              {transitData.planetLanguage ?? (waitingForTransitData ? <span className="animate-pulse text-[#3a3048]">Generando...</span> : PLANET_LANGUAGE[dominantTransit.transitingPlanet] ?? "Este planeta marca una zona de aprendizaje activo y pide presencia.")}
             </p>
-            <p className="mt-5 text-sm leading-7 text-ivory/48">
+            <p className="mt-5 text-sm leading-7 text-[#3a3048]">
               {transitCopy.orbLabel} {dominantTransit.orb}° · {dominantTransit.strength === "tight" ? transitCopy.strengthTight : dominantTransit.strength === "moderate" ? transitCopy.strengthModerate : transitCopy.strengthLoose}
             </p>
           </article>
         </div>
       ) : result?.ok ? (
-        <div className="mx-auto mt-12 max-w-3xl border border-white/10 bg-white/[0.025] p-7 text-center">
+        <div className="mx-auto mt-12 max-w-3xl border border-black/12 bg-white p-7 text-center shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
           <h3 className="font-serif text-3xl text-ivory">{transitCopy.silentSkyHeading}</h3>
-          <p className="mt-4 text-sm leading-7 text-ivory/58">
+          <p className="mt-4 text-sm leading-7 text-[#3a3048]">
             {transitCopy.silentSkyBody}
           </p>
         </div>
       ) : null}
 
+      <div className="mx-auto mt-10 max-w-5xl border-t border-black/[0.07]" />
+
       {(isLoadingTransitReading || transitReading) ? (
         <div className="mx-auto mt-8 max-w-3xl border-y border-dusty-gold/14 py-7">
-          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">{transitCopy.readingEyebrow}</p>
+          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">{transitCopy.readingEyebrow}</p>
           {isLoadingTransitReading && !transitReading ? (
-            <p className="mt-4 animate-pulse text-base leading-8 text-ivory/35">{transitCopy.readingLoading}</p>
+            <p className="mt-4 animate-pulse text-base leading-8 text-[#3a3048]">{transitCopy.readingLoading}</p>
           ) : (
             proseTransitReading.split("\n\n").filter(Boolean).map((para, i) => (
-              <p key={i} className="mt-4 text-base leading-8 text-ivory/82">{para}</p>
+              <p key={i} className="mt-4 text-base leading-8 text-[#2f293b]">{para}</p>
             ))
           )}
         </div>
       ) : null}
 
+      <div className="mx-auto mt-10 max-w-5xl border-t border-black/[0.07]" />
+
       {activeTransits.length > 0 ? (
-        <div className="mx-auto mt-10 max-w-5xl border-t border-white/10 pt-8">
-          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
+        <div className="mx-auto mt-10 max-w-5xl border-t border-black/10 pt-8">
+          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
             {transitCopy.activatedAreasEyebrow}
           </p>
           <div className="mt-5 grid gap-4 md:grid-cols-3">
@@ -323,15 +329,20 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
               const aiHouse = transitData.houses?.find((house) => house.house === entry.house);
               const housePending = isLoadingTransitReading && !aiHouse;
               return (
-              <article key={entry.house} className="border border-white/10 bg-white/[0.025] p-5">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold/82">
-                  casa {entry.house}
-                </p>
+              <article key={entry.house} className="border border-black/12 bg-white p-5 shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+                <div className="mb-3 flex items-center gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center border border-dusty-gold/30 bg-dusty-gold/[0.08] font-serif text-lg text-[#6f613a]">
+                    {entry.house}
+                  </span>
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#6f613a]">
+                    {transitCopy.houseLabel ?? "Casa"}
+                  </p>
+                </div>
                 <h3 className="mt-3 font-serif text-2xl leading-tight text-ivory">
                   {aiHouse?.title ?? (housePending ? "..." : HOUSE_AREAS[entry.house])}
                 </h3>
-                <p className="mt-4 text-sm leading-7 text-ivory/58">
-                  {aiHouse?.body ?? (housePending ? <span className="animate-pulse text-ivory/35">Generando...</span> : transitCopy.activatedAreaBody.replace("{points}", Array.from(entry.points).join(", ")))}
+                <p className="mt-4 text-sm leading-7 text-[#3a3048]">
+                  {aiHouse?.body ?? (housePending ? <span className="animate-pulse text-[#3a3048]">Generando...</span> : transitCopy.activatedAreaBody.replace("{points}", Array.from(entry.points).join(", ")))}
                 </p>
               </article>
               );
@@ -340,21 +351,23 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
         </div>
       ) : null}
 
+      <div className="mx-auto mt-10 max-w-5xl border-t border-black/[0.07]" />
+
       {activeTransits.length > 0 ? (
-        <details className="mx-auto mt-10 max-w-5xl border-y border-white/10">
-          <summary className="cursor-pointer list-none py-4 text-center text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold/82">
+        <details className="mx-auto mt-10 max-w-5xl border-y border-black/10">
+          <summary className="cursor-pointer list-none py-4 text-center text-[12px] font-semibold uppercase tracking-[0.2em] text-[#6f613a]">
             {transitCopy.viewTransits}
           </summary>
           <div className="grid gap-3 pb-6">
             {activeTransits.map((transit) => (
               <div
                 key={`${transit.transitingPlanet}-${transit.natalPlanet}-${transit.aspectType}`}
-                className="grid gap-2 border border-white/8 bg-white/[0.02] p-4 md:grid-cols-[0.8fr_1.2fr]"
+                className="grid gap-2 border border-black/12 bg-white p-4 md:grid-cols-[0.8fr_1.2fr]"
               >
-                <p className="text-sm text-dusty-gold/82">
+                <p className="text-sm text-[#6f613a]">
                   {pointLabel(transit.transitingPlanet)} {ASPECT_LABELS[transit.aspectType]} {pointLabel(transit.natalPlanet)}
                 </p>
-                <p className="text-sm leading-6 text-ivory/58">
+                <p className="text-sm leading-6 text-[#3a3048]">
                   {transitSentence(chart, transit)}
                 </p>
               </div>

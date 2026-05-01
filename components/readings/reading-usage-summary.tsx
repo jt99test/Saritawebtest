@@ -17,15 +17,15 @@ export function ReadingUsageSummary({ plan, count, limit }: ReadingUsageSummaryP
   const usagePercent = Math.min(100, Math.round((count / Math.max(limit, 1)) * 100));
 
   return (
-    <div className="mt-6 border-y border-white/8 py-4">
-      <div className="grid gap-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-ivory/45 sm:grid-cols-2">
+    <div className="mt-6 border-y border-black/10 py-4">
+      <div className="grid gap-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] sm:grid-cols-2">
         <p>
           {dictionary.readings.planLabel}{" "}
-          <span className="text-dusty-gold/82">{planLabel}</span>
+          <span className="text-[#6f613a]">{planLabel}</span>
         </p>
         <p className="sm:text-right">
           {dictionary.readings.thisMonth}{" "}
-          <span className="text-dusty-gold/82">
+          <span className="text-[#6f613a]">
             {count} / {limit}
           </span>
         </p>

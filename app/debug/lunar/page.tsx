@@ -185,14 +185,14 @@ function renderLunationBlock(title: string, value: MonthlyLunarData["lunaNueva"]
     <div className="rounded border border-white/15 bg-white/5 p-4">
       <h3 className="text-base font-semibold">{title}</h3>
       {!value ? (
-        <p className="mt-2 text-white/65">No se encontr\u00f3 una lunaci\u00f3n de este tipo para el mes indicado.</p>
+        <p className="mt-2 text-ivory/65">No se encontr\u00f3 una lunaci\u00f3n de este tipo para el mes indicado.</p>
       ) : (
         <dl className="mt-3 grid gap-x-4 gap-y-2 sm:grid-cols-2">
-          <div><dt className="text-white/55">Fecha exacta UTC</dt><dd>{value.timestamp}</dd></div>
-          <div><dt className="text-white/55">Posici\u00f3n</dt><dd>{formatPosition(value.position.sign, value.position.degree, value.position.minutes, value.position.longitude)}</dd></div>
-          <div><dt className="text-white/55">Casa activada</dt><dd>{value.activatedHouse}</dd></div>
-          <div><dt className="text-white/55">Elemento</dt><dd>{value.element}</dd></div>
-          <div><dt className="text-white/55">Rutina asignada</dt><dd>{value.assignedRoutine}</dd></div>
+          <div><dt className="text-ivory/58">Fecha exacta UTC</dt><dd>{value.timestamp}</dd></div>
+          <div><dt className="text-ivory/58">Posici\u00f3n</dt><dd>{formatPosition(value.position.sign, value.position.degree, value.position.minutes, value.position.longitude)}</dd></div>
+          <div><dt className="text-ivory/58">Casa activada</dt><dd>{value.activatedHouse}</dd></div>
+          <div><dt className="text-ivory/58">Elemento</dt><dd>{value.element}</dd></div>
+          <div><dt className="text-ivory/58">Rutina asignada</dt><dd>{value.assignedRoutine}</dd></div>
         </dl>
       )}
     </div>
@@ -230,14 +230,14 @@ export default async function DebugLunarPage({ searchParams }: DebugPageProps) {
   const activeInput = input;
 
   return (
-    <main className="min-h-screen bg-black px-4 py-8 font-mono text-sm text-white sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-black px-4 py-8 font-mono text-sm text-ivory sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.24em] text-white/55">Debug only</p>
+            <p className="text-xs uppercase tracking-[0.24em] text-ivory/58">Debug only</p>
             <h1 className="mt-2 text-2xl font-semibold">Motor lunar \u00b7 verificaci\u00f3n</h1>
           </div>
-          <Link href="/resultado" className="text-white/70 underline underline-offset-4 hover:text-white">
+          <Link href="/resultado" className="text-ivory/70 underline underline-offset-4 hover:text-ivory">
             Volver a resultado
           </Link>
         </div>
@@ -253,13 +253,13 @@ export default async function DebugLunarPage({ searchParams }: DebugPageProps) {
                   <Link
                     key={preset.label}
                     href={renderPresetHref(preset.params)}
-                    className="rounded border border-white/15 px-3 py-2 text-white/85 hover:bg-white/10"
+                    className="rounded border border-white/15 px-3 py-2 text-ivory/85 hover:bg-white/10"
                   >
                     {preset.label}
                   </Link>
                 ))}
               </div>
-              <p className="mt-4 text-white/70">
+              <p className="mt-4 text-ivory/70">
                 Tambi\u00e9n puedes usar query params: <code>?birthDate=YYYY-MM-DD&amp;birthTime=HH:mm&amp;lat=...&amp;lng=...&amp;timezone=...&amp;year=...&amp;month=...</code>
               </p>
             </div>
@@ -269,10 +269,10 @@ export default async function DebugLunarPage({ searchParams }: DebugPageProps) {
             <section className="rounded border border-white/15 bg-white/5 p-4">
               <h2 className="text-lg font-semibold">Carta base</h2>
               <dl className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-4">
-                <div><dt className="text-white/60">Nombre</dt><dd>{chart.event.name}</dd></div>
-                <div><dt className="text-white/60">Fecha natal</dt><dd>{activeInput.birthDate} {activeInput.birthTime}</dd></div>
-                <div><dt className="text-white/60">Lugar</dt><dd>{chart.event.locationLabel}</dd></div>
-                <div><dt className="text-white/60">Mes analizado</dt><dd>{activeInput.year}-{String(activeInput.month).padStart(2, "0")}</dd></div>
+                <div><dt className="text-ivory/60">Nombre</dt><dd>{chart.event.name}</dd></div>
+                <div><dt className="text-ivory/60">Fecha natal</dt><dd>{activeInput.birthDate} {activeInput.birthTime}</dd></div>
+                <div><dt className="text-ivory/60">Lugar</dt><dd>{chart.event.locationLabel}</dd></div>
+                <div><dt className="text-ivory/60">Mes analizado</dt><dd>{activeInput.year}-{String(activeInput.month).padStart(2, "0")}</dd></div>
               </dl>
             </section>
 
@@ -296,7 +296,7 @@ export default async function DebugLunarPage({ searchParams }: DebugPageProps) {
                 <tbody>
                   {transits.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="border border-white/15 px-3 py-4 text-white/65">
+                      <td colSpan={6} className="border border-white/15 px-3 py-4 text-ivory/65">
                         No hay tr\u00e1nsitos activos seg\u00fan los filtros de Sarita para la fecha actual.
                       </td>
                     </tr>
@@ -325,14 +325,14 @@ export default async function DebugLunarPage({ searchParams }: DebugPageProps) {
                   </li>
                 ))}
                 {dominantTransits(transits).length === 0 ? (
-                  <li className="text-white/65">No se detectaron tr\u00e1nsitos dominantes para hoy.</li>
+                  <li className="text-ivory/65">No se detectaron tr\u00e1nsitos dominantes para hoy.</li>
                 ) : null}
               </ul>
             </section>
 
             <section className="rounded border border-white/15 bg-white/5 p-4">
               <h2 className="text-lg font-semibold">Checklist del ejemplo Sarita</h2>
-              <p className="mt-3 text-white/75">
+              <p className="mt-3 text-ivory/75">
                 Referencia esperada del documento: Luna Nueva en Aries 27\u00b0 \u00b7 17 de abril \u00b7 Casa 4 \u00b7 elemento Fuego \u00b7 rutina fuego.
               </p>
               <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-5">

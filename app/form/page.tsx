@@ -41,8 +41,8 @@ export default function FormPage() {
   }
 
   const inputClass =
-    "w-full rounded-2xl border border-white/12 bg-black/25 px-4 py-3.5 text-sm text-ivory outline-none transition placeholder:text-ivory/28 focus:border-dusty-gold/55 focus:ring-2 focus:ring-dusty-gold/20 disabled:opacity-50";
-  const labelClass = "mb-2 block text-xs uppercase tracking-[0.28em] text-ivory/48";
+    "w-full rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-sm text-ivory outline-none transition placeholder:text-muted-ivory hover:border-black/25 focus:border-dusty-gold/55 focus:ring-2 focus:ring-dusty-gold/20 disabled:opacity-50";
+  const labelClass = "mb-2 block text-xs uppercase tracking-[0.28em] text-[#3a3048]";
 
   return (
     <main className="relative isolate min-h-screen overflow-hidden bg-cosmic-950">
@@ -54,13 +54,13 @@ export default function FormPage() {
             <div className="pb-2">
               <Link
                 href="/"
-                className="text-xs font-medium uppercase tracking-[0.26em] text-ivory/52 transition hover:text-ivory"
+                className="text-xs font-medium uppercase tracking-[0.26em] text-[#3a3048] transition hover:text-ivory"
               >
                 {dictionary.form.back}
               </Link>
 
               <SectionTitle className="mt-6">{dictionary.form.title}</SectionTitle>
-              <p className="mt-4 max-w-xl text-base leading-8 text-ivory/68">
+              <p className="mt-4 max-w-xl text-base leading-8 text-[#3a3048]">
                 {dictionary.form.subtitle}
               </p>
             </div>

@@ -46,7 +46,7 @@ export function HomePage() {
           style={{ objectPosition: "70% center" }}
           sizes="100vw"
         />
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(5,7,13,0.68),rgba(5,7,13,0.34)_42%,rgba(5,7,13,0.82)),linear-gradient(180deg,rgba(5,7,13,0.24),rgba(5,7,13,0.78)_76%,#05070d)]" />
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(0,0,0,0.04),rgba(0,0,0,0.04)_42%,rgba(0,0,0,0.04)),linear-gradient(180deg,rgba(0,0,0,0.04),rgba(0,0,0,0.04)_76%,#f5f0e6)]" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[34vh] bg-gradient-to-t from-cosmic-950 via-cosmic-950/72 to-transparent" />
 
         <Container className="relative flex min-h-screen flex-col pb-8 pt-5 sm:pb-10 sm:pt-6">
@@ -54,13 +54,19 @@ export function HomePage() {
             <div className="min-w-0 flex-1 pt-2">
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="h-px w-10 shrink-0 bg-gradient-to-r from-dusty-gold/70 to-transparent sm:w-14" />
-                <p className="truncate text-[0.56rem] uppercase tracking-[0.28em] text-dusty-gold/80 sm:text-[12px] sm:tracking-[0.38em]">
+                <p className="truncate text-[12px] uppercase tracking-[0.28em] text-[#6f613a] sm:text-[12px] sm:tracking-[0.38em]">
                   {dictionary.home.eyebrow}
                 </p>
               </div>
             </div>
 
             <div className="ml-auto flex items-center gap-4">
+              <Link
+                href="/precios"
+                className="hidden text-xs font-medium uppercase tracking-[0.22em] text-[#3a3048] transition hover:text-ivory sm:inline"
+              >
+                {dictionary.nav.pricing}
+              </Link>
               <AccountButton />
               <LanguageSelector
                 dictionary={dictionary}
@@ -86,7 +92,7 @@ export function HomePage() {
               transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
             />
             <motion.h1
-              className="max-w-[9ch] text-6xl leading-[0.9] font-medium text-white drop-shadow-[0_18px_34px_rgba(0,0,0,0.58)] sm:text-8xl lg:text-[8rem]"
+              className="max-w-[9ch] text-6xl leading-[0.9] font-medium text-ivory drop-shadow-[0_18px_34px_rgba(0,0,0,0.58)] sm:text-8xl lg:text-[8rem]"
               variants={{
                 hidden: { opacity: 0, y: 12 },
                 show: { opacity: 1, y: 0 },
@@ -117,7 +123,7 @@ export function HomePage() {
             >
               <PrimaryButton
                 href="/form"
-                className="min-w-56 px-8 py-3.5 text-[0.8rem] uppercase tracking-[0.18em]"
+                className="min-w-56 px-8 py-4 text-[0.8rem] uppercase tracking-[0.18em]"
               >
                 {dictionary.home.cta}
               </PrimaryButton>
@@ -125,22 +131,31 @@ export function HomePage() {
             </motion.div>
           </div>
 
-          <div className="relative z-10 border-t border-white/10 py-4">
+          <div className="relative z-10 border-t border-black/10 py-4">
             <div className="grid gap-3 sm:grid-cols-3">
-              {features.map((feature) => (
+              {features.map((feature, index) => (
                 <Link
                   key={feature.href}
                   href={feature.href}
-                  className="group block border-l border-white/10 px-4 py-2 text-left transition hover:border-dusty-gold/45 hover:bg-white/[0.025]"
+                  className="group block border-l border-black/10 px-4 py-2 text-left transition hover:border-dusty-gold/45 hover:bg-white"
                 >
-                  <span className="block text-[0.65rem] font-semibold uppercase tracking-[0.24em] text-ivory/58 transition group-hover:text-dusty-gold/82">
+                  <span className="mb-3 block text-2xl text-[#6f613a]">
+                    {["☽", "☉", "♄"][index] ?? "☽"}
+                  </span>
+                  <span className="block text-[12px] font-semibold uppercase tracking-[0.24em] text-[#3a3048] transition group-hover:text-[#6f613a]">
                     {feature.title}
                   </span>
-                  <span className="mt-1 block text-xs leading-5 text-ivory/42 transition group-hover:text-ivory/66">
+                  <span className="mt-1 block text-xs leading-5 text-[#3a3048] transition group-hover:text-[#3a3048]">
                     {feature.description}
                   </span>
                 </Link>
               ))}
+            </div>
+            <div className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 text-[12px] uppercase tracking-[0.18em] text-[#3a3048]">
+              <Link href="/precios" className="transition hover:text-dusty-gold">{dictionary.nav.pricing}</Link>
+              <Link href="/ayuda" className="transition hover:text-dusty-gold">{dictionary.nav.help}</Link>
+              <Link href="/privacidad" className="transition hover:text-dusty-gold">{dictionary.legal.privacy}</Link>
+              <Link href="/terminos" className="transition hover:text-dusty-gold">{dictionary.legal.terms}</Link>
             </div>
           </div>
         </Container>

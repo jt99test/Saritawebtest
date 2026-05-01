@@ -289,14 +289,14 @@ export default async function DebugChartPage({ searchParams }: DebugPageProps) {
   const orderedAspects = chart ? [...chart.aspects].sort((left, right) => left.orb - right.orb) : [];
 
   return (
-    <main className="min-h-screen bg-black px-4 py-8 font-mono text-sm text-white sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-black px-4 py-8 font-mono text-sm text-ivory sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <p className="text-xs uppercase tracking-[0.24em] text-white/55">Debug only</p>
+            <p className="text-xs uppercase tracking-[0.24em] text-ivory/58">Debug only</p>
             <h1 className="mt-2 text-2xl font-semibold">Natal chart calculation dump</h1>
           </div>
-          <Link href="/resultado" className="text-white/70 underline underline-offset-4 hover:text-white">
+          <Link href="/resultado" className="text-ivory/70 underline underline-offset-4 hover:text-ivory">
             Volver a resultado
           </Link>
         </div>
@@ -312,13 +312,13 @@ export default async function DebugChartPage({ searchParams }: DebugPageProps) {
                   <Link
                     key={preset.label}
                     href={renderPresetHref(preset.params)}
-                    className="rounded border border-white/15 px-3 py-2 text-white/85 hover:bg-white/10"
+                    className="rounded border border-white/15 px-3 py-2 text-ivory/85 hover:bg-white/10"
                   >
                     {preset.label}
                   </Link>
                 ))}
               </div>
-              <p className="mt-4 text-white/70">
+              <p className="mt-4 text-ivory/70">
                 También puedes abrir esta ruta con query params: <code>?birthDate=YYYY-MM-DD&amp;birthTime=HH:mm&amp;lat=…&amp;lng=…&amp;timezone=…&amp;name=…</code>
               </p>
             </div>
@@ -328,20 +328,20 @@ export default async function DebugChartPage({ searchParams }: DebugPageProps) {
             <section className="rounded border border-white/15 bg-white/5 p-4">
               <h2 className="text-lg font-semibold">Section 1 — Event metadata</h2>
               <dl className="mt-4 grid gap-x-6 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
-                <div><dt className="text-white/60">Name</dt><dd>{chart.event.name}</dd></div>
-                <div><dt className="text-white/60">Date</dt><dd>{input?.birthDate} {input?.birthTime}</dd></div>
-                <div><dt className="text-white/60">Location</dt><dd>{chart.event.locationLabel} ({chart.event.latitude}, {chart.event.longitude})</dd></div>
-                <div><dt className="text-white/60">Timezone</dt><dd>{chart.event.timezoneIdentifier} ({chart.event.utcOffset}, DST: {chart.event.daylightSaving})</dd></div>
-                <div><dt className="text-white/60">Julian Day</dt><dd>{chart.event.julianDay ?? "N/D"}</dd></div>
-                <div><dt className="text-white/60">House System</dt><dd>Placidus</dd></div>
-                <div><dt className="text-white/60">Zodiac</dt><dd>Tropical</dd></div>
-                <div><dt className="text-white/60">Node Method</dt><dd>True Node</dd></div>
+                <div><dt className="text-ivory/60">Name</dt><dd>{chart.event.name}</dd></div>
+                <div><dt className="text-ivory/60">Date</dt><dd>{input?.birthDate} {input?.birthTime}</dd></div>
+                <div><dt className="text-ivory/60">Location</dt><dd>{chart.event.locationLabel} ({chart.event.latitude}, {chart.event.longitude})</dd></div>
+                <div><dt className="text-ivory/60">Timezone</dt><dd>{chart.event.timezoneIdentifier} ({chart.event.utcOffset}, DST: {chart.event.daylightSaving})</dd></div>
+                <div><dt className="text-ivory/60">Julian Day</dt><dd>{chart.event.julianDay ?? "N/D"}</dd></div>
+                <div><dt className="text-ivory/60">House System</dt><dd>Placidus</dd></div>
+                <div><dt className="text-ivory/60">Zodiac</dt><dd>Tropical</dd></div>
+                <div><dt className="text-ivory/60">Node Method</dt><dd>True Node</dd></div>
               </dl>
             </section>
 
             <section className="overflow-x-auto rounded border border-white/15 bg-white/5 p-4">
               <h2 className="text-lg font-semibold">Section 2 — Chart points table</h2>
-              <p className="mt-2 text-white/65">
+              <p className="mt-2 text-ivory/65">
                 The current payload returned by <code>calculateNatalChart()</code> does not expose longitude speed yet, so the Speed column is shown as <code>N/D</code> unless that field exists.
               </p>
               <table className="mt-4 min-w-full border-collapse">
@@ -474,7 +474,7 @@ export default async function DebugChartPage({ searchParams }: DebugPageProps) {
                   })}
                 </tbody>
               </table>
-              <p className="mt-4 text-white/70">
+              <p className="mt-4 text-ivory/70">
                 Match rule: same sign and degree-minute within 2 arc-minutes (0° 02&apos;).
               </p>
             </section>
@@ -486,7 +486,7 @@ export default async function DebugChartPage({ searchParams }: DebugPageProps) {
                   <Link
                     key={preset.label}
                     href={renderPresetHref(preset.params)}
-                    className="rounded border border-white/15 px-3 py-2 text-white/85 hover:bg-white/10"
+                    className="rounded border border-white/15 px-3 py-2 text-ivory/85 hover:bg-white/10"
                   >
                     {preset.label}
                   </Link>

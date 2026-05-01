@@ -97,29 +97,29 @@ function ResultPageContent() {
               <button
                 type="button"
                 onClick={() => setBanner(null)}
-                className="text-xs font-semibold uppercase tracking-[0.18em] text-dusty-gold/80"
+                className="text-xs font-semibold uppercase tracking-[0.18em] text-[#6f613a]"
               >
                 {dictionary.common.close}
               </button>
             </div>
           ) : null}
 
-          <div className="mb-4 grid min-h-10 grid-cols-[1fr_auto_1fr] items-center gap-4 border-b border-white/8 pb-3 pt-1">
+          <div className="mb-4 grid min-h-10 grid-cols-[1fr_auto_1fr] items-center gap-4 border-b border-black/10 pb-3 pt-1">
             <Link
               href="/"
-              className="justify-self-start text-xs font-medium uppercase tracking-[0.24em] text-ivory/68 transition hover:text-ivory"
+              className="justify-self-start text-xs font-medium uppercase tracking-[0.24em] text-[#3a3048] transition hover:text-ivory"
             >
               ← {dictionary.result.back}
             </Link>
 
-            <p className="justify-self-center text-[10px] font-semibold uppercase tracking-[0.22em] text-dusty-gold/58">
+            <p className="justify-self-center text-[12px] font-semibold uppercase tracking-[0.22em] text-[#6f613a]">
               {result?.saved ? dictionary.standalonePages.savedReading : ""}
             </p>
 
-            <div className="flex items-center gap-4 justify-self-end border-l border-white/12 pl-4">
+            <div className="flex items-center gap-4 justify-self-end border-l border-black/15 pl-4">
               <Link
                 href="/form"
-                className="text-right text-xs font-medium uppercase tracking-[0.24em] text-ivory/54 transition hover:text-ivory/80"
+                className="text-right text-xs font-medium uppercase tracking-[0.24em] text-[#3a3048] transition hover:text-ivory/80"
               >
                 {dictionary.form.back}
               </Link>
@@ -136,11 +136,11 @@ function ResultPageContent() {
             />
           ) : (
             <div className="flex flex-1 items-center justify-center">
-              <div className="rounded-4xl border border-white/10 bg-white/[0.03] px-8 py-10 text-center shadow-[0_24px_80px_rgba(0,0,0,0.32)] backdrop-blur-xl">
-                <p className="text-sm leading-7 text-ivory/62">{dictionary.result.messages.missingResult}</p>
+              <div className="rounded-4xl border border-black/10 bg-white px-8 py-10 text-center shadow-[0_24px_80px_rgba(0,0,0,0.32)] backdrop-blur-xl">
+                <p className="text-sm leading-7 text-[#3a3048]">{dictionary.result.messages.missingResult}</p>
                 <Link
                   href="/form"
-                  className="mt-5 inline-block text-xs font-medium uppercase tracking-[0.24em] text-dusty-gold/80 transition hover:text-dusty-gold"
+                  className="mt-5 inline-block text-xs font-medium uppercase tracking-[0.24em] text-[#6f613a] transition hover:text-dusty-gold"
                 >
                   {dictionary.form.back}
                 </Link>

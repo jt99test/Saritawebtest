@@ -404,25 +404,25 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
   return (
     <div className="pb-24 pt-24">
       <div className="mx-auto mb-8 max-w-2xl text-center">
-        <p className="text-sm leading-7 text-ivory/60">
+        <p className="text-sm leading-7 text-[#3a3048]">
           El yoga astral conecta los elementos de tu carta natal con rutinas de movimiento y respiración. Según tu elemento dominante, el cuerpo responde mejor a ciertos tipos de práctica. Aquí encuentras la rutina que va con tu energía de este mes.
         </p>
       </div>
 
       <header className="text-center">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
           yoga astral
         </p>
-        <h1 className="mt-2 font-serif text-[64px] font-normal leading-none tracking-[-0.01em] text-white lg:text-[88px]">
+        <h1 className="mt-2 font-serif text-[64px] font-normal leading-none tracking-[-0.01em] text-ivory lg:text-[88px]">
           El cuerpo como mapa.
         </h1>
-        <p className="mx-auto mt-6 max-w-[520px] font-serif text-[17px] italic leading-[1.6] text-white/55 lg:max-w-[580px] lg:text-[19px]">
+        <p className="mx-auto mt-6 max-w-[520px] font-serif text-[17px] italic leading-[1.6] text-[#3a3048] lg:max-w-[580px] lg:text-[19px]">
           Cuatro rutinas para los cuatro elementos. Cada luna te asigna una. Cada postura te devuelve algo.
         </p>
       </header>
 
       <section className="mx-auto mt-16 max-w-[1040px] border-t-[0.5px] border-dusty-gold/12 pt-10 lg:mt-20 lg:max-w-[1080px]">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
           tu rutina del mes
         </p>
 
@@ -442,25 +442,25 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
           <div>
             {monthlyRoutine || blendedRoutine ? (
               <>
-                <p className="font-serif text-[13px] italic lowercase text-white/50">
+                <p className="font-serif text-[13px] italic lowercase text-[#3a3048]">
                   {blendedRoutine ? "rutina combinada" : "esta luna te pide"}
                 </p>
-                <h2 className="mt-2 font-serif text-[48px] font-normal leading-tight text-white lg:text-[64px]">
+                <h2 className="mt-2 font-serif text-[48px] font-normal leading-tight text-ivory lg:text-[64px]">
                   {blendedRoutine
                     ? `${ELEMENT_LABELS[blendedRoutine.primary]} + ${ELEMENT_LABELS[blendedRoutine.secondary]}`
                     : ELEMENT_HEADLINES[monthlyElement]}
                 </h2>
-                <p className="mt-6 font-serif text-lg leading-[1.6] text-white/80 lg:max-w-[440px] lg:text-[20px] lg:leading-[1.7]">
+                <p className="mt-6 font-serif text-lg leading-[1.6] text-ivory/80 lg:max-w-[440px] lg:text-[20px] lg:leading-[1.7]">
                   {blendedRoutine
                     ? `En tu carta, ${ELEMENT_LABELS[blendedRoutine.primary]} y ${ELEMENT_LABELS[blendedRoutine.secondary]} se responden. Esta práctica cruza sus ritmos para que la mente, el cuerpo y la respiración encuentren un mismo cauce.`
                     : ELEMENT_COPY[monthlyElement]}
                 </p>
-                <p className="mt-4 max-w-[460px] text-sm leading-7 text-white/55">
+                <p className="mt-4 max-w-[460px] text-sm leading-7 text-[#3a3048]">
                   {blendedRoutine
                     ? `${ASTRO_SOMATIC_COPY[blendedRoutine.primary]} ${ASTRO_SOMATIC_COPY[blendedRoutine.secondary]}`
                     : ASTRO_SOMATIC_COPY[monthlyElement]}
                 </p>
-                <p className="mt-8 font-serif text-[13px] italic leading-7 text-white/50">
+                <p className="mt-8 font-serif text-[13px] italic leading-7 text-[#3a3048]">
                   {blendedRoutine
                     ? blendedRoutine.asanas.slice(0, 5).map((asana) => displayText(asana.nameSanskrit)).join(" · ")
                     : getRoutineMeta(monthlyElement)}
@@ -480,20 +480,20 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
                 <PrimaryButton
                   href={`/yoga-astral/${monthlyElement}`}
                   variant="ghostGold"
-                  className="mt-8 px-6 py-3 text-[0.72rem] uppercase tracking-[0.2em]"
+                  className="mt-8 px-6 py-3 text-[12px] uppercase tracking-[0.2em]"
                 >
                   Entrar en la rutina
                 </PrimaryButton>
               </>
             ) : (
               <>
-                <p className="max-w-[420px] font-serif text-[17px] italic leading-8 text-white/50">
+                <p className="max-w-[420px] font-serif text-[17px] italic leading-8 text-[#3a3048]">
                   Visita la Luna del mes para que te asignemos una rutina.
                 </p>
                 <PrimaryButton
                   href="/luna-del-mes"
                   variant="ghostGold"
-                  className="mt-8 px-6 py-3 text-[0.72rem] uppercase tracking-[0.2em]"
+                  className="mt-8 px-6 py-3 text-[12px] uppercase tracking-[0.2em]"
                 >
                   Ir a Luna del mes
                 </PrimaryButton>
@@ -505,10 +505,10 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
 
       <section className="mx-auto mt-16 max-w-[960px] border-t-[0.5px] border-dusty-gold/12 pt-10 lg:mt-20 lg:max-w-[1080px]">
         <div className="text-center">
-          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
+          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
             las cuatro rutinas
           </p>
-          <h2 className="mt-2 font-serif text-[36px] font-normal leading-tight text-white lg:text-[48px]">
+          <h2 className="mt-2 font-serif text-[36px] font-normal leading-tight text-ivory lg:text-[48px]">
             Elige tu cauce
           </h2>
         </div>
@@ -529,14 +529,14 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
                   className="mx-auto h-[200px] w-auto object-contain transition duration-[350ms] group-hover:scale-[1.02] group-hover:brightness-[1.15] lg:h-[260px]"
                   sizes="260px"
                 />
-                <h3 className="mt-8 font-serif text-[32px] font-normal leading-tight text-white transition-colors duration-[250ms] group-hover:text-dusty-gold lg:text-[38px]">
+                <h3 className="mt-8 font-serif text-[32px] font-normal leading-tight text-ivory transition-colors duration-[250ms] group-hover:text-dusty-gold lg:text-[38px]">
                   {`Elemento ${ELEMENT_LABELS[element]}`}
                 </h3>
-                <p className="relative mx-auto mt-3 max-w-[280px] font-serif text-sm italic leading-6 text-white/55 lg:max-w-[320px] lg:text-base">
+                <p className="relative mx-auto mt-3 max-w-[280px] font-serif text-sm italic leading-6 text-[#3a3048] lg:max-w-[320px] lg:text-base">
                   <span>{ELEMENT_ESSENCE[element]}</span>
                   <span className="mx-auto mt-3 block h-px w-12 origin-center scale-x-0 bg-dusty-gold/55 transition-transform duration-300 group-hover:scale-x-100" />
                 </p>
-                <p className="mx-auto mt-6 max-w-[360px] font-serif text-xs italic leading-6 text-white/40">
+                <p className="mx-auto mt-6 max-w-[360px] font-serif text-xs italic leading-6 text-[#3a3048]">
                   {getPortalMeta(element)}
                 </p>
               </Link>
@@ -547,10 +547,10 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
 
       <section className="mt-16 w-full border-t-[0.5px] border-dusty-gold/12 pt-10 lg:mt-20">
         <div className="text-center">
-          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
+          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
             tu postura ancla
           </p>
-          <p className="mx-auto mt-3 max-w-[480px] font-serif text-[15px] italic leading-7 text-white/55">
+          <p className="mx-auto mt-3 max-w-[480px] font-serif text-[15px] italic leading-7 text-[#3a3048]">
             Una postura para cuando todo lo demás se mueve. Tuya, por tu carta.
           </p>
         </div>
@@ -568,19 +568,19 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
           </div>
 
           <div>
-            <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-white/50">
+            <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#3a3048]">
               {`para tu ${anchorPose.label.toLowerCase()} dominante`}
             </p>
-            <h2 className="mt-2 font-serif text-[40px] font-normal leading-tight text-white lg:text-[52px]">
+            <h2 className="mt-2 font-serif text-[40px] font-normal leading-tight text-ivory lg:text-[52px]">
               {anchorName}
             </h2>
-            <p className="mt-1 font-serif text-sm italic lowercase tracking-[0.1em] text-dusty-gold/82">
+            <p className="mt-1 font-serif text-sm italic lowercase tracking-[0.1em] text-[#6f613a]">
               {anchorSpanish}
             </p>
-            <p className="mt-8 max-w-[380px] font-serif text-[17px] leading-[1.7] text-white/85 lg:max-w-[440px] lg:text-[19px]">
+            <p className="mt-8 max-w-[380px] font-serif text-[17px] leading-[1.7] text-ivory/85 lg:max-w-[440px] lg:text-[19px]">
               {anchorDescription}
             </p>
-            <p className="mt-6 max-w-[380px] font-serif text-sm italic leading-[1.6] text-white/55">
+            <p className="mt-6 max-w-[380px] font-serif text-sm italic leading-[1.6] text-[#3a3048]">
               {ANCHOR_REASON[anchorPose.element]}
             </p>
           </div>
@@ -590,13 +590,13 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
       <section className="mx-auto mt-24 max-w-[720px] border-t-[0.5px] border-dusty-gold/12 pt-8 lg:mt-[120px]">
         <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
+            <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
               kriya
             </p>
-            <h2 className="mt-1 font-serif text-2xl font-normal leading-tight text-white lg:text-[26px]">
+            <h2 className="mt-1 font-serif text-2xl font-normal leading-tight text-ivory lg:text-[26px]">
               Lavado intestinal corto
             </h2>
-            <p className="mt-1 font-serif text-[13px] italic leading-6 text-white/50">
+            <p className="mt-1 font-serif text-[13px] italic leading-6 text-[#3a3048]">
               Práctica de limpieza profunda · 3 días
             </p>
           </div>

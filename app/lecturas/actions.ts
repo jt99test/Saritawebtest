@@ -27,3 +27,32 @@ export async function deleteReadingAction(readingId: string) {
   revalidatePath("/lecturas");
   return { ok: true };
 }
+
+export async function getReadingUsageAction() {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { count: 0, limit: 2, plan: "free" };
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("plan")
+    .eq("id", user.id)
+    .maybeSingle();
+  const startOfMonth = new Date();
+  startOfMonth.setUTCDate(1);
+  startOfMonth.setUTCHours(0, 0, 0, 0);
+  const { count } = await supabase
+    .from("reading_usage_events")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .gte("created_at", startOfMonth.toISOString());
+  const plan = profile?.plan === "pro" || profile?.plan === "avanzado" ? profile.plan : "free";
+  const limit = plan === "avanzado" ? 50 : plan === "pro" ? 10 : 2;
+
+  return { count: count ?? 0, limit, plan };
+}

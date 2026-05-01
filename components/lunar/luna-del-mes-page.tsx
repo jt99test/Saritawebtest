@@ -333,19 +333,19 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
   return (
     <div className="mx-auto max-w-[1080px] pb-0 pt-8 lg:pt-10">
       <div className="mx-auto mb-8 max-w-2xl text-center">
-        <p className="text-sm leading-7 text-ivory/60">
+        <p className="text-sm leading-7 text-[#3a3048]">
           Cada mes hay dos lunas importantes: la Luna Nueva, que abre un ciclo, y la Luna Llena, que lo cierra. Según dónde cae cada una en tu carta, activa un área distinta de tu vida. Aquí ves qué te toca este mes y qué hacer con eso.
         </p>
       </div>
 
       <header className="text-center">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
           luna del mes
         </p>
-        <h1 className="mt-1.5 font-serif text-[52px] font-normal leading-none tracking-[-0.01em] text-white lg:text-[68px]">
+        <h1 className="mt-1.5 font-serif text-[52px] font-normal leading-none tracking-[-0.01em] text-ivory lg:text-[68px]">
           {currentMonth.setLocale("es").toFormat("LLLL yyyy").toLowerCase()}
         </h1>
-        <p className="mx-auto mt-3 max-w-[480px] font-serif text-[15px] italic leading-7 text-white/50 lg:max-w-[540px]">
+        <p className="mx-auto mt-3 max-w-[480px] font-serif text-[15px] italic leading-7 text-[#3a3048] lg:max-w-[540px]">
           Dos lunas marcan este mes. Tócalas para entrar.
         </p>
 
@@ -361,11 +361,11 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
       </header>
 
       {previewLoading ? (
-        <p className="mt-12 text-center font-serif text-sm italic leading-7 text-white/55">
+        <p className="mt-12 text-center font-serif text-sm italic leading-7 text-[#3a3048]">
           Calculando tu luna del mes...
         </p>
       ) : previewError ? (
-        <p className="mt-12 text-center font-serif text-sm italic leading-7 text-white/55">
+        <p className="mt-12 text-center font-serif text-sm italic leading-7 text-[#3a3048]">
           {previewError}
         </p>
       ) : selectedMetadata ? (
@@ -403,7 +403,7 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
           </div>
         </div>
       ) : (
-        <p className="mt-12 text-center font-serif text-sm italic leading-7 text-white/55">
+        <p className="mt-12 text-center font-serif text-sm italic leading-7 text-[#3a3048]">
           No hemos encontrado lunaciones para este mes.
         </p>
       )}

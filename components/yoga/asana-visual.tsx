@@ -41,7 +41,7 @@ export function AsanaVisual({
     <div
       className={`flex ${frameClassName} items-center justify-center px-6 text-center`}
       style={{
-        backgroundImage: `radial-gradient(circle at 50% 34%, ${TONE_GLOW[tone]}, transparent 46%), linear-gradient(180deg, rgba(10,14,22,0.88), rgba(5,7,13,0.96))`,
+        backgroundImage: `radial-gradient(circle at 50% 34%, ${TONE_GLOW[tone]}, transparent 46%), linear-gradient(180deg, rgba(10,14,22,0.88), rgba(0,0,0,0.04))`,
       }}
     >
       <div className="flex max-w-[15rem] flex-col items-center">
@@ -54,7 +54,7 @@ export function AsanaVisual({
         <p className="mt-5 font-serif text-2xl leading-tight text-ivory/88">
           {asana.nameSanskrit}
         </p>
-        <p className="mt-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-ivory/40">
+        <p className="mt-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048]">
           Sin foto disponible
         </p>
       </div>

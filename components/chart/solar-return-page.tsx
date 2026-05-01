@@ -197,21 +197,25 @@ export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturn
           variant="solar-return"
         />
 
+        <div className="mx-auto mt-10 max-w-5xl border-t border-black/[0.07]" />
+
         <div className="mx-auto mt-8 grid max-w-5xl gap-4 md:grid-cols-3">
           {summaryCards.map((card) => (
-            <article key={card.key} className="border-t border-dusty-gold/16 bg-white/[0.02] p-5">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-dusty-gold/72">{card.title}</p>
-              <p className="mt-3 text-sm leading-7 text-ivory/68">{card.body}</p>
+            <article key={card.key} className="border border-black/12 bg-white p-5 shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-dusty-gold">{card.title}</p>
+              <p className="mt-3 text-sm leading-7 text-[#3a3048]">{card.body}</p>
             </article>
           ))}
         </div>
 
+        <div className="mx-auto mt-10 max-w-5xl border-t border-black/[0.07]" />
+
         <div className="mx-auto mt-8 max-w-3xl border-y border-dusty-gold/14 py-7">
-          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">{solarCopy.readingEyebrow}</p>
+          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">{solarCopy.readingEyebrow}</p>
           <h3 className="mt-2 font-serif text-3xl text-ivory">{solarCopy.readingTitle}</h3>
           <div className="mt-5 space-y-4">
             {isLoadingReading && !aiReading ? (
-              <p className="animate-pulse text-base leading-8 text-ivory/35">{solarCopy.readingLoading}</p>
+              <p className="animate-pulse text-base leading-8 text-[#3a3048]">{solarCopy.readingLoading}</p>
             ) : aiReading ? (
               aiReading.split("\n\n").filter(Boolean).map((paragraph, i) => (
                 <p key={i} className="text-base leading-8 text-ivory/82">{paragraph}</p>
@@ -220,14 +224,16 @@ export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturn
           </div>
         </div>
 
-        <div className="mx-auto mt-8 max-w-4xl border-y border-white/10 py-7">
+        <div className="mx-auto mt-10 max-w-5xl border-t border-black/[0.07]" />
+
+        <div className="mx-auto mt-8 max-w-4xl border-y border-black/10 py-7">
           <div>
             <p className="font-serif text-2xl text-ivory">{solarCopy.priorityTitle}</p>
             <div className="mt-4 grid gap-4 md:grid-cols-3">
               {priorityAreas.map((area) => (
                 <article key={area.title} className="border-l border-dusty-gold/24 pl-4">
                   <h4 className="font-serif text-lg text-ivory">{area.title}</h4>
-                  <p className="mt-1 text-sm leading-7 text-ivory/62">{area.body}</p>
+                  <p className="mt-1 text-sm leading-7 text-[#3a3048]">{area.body}</p>
                 </article>
               ))}
             </div>
@@ -247,16 +253,16 @@ export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturn
 
   return (
     <section className="mx-auto max-w-2xl py-16">
-      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
+      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
         {solarCopy.eyebrow}
       </p>
       <h2 className="mt-2 font-serif text-[34px] leading-tight text-ivory sm:text-[52px]">{solarCopy.title}</h2>
-      <p className="mt-5 max-w-xl text-sm leading-7 text-ivory/60">
+      <p className="mt-5 max-w-xl text-sm leading-7 text-[#3a3048]">
         {solarCopy.intro}
       </p>
       <div className="mt-8 grid gap-5">
         <label className="block">
-          <span className="text-[12px] font-semibold uppercase tracking-[0.22em] text-ivory/58">Año</span>
+          <span className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#3a3048]">Año</span>
           <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-6">
             {yearOptions.map((year) => (
               <button
@@ -268,7 +274,7 @@ export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturn
                   "rounded-full border px-3 py-2.5 text-sm font-semibold transition",
                   targetYear === year
                     ? "border-dusty-gold/70 bg-dusty-gold/18 text-dusty-gold"
-                    : "border-white/12 bg-black/25 text-ivory/72 hover:border-white/24 hover:text-ivory",
+                    : "border-black/15 bg-black/[0.05] text-[#3a3048] hover:border-black/15 hover:text-ivory",
                 ].join(" ")}
               >
                 {year}
@@ -277,7 +283,7 @@ export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturn
           </div>
         </label>
         <div>
-          <span className="text-[12px] font-semibold uppercase tracking-[0.22em] text-ivory/58">
+          <span className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#3a3048]">
             {solarCopy.cityQuestion}
           </span>
           <div className="mt-2">
@@ -295,7 +301,7 @@ export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturn
               dictionary={dictionary}
             />
           </div>
-          <p className="mt-2 text-xs leading-5 text-ivory/42">{solarCopy.cityHint}</p>
+          <p className="mt-2 text-xs leading-5 text-[#3a3048]">{solarCopy.cityHint}</p>
         </div>
         {error ? <p className="text-sm text-amber-100/80">{error}</p> : null}
         <PrimaryButton type="button" onClick={calculate} disabled={isPending}>

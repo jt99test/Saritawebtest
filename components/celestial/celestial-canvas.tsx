@@ -307,12 +307,12 @@ function DustDrift() {
           />
         </bufferGeometry>
         <pointsMaterial
-          color="#d6dcee"
+          color="#a08c5a"
           transparent
           size={0.028}
           sizeAttenuation
           depthWrite={false}
-          opacity={0.17}
+          opacity={0.1}
         />
       </points>
     </group>
@@ -345,7 +345,7 @@ function CelestialScene() {
       <pointLight position={[4.8, -0.8, 3.5]} intensity={24} distance={22} color="#e2b36e" />
       <pointLight position={[8.5, 2.2, 2.8]} intensity={10} distance={18} color="#6977c0" />
 
-      <Stars radius={120} depth={50} count={1600} factor={2.6} saturation={0} fade speed={0.22} />
+      <Stars radius={120} depth={50} count={960} factor={2.1} saturation={0} fade speed={0.22} />
       <DustDrift />
       <SaturnHero />
       <CameraDrift />
@@ -373,11 +373,11 @@ function MobileFallback() {
       canvas.height = Math.max(1, Math.floor(canvas.offsetHeight * window.devicePixelRatio));
     };
 
-    const stars = Array.from({ length: 120 }, () => ({
+    const stars = Array.from({ length: 72 }, () => ({
       x: Math.random(),
       y: Math.random(),
       r: 0.4 + Math.random() * 1.2,
-      alpha: 0.18 + Math.random() * 0.36
+      alpha: 0.08 + Math.random() * 0.17
     }));
 
     resize();
@@ -396,7 +396,7 @@ function MobileFallback() {
         const pulse = star.alpha + Math.sin(elapsed * 0.28 + star.x * 8) * 0.04;
         ctx.beginPath();
         ctx.arc(star.x * width, star.y * height, star.r * window.devicePixelRatio, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(233,238,248,${pulse})`;
+        ctx.fillStyle = `rgba(160,140,90,${pulse})`;
         ctx.fill();
       }
 
@@ -478,7 +478,7 @@ function StaticFallback() {
     <div aria-hidden="true" className="absolute inset-0 overflow-hidden">
       <div className="absolute right-[-18%] top-[18%] h-[33rem] w-[33rem] rounded-full bg-[radial-gradient(circle_at_32%_28%,rgba(248,234,208,0.96),rgba(207,168,98,0.84)_22%,rgba(113,76,38,0.78)_58%,rgba(18,12,8,0.94)_100%)] shadow-[0_0_120px_rgba(217,180,113,0.14)]" />
       <div className="absolute right-[-12%] top-[24%] h-[18rem] w-[36rem] -rotate-[18deg] rounded-full border border-[#d9cfbc]/16 bg-[radial-gradient(circle,rgba(248,233,203,0.34),rgba(136,142,179,0.08)_48%,transparent_72%)]" />
-      <div className="absolute inset-0 opacity-[0.14] bg-[radial-gradient(circle_at_14%_18%,rgba(255,255,255,0.88)_0,rgba(255,255,255,0.88)_0.75px,transparent_1.4px),radial-gradient(circle_at_70%_32%,rgba(210,216,231,0.54)_0,rgba(210,216,231,0.54)_0.85px,transparent_1.7px),radial-gradient(circle_at_40%_78%,rgba(255,255,255,0.42)_0,rgba(255,255,255,0.42)_0.7px,transparent_1.4px)] bg-size-[240px_240px,320px_320px,280px_280px]" />
+      <div className="absolute inset-0 opacity-[0.09] bg-[radial-gradient(circle_at_14%_18%,rgba(160,140,90,0.25)_0,rgba(160,140,90,0.25)_0.75px,transparent_1.4px),radial-gradient(circle_at_70%_32%,rgba(160,140,90,0.2)_0,rgba(160,140,90,0.2)_0.85px,transparent_1.7px),radial-gradient(circle_at_40%_78%,rgba(160,140,90,0.16)_0,rgba(160,140,90,0.16)_0.7px,transparent_1.4px)] bg-size-[240px_240px,320px_320px,280px_280px]" />
     </div>
   );
 }

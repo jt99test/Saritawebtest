@@ -37,10 +37,10 @@ export function LunationToggle({
             onClick={() => onChange(option.id)}
             aria-pressed={active}
             className={[
-              "group flex w-[min(40vw,140px)] flex-col items-center p-0 text-center outline-none transition duration-[400ms] ease-out focus-visible:ring-2 focus-visible:ring-dusty-gold/70 focus-visible:ring-offset-4 focus-visible:ring-offset-cosmic-950 lg:w-[180px]",
+              "group flex w-[min(40vw,140px)] flex-col items-center p-3 text-center outline-none transition duration-[400ms] ease-out focus-visible:ring-2 focus-visible:ring-dusty-gold/70 focus-visible:ring-offset-4 focus-visible:ring-offset-cosmic-950 lg:w-[180px]",
               active
-                ? "scale-100 cursor-pointer opacity-100"
-                : "scale-90 cursor-pointer opacity-40 grayscale saturate-0 hover:scale-95 hover:opacity-70 hover:grayscale-0 hover:saturate-100",
+                ? "scale-100 cursor-pointer bg-dusty-gold/22 text-dusty-gold opacity-100 shadow-[0_2px_12px_rgba(181,163,110,0.18)]"
+                : "scale-90 cursor-pointer text-[#3a3048] opacity-70 grayscale saturate-0 hover:scale-95 hover:text-ivory/80 hover:opacity-80 hover:grayscale-0 hover:saturate-100",
             ].join(" ")}
           >
             <span
@@ -64,7 +64,7 @@ export function LunationToggle({
             <span
               className={[
                 "mt-4 font-serif text-[20px] font-normal leading-tight transition-colors duration-[400ms] lg:text-[23px]",
-                active ? "text-white" : "text-white/40 group-hover:text-white/62",
+                active ? "text-ivory" : "text-[#3a3048] group-hover:text-[#3a3048]",
               ].join(" ")}
             >
               {option.label}
@@ -72,7 +72,7 @@ export function LunationToggle({
             <span
               className={[
                 "mt-2 font-serif text-[13px] italic leading-tight transition-colors duration-[400ms]",
-                active ? "text-dusty-gold/82" : "text-white/40 group-hover:text-dusty-gold/55",
+                active ? "text-[#6f613a]" : "text-[#3a3048] group-hover:text-[#6f613a]",
               ].join(" ")}
             >
               {option.date}

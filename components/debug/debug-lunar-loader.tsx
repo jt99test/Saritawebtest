@@ -89,9 +89,9 @@ export function DebugLunarLoader() {
   }, [router]);
 
   return (
-    <div className="rounded border border-white/15 bg-white/5 p-4">
+    <div className="rounded border border-white/15 bg-white/70 p-4">
       <p>{status}</p>
-      <p className="mt-3 text-white/70">
+      <p className="mt-3 text-[#3a3048]">
         Se intentan leer primero <code>localStorage[&quot;sarita_chart&quot;]</code> y despu\u00e9s{" "}
         <code>sessionStorage[&quot;sarita_chart&quot;]</code>.
       </p>

@@ -87,12 +87,12 @@ function CompatibilityRing({ aspects }: { aspects: SynastryAspect[] }) {
 
   return (
     <svg viewBox="0 0 170 170" className="mx-auto h-40 w-40" role="img" aria-label="Dinámica de compatibilidad">
-      <circle cx="85" cy="85" r={radius} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="16" />
+      <circle cx="85" cy="85" r={radius} fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="16" />
       <circle cx="85" cy="85" r={radius} fill="none" stroke="rgba(130,146,214,0.88)" strokeWidth="16" strokeDasharray={`${harmoniousLength} ${circumference}`} transform="rotate(-90 85 85)" />
       <circle cx="85" cy="85" r={radius} fill="none" stroke="rgba(245,190,105,0.78)" strokeWidth="16" strokeDasharray={`${tenseLength} ${circumference}`} strokeDashoffset={-harmoniousLength} transform="rotate(-90 85 85)" />
       <circle cx="85" cy="85" r={radius} fill="none" stroke="rgba(181,163,110,0.78)" strokeWidth="16" strokeDasharray={`${neutralLength} ${circumference}`} strokeDashoffset={-(harmoniousLength + tenseLength)} transform="rotate(-90 85 85)" />
-      <text x="85" y="80" textAnchor="middle" className="font-serif text-[22px]" fill="rgba(255,255,255,0.86)">{aspects.length}</text>
-      <text x="85" y="101" textAnchor="middle" className="text-[10px] uppercase tracking-[0.16em]" fill="rgba(255,255,255,0.42)">aspectos</text>
+      <text x="85" y="80" textAnchor="middle" className="font-serif text-[22px]" fill="#1e1a2e">{aspects.length}</text>
+      <text x="85" y="101" textAnchor="middle" className="text-[12px] uppercase tracking-[0.16em]" fill="#3a3048">aspectos</text>
     </svg>
   );
 }
@@ -278,9 +278,9 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
     return (
       <section className="py-10">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">{synastryCopy.eyebrow}</p>
+          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">{synastryCopy.eyebrow}</p>
           <h2 className="mt-2 font-serif text-[30px] leading-tight text-ivory sm:text-[48px]">{synastryData.compatibilityLabel ?? label.label}</h2>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-ivory/62">{synastryData.compatibilityDescription ?? label.description}</p>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#3a3048]">{synastryData.compatibilityDescription ?? label.description}</p>
         </div>
         <div className="mt-8">
           <BiWheelChart
@@ -301,11 +301,24 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
           </button>
         </div>
         <CompatibilityRing aspects={aspects} />
+        <div className="mt-4 flex justify-center gap-6">
+          {[
+            { color: "bg-[rgba(130,146,214,0.88)]", label: synastryCopy.legendHarmonious },
+            { color: "bg-[rgba(245,190,105,0.78)]", label: synastryCopy.legendTense },
+            { color: "bg-[rgba(181,163,110,0.78)]", label: synastryCopy.legendNeutral },
+          ].map(({ color, label }) => (
+            <div key={label} className="flex items-center gap-2">
+              <span className={`h-2.5 w-2.5 rounded-full ${color}`} />
+              <span className="text-[12px] uppercase tracking-[0.16em] text-[#3a3048]">{label}</span>
+            </div>
+          ))}
+        </div>
+        <div className="mx-auto mt-10 max-w-5xl border-t border-black/[0.07]" />
         {(isLoadingReading || synastryReading) ? (
           <div className="mx-auto mt-6 max-w-3xl border-y border-[#8292d6]/18 py-6">
             <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#8292d6]/60">{synastryCopy.readingEyebrow}</p>
             {isLoadingReading && !synastryReading ? (
-              <p className="mt-4 animate-pulse text-base leading-8 text-ivory/35">{synastryCopy.readingLoading}</p>
+              <p className="mt-4 animate-pulse text-base leading-8 text-[#3a3048]">{synastryCopy.readingLoading}</p>
             ) : (
               synastryReading.split(SARITA_DATA_MARKER)[0].split("\n\n").filter(Boolean).map((para, i) => (
                 <p key={i} className="mt-4 text-base leading-8 text-ivory/82">{para}</p>
@@ -313,12 +326,13 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
             )}
           </div>
         ) : null}
-        <div className="mx-auto mt-8 max-w-3xl border-y border-white/10 py-6">
+        <div className="mx-auto mt-10 max-w-5xl border-t border-black/[0.07]" />
+        <div className="mx-auto mt-8 max-w-3xl border-y border-black/10 py-6">
           <p className="font-serif text-2xl text-ivory">{synastryCopy.mainConnections}</p>
           <div className="mt-4 space-y-3">
             {aspects.slice(0, 6).map((aspect) => (
-              <p key={`${aspect.pointA}-${aspect.pointB}-${aspect.type}`} className="text-sm leading-7 text-ivory/64">
-                <span className="text-dusty-gold/82">{pointLabel(aspect.pointA, dictionary)}</span>{" "}
+              <p key={`${aspect.pointA}-${aspect.pointB}-${aspect.type}`} className="text-sm leading-7 text-[#3a3048]">
+                <span className="text-dusty-gold">{pointLabel(aspect.pointA, dictionary)}</span>{" "}
                 {ASPECT_SYMBOLS[aspect.type]}{" "}
                 <span className="text-[#8292d6]">{pointLabel(aspect.pointB, dictionary)}</span> · {synastryCopy.aspectQuality[aspect.quality]} · {synastryCopy.orb} {aspect.orb}°.
               </p>
@@ -326,9 +340,9 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
           </div>
           <div className="mt-6 grid gap-3 md:grid-cols-2">
             {LAYERS.map((layer) => (
-              <details key={layer.id} className="border border-white/10 bg-white/[0.025] p-4">
+              <details key={layer.id} className="border border-black/12 bg-white p-4 shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
                 <summary className="cursor-pointer font-serif text-lg text-ivory">{synastryCopy.layerTitles[layer.id]}</summary>
-                <p className="mt-3 text-sm leading-7 text-ivory/58">
+                <p className="mt-3 text-sm leading-7 text-[#3a3048]">
                   {synastryData.layers?.[layer.id] ?? layerReading(aspects, layer, innerName, outerName)}
                 </p>
               </details>
@@ -350,25 +364,25 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
   return (
     <section className="mx-auto max-w-3xl py-16">
       <div className="mx-auto mb-8 max-w-2xl text-center">
-        <p className="text-sm leading-7 text-ivory/60">
+        <p className="text-sm leading-7 text-[#3a3048]">
           {synastryCopy.intro}
         </p>
       </div>
-      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">{synastryCopy.eyebrow}</p>
+      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">{synastryCopy.eyebrow}</p>
       <h2 className="mt-2 font-serif text-[34px] leading-tight text-ivory sm:text-[52px]">{synastryCopy.title}</h2>
       {partners.length ? (
-        <div className="mt-8 border-y border-white/10">
+        <div className="mt-8 border-y border-black/10">
           {partners.map((partner) => (
-            <div key={partner.id} className="flex flex-wrap items-center justify-between gap-4 border-b border-white/8 py-4 last:border-b-0">
+            <div key={partner.id} className="flex flex-wrap items-center justify-between gap-4 border-b border-black/10 py-4 last:border-b-0">
               <div>
                 <p className="font-serif text-xl text-ivory">{partner.name}</p>
-                <p className="text-xs uppercase tracking-[0.18em] text-ivory/38">{partner.birth_date} · {partner.birth_city}</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-[#3a3048]">{partner.birth_date} · {partner.birth_city}</p>
               </div>
               <div className="flex gap-2">
-                <button type="button" className="border border-dusty-gold/28 px-4 py-2 text-xs uppercase tracking-[0.18em] text-dusty-gold/82" onClick={() => { setSelectedPartner(partner); setFlipped(false); }}>{synastryCopy.compare}</button>
+                <button type="button" className="border border-black/20 bg-transparent px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory transition hover:bg-black/[0.05]" onClick={() => { setSelectedPartner(partner); setFlipped(false); }}>{synastryCopy.compare}</button>
                 <button
                   type="button"
-                  className="border border-white/10 px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory/42"
+                  className="border border-black/20 bg-transparent px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory transition hover:bg-black/[0.05]"
                   onClick={() => {
                     startTransition(async () => {
                       if (!partner.id.startsWith("local-")) {
@@ -388,9 +402,9 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
 
       <div className="mt-10 grid gap-5 border-t border-dusty-gold/14 pt-8">
         <p className="font-serif text-2xl text-ivory">{synastryCopy.addPerson}</p>
-        <input className="rounded-2xl border border-white/12 bg-black/25 px-4 py-3.5 text-sm text-ivory outline-none" placeholder="Nombre" value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
-        <input className="rounded-2xl border border-white/12 bg-black/25 px-4 py-3.5 text-sm text-ivory outline-none" type="date" value={form.birthDate} onChange={(event) => setForm((current) => ({ ...current, birthDate: clampIsoDateYear(event.target.value) }))} />
-        <input className="rounded-2xl border border-white/12 bg-black/25 px-4 py-3.5 text-sm text-ivory outline-none" type="time" value={form.birthTime} onChange={(event) => setForm((current) => ({ ...current, birthTime: event.target.value }))} />
+        <input className="rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-sm text-ivory outline-none transition placeholder:text-muted-ivory hover:border-black/25" placeholder="Nombre" value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
+        <input className="rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-sm text-ivory outline-none transition placeholder:text-muted-ivory hover:border-black/25" type="date" value={form.birthDate} onChange={(event) => setForm((current) => ({ ...current, birthDate: clampIsoDateYear(event.target.value) }))} />
+        <input className="rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-sm text-ivory outline-none transition placeholder:text-muted-ivory hover:border-black/25" type="time" value={form.birthTime} onChange={(event) => setForm((current) => ({ ...current, birthTime: event.target.value }))} />
         <LocationAutocomplete
           value={form.birthCity}
           selectedLocation={form.selectedLocation}

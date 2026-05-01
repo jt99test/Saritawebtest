@@ -145,26 +145,26 @@ export function LocationAutocomplete({
         aria-expanded={showDropdown}
         aria-controls={listId}
         aria-autocomplete="list"
-        className="w-full rounded-2xl border border-white/12 bg-black/25 px-4 py-3.5 text-sm text-ivory outline-none transition placeholder:text-ivory/28 focus:border-dusty-gold/55 focus:ring-2 focus:ring-dusty-gold/20 disabled:opacity-50"
+        className="w-full rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-sm text-ivory outline-none transition placeholder:text-muted-ivory hover:border-black/25 focus:border-dusty-gold/55 focus:ring-2 focus:ring-dusty-gold/20 disabled:opacity-50"
       />
 
       {selectedLocation ? (
-        <p className="mt-2 text-xs leading-5 text-dusty-gold/78">
+        <p className="mt-2 text-xs leading-5 text-[#6f613a]">
           {dictionary.form.locationStatus.selected}: {selectedLocation.displayName}
         </p>
       ) : (
-        <p className="mt-2 text-xs leading-5 text-ivory/42">{dictionary.form.locationStatus.hint}</p>
+        <p className="mt-2 text-xs leading-5 text-[#3a3048]">{dictionary.form.locationStatus.hint}</p>
       )}
 
       {showDropdown ? (
         <div
           id={listId}
-          className="absolute left-0 right-0 z-20 mt-3 overflow-hidden rounded-[1.4rem] border border-white/10 bg-[linear-gradient(180deg,rgba(11,13,22,0.96),rgba(8,10,18,0.98))] shadow-[0_30px_90px_rgba(0,0,0,0.42)] backdrop-blur-xl"
+          className="absolute left-0 right-0 z-20 mt-3 overflow-hidden rounded-[1.4rem] border border-black/10 bg-cosmic-900 shadow-[0_30px_90px_rgba(0,0,0,0.18)] backdrop-blur-xl"
         >
           {loading ? (
-            <div className="px-4 py-4 text-sm text-ivory/58">{dictionary.form.locationStatus.searching}</div>
+            <div className="px-4 py-4 text-sm text-[#3a3048]">{dictionary.form.locationStatus.searching}</div>
           ) : error ? (
-            <div className="px-4 py-4 text-sm text-ivory/58">{error}</div>
+            <div className="px-4 py-4 text-sm text-[#3a3048]">{error}</div>
           ) : suggestions.length > 0 ? (
             <ul className="max-h-72 overflow-y-auto py-2">
               {suggestions.map((suggestion, index) => {
@@ -178,18 +178,18 @@ export function LocationAutocomplete({
                       onClick={() => handleSelect(suggestion)}
                       className={[
                         "flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition",
-                        active ? "bg-white/[0.06]" : "hover:bg-white/[0.04]",
+                        active ? "bg-black/[0.06]" : "hover:bg-black/[0.04]",
                       ].join(" ")}
                     >
                       <div>
                         <p className="text-sm text-ivory">{suggestion.displayName}</p>
-                        <p className="mt-1 text-xs text-ivory/46">
+                        <p className="mt-1 text-xs text-[#3a3048]">
                           {suggestion.city}
                           {suggestion.region ? ` · ${suggestion.region}` : ""}
                           {suggestion.country ? ` · ${suggestion.country}` : ""}
                         </p>
                       </div>
-                      <span className="mt-0.5 text-[0.65rem] uppercase tracking-[0.22em] text-dusty-gold/82">
+                      <span className="mt-0.5 text-[12px] uppercase tracking-[0.22em] text-[#6f613a]">
                         {suggestion.timezone}
                       </span>
                     </button>
@@ -198,7 +198,7 @@ export function LocationAutocomplete({
               })}
             </ul>
           ) : (
-            <div className="px-4 py-4 text-sm text-ivory/58">{dictionary.form.locationStatus.empty}</div>
+            <div className="px-4 py-4 text-sm text-[#3a3048]">{dictionary.form.locationStatus.empty}</div>
           )}
         </div>
       ) : null}

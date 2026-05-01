@@ -13,10 +13,10 @@ export function ReadingsArchiveHeader() {
 
   return (
     <>
-      <div className="mx-auto mb-10 flex max-w-3xl items-center justify-between gap-4 border-b border-white/8 pb-4">
+      <div className="mx-auto mb-10 flex max-w-3xl items-center justify-between gap-4 border-b border-black/10 pb-4">
         <Link
           href="/"
-          className="text-xs font-medium uppercase tracking-[0.24em] text-ivory/58 transition hover:text-ivory"
+          className="text-xs font-medium uppercase tracking-[0.24em] text-[#3a3048] transition hover:text-ivory"
         >
           {dictionary.readings.back}
         </Link>
@@ -26,7 +26,7 @@ export function ReadingsArchiveHeader() {
       <div className="mx-auto max-w-3xl">
         <div className="grid gap-6 sm:grid-cols-[1fr_auto] sm:items-end">
           <div>
-            <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.24em] text-dusty-gold/58">
+            <p className="mb-3 text-[12px] font-semibold uppercase tracking-[0.24em] text-[#6f613a]">
               {dictionary.readings.eyebrow}
             </p>
             <h1 className="font-serif text-[48px] font-normal leading-none text-ivory">

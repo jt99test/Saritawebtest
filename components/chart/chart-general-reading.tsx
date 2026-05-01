@@ -39,6 +39,23 @@ const GATE_GLYPHS: Partial<Record<ChartPointId | "ascendant", string>> = {
   ascendant: "AC",
 };
 
+const GLYPH_COLORS: Partial<Record<ChartPointId | "ascendant", string>> = {
+  sun: "#b88400",
+  moon: "#6c7286",
+  venus: "#9b5fb7",
+  mercury: "#3a8a76",
+  mars: "#b74337",
+  jupiter: "#8a6a25",
+  saturn: "#77724d",
+  uranus: "#347f91",
+  neptune: "#4d61b2",
+  pluto: "#7e4b91",
+  northNode: "#b88400",
+  southNode: "#a87900",
+  chiron: "#6e8b55",
+  ascendant: "#b88400",
+};
+
 const GATE_META_BY_THEME: Partial<Record<GeneralReadingTheme, GateMeta>> = {
   "tu-esencia": { pointId: "sun", glyph: "☉" },
   "como-sientes": { pointId: "moon", glyph: "☽" },
@@ -205,7 +222,7 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
   return (
     <section className="pb-12 lg:pb-14">
       <div className="mx-auto max-w-[720px] text-center">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
           tu carta, en esencia
         </p>
         <h2 className="mt-1.5 font-serif text-[30px] font-normal leading-tight text-ivory lg:text-[36px]">
@@ -213,7 +230,7 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
         </h2>
       </div>
 
-      <div className="mx-auto mt-7 max-w-[700px] lg:mt-8">
+      <div className="mx-auto mt-7 max-w-[760px] lg:mt-8">
         {cards.map((card, index) => {
           const expanded = expandedId === card.id;
           const cachedContent = cachedReadings[card.theme] ?? "";
@@ -237,13 +254,13 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
             <article
               key={card.id}
               className={[
-                "border-t-[0.5px] border-dusty-gold/15",
+                "border-t border-black/12",
                 index === cards.length - 1 ? "border-b-[0.5px]" : "",
               ].join(" ")}
             >
               <button
                 type="button"
-                className="group grid w-full cursor-pointer grid-cols-[48px_minmax(0,1fr)_112px] items-center gap-4 py-4.5 text-left transition duration-200 hover:bg-dusty-gold/[0.03] sm:grid-cols-[56px_minmax(0,1fr)_140px] lg:grid-cols-[64px_minmax(0,1fr)_144px] lg:py-5"
+                className="group grid w-full cursor-pointer grid-cols-[56px_minmax(0,1fr)_112px] items-center gap-4 py-5 text-left transition duration-200 hover:bg-black/[0.035] sm:grid-cols-[64px_minmax(0,1fr)_140px] lg:grid-cols-[72px_minmax(0,1fr)_144px] lg:py-6"
                 onClick={() => {
                   setExpandedId(expanded ? null : card.id);
                   if (!cachedContent && !streamingContent && !loading) {
@@ -252,25 +269,28 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
                 }}
                 aria-expanded={expanded}
               >
-                <span className="text-center font-serif text-[28px] text-[rgba(255,255,255,0.58)] lg:text-[32px]">
+                <span
+                  className="text-center font-serif text-[34px] leading-none lg:text-[40px]"
+                  style={{ color: GLYPH_COLORS[gateMeta.pointId] }}
+                >
                   {GATE_GLYPHS[gateMeta.pointId] ?? gateMeta.glyph}
                 </span>
                 <span>
-                  <span className="block font-serif text-[21px] font-normal text-white lg:text-[24px]">
+                  <span className="block font-serif text-[25px] font-normal leading-tight text-ivory lg:text-[28px]">
                     {card.title}
                   </span>
-                  <span className="mt-1 block font-serif text-[13px] italic text-[rgba(255,255,255,0.5)] lg:text-sm">
+                  <span className="mt-1.5 block font-serif text-[15px] italic leading-6 text-[#3a3048] lg:text-base">
                     {subtitleFor(gateMeta.pointId, chart, dictionary)}
                   </span>
                 </span>
                 <span
                   className={[
-                    "inline-flex min-h-9 items-center justify-center px-3 text-center text-[10px] font-semibold uppercase tracking-[0.16em] transition",
+                    "inline-flex min-h-9 items-center justify-center px-3 text-center text-[12px] font-semibold uppercase tracking-[0.16em] transition",
                     loading
-                      ? "border-transparent bg-transparent px-0 text-dusty-gold/80"
+                      ? "border-transparent bg-transparent px-0 text-[#6f613a]"
                       : cachedContent
-                        ? "border border-white/10 bg-white/[0.025] text-ivory/62 group-hover:border-dusty-gold/30 group-hover:text-dusty-gold/86"
-                        : "border border-dusty-gold/28 bg-dusty-gold/[0.07] text-dusty-gold/88 shadow-[0_12px_32px_rgba(0,0,0,0.18)] group-hover:border-dusty-gold/50 group-hover:bg-dusty-gold/[0.11]",
+                        ? "border border-black/20 bg-transparent text-ivory group-hover:bg-black/[0.05]"
+                        : "border border-dusty-gold/60 bg-dusty-gold/[0.07] text-dusty-gold shadow-[0_12px_32px_rgba(0,0,0,0.12)] group-hover:border-dusty-gold group-hover:bg-dusty-gold/[0.11]",
                   ].join(" ")}
                 >
                   {actionLabel}
@@ -290,13 +310,13 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
                 <div className="max-w-[600px] pb-5 pl-[64px] sm:pl-[76px] lg:pl-[84px]">
                   {error ? (
                     <div className="space-y-4">
-                      <p className="font-serif text-[17px] leading-[1.75] text-[rgba(255,255,255,0.85)] lg:text-lg lg:leading-[1.8]">
+                      <p className="font-serif text-[17px] leading-[1.75] text-ivory lg:text-lg lg:leading-[1.8]">
                         {error}
                       </p>
                       <button
                         type="button"
                         onClick={() => void generateReading(card.theme)}
-                        className="inline-flex items-center justify-center border border-dusty-gold/28 bg-dusty-gold/[0.07] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-dusty-gold/86 transition hover:border-dusty-gold/50 hover:bg-dusty-gold/[0.11]"
+                        className="inline-flex items-center justify-center border border-dusty-gold/60 bg-dusty-gold/[0.07] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-dusty-gold transition hover:border-dusty-gold hover:bg-dusty-gold/[0.11]"
                       >
                         {dictionary.result.generalReading.retry} ↓
                       </button>
@@ -307,7 +327,7 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
                         {paragraphs.map((paragraph, paragraphIndex) => (
                           <p
                             key={`${card.id}-${paragraphIndex}`}
-                            className="font-serif text-[17px] leading-[1.75] text-[rgba(255,255,255,0.85)] lg:text-lg lg:leading-[1.8]"
+                            className="font-serif text-[17px] leading-[1.75] text-ivory lg:text-lg lg:leading-[1.8]"
                           >
                             {paragraph}
                           </p>
@@ -315,7 +335,7 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
                       </div>
                     </div>
                   ) : (
-                    <p className="font-serif text-[17px] leading-[1.75] text-[rgba(255,255,255,0.55)] lg:text-lg lg:leading-[1.8]">
+                    <p className="font-serif text-[17px] leading-[1.75] text-[#3a3048] lg:text-lg lg:leading-[1.8]">
                       {GENERAL_READING_THEMES.includes(card.theme)
                         ? dictionary.result.generalReading.placeholder
                         : ""}

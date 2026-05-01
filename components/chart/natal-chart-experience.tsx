@@ -10,6 +10,8 @@ import { AspectDetailPanel } from "@/components/chart/aspect-detail-panel";
 import { ChartBalanceSection } from "@/components/chart/chart-balance-section";
 import { ChartCompletePage } from "@/components/chart/chart-complete-page";
 import { ChartGeneralReading } from "@/components/chart/chart-general-reading";
+import { ChartShareActions } from "@/components/chart/chart-share-actions";
+import { ReadingUsageBanner } from "@/components/chart/reading-usage-banner";
 import { ChartSignaturesSection } from "@/components/chart/chart-signatures-section";
 import { useChartStore } from "@/components/chart/chart-store";
 import { ChartLayerRail, NatalChartWheel } from "@/components/chart/natal-chart-wheel";
@@ -106,7 +108,8 @@ export function NatalChartExperience({
   return (
     <div className="relative mx-auto max-w-[880px] px-4 pb-20 sm:px-6 lg:max-w-[1180px] lg:px-8">
       <div className="space-y-3">
-        <nav className="flex gap-0 overflow-x-auto border-b border-white/8 pb-0 pt-1 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
+        <div className="relative">
+        <nav className="flex gap-0 overflow-x-auto border-b border-black/10 pb-0 pt-1 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
           {PAGE_TABS.map((tab) => {
             const active = pageTab === tab;
             const requiredPlan = TAB_REQUIREMENTS[tab];
@@ -125,19 +128,21 @@ export function NatalChartExperience({
                   "group flex-shrink-0 border-b-[1.5px] px-5 pb-3 pt-2 text-left transition",
                   active
                     ? "border-dusty-gold bg-transparent"
-                    : "border-transparent bg-transparent hover:border-dusty-gold/30",
+                    : locked
+                      ? "border-transparent bg-dusty-gold/[0.06] hover:border-dusty-gold/30"
+                      : "border-transparent bg-transparent hover:border-dusty-gold/30",
                 ].join(" ")}
               >
                 <span
                   className={[
-                    "flex items-center gap-2 text-[0.65rem] font-semibold uppercase leading-none tracking-[0.22em] transition",
-                    active ? "text-dusty-gold" : "text-ivory/52 group-hover:text-ivory/78",
+                    "flex items-center gap-2 text-[12px] font-semibold uppercase leading-none tracking-[0.22em] transition",
+                    active ? "text-dusty-gold" : "text-[#3a3048] group-hover:text-ivory/78",
                   ].join(" ")}
                 >
                   {locked ? <span aria-hidden="true">🔒</span> : null}
                   {dictionary.result.primaryTabs[tab]}
                   {locked && requiredPlan ? (
-                    <span className="border border-dusty-gold/20 px-1.5 py-0.5 text-[9px] tracking-[0.14em] text-dusty-gold/80">
+                    <span className="border border-dusty-gold/20 px-1.5 py-0.5 text-[12px] tracking-[0.14em] text-[#6f613a]">
                       {requiredPlan === "pro" ? dictionary.paywall.lockedBadgePro : dictionary.paywall.lockedBadgeAvanzado}
                     </span>
                   ) : null}
@@ -146,13 +151,16 @@ export function NatalChartExperience({
             );
           })}
         </nav>
+        <div className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-cosmic-950 to-transparent md:hidden" />
+        </div>
+        <ReadingUsageBanner dictionary={dictionary} />
 
         {pageTab === "yoga" && !activeTabLocked ? <YogaAstralPage chart={chart} /> : null}
       </div>
 
       {activeTabLocked && activeRequiredPlan ? (
         <div className="mx-auto mt-16 max-w-2xl border-y border-dusty-gold/14 py-14 text-center">
-          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/65">
+          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#6f613a]">
             {dictionary.result.primaryTabs[pageTab]}
           </p>
           <h2 className="mt-3 font-serif text-[38px] leading-tight text-ivory">
@@ -161,7 +169,7 @@ export function NatalChartExperience({
               activeRequiredPlan === "pro" ? dictionary.paywall.proName : dictionary.paywall.avanzadoName,
             )}
           </h2>
-          <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-ivory/58">
+          <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-[#3a3048]">
             {dictionary.paywall.lockedTabBody.replace(
               "{plan}",
               activeRequiredPlan === "pro" ? dictionary.paywall.proName : dictionary.paywall.avanzadoName,
@@ -170,7 +178,7 @@ export function NatalChartExperience({
           <button
             type="button"
             onClick={() => openPricing(activeRequiredPlan)}
-            className="mt-8 border border-dusty-gold/32 bg-dusty-gold/10 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold/88 transition hover:border-dusty-gold/55 hover:bg-dusty-gold/16"
+            className="mt-8 border border-dusty-gold/32 bg-dusty-gold/10 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#6f613a] transition hover:border-dusty-gold/55 hover:bg-dusty-gold/16"
           >
             {dictionary.paywall.lockedTabCta}
           </button>
@@ -180,7 +188,7 @@ export function NatalChartExperience({
       {pageTab === "natal" && !activeTabLocked ? (
         <>
           <div className="mx-auto mt-8 max-w-2xl text-center">
-            <p className="text-sm leading-7 text-ivory/60">
+            <p className="text-sm leading-7 text-[#3a3048]">
               Esta es tu carta natal: una foto del cielo exactamente en el momento en que naciste. Cada planeta marca algo tuyo — cómo piensas, qué te mueve, dónde tienes fuerza, dónde tienes fricción. Toca cualquier planeta para leer qué dice sobre ti.
             </p>
           </div>
@@ -188,39 +196,39 @@ export function NatalChartExperience({
           <section className="pt-8">
             <div className="flex flex-wrap items-center justify-center gap-3">
               {isMock ? (
-                <div className="rounded-full border border-dusty-gold/18 bg-dusty-gold/8 px-4 py-2 text-xs uppercase tracking-[0.24em] text-dusty-gold/82">
+                <div className="rounded-full border border-dusty-gold/18 bg-dusty-gold/8 px-4 py-2 text-xs uppercase tracking-[0.24em] text-[#6f613a]">
                   {dictionary.result.messages.mockNotice}
                 </div>
               ) : null}
             </div>
 
             <div className="mt-10 mb-10 text-center lg:hidden">
-              <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.35)]">
+              <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-dusty-gold">
                 {dictionary.result.chartHeader.eyebrow}
               </p>
               <h1 className={`mx-auto -mt-1 max-w-full break-words font-serif font-normal leading-none text-ivory [overflow-wrap:anywhere] ${titleNameClass}`}>
                 {firstName}
               </h1>
-              <p className="mt-4 font-serif text-[14px] italic text-[rgba(255,255,255,0.5)]">
+              <p className="mt-4 font-serif text-[14px] italic text-[#3a3048]">
                 {headerSubtitle}
               </p>
             </div>
 
             <div className="relative mx-auto max-w-[56rem] py-6 lg:max-w-[1180px]">
-              <div className="space-y-6 lg:grid lg:grid-cols-[minmax(220px,1fr)_minmax(500px,640px)_minmax(140px,0.65fr)] lg:items-center lg:gap-8 lg:space-y-0">
+              <div className="space-y-6 lg:grid lg:grid-cols-[minmax(220px,1fr)_minmax(500px,640px)_minmax(180px,0.75fr)] lg:items-center lg:gap-8 lg:space-y-0">
                 <div className="hidden min-w-0 text-right lg:block">
-                  <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.35)]">
+                  <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-dusty-gold">
                     {dictionary.result.chartHeader.eyebrow}
                   </p>
                   <h1 className={`-mt-1 ml-auto max-w-[300px] break-words font-serif font-normal leading-none text-ivory [overflow-wrap:anywhere] ${titleNameClass}`}>
                     {firstName}
                   </h1>
-                  <p className="ml-auto mt-4 max-w-[260px] font-serif text-[15px] italic leading-6 text-[rgba(255,255,255,0.5)]">
+                  <p className="ml-auto mt-4 max-w-[260px] font-serif text-[15px] italic leading-6 text-[#3a3048]">
                     {headerSubtitle}
                   </p>
                 </div>
 
-                <div className="relative z-10 flex justify-center">
+                <div className="sarita-natal-chart relative z-10 flex justify-center">
                   <NatalChartWheel chart={chart} />
                 </div>
                 <div className="min-w-0 lg:self-center">
@@ -230,10 +238,11 @@ export function NatalChartExperience({
             </div>
 
             {!panelOpen && !selectedPointId ? (
-              <p className="mt-3 text-center font-serif text-[13px] italic text-[rgba(255,255,255,0.32)]">
+              <p className="mt-3 text-center font-serif text-[13px] italic text-[#3a3048]">
                 {dictionary.result.chartHeader.selectPlanet}
               </p>
             ) : null}
+            <ChartShareActions chart={chart} dictionary={dictionary} plan={plan} />
           </section>
 
           {!panelOpen && !selectedPointId ? (

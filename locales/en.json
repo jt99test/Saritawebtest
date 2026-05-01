@@ -135,8 +135,20 @@
     "lockedTabCta": "View plans",
     "proName": "Pro",
     "avanzadoName": "Advanced",
-    "proFeatures": ["Personalised moon of the month", "Astral yoga based on your chart", "Intestinal cleanse free with yearly plan"],
-    "avanzadoFeatures": ["Everything in Pro", "Real-time transits", "Solar Return", "Synastry", "Intestinal cleanse free with yearly plan"],
+    "proTagline": "Moon, yoga and your full chart",
+    "avanzadoTagline": "Everything. Transits, solar return and synastry.",
+    "proFeatures": [
+      "Personalised moon of the month",
+      "Astral yoga based on your chart",
+      "Intestinal cleanse free with yearly plan"
+    ],
+    "avanzadoFeatures": [
+      "Everything in Pro",
+      "Real-time transits",
+      "Solar Return",
+      "Synastry",
+      "Intestinal cleanse free with yearly plan"
+    ],
     "lavadoFreeHighlight": "Free with yearly plan",
     "checkoutLoading": "Redirecting...",
     "lavado": {
@@ -147,7 +159,11 @@
     },
     "successBanner": "Plan activated. You now have full access.",
     "cancelBanner": "Payment cancelled. Come back whenever you're ready.",
-    "manageSubscription": "Manage subscription"
+    "manageSubscription": "Manage subscription",
+    "cancelAnytime": "Cancel anytime"
+  },
+  "yogaAstral": {
+    "asanas": "asanas"
   },
   "result": {
     "intro": "This is how the planets were aligned when you were born.",
@@ -210,6 +226,9 @@
       "mainConnections": "Main connections",
       "readingEyebrow": "relationship reading",
       "readingLoading": "Generating reading...",
+      "legendHarmonious": "Harmonious",
+      "legendTense": "Tense",
+      "legendNeutral": "Neutral",
       "compareAnother": "Compare with another person",
       "orb": "orb",
       "aspectQuality": {
@@ -241,6 +260,7 @@
       "readingLoading": "Generating reading...",
       "activatedAreasEyebrow": "activated life areas",
       "activatedAreaBody": "This is activated through {points}. Read this house as a stage: the transit is not only moving events, it is also asking for a new way of showing up in your life.",
+      "houseLabel": "House",
       "viewTransits": "see main activations",
       "strengthTight": "very close activation",
       "strengthModerate": "active activation",
@@ -257,7 +277,15 @@
       "aspectTitle": "Aspect matrix",
       "showAspects": "Show matrix",
       "hideAspects": "Hide matrix",
-      "columns": ["", "Name", "Sign", "Degree", "House", "℞", "Dignity"],
+      "columns": [
+        "",
+        "Name",
+        "Sign",
+        "Degree",
+        "House",
+        "℞",
+        "Dignity"
+      ],
       "houseSystems": {
         "P": "Placidus",
         "W": "Whole Sign",
@@ -571,6 +599,164 @@
       "equal": "Equal Houses",
       "geocentric": "Geocentric"
     }
+  },
+  "legal": {
+    "cookieMessage": "We use cookies to improve your experience.",
+    "cookieAccept": "Accept",
+    "cookieDecline": "Decline",
+    "cookiePrivacy": "Privacy policy",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "lastUpdated": "Last updated",
+    "updatedDate": "May 1, 2026",
+    "contact": "Contact",
+    "privacyTitle": "Privacy Policy",
+    "privacyIntro": "We handle your data with care and only use what is needed to provide the service.",
+    "privacySections": [
+      {
+        "title": "Data we collect",
+        "body": "We may collect your name, birth date, birth city, email address and the technical data needed to create and protect your account."
+      },
+      {
+        "title": "Why we use it",
+        "body": "We use this data to calculate your natal chart, create your account, save readings and manage billing or subscriptions when you choose a paid plan."
+      },
+      {
+        "title": "Who we share it with",
+        "body": "We use Supabase for authentication and database storage, Stripe for payments and Anthropic for AI readings. We only share what each function needs."
+      },
+      {
+        "title": "Your rights",
+        "body": "You can request access, deletion or portability of your data by writing to hola@saritashakti.com."
+      }
+    ],
+    "termsTitle": "Terms of Service",
+    "termsIntro": "These terms explain how you can use SARITA and what you can expect from the platform.",
+    "termsSections": [
+      {
+        "title": "Service description",
+        "body": "SARITA offers natal chart calculation, astrology readings, Moon of the Month, Astral Yoga, transits, Solar Return, synastry and related digital content."
+      },
+      {
+        "title": "Subscriptions",
+        "body": "Pro and Avanzado plans are billed monthly or yearly depending on your selection. You can cancel renewal from subscription management."
+      },
+      {
+        "title": "One-time purchases",
+        "body": "Some content, such as Intestinal Cleanse, may be purchased as one-time digital access when it is not included in your plan."
+      },
+      {
+        "title": "Refunds",
+        "body": "Digital content is non-refundable unless required by applicable law."
+      },
+      {
+        "title": "Acceptable use",
+        "body": "You may not use SARITA for abuse, scraping, unauthorized redistribution, reverse engineering or illegal activity."
+      },
+      {
+        "title": "Governing law",
+        "body": "These terms are governed by the laws of Spain."
+      }
+    ]
+  },
+  "pricing": {
+    "eyebrow": "plans",
+    "headline": "Choose your plan",
+    "subtitle": "No surprises. Cancel anytime.",
+    "free": "Free",
+    "startFree": "Start free",
+    "faqTitle": "Frequently asked questions",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "current": "Current",
+    "choose": "Choose plan",
+    "includedYearly": "yearly",
+    "limited": "limited",
+    "notIncluded": "—",
+    "tableTitle": "Full comparison",
+    "rows": [
+      "Full natal chart",
+      "Planet readings",
+      "Moon of the month",
+      "Astral yoga",
+      "Real-time transits",
+      "Solar Return",
+      "Synastry",
+      "Intestinal Cleanse"
+    ],
+    "faqs": [
+      {
+        "question": "Can I cancel anytime?",
+        "answer": "Yes, from your account settings. No questions asked."
+      },
+      {
+        "question": "What happens when I cancel?",
+        "answer": "You keep access until the end of your billing period."
+      },
+      {
+        "question": "Is Intestinal Cleanse included?",
+        "answer": "Free with any yearly plan. Otherwise €49.99 one-time."
+      },
+      {
+        "question": "What is the difference between Pro and Avanzado?",
+        "answer": "Pro gives you Moon of the Month and Astral Yoga. Avanzado adds Transits, Solar Return and Synastry."
+      },
+      {
+        "question": "Do you offer refunds?",
+        "answer": "Digital content is non-refundable unless required by law."
+      }
+    ]
+  },
+  "account": {
+    "title": "My account",
+    "plan": "Current plan",
+    "manageBilling": "Manage billing",
+    "upgradePlan": "Upgrade plan",
+    "email": "Email address",
+    "changePassword": "Change password",
+    "passwordSent": "We've sent a link to your email.",
+    "dangerZone": "Danger zone",
+    "deleteAccount": "Delete account",
+    "deleteConfirmTitle": "Delete your account?",
+    "deleteConfirmBody": "You will lose all your data. This action cannot be undone.",
+    "deleteConfirmWord": "DELETE",
+    "deleteConfirmPlaceholder": "Type DELETE to confirm",
+    "deleteButton": "Delete permanently",
+    "billingPeriod": "Billing",
+    "renewalDate": "Renewal",
+    "noRenewalDate": "Not available",
+    "freePlanNote": "You can upgrade your plan anytime."
+  },
+  "chart": {
+    "share": "Share chart",
+    "download": "Download",
+    "linkCopied": "Link copied!",
+    "shareTitle": "Your natal chart",
+    "shareSubtitle": "Share your chart with anyone.",
+    "copyLink": "Copy link",
+    "downloadLockedTooltip": "Available on Pro plan",
+    "createCta": "Create your chart in SARITA",
+    "sharedNotFound": "We could not find this shared chart.",
+    "ascendantLabel": "Ascendant"
+  },
+  "usage": {
+    "limitNotice": "You've used {count} of {limit} readings this month.",
+    "upgrade": "View plans"
+  },
+  "auth": {
+    "signUp": "Create account",
+    "signIn": "Sign in",
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "you@email.com",
+    "passwordPlaceholder": "minimum 6 characters",
+    "processing": "Processing",
+    "continueWithGoogle": "Continue with Google",
+    "or": "or"
+  },
+  "nav": {
+    "pricing": "Pricing",
+    "help": "Help",
+    "account": "Account"
   }
 }
-

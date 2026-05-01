@@ -15,7 +15,7 @@ export function PremiumCard<T extends ElementType = "div">({
 
   return createElement(Component, {
     className:
-      `rounded-[1.8rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] ${className}`.trim(),
+      `rounded-[1.2rem] border border-black/12 bg-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] ${className}`.trim(),
     ...props,
   });
 }

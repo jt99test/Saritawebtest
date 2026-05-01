@@ -14,8 +14,8 @@ export function LanguageSelector({
   onChange,
 }: LanguageSelectorProps) {
   return (
-    <div className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-black/12 px-2 py-2 shadow-[0_10px_30px_rgba(0,0,0,0.18)] backdrop-blur-md">
-      <span className="px-2 text-[0.58rem] font-medium uppercase tracking-[0.3em] text-ivory/36">
+    <div className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/12 px-2 py-2 shadow-[0_10px_30px_rgba(0,0,0,0.18)] backdrop-blur-md">
+      <span className="px-2 text-[12px] font-medium uppercase tracking-[0.3em] text-[#3a3048]">
         {dictionary.common.languageLabel}
       </span>
       <div className="flex items-center gap-1">
@@ -29,10 +29,10 @@ export function LanguageSelector({
               onClick={() => onChange(option)}
               aria-pressed={isActive}
               className={[
-                "rounded-full px-3 py-1.5 text-[0.65rem] font-medium tracking-[0.24em] transition",
+                "rounded-full px-3 py-1.5 text-[12px] font-medium tracking-[0.24em] transition",
                 isActive
                   ? "bg-white text-cosmic-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]"
-                  : "text-ivory/52 hover:bg-white/7 hover:text-ivory",
+                  : "text-[#3a3048] hover:bg-white/7 hover:text-ivory",
               ].join(" ")}
             >
               {dictionary.common.languages[option]}

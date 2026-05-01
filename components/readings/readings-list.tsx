@@ -39,7 +39,7 @@ export function ReadingsList({ readings }: { readings: StoredReading[] }) {
   if (!readings.length) {
     return (
       <div className="mt-8 grid overflow-hidden border-t border-dusty-gold/14 pt-7 sm:grid-cols-[0.9fr_1.1fr] sm:gap-8">
-        <div className="relative hidden min-h-52 overflow-hidden border border-white/8 sm:block">
+        <div className="relative hidden min-h-52 overflow-hidden border border-black/10 sm:block">
           <Image
             src={illustrations.scenes.landing}
             alt=""
@@ -47,18 +47,18 @@ export function ReadingsList({ readings }: { readings: StoredReading[] }) {
             className="object-cover opacity-58 saturate-[0.78]"
             sizes="320px"
           />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(5,7,13,0.2),rgba(5,7,13,0.84))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.04),rgba(0,0,0,0.04))]" />
         </div>
         <div className="flex flex-col justify-center">
           <p className="font-serif text-[25px] leading-tight text-ivory">
             {dictionary.readings.emptyTitle}
           </p>
-          <p className="mt-3 max-w-md text-sm leading-7 text-ivory/58">
+          <p className="mt-3 max-w-md text-sm leading-7 text-[#3a3048]">
             {dictionary.readings.emptyBody}
           </p>
           <PrimaryButton
             href="/form"
-            className="mt-6 self-start px-5 py-3 text-[0.72rem] uppercase tracking-[0.18em]"
+            className="mt-6 self-start px-5 py-3 text-[12px] uppercase tracking-[0.18em]"
           >
             {dictionary.readings.emptyCta}
           </PrimaryButton>
@@ -85,7 +85,7 @@ export function ReadingsList({ readings }: { readings: StoredReading[] }) {
         return (
           <article
             key={reading.id}
-            className="grid gap-4 border-b border-white/8 py-5 transition hover:border-dusty-gold/24 sm:grid-cols-[1fr_auto] sm:items-center"
+            className="grid gap-4 border-b border-black/10 py-5 transition hover:border-dusty-gold/24 sm:grid-cols-[1fr_auto] sm:items-center"
           >
             <button
               type="button"
@@ -103,7 +103,7 @@ export function ReadingsList({ readings }: { readings: StoredReading[] }) {
               <p className="font-serif text-[21px] leading-tight text-ivory">
                 {label}
               </p>
-              <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-ivory/38">
+              <p className="mt-1 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048]">
                 {typeLabel} · {date}
               </p>
             </button>
@@ -126,14 +126,14 @@ export function ReadingsList({ readings }: { readings: StoredReading[] }) {
                         }
                       });
                     }}
-                    className="inline-flex min-w-20 items-center justify-center border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-100/82 transition hover:border-amber-300/45"
+                    className="inline-flex min-w-20 items-center justify-center border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-amber-100/82 transition hover:border-amber-300/45"
                   >
                     {isPending && pendingId === reading.id ? "..." : dictionary.readings.delete}
                   </button>
                   <button
                     type="button"
                     onClick={() => setConfirmingId(null)}
-                    className="inline-flex min-w-20 items-center justify-center border border-white/10 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-ivory/52 transition hover:text-ivory"
+                    className="inline-flex min-w-20 items-center justify-center border border-black/10 px-3 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-ivory"
                   >
                     {dictionary.readings.cancel}
                   </button>
@@ -151,14 +151,14 @@ export function ReadingsList({ readings }: { readings: StoredReading[] }) {
                       window.sessionStorage.setItem(CHART_RESULT_KEY, JSON.stringify(result));
                       router.push("/resultado");
                     }}
-                    className="inline-flex min-w-24 items-center justify-center border border-dusty-gold/24 bg-dusty-gold/[0.055] px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-dusty-gold/82 transition hover:border-dusty-gold/42 hover:bg-dusty-gold/[0.085] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex min-w-24 items-center justify-center border border-dusty-gold/24 bg-dusty-gold/[0.055] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#6f613a] transition hover:border-dusty-gold/42 hover:bg-dusty-gold/[0.085] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {dictionary.readings.open}
                   </button>
                   <button
                     type="button"
                     onClick={() => setConfirmingId(reading.id)}
-                    className="inline-flex min-w-24 items-center justify-center border border-white/10 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-ivory/42 transition hover:border-amber-300/28 hover:text-amber-100/78"
+                    className="inline-flex min-w-24 items-center justify-center border border-black/10 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:border-amber-300/28 hover:text-amber-100/78"
                   >
                     {dictionary.readings.delete}
                   </button>

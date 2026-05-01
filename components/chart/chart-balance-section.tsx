@@ -182,7 +182,7 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
                     x={labelPoint.x}
                     y={labelPoint.y + 10}
                     textAnchor="middle"
-                    className="font-serif text-[10px]"
+                    className="font-serif text-[12px]"
                     fill={active ? "#e8c547" : "rgba(255,255,255,0.7)"}
                   >
                     {elementPercent}%
@@ -193,29 +193,29 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
           </svg>
           {hoveredElement ? (
             <div
-              className="pointer-events-none absolute left-1/2 top-1/2 z-20 w-56 -translate-x-1/2 -translate-y-1/2 border border-white/12 p-3 text-left text-xs leading-5 text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]"
+              className="pointer-events-none absolute left-1/2 top-1/2 z-20 w-56 -translate-x-1/2 -translate-y-1/2 border border-black/15 p-3 text-left text-xs leading-5 text-ivory shadow-[0_18px_50px_rgba(0,0,0,0.35)]"
               style={{ backgroundColor: ELEMENT_COLORS[hoveredElement] }}
             >
-              <p className="mb-1 text-[12px] font-semibold uppercase tracking-[0.2em] text-white/78">
+              <p className="mb-1 text-[12px] font-semibold uppercase tracking-[0.2em] text-ivory/78">
                 {dictionary.result.elements[hoveredElement]}
               </p>
               {ELEMENT_TOOLTIPS[hoveredElement]}
             </div>
           ) : null}
           </div>
-          <p className="mt-3 text-center text-xs leading-6 text-[rgba(255,255,255,0.5)] lg:hidden">
+          <p className="mt-3 text-center text-xs leading-6 text-[#3a3048] lg:hidden">
             {modalityLine}
           </p>
         </div>
 
         <div>
-          <p className="font-serif text-[18px] leading-[1.65] text-white lg:max-w-[440px] lg:text-[21px] lg:leading-[1.58]">
+          <p className="font-serif text-[18px] leading-[1.65] text-ivory lg:max-w-[440px] lg:text-[21px] lg:leading-[1.58]">
             {firstName}, {ELEMENT_STATEMENTS[dominantElement]}
           </p>
         </div>
       </div>
 
-      <p className="mx-auto mt-7 hidden max-w-[720px] text-center font-serif text-sm italic leading-6 text-[rgba(255,255,255,0.45)] lg:block">
+      <p className="mx-auto mt-7 hidden max-w-[720px] text-center font-serif text-sm italic leading-6 text-[#3a3048] lg:block">
         {modalityLine}
       </p>
     </section>

@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #05070d;
-  --foreground: #ece8df;
+  --background: #f5f0e6;
+  --foreground: #1e1a2e;
 }
 
 @theme inline {
@@ -10,16 +10,18 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-manrope);
   --font-serif: var(--font-bodoni);
-  --color-cosmic-950: #05070d;
-  --color-cosmic-900: #0a0f17;
-  --color-midnight-900: #101521;
-  --color-midnight-800: #171d2b;
-  --color-nebula-300: #8292d6;
-  --color-nebula-400: #6979bc;
-  --color-dusty-gold: #b5a36e;
-  --color-silver-haze: #bfc7dc;
-  --color-ivory: #ece8df;
-  --color-muted-ivory: #c7c2b6;
+  --color-cosmic-950: #f5f0e6;
+  --color-cosmic-900: #ede7d9;
+  --color-midnight-900: #f0ebe0;
+  --color-midnight-800: #ddd6c6;
+  --color-nebula-300: #6272b6;
+  --color-nebula-400: #4a5a9a;
+  --color-dusty-gold: #8a7a4e;
+  --color-silver-haze: #4a4860;
+  --color-ivory: #1e1a2e;
+  --color-muted-ivory: #3a3048;
+  --color-overlay: #05070d;
+  --color-chart-surface: #0a0f17;
 }
 
 * {
@@ -27,7 +29,7 @@
 }
 
 html {
-  background: #05070d;
+  background: #f5f0e6;
 }
 
 body {
@@ -59,8 +61,8 @@ h6 {
 
 .premium-noise::after {
   background-image:
-    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.08) 0, transparent 1px),
-    radial-gradient(circle at 82% 64%, rgba(255, 255, 255, 0.055) 0, transparent 1px);
+    radial-gradient(circle at 18% 22%, rgba(0, 0, 0, 0.08) 0, transparent 1px),
+    radial-gradient(circle at 82% 64%, rgba(0, 0, 0, 0.055) 0, transparent 1px);
   background-size: 180px 180px, 260px 260px;
   content: "";
   inset: 0;
@@ -70,8 +72,8 @@ h6 {
 }
 
 ::selection {
-  background: rgba(181, 163, 110, 0.28);
-  color: #f7f2e8;
+  background: rgba(138, 122, 78, 0.28);
+  color: #1e1a2e;
 }
 
 :focus-visible {

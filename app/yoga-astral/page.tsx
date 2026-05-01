@@ -73,7 +73,7 @@ export default function YogaAstralRoutePage() {
           <div className="mb-6 flex items-center justify-between gap-4 pt-2">
             <Link
               href="/resultado"
-              className="text-xs font-medium uppercase tracking-[0.28em] text-ivory/54 transition hover:text-ivory"
+              className="text-xs font-medium uppercase tracking-[0.28em] text-[#3a3048] transition hover:text-ivory"
             >
               {dictionary.form.back}
             </Link>
@@ -84,25 +84,25 @@ export default function YogaAstralRoutePage() {
           ) : (
             <div className="flex flex-1 items-center justify-center">
               <div className="max-w-3xl text-center">
-                <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-dusty-gold/50">
+                <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#6f613a]">
                   yoga astral
                 </p>
-                <h1 className="mt-2 font-serif text-[48px] font-normal leading-tight text-white">
+                <h1 className="mt-2 font-serif text-[48px] font-normal leading-tight text-ivory">
                   {dictionary.standalonePages.needChartTitle}
                 </h1>
-                <p className="mx-auto mt-4 max-w-2xl font-serif text-[17px] italic leading-8 text-white/55">
+                <p className="mx-auto mt-4 max-w-2xl font-serif text-[17px] italic leading-8 text-[#3a3048]">
                   {dictionary.standalonePages.needChartBody}
                 </p>
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
                   <Link
                     href="/form"
-                    className="font-serif text-[15px] text-dusty-gold/90 transition hover:text-dusty-gold"
+                    className="font-serif text-[15px] text-[#6f613a] transition hover:text-dusty-gold"
                   >
                     {dictionary.standalonePages.goToForm}
                   </Link>
                   <Link
                     href="/resultado"
-                    className="font-serif text-[15px] text-white/62 transition hover:text-white"
+                    className="font-serif text-[15px] text-[#3a3048] transition hover:text-ivory"
                   >
                     {dictionary.standalonePages.backToResult}
                   </Link>

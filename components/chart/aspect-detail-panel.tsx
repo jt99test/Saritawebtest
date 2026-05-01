@@ -37,7 +37,7 @@ export function AspectDetailPanel({ chart }: Props) {
             <button
               type="button"
               onClick={() => selectAspect(null)}
-              className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full text-[18px] leading-none text-ivory/35 transition hover:text-ivory/80"
+              className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full text-[18px] leading-none text-[#3a3048] transition hover:text-ivory/80"
               aria-label="Cerrar"
             >
               ×
@@ -51,7 +51,7 @@ export function AspectDetailPanel({ chart }: Props) {
                 <span className="mt-1.5 font-serif text-[15px] leading-none text-ivory">
                   {dictionary.result.points[fromPoint.id]}
                 </span>
-                <span className="mt-1 text-[11px] text-ivory/45">
+                <span className="mt-1 text-[12px] text-[#3a3048]">
                   {dictionary.result.signs[fromPoint.sign]} · casa {fromPoint.house}
                 </span>
               </div>
@@ -60,10 +60,10 @@ export function AspectDetailPanel({ chart }: Props) {
                 <span className="font-serif text-[1.6rem] leading-none text-ivory/90">
                   {dictionary.result.aspectSymbols[selectedAspect.type]}
                 </span>
-                <span className="text-[9px] font-semibold uppercase tracking-[0.22em] text-ivory/50">
+                <span className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#3a3048]">
                   {dictionary.result.aspectTypes[selectedAspect.type]}
                 </span>
-                <span className="text-[11px] text-dusty-gold/82">
+                <span className="text-[12px] text-[#6f613a]">
                   {selectedAspect.orb.toFixed(1)}°
                 </span>
               </div>
@@ -75,7 +75,7 @@ export function AspectDetailPanel({ chart }: Props) {
                 <span className="mt-1.5 font-serif text-[15px] leading-none text-ivory">
                   {dictionary.result.points[toPoint.id]}
                 </span>
-                <span className="mt-1 text-[11px] text-ivory/45">
+                <span className="mt-1 text-[12px] text-[#3a3048]">
                   {dictionary.result.signs[toPoint.sign]} · casa {toPoint.house}
                 </span>
               </div>
