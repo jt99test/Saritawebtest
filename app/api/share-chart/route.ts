@@ -1,5 +1,5 @@
 import type { NatalChartData } from "@/lib/chart";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createServerSupabaseClient, createServiceSupabaseClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
   const supabase = await createServerSupabaseClient();
@@ -17,7 +17,11 @@ export async function POST(request: Request) {
     return new Response("Missing chart", { status: 400 });
   }
 
-  const { data, error } = await supabase
+  const writer = process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? createServiceSupabaseClient()
+    : supabase;
+
+  const { data, error } = await writer
     .from("shared_charts")
     .insert({ chart_data: chart })
     .select("id")

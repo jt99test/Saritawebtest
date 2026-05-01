@@ -220,10 +220,10 @@ function TickRing({
           y2={round(y2)}
           stroke={
             isLabelDegree
-              ? "rgba(236,228,255,0.5)"
+              ? "rgba(30,26,46,0.38)"
               : isFive
-                ? "rgba(236,228,255,0.28)"
-                : "rgba(236,228,255,0.14)"
+                ? "rgba(30,26,46,0.24)"
+                : "rgba(30,26,46,0.12)"
           }
           strokeWidth={isLabelDegree ? 0.9 : isFive ? 0.7 : 0.48}
         />,
@@ -238,19 +238,22 @@ function TickRing({
 
         const [labelX, labelY] = pointAtRadius(321, longitude + 1.2, ascendant);
         labels.push(
-          <text
-            key={`degree-label-${longitude}`}
-            x={round(labelX)}
-            y={round(labelY)}
-            textAnchor="middle"
-            dominantBaseline="central"
-            fill="rgba(232,224,240,0.7)"
-            fontFamily="'Inter', sans-serif"
-            fontSize="8"
-            letterSpacing="0.02em"
-          >
-            {degree}
-          </text>,
+          <g key={`degree-label-${longitude}`}>
+            <circle cx={round(labelX)} cy={round(labelY)} r="8" fill="rgba(255,250,240,0.72)" />
+            <text
+              x={round(labelX)}
+              y={round(labelY)}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fill="rgba(30,26,46,0.82)"
+              fontFamily="'Inter', sans-serif"
+              fontSize="10.5"
+              fontWeight="700"
+              letterSpacing="0"
+            >
+              {degree}
+            </text>
+          </g>,
         );
       }
     }
@@ -266,10 +269,10 @@ function TickRing({
 
 function SymbolicWheelFrame({ ascendant }: { ascendant: number }) {
   const elementTints = {
-    fire: "rgba(236,232,223,0.13)",
-    earth: "rgba(236,232,223,0.09)",
-    air: "rgba(236,232,223,0.07)",
-    water: "rgba(236,232,223,0.11)",
+    fire: "rgba(209,118,118,0.14)",
+    earth: "rgba(216,194,122,0.1)",
+    air: "rgba(140,158,240,0.1)",
+    water: "rgba(110,170,190,0.12)",
   } as const;
 
   return (
@@ -279,17 +282,17 @@ function SymbolicWheelFrame({ ascendant }: { ascendant: number }) {
           key={`tint-${sign.id}`}
           d={describeRingSegment(ZODIAC_INNER, ZODIAC_OUTER, sign.start, sign.start + 30, ascendant)}
           fill={elementTints[sign.element]}
-          stroke="rgba(236,232,223,0.28)"
+          stroke="rgba(30,26,46,0.18)"
           strokeWidth="1"
         />
       ))}
 
-      <circle cx={CX} cy={CY} r={ZODIAC_OUTER + 2} fill="none" stroke="rgba(236,232,223,0.55)" strokeWidth="1.2" />
-      <circle cx={CX} cy={CY} r={ZODIAC_OUTER - 12} fill="none" stroke="rgba(236,232,223,0.18)" strokeWidth="0.7" />
-      <circle cx={CX} cy={CY} r={ZODIAC_INNER + 12} fill="none" stroke="rgba(236,232,223,0.18)" strokeWidth="0.7" />
-      <circle cx={CX} cy={CY} r={ZODIAC_INNER} fill="none" stroke="rgba(236,232,223,0.6)" strokeWidth="1.2" />
-      <circle cx={CX} cy={CY} r={HOUSE_OUTER} fill="none" stroke="rgba(236,232,223,0.14)" strokeWidth="0.9" />
-      <circle cx={CX} cy={CY} r={HOUSE_INNER} fill="none" stroke="rgba(236,232,223,0.1)" strokeWidth="0.8" />
+      <circle cx={CX} cy={CY} r={ZODIAC_OUTER + 2} fill="none" stroke="rgba(30,26,46,0.38)" strokeWidth="1.2" />
+      <circle cx={CX} cy={CY} r={ZODIAC_OUTER - 12} fill="none" stroke="rgba(30,26,46,0.14)" strokeWidth="0.7" />
+      <circle cx={CX} cy={CY} r={ZODIAC_INNER + 12} fill="none" stroke="rgba(30,26,46,0.14)" strokeWidth="0.7" />
+      <circle cx={CX} cy={CY} r={ZODIAC_INNER} fill="none" stroke="rgba(30,26,46,0.42)" strokeWidth="1.2" />
+      <circle cx={CX} cy={CY} r={HOUSE_OUTER} fill="none" stroke="rgba(30,26,46,0.12)" strokeWidth="0.9" />
+      <circle cx={CX} cy={CY} r={HOUSE_INNER} fill="none" stroke="rgba(30,26,46,0.1)" strokeWidth="0.8" />
 
       {zodiacSigns.map((sign) => {
         const [x, y] = pointAtRadius((ZODIAC_OUTER + ZODIAC_INNER) / 2, sign.start + 15, ascendant);
@@ -300,8 +303,8 @@ function SymbolicWheelFrame({ ascendant }: { ascendant: number }) {
             y={round(y)}
             textAnchor="middle"
             dominantBaseline="central"
-            fill="#ece8df"
-            fillOpacity="0.92"
+            fill="#1e1a2e"
+            fillOpacity="0.58"
             fontSize="22"
             fontWeight="600"
             fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
@@ -316,9 +319,9 @@ function SymbolicWheelFrame({ ascendant }: { ascendant: number }) {
 
 function HouseGeometry({ chart, ascendant }: { chart: NatalChartData; ascendant: number }) {
   const houseTones = {
-    angular: "rgba(209,118,118,0.04)",
-    succedent: "rgba(176,164,214,0.03)",
-    cadent: "rgba(88,116,180,0.02)",
+    angular: "rgba(209,118,118,0.05)",
+    succedent: "rgba(216,194,122,0.035)",
+    cadent: "rgba(140,158,240,0.03)",
   } as const;
 
   return (
@@ -355,7 +358,7 @@ function HouseGeometry({ chart, ascendant }: { chart: NatalChartData; ascendant:
             y1={round(outerY)}
             x2={round(innerX)}
             y2={round(innerY)}
-            stroke="rgba(236,232,223,0.38)"
+            stroke="rgba(30,26,46,0.28)"
             strokeWidth={house.house === 1 || house.house === 4 || house.house === 7 || house.house === 10 ? 1.6 : 0.9}
           />
         );
@@ -374,7 +377,7 @@ function HouseGeometry({ chart, ascendant }: { chart: NatalChartData; ascendant:
             y={round(y)}
             textAnchor="middle"
             dominantBaseline="central"
-            fill="rgba(236,232,223,0.48)"
+            fill="rgba(30,26,46,0.52)"
             fontFamily="'Inter', sans-serif"
             fontSize="13"
             fontWeight="500"
@@ -408,7 +411,7 @@ function AxisLines({ chart, ascendant }: { chart: NatalChartData; ascendant: num
               y1={round(y1)}
               x2={round(x2)}
               y2={round(y2)}
-              stroke="rgba(244,238,230,0.9)"
+              stroke="rgba(30,26,46,0.72)"
               strokeWidth={axis.weight}
             />
             <g transform={`translate(${round(labelStartX)} ${round(labelStartY)})`}>
@@ -418,14 +421,14 @@ function AxisLines({ chart, ascendant }: { chart: NatalChartData; ascendant: num
                 width={40}
                 height={22}
                 rx={11}
-                fill="rgba(10,15,23,0.96)"
-                stroke="rgba(220,195,120,0.82)"
+                fill="#fffaf0"
+                stroke="rgba(138,122,78,0.72)"
                 strokeWidth="1"
               />
               <text
                 textAnchor="middle"
                 dominantBaseline="central"
-                fill="rgba(255,250,238,0.96)"
+                fill="#1e1a2e"
                 fontFamily="'Spectral', serif"
                 fontSize="14"
                 fontWeight="700"
@@ -441,14 +444,14 @@ function AxisLines({ chart, ascendant }: { chart: NatalChartData; ascendant: num
                 width={40}
                 height={22}
                 rx={11}
-                fill="rgba(10,15,23,0.96)"
-                stroke="rgba(220,195,120,0.82)"
+                fill="#fffaf0"
+                stroke="rgba(138,122,78,0.72)"
                 strokeWidth="1"
               />
               <text
                 textAnchor="middle"
                 dominantBaseline="central"
-                fill="rgba(255,250,238,0.96)"
+                fill="#1e1a2e"
                 fontFamily="'Spectral', serif"
                 fontSize="14"
                 fontWeight="700"
@@ -1191,7 +1194,7 @@ function ClearPlanetLayer({
                 y1={round(layout.connectorY1)}
                 x2={round(layout.connectorX2)}
                 y2={round(layout.connectorY2)}
-                stroke="rgba(236,232,223,0.16)"
+                stroke="rgba(30,26,46,0.18)"
                 strokeWidth={0.55}
                 strokeLinecap="round"
               />
@@ -1213,8 +1216,8 @@ function ClearPlanetLayer({
               cx={round(layout.glyphX)}
               cy={round(layout.glyphY)}
               r={20}
-              fill="rgba(6,3,16,0.9)"
-              stroke="rgba(181,163,110,0.32)"
+              fill="#fffaf0"
+              stroke="rgba(138,122,78,0.42)"
               strokeWidth={0.8}
             />
 
@@ -1228,7 +1231,7 @@ function ClearPlanetLayer({
               fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
               fontSize="27"
               fontWeight="700"
-              stroke="rgba(6,3,16,0.92)"
+              stroke="#fffaf0"
               strokeWidth={1.6}
               paintOrder="stroke fill"
               style={{ filter: glow }}
@@ -1242,12 +1245,12 @@ function ClearPlanetLayer({
                 y={round(layout.labelY)}
                 textAnchor={layout.labelAnchor}
                 dominantBaseline="central"
-                fill="rgba(244,238,255,0.96)"
+                fill="#1e1a2e"
                 fontFamily="'Inter', sans-serif"
                 fontSize="10.5"
                 fontWeight="700"
                 letterSpacing="0.01em"
-                stroke="rgba(6,3,16,0.92)"
+                stroke="#fffaf0"
                 strokeWidth={2}
                 paintOrder="stroke fill"
               >
@@ -1261,11 +1264,11 @@ function ClearPlanetLayer({
                 y={round(layout.retrogradeY)}
                 textAnchor={layout.labelAnchor}
                 dominantBaseline="central"
-                fill="rgba(232,197,71,0.9)"
+                fill="#8a7a4e"
                 fontFamily="'Spectral', serif"
                 fontSize="10"
                 fontWeight="600"
-                stroke="rgba(6,3,16,0.92)"
+                stroke="#fffaf0"
                 strokeWidth={1.8}
                 paintOrder="stroke fill"
               >
@@ -1433,10 +1436,10 @@ export function NatalChartWheel({ chart }: Props) {
   }
 
   return (
-    <div className="relative aspect-square w-full max-w-[54rem] rounded-full bg-chart-surface lg:w-[640px]">
+    <div className="relative aspect-square w-full max-w-[54rem] rounded-full bg-transparent drop-shadow-[0_18px_42px_rgba(30,26,46,0.18)] lg:w-[640px]">
       {tooltip ? (
         <div
-          className="pointer-events-none absolute z-30 hidden -translate-x-1/2 -translate-y-[calc(100%+0.85rem)] rounded-2xl border border-[rgba(236,232,223,0.08)] bg-[rgba(10,14,22,0.96)] px-3 py-2 text-xs leading-6 text-ivory/86 shadow-[0_18px_45px_rgba(0,0,0,0.28)] backdrop-blur-[10px] md:block"
+          className="pointer-events-none absolute z-30 hidden -translate-x-1/2 -translate-y-[calc(100%+0.85rem)] rounded-2xl border border-dusty-gold/45 bg-[#fffaf0] px-3 py-2 text-xs font-semibold leading-6 text-[#1e1a2e] shadow-[0_18px_45px_rgba(0,0,0,0.28)] md:block"
           style={{ left: `${tooltip.xPercent}%`, top: `${tooltip.yPercent}%` }}
         >
           {tooltip.content}
@@ -1446,9 +1449,14 @@ export function NatalChartWheel({ chart }: Props) {
       <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="relative h-full w-full overflow-visible" role="img" aria-label="Carta natal interactiva">
         <defs>
           <radialGradient id="wheel-bg" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="rgba(181,163,110,0.06)" />
-            <stop offset="55%" stopColor="rgba(5,7,13,0)" />
-            <stop offset="100%" stopColor="rgba(5,7,13,0.18)" />
+            <stop offset="0%" stopColor="rgba(255,250,240,0.36)" />
+            <stop offset="55%" stopColor="rgba(138,122,78,0.05)" />
+            <stop offset="100%" stopColor="rgba(30,26,46,0.06)" />
+          </radialGradient>
+          <radialGradient id="chart-surface-bg" cx="50%" cy="45%" r="56%">
+            <stop offset="0%" stopColor="#f5f0e6" />
+            <stop offset="68%" stopColor="#ede7d9" />
+            <stop offset="100%" stopColor="#ddd6c6" />
           </radialGradient>
           <filter id="planet-glow">
             <feGaussianBlur stdDeviation="1.6" result="blur" />
@@ -1467,6 +1475,8 @@ export function NatalChartWheel({ chart }: Props) {
         </defs>
 
         <>
+            <circle cx={CX} cy={CY} r={CX - 8} fill="url(#chart-surface-bg)" stroke="rgba(30,26,46,0.16)" strokeWidth="1.2" />
+            <circle cx={CX} cy={CY} r={CX - 22} fill="none" stroke="rgba(138,122,78,0.1)" strokeWidth="10" />
             <circle cx={CX} cy={CY} r={ZODIAC_INNER} fill="url(#wheel-bg)" />
             <SymbolicWheelFrame ascendant={ascendant} />
             <TickRing ascendant={ascendant} showDegrees={showDegrees} points={displayPoints} />

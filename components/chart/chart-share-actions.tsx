@@ -15,6 +15,7 @@ export function ChartShareActions({ chart, dictionary, plan }: ChartShareActions
   const [shareUrl, setShareUrl] = useState("");
   const [copied, setCopied] = useState(false);
   const [pending, setPending] = useState(false);
+  const [error, setError] = useState("");
   const timeoutRef = useRef<number | null>(null);
   const canDownload = plan === "pro" || plan === "avanzado";
 
@@ -27,12 +28,19 @@ export function ChartShareActions({ chart, dictionary, plan }: ChartShareActions
   }, []);
 
   async function shareChart() {
+    setError("");
     setPending(true);
     const response = await fetch("/api/share-chart", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chart }),
-    });
+    }).catch(() => null);
+
+    if (!response) {
+      setPending(false);
+      setError("No se pudo crear el enlace. Intenta de nuevo.");
+      return;
+    }
 
     if (response.status === 401) {
       setPending(false);
@@ -42,12 +50,15 @@ export function ChartShareActions({ chart, dictionary, plan }: ChartShareActions
 
     if (!response.ok) {
       setPending(false);
+      const message = await response.text().catch(() => "");
+      setError(message || "No se pudo crear el enlace. Intenta de nuevo.");
       return;
     }
 
     const { id } = (await response.json()) as { id?: string };
     if (!id) {
       setPending(false);
+      setError("No se pudo crear el enlace. Intenta de nuevo.");
       return;
     }
     setShareUrl(`${window.location.origin}/carta/${id}`);
@@ -65,7 +76,12 @@ export function ChartShareActions({ chart, dictionary, plan }: ChartShareActions
     if (!canDownload) return;
     const svg = document.querySelector(".sarita-natal-chart svg");
     if (!svg) return;
-    const source = new XMLSerializer().serializeToString(svg);
+    const clone = svg.cloneNode(true) as SVGSVGElement;
+    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    clone.setAttribute("width", "1600");
+    clone.setAttribute("height", "1600");
+    clone.setAttribute("viewBox", "0 0 860 860");
+    const source = `<?xml version="1.0" encoding="UTF-8"?>\n${new XMLSerializer().serializeToString(clone)}`;
     const blob = new Blob([source], { type: "image/svg+xml" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -84,7 +100,7 @@ export function ChartShareActions({ chart, dictionary, plan }: ChartShareActions
           disabled={pending}
           className="border border-black/20 bg-transparent px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-ivory transition hover:bg-black/[0.05] disabled:opacity-50"
         >
-          {dictionary.chart.share}
+          {pending ? "Creando enlace..." : dictionary.chart.share}
         </button>
         <button
           type="button"
@@ -97,6 +113,12 @@ export function ChartShareActions({ chart, dictionary, plan }: ChartShareActions
           {dictionary.chart.download}
         </button>
       </div>
+
+      {error ? (
+        <p className="mx-auto mt-3 max-w-md text-center text-sm leading-6 text-[#8f3129]">
+          {error}
+        </p>
+      ) : null}
 
       {shareUrl ? (
         <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/72 px-4 backdrop-blur-[10px]">
