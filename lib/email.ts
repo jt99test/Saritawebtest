@@ -1,9 +1,6 @@
 import { Resend } from "resend";
 import type { ReactElement } from "react";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-const from = process.env.RESEND_FROM ?? "onboarding@resend.dev";
-
 export async function sendEmail({
   to,
   subject,
@@ -13,6 +10,13 @@ export async function sendEmail({
   subject: string;
   react: ReactElement;
 }) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    console.warn("[email] RESEND_API_KEY not set — skipping");
+    return;
+  }
+  const resend = new Resend(apiKey);
+  const from = process.env.RESEND_FROM ?? "onboarding@resend.dev";
   try {
     await resend.emails.send({ from, to, subject, react });
   } catch (err) {
