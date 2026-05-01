@@ -50,20 +50,20 @@ export function HomePage() {
         <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[34vh] bg-gradient-to-t from-cosmic-950 via-cosmic-950/72 to-transparent" />
 
         <Container className="relative flex min-h-screen flex-col pb-8 pt-5 sm:pb-10 sm:pt-6">
-          <div className="flex items-start justify-between gap-4 sm:gap-6">
+          <div className="flex items-center justify-between gap-4 rounded-full border border-black/12 bg-[#fffaf0]/78 px-4 py-3 shadow-[0_14px_40px_rgba(30,26,46,0.12)] backdrop-blur-md sm:gap-6 sm:px-5">
             <div className="min-w-0 flex-1 pt-2">
               <div className="flex items-center gap-3 sm:gap-4">
-                <div className="h-px w-10 shrink-0 bg-gradient-to-r from-dusty-gold/70 to-transparent sm:w-14" />
-                <p className="truncate text-[12px] uppercase tracking-[0.28em] text-[#6f613a] sm:text-[12px] sm:tracking-[0.38em]">
+                <div className="h-px w-10 shrink-0 bg-gradient-to-r from-dusty-gold to-transparent sm:w-14" />
+                <p className="truncate text-[12px] font-semibold uppercase tracking-[0.24em] text-[#6f613a] sm:text-[12px] sm:tracking-[0.32em]">
                   {dictionary.home.eyebrow}
                 </p>
               </div>
             </div>
 
-            <div className="ml-auto flex items-center gap-4">
+            <div className="ml-auto flex items-center gap-3 sm:gap-4">
               <Link
                 href="/precios"
-                className="hidden text-xs font-medium uppercase tracking-[0.22em] text-[#3a3048] transition hover:text-ivory sm:inline"
+                className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-[#1e1a2e] transition hover:text-[#6f613a] sm:inline"
               >
                 {dictionary.nav.pricing}
               </Link>
