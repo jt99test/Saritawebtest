@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { getPlanReadingLimit } from "@/lib/reading-limits";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function deleteReadingAction(readingId: string) {
@@ -35,7 +36,7 @@ export async function getReadingUsageAction() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return { count: 0, limit: 2, plan: "free" };
+    return { count: 0, limit: getPlanReadingLimit("free"), plan: "free" };
   }
 
   const { data: profile } = await supabase
@@ -52,7 +53,7 @@ export async function getReadingUsageAction() {
     .eq("user_id", user.id)
     .gte("created_at", startOfMonth.toISOString());
   const plan = profile?.plan === "pro" || profile?.plan === "avanzado" ? profile.plan : "free";
-  const limit = plan === "avanzado" ? 50 : plan === "pro" ? 10 : 2;
+  const limit = getPlanReadingLimit(plan);
 
   return { count: count ?? 0, limit, plan };
 }

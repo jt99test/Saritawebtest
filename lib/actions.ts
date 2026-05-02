@@ -3,15 +3,8 @@
 import type { NatalChartData } from "./chart";
 import type { ChartActionResult, ChartCalculationResult, FormValues } from "./chart-session";
 import type { PlaceSuggestion } from "./geocoding";
+import { getPlanReadingLimit } from "./reading-limits";
 import { createServerSupabaseClient } from "./supabase/server";
-
-const PLAN_LIMITS: Record<string, number> = {
-  free: 2,
-  basico: 10,
-  completo: 50,
-  pro: 10,
-  avanzado: 50,
-};
 
 function getStartOfMonth() {
   const now = new Date();
@@ -35,7 +28,7 @@ async function getReadingAccess() {
     .maybeSingle();
 
   const plan = profile?.plan ?? "free";
-  const limit = PLAN_LIMITS[plan] ?? PLAN_LIMITS.free;
+  const limit = getPlanReadingLimit(plan);
   // Usage is counted from immutable usage events so deleting an archived reading
   // does not refund the monthly quota that was already spent.
   const { count } = await supabase
@@ -72,6 +65,19 @@ async function saveNatalReading(result: ChartCalculationResult, access: ReadingA
   }
 
   if (data?.id) {
+    result.readingId = data.id;
+    result.saved = true;
+
+    const { error: updateError } = await access.supabase
+      .from("readings")
+      .update({ chart_data: result })
+      .eq("id", data.id)
+      .eq("user_id", access.user.id);
+
+    if (updateError) {
+      console.error("Reading metadata update error:", updateError.message);
+    }
+
     const { error: usageError } = await access.supabase
       .from("reading_usage_events")
       .insert({

@@ -25,6 +25,7 @@ import { calculateSynastryAspects, type SynastryAspect } from "@/lib/synastry";
 type SynastryPageProps = {
   natalChart: NatalChartData;
   dictionary: Dictionary;
+  readingId?: string;
 };
 
 type SynastryData = {
@@ -182,7 +183,7 @@ function normalizeSynastryData(data: SynastryData): SynastryData {
   };
 }
 
-export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
+export function SynastryPage({ natalChart, dictionary, readingId }: SynastryPageProps) {
   const locale = useStoredLocale();
   const synastryCopy = dictionary.result.synastryPage;
   const [partners, setPartners] = useState<PartnerRow[]>([]);
@@ -306,6 +307,8 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
         partnerName: selectedPartner.name,
         aspects: readingAspects,
         locale,
+        readingId,
+        cacheKey,
       }),
       signal: controller.signal,
     }).then(async (res) => {
@@ -356,7 +359,7 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
       controller.abort();
       clearTimeout(timeout);
     };
-  }, [readingAspects, selectedPartner, partnerChart, natalChart, natalHash, partnerHash, locale]);
+  }, [readingAspects, selectedPartner, partnerChart, natalChart, natalHash, partnerHash, locale, readingId]);
 
   function savePartner() {
     setError(null);

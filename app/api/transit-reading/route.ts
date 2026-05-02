@@ -2,6 +2,11 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { Message } from "@anthropic-ai/sdk/resources/messages";
 
 import { ANTHROPIC_PREMIUM_READING_MODEL } from "@/lib/anthropic-models";
+import {
+  getCachedAiReading,
+  setCachedAiReading,
+  validateReadingGenerationAccess,
+} from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData } from "@/lib/chart";
 import { ASPECT_LABELS, HOUSE_AREAS, POINT_LABELS } from "@/lib/chart-labels";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -83,14 +88,35 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return new Response("Unauthorized", { status: 401 });
 
-  const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).maybeSingle();
-  if (profile?.plan !== "avanzado") return new Response("Advanced plan required", { status: 403 });
-
-  const { chart, transits, locale } = await request.json() as {
+  const { chart, transits, locale, readingId, cacheKey } = await request.json() as {
     chart: NatalChartData;
     transits: TransitInput[];
     locale?: string;
+    readingId?: string;
+    cacheKey?: string;
   };
+
+  const itemKey = cacheKey ?? `transit:${transits.map((transit) => `${transit.transitingPlanet}-${transit.aspectType}-${transit.natalPlanet}`).join("|")}`;
+  const access = await validateReadingGenerationAccess({ supabase, user, readingId });
+  if (!access.ok) return access.response;
+
+  const cachedContent = await getCachedAiReading({
+    supabase,
+    user,
+    readingId,
+    scope: "transit",
+    itemKey,
+    locale,
+  });
+
+  if (cachedContent) {
+    return new Response(`${SARITA_DATA_MARKER}${JSON.stringify(cachedContent)}`, {
+      headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-cache" },
+    });
+  }
+
+  const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).maybeSingle();
+  if (profile?.plan !== "avanzado") return new Response("Advanced plan required", { status: 403 });
 
   const name = chart.event.name;
   const natalSun = chart.points.find((point) => point.id === "sun");
@@ -157,6 +183,16 @@ ${langInstruction(locale)}`;
     console.error("Transit reading JSON shape invalid", parsed);
     return new Response("Transit reading JSON shape invalid", { status: 502 });
   }
+
+  await setCachedAiReading({
+    supabase,
+    user,
+    readingId,
+    scope: "transit",
+    itemKey,
+    locale,
+    content: parsed,
+  });
 
   const data = {
     dominantTitle: parsed.dominantTitle,

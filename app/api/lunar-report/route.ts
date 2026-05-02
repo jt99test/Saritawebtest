@@ -14,6 +14,11 @@ import { elementRoutines } from "@/data/sarita/element-routines";
 import { transitDescriptions } from "@/data/sarita/transit-descriptions";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ANTHROPIC_FAST_MODEL, ANTHROPIC_STANDARD_READING_MODEL } from "@/lib/anthropic-models";
+import {
+  getCachedAiReading,
+  setCachedAiReading,
+  validateReadingGenerationAccess,
+} from "@/lib/ai-reading-generations";
 import { ASPECT_LABELS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
 
 type LunarReportRequest = {
@@ -23,6 +28,13 @@ type LunarReportRequest = {
   lunationType: LunationType;
   metadataOnly?: boolean;
   locale?: string;
+  readingId?: string;
+  cacheKey?: string;
+};
+
+type CachedLunarContent = {
+  prose: string;
+  actions: LunarReportActionSet | null;
 };
 
 const ACTIONS_MARKER = "__SARITA_ACTIONS__";
@@ -233,7 +245,7 @@ export async function POST(request: Request) {
       return new Response("Plan required", { status: 403 });
     }
 
-    const { chart, year, month, lunationType, metadataOnly = false, locale } =
+    const { chart, year, month, lunationType, metadataOnly = false, locale, readingId, cacheKey } =
       (await request.json()) as LunarReportRequest;
 
     const monthlyData = await getMonthlyLunarData(chart, year, month);
@@ -297,6 +309,49 @@ export async function POST(request: Request) {
       return Response.json(metadata);
     }
 
+    const itemKey = cacheKey ?? `lunar:${locale ?? "es"}:${year}-${month}-${lunationType}`;
+    const access = await validateReadingGenerationAccess({ supabase, user, readingId });
+    if (!access.ok) {
+      return access.response;
+    }
+
+    const cachedContent = await getCachedAiReading({
+      supabase,
+      user,
+      readingId,
+      scope: "lunar",
+      itemKey,
+      locale,
+    });
+
+    if (
+      cachedContent &&
+      typeof cachedContent === "object" &&
+      typeof (cachedContent as CachedLunarContent).prose === "string"
+    ) {
+      const cached = cachedContent as CachedLunarContent;
+      const encoder = new TextEncoder();
+      const readable = new ReadableStream({
+        start(controller) {
+          controller.enqueue(encoder.encode(`${JSON.stringify({ type: "metadata", data: metadata })}\n`));
+          controller.enqueue(encoder.encode(`${JSON.stringify({ type: "text", data: cached.prose })}\n`));
+          if (cached.actions) {
+            controller.enqueue(encoder.encode(`${JSON.stringify({ type: "actions", data: cached.actions })}\n`));
+          }
+          controller.enqueue(encoder.encode(`${JSON.stringify({ type: "done" })}\n`));
+          controller.close();
+        },
+      });
+
+      return new Response(readable, {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Cache-Control": "no-cache",
+          "X-Content-Type-Options": "nosniff",
+        },
+      });
+    }
+
     if (!client) {
       return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
     }
@@ -345,6 +400,8 @@ Reglas para esa línea final:
         let closed = false;
         let textBuffer = "";
         let actionsBuffer = "";
+        let emittedText = "";
+        let finalActions: LunarReportActionSet | null = null;
         let markerDetected = false;
 
         const emitEvent = (event: unknown) => {
@@ -367,6 +424,7 @@ Reglas para esa línea final:
             return;
           }
 
+          emittedText += chunk;
           emitEvent({ type: "text", data: chunk });
         };
 
@@ -412,6 +470,7 @@ Reglas para esa línea final:
 
           try {
             const parsed = JSON.parse(raw) as LunarReportActionSet;
+            finalActions = parsed;
             emitEvent({ type: "actions", data: parsed });
           } catch (error) {
             console.error("Could not parse lunar actions:", error);
@@ -428,6 +487,18 @@ Reglas para esa línea final:
           .finalMessage()
           .then(() => {
             finalizeActions();
+            void setCachedAiReading({
+              supabase,
+              user,
+              readingId,
+              scope: "lunar",
+              itemKey,
+              locale,
+              content: {
+                prose: emittedText.trim(),
+                actions: finalActions,
+              },
+            });
             emitEvent({ type: "done" });
             closeSafely();
           })

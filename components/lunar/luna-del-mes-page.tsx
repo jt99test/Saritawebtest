@@ -29,6 +29,7 @@ import { PracticalActions } from "@/components/lunar/practical-actions";
 type LunaDelMesPageProps = {
   chart: NatalChartData;
   dictionary: Dictionary;
+  readingId?: string;
 };
 
 type StreamState = {
@@ -101,7 +102,7 @@ async function fetchPreview(
   return (await response.json()) as LunarReportMetadata;
 }
 
-export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
+export function LunaDelMesPage({ chart, dictionary, readingId }: LunaDelMesPageProps) {
   const locale = useStoredLocale();
   const currentMonth = useMemo(() => monthDateForChart(chart), [chart]);
   const year = currentMonth.year;
@@ -201,6 +202,8 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
       return;
     }
 
+    const cacheKey = reportKeyFor(year, month, type, locale);
+
     setStreamState((current) => ({
       ...current,
       [type]: { prose: "", actions: null, loading: true, error: null },
@@ -215,6 +218,8 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
         month,
         lunationType: type,
         locale,
+        readingId,
+        cacheKey,
       }),
     }).catch(() => null);
 

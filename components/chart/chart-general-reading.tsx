@@ -15,6 +15,7 @@ import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 type ChartGeneralReadingProps = {
   chart: NatalChartData;
   dictionary: Dictionary;
+  readingId?: string;
 };
 
 const PLAN_REQUIRED_ERROR = "SARITA_PLAN_REQUIRED";
@@ -98,7 +99,7 @@ function LockedReadingPanel({ dictionary }: { dictionary: Dictionary }) {
   );
 }
 
-export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingProps) {
+export function ChartGeneralReading({ chart, dictionary, readingId }: ChartGeneralReadingProps) {
   const locale = useStoredLocale();
   const [chartHash, setChartHash] = useState<string | null>(null);
   const [readings, setReadings] = useState<Record<string, string>>({});
@@ -126,7 +127,7 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
         const response = await fetch("/api/general-reading", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chart, theme, locale }),
+          body: JSON.stringify({ chart, theme, locale, readingId }),
           signal: controller.signal,
         });
 
@@ -170,7 +171,7 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
         setLoading((current) => ({ ...current, [theme]: false }));
       }
     },
-    [chart, dictionary.chart.generateError, locale],
+    [chart, dictionary.chart.generateError, locale, readingId],
   );
 
   useEffect(() => {

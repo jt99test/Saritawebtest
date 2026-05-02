@@ -2,6 +2,11 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { Message, Tool } from "@anthropic-ai/sdk/resources/messages";
 
 import { ANTHROPIC_PREMIUM_READING_MODEL } from "@/lib/anthropic-models";
+import {
+  getCachedAiReading,
+  setCachedAiReading,
+  validateReadingGenerationAccess,
+} from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData, SignId } from "@/lib/chart";
 import { ASPECT_LABELS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
 import type { SynastryAspect } from "@/lib/synastry";
@@ -205,20 +210,41 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return new Response("Unauthorized", { status: 401 });
 
-  const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).maybeSingle();
-  if (profile?.plan !== "avanzado") return new Response("Advanced plan required", { status: 403 });
-
-  const { chartA, chartB, partnerName, aspects, locale } = await request.json() as {
+  const { chartA, chartB, partnerName, aspects, locale, readingId, cacheKey } = await request.json() as {
     chartA: NatalChartData;
     chartB: NatalChartData;
     partnerName: string;
     aspects: SynastryAspect[];
     locale?: string;
+    readingId?: string;
+    cacheKey?: string;
   };
 
   if (!process.env.ANTHROPIC_API_KEY) {
     return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
   }
+
+  const itemKey = cacheKey ?? `synastry:${partnerName}:${chartB.event.julianDay}`;
+  const access = await validateReadingGenerationAccess({ supabase, user, readingId });
+  if (!access.ok) return access.response;
+
+  const cachedContent = await getCachedAiReading({
+    supabase,
+    user,
+    readingId,
+    scope: "synastry",
+    itemKey,
+    locale,
+  });
+
+  if (cachedContent) {
+    return new Response(`${SARITA_DATA_MARKER}${JSON.stringify(cachedContent)}`, {
+      headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-cache" },
+    });
+  }
+
+  const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).maybeSingle();
+  if (profile?.plan !== "avanzado") return new Response("Advanced plan required", { status: 403 });
 
   const name = chartA.event.name;
   const context = buildContext(chartA, chartB, partnerName, aspects);
@@ -288,6 +314,16 @@ ${firstText}`,
     compatibilityDescription: parsed.compatibilityDescription,
     layers: parsed.layers,
   };
+
+  await setCachedAiReading({
+    supabase,
+    user,
+    readingId,
+    scope: "synastry",
+    itemKey,
+    locale,
+    content: data,
+  });
 
   return new Response(`${parsed.reading}\n\n${SARITA_DATA_MARKER}\n${JSON.stringify(data)}`, {
     headers: {

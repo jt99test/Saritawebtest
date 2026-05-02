@@ -6,6 +6,7 @@ import { ReadingsList } from "@/components/readings/readings-list";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { getPlanReadingLimit } from "@/lib/reading-limits";
 
 export default async function ReadingsPage() {
   const supabase = await createServerSupabaseClient();
@@ -38,7 +39,7 @@ export default async function ReadingsPage() {
     .eq("user_id", user.id)
     .gte("created_at", startOfMonth.toISOString());
   const plan = profile?.plan ?? "free";
-  const limit = plan === "avanzado" || plan === "completo" ? 50 : plan === "pro" || plan === "basico" ? 10 : 2;
+  const limit = getPlanReadingLimit(plan);
 
   return (
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">

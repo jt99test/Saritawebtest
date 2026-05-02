@@ -20,6 +20,7 @@ type SolarReturnPageProps = {
   natalChart: NatalChartData;
   request: FormValues | null;
   dictionary: Dictionary;
+  readingId?: string;
 };
 
 type SolarData = {
@@ -87,7 +88,7 @@ function normalizeSolarData(data: SolarData): SolarData {
   };
 }
 
-export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturnPageProps) {
+export function SolarReturnPage({ natalChart, request, dictionary, readingId }: SolarReturnPageProps) {
   const locale = useStoredLocale();
   const solarCopy = dictionary.result.solarReturnPage;
   const defaultYear = currentSolarReturnYear(request);
@@ -204,7 +205,7 @@ export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturn
         void fetch("/api/solar-return-reading", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ natalChartData: natalChart, solarReturnData: result.chart, locale }),
+          body: JSON.stringify({ natalChartData: natalChart, solarReturnData: result.chart, locale, readingId, cacheKey: solarCacheKey }),
           signal: controller.signal,
         }).then(async (res) => {
           if (!res.ok || !res.body) {

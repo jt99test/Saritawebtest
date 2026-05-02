@@ -3,7 +3,13 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { ChartPointId, NatalChartData } from "@/lib/chart";
 import { zodiacSigns } from "@/lib/chart";
 import { ANTHROPIC_STANDARD_READING_MODEL } from "@/lib/anthropic-models";
+import {
+  getCachedAiReading,
+  setCachedAiReading,
+  validateReadingGenerationAccess,
+} from "@/lib/ai-reading-generations";
 import { ASPECT_LABELS, HOUSE_AREAS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -71,14 +77,48 @@ ${langInstruction(locale)}`;
 
 export async function POST(request: Request) {
   try {
-    const { chart, pointId, locale } = (await request.json()) as {
+    const supabase = await createServerSupabaseClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return new Response("Unauthorized", { status: 401 });
+    }
+
+    const { chart, pointId, locale, readingId } = (await request.json()) as {
       chart: NatalChartData;
       pointId: ChartPointId;
       locale?: string;
+      readingId?: string;
     };
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
+    }
+
+    const access = await validateReadingGenerationAccess({ supabase, user, readingId });
+    if (!access.ok) {
+      return access.response;
+    }
+
+    const cachedContent = await getCachedAiReading({
+      supabase,
+      user,
+      readingId,
+      scope: "planet",
+      itemKey: pointId,
+      locale,
+    });
+
+    if (typeof cachedContent === "string" && cachedContent.trim()) {
+      return new Response(cachedContent, {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Cache-Control": "no-cache",
+          "X-Content-Type-Options": "nosniff",
+        },
+      });
     }
 
     const prompt = buildPrompt(chart, pointId, locale);
@@ -97,6 +137,7 @@ export async function POST(request: Request) {
     const readable = new ReadableStream({
       start(controller) {
         let closed = false;
+        let content = "";
         const closeSafely = () => {
           if (closed) {
             return;
@@ -108,10 +149,27 @@ export async function POST(request: Request) {
 
         stream.on("text", (text) => {
           if (!closed) {
+            content += text;
             controller.enqueue(encoder.encode(text));
           }
         });
-        stream.finalMessage().then(closeSafely).catch(closeSafely);
+        stream.finalMessage()
+          .then(async () => {
+            const finalContent = content.trim();
+            if (finalContent) {
+              await setCachedAiReading({
+                supabase,
+                user,
+                readingId,
+                scope: "planet",
+                itemKey: pointId,
+                locale,
+                content: finalContent,
+              });
+            }
+            closeSafely();
+          })
+          .catch(closeSafely);
       },
       cancel() {
         stream.abort();

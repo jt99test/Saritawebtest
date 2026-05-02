@@ -2,6 +2,11 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { Message } from "@anthropic-ai/sdk/resources/messages";
 
 import { ANTHROPIC_PREMIUM_READING_MODEL } from "@/lib/anthropic-models";
+import {
+  getCachedAiReading,
+  setCachedAiReading,
+  validateReadingGenerationAccess,
+} from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData, SignId } from "@/lib/chart";
 import { HOUSE_AREAS, SIGN_LABELS } from "@/lib/chart-labels";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -128,18 +133,39 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return new Response("Unauthorized", { status: 401 });
 
-  const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).maybeSingle();
-  if (profile?.plan !== "avanzado") return new Response("Advanced plan required", { status: 403 });
-
-  const { natalChartData, solarReturnData, locale } = await request.json() as {
+  const { natalChartData, solarReturnData, locale, readingId, cacheKey } = await request.json() as {
     natalChartData: NatalChartData;
     solarReturnData: NatalChartData;
     locale?: string;
+    readingId?: string;
+    cacheKey?: string;
   };
 
   if (!process.env.ANTHROPIC_API_KEY) {
     return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
   }
+
+  const itemKey = cacheKey ?? `solar-return:${solarReturnData.meta.solarReturnYear ?? solarReturnData.event.title}`;
+  const access = await validateReadingGenerationAccess({ supabase, user, readingId });
+  if (!access.ok) return access.response;
+
+  const cachedContent = await getCachedAiReading({
+    supabase,
+    user,
+    readingId,
+    scope: "solar_return",
+    itemKey,
+    locale,
+  });
+
+  if (cachedContent) {
+    return new Response(`${SARITA_DATA_MARKER}${JSON.stringify(cachedContent)}`, {
+      headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-cache" },
+    });
+  }
+
+  const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).maybeSingle();
+  if (profile?.plan !== "avanzado") return new Response("Advanced plan required", { status: 403 });
 
   const name = natalChartData.event.name;
   const context = buildContext(natalChartData, solarReturnData);
@@ -185,6 +211,16 @@ ${langInstruction(locale)}`;
     cards: parsed.cards,
     priorities: parsed.priorities,
   };
+
+  await setCachedAiReading({
+    supabase,
+    user,
+    readingId,
+    scope: "solar_return",
+    itemKey,
+    locale,
+    content: data,
+  });
 
   return new Response(`${parsed.reading}\n\n${SARITA_DATA_MARKER}\n${JSON.stringify(data)}`, {
     headers: {

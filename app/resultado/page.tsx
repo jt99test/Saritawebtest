@@ -129,6 +129,7 @@ function ResultPageContent() {
               dictionary={dictionary}
               isMock={result.isMock}
               request={result.request}
+              readingId={result.readingId}
             />
           ) : (
             <div className="flex flex-1 items-center justify-center">

@@ -7,6 +7,11 @@ import {
   getThemeInstruction,
   type GeneralReadingTheme,
 } from "@/lib/general-reading";
+import {
+  getCachedAiReading,
+  setCachedAiReading,
+  validateReadingGenerationAccess,
+} from "@/lib/ai-reading-generations";
 import { ANTHROPIC_STANDARD_READING_MODEL } from "@/lib/anthropic-models";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -63,20 +68,11 @@ export async function POST(request: Request) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("plan")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if ((profile?.plan ?? "free") === "free") {
-      return new Response("Plan required", { status: 403 });
-    }
-
-    const { chart, theme, locale } = (await request.json()) as {
+    const { chart, theme, locale, readingId } = (await request.json()) as {
       chart: NatalChartData;
       theme: GeneralReadingTheme;
       locale?: string;
+      readingId?: string;
     };
 
     if (!process.env.ANTHROPIC_API_KEY) {
@@ -85,6 +81,40 @@ export async function POST(request: Request) {
 
     if (!theme) {
       return new Response("Unknown theme", { status: 400 });
+    }
+
+    const access = await validateReadingGenerationAccess({ supabase, user, readingId });
+    if (!access.ok) {
+      return access.response;
+    }
+
+    const cachedContent = await getCachedAiReading({
+      supabase,
+      user,
+      readingId,
+      scope: "general",
+      itemKey: theme,
+      locale,
+    });
+
+    if (typeof cachedContent === "string" && cachedContent.trim()) {
+      return new Response(cachedContent, {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Cache-Control": "no-cache",
+          "X-Content-Type-Options": "nosniff",
+        },
+      });
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if ((profile?.plan ?? "free") === "free") {
+      return new Response("Plan required", { status: 403 });
     }
 
     const prompt = buildPrompt(chart, theme, locale);
@@ -98,6 +128,16 @@ export async function POST(request: Request) {
     if (!content) {
       return new Response("Empty model response", { status: 502 });
     }
+
+    await setCachedAiReading({
+      supabase,
+      user,
+      readingId,
+      scope: "general",
+      itemKey: theme,
+      locale,
+      content,
+    });
 
     return new Response(content, {
       headers: {

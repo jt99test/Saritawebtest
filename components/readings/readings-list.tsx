@@ -25,7 +25,11 @@ function getStoredResult(reading: StoredReading): ChartCalculationResult | null 
     return null;
   }
 
-  return data as ChartCalculationResult;
+  return {
+    ...data,
+    readingId: data.readingId ?? reading.id,
+    saved: data.saved ?? true,
+  } as ChartCalculationResult;
 }
 
 export function ReadingsList({ readings }: { readings: StoredReading[] }) {

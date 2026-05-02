@@ -22,6 +22,7 @@ import { RenderedReading, splitReadingParagraphs } from "@/components/ui/rendere
 type Props = {
   chart: NatalChartData;
   dictionary: Dictionary;
+  readingId?: string;
 };
 
 const PANEL_POINT_COLORS: Partial<Record<ChartPointId, string>> = {
@@ -93,7 +94,7 @@ function formatAspectLabel(dictionary: Dictionary, aspect: Aspect, pointId: Char
   };
 }
 
-export function PlanetDetailPanel({ chart, dictionary }: Props) {
+export function PlanetDetailPanel({ chart, dictionary, readingId }: Props) {
   const locale = useStoredLocale();
   const {
     selectedPointId,
@@ -155,7 +156,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
         const response = await fetch("/api/reading", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chart, pointId: selectedPointId, locale }),
+          body: JSON.stringify({ chart, pointId: selectedPointId, locale, readingId }),
           signal: controller.signal,
         });
 
@@ -187,7 +188,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
     })();
 
     return () => controller.abort();
-  }, [chart, dictionary.loading.errorFallback, hoverAspect, locale, panelOpen, selectedPointId]);
+  }, [chart, dictionary.loading.errorFallback, hoverAspect, locale, panelOpen, readingId, selectedPointId]);
 
   useEffect(() => {
     if (!panelOpen) {

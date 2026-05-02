@@ -18,6 +18,7 @@ type ChartCompletePageProps = {
   chart: NatalChartData;
   request: FormValues | null;
   dictionary: Dictionary;
+  readingId?: string;
 };
 
 type TransitResult = Awaited<ReturnType<typeof calculateCurrentTransitsAction>>;
@@ -180,7 +181,7 @@ function dateLabel(iso?: string, locale?: string) {
   }).format(new Date(iso));
 }
 
-export function ChartCompletePage({ chart, request, dictionary }: ChartCompletePageProps) {
+export function ChartCompletePage({ chart, request, dictionary, readingId }: ChartCompletePageProps) {
   const locale = useStoredLocale();
   const transitCopy = dictionary.result.transitPage;
   const [result, setResult] = useState<TransitResult | null>(null);
@@ -256,7 +257,7 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
     void fetch("/api/transit-reading", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chart, transits: top, locale }),
+      body: JSON.stringify({ chart, transits: top, locale, readingId, cacheKey }),
       signal: controller.signal,
     }).then(async (res) => {
       if (!active || !res.ok || !res.body) {
@@ -305,7 +306,7 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
       controller.abort();
       clearTimeout(timeout);
     };
-  }, [result, chart, locale, chartHash]);
+  }, [result, chart, locale, chartHash, readingId]);
 
   const activeTransits = useMemo(() => {
     if (!result?.ok) return [];

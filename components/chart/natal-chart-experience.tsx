@@ -29,6 +29,7 @@ type NatalChartExperienceProps = {
   dictionary: Dictionary;
   isMock?: boolean;
   request?: FormValues | null;
+  readingId?: string;
 };
 
 type PageTabId = "natal" | "moon" | "yoga" | "complete" | "solarReturn" | "synastry";
@@ -84,6 +85,7 @@ export function NatalChartExperience({
   dictionary,
   isMock = false,
   request = null,
+  readingId,
 }: NatalChartExperienceProps) {
   const { panelOpen, selectedPointId } = useChartStore();
   const { plan, loading: planLoading } = usePlan();
@@ -250,27 +252,27 @@ export function NatalChartExperience({
             <div className="mt-12 space-y-0 lg:mt-16">
               <ChartBalanceSection chart={chart} dictionary={dictionary} />
               <ChartSignaturesSection chart={chart} dictionary={dictionary} />
-              <ChartGeneralReading chart={chart} dictionary={dictionary} />
+              <ChartGeneralReading chart={chart} dictionary={dictionary} readingId={readingId} />
             </div>
           ) : null}
 
-          <PlanetDetailPanel chart={chart} dictionary={dictionary} />
+          <PlanetDetailPanel chart={chart} dictionary={dictionary} readingId={readingId} />
           <AspectDetailPanel chart={chart} />
         </>
       ) : null}
 
-      {pageTab === "moon" && !activeTabLocked ? <LunaDelMesPage chart={chart} dictionary={dictionary} /> : null}
+      {pageTab === "moon" && !activeTabLocked ? <LunaDelMesPage chart={chart} dictionary={dictionary} readingId={readingId} /> : null}
 
       {pageTab === "complete" && !activeTabLocked ? (
-        <ChartCompletePage chart={chart} request={request} dictionary={dictionary} />
+        <ChartCompletePage chart={chart} request={request} dictionary={dictionary} readingId={readingId} />
       ) : null}
 
       {pageTab === "solarReturn" && !activeTabLocked ? (
-        <SolarReturnPage natalChart={chart} request={request} dictionary={dictionary} />
+        <SolarReturnPage natalChart={chart} request={request} dictionary={dictionary} readingId={readingId} />
       ) : null}
 
       {pageTab === "synastry" && !activeTabLocked ? (
-        <SynastryPage natalChart={chart} dictionary={dictionary} />
+        <SynastryPage natalChart={chart} dictionary={dictionary} readingId={readingId} />
       ) : null}
 
       <PricingModal
