@@ -182,7 +182,11 @@
     "practiceThisMonth": "your practice this month",
     "elementLabel": "{element} element",
     "seeRoutine": "See full routine",
-    "moonIllustrationAlt": "Illustration of {moon}"
+    "moonIllustrationAlt": "Illustration of {moon}",
+    "activeTransitsEyebrow": "what is also moving",
+    "activeTransitsTitle": "Active transits this month",
+    "solarEclipse": "Solar eclipse",
+    "lunarEclipse": "Lunar eclipse"
   },
   "result": {
     "intro": "This is how the planets were aligned when you were born.",
@@ -211,7 +215,8 @@
     },
     "chartHeader": {
       "eyebrow": "the chart of",
-      "selectPlanet": "tap a planet to read its story"
+      "selectPlanet": "tap a planet to read its story",
+      "intro": "This is your natal chart: a snapshot of the sky at the exact moment you were born. Each planet marks something of yours: how you think, what moves you, where you have strength, where there is friction. Tap any planet to read what it says about you."
     },
     "solarReturnPage": {
       "eyebrow": "solar return",
@@ -496,7 +501,8 @@
       "majorAspects": "Major aspects",
       "minorAspects": "Minor aspects",
       "minorPoints": "Minor points",
-      "degrees": "Degrees and minutes"
+      "degrees": "Degrees and minutes",
+      "view": "view"
     },
     "messages": {
       "detailsHint": "Tap a planet or point to open its data card.",
@@ -790,6 +796,7 @@
     "emailPlaceholder": "you@email.com",
     "passwordPlaceholder": "minimum 6 characters",
     "processing": "Processing",
+    "checkEmail": "We sent you an email to confirm your account.",
     "continueWithGoogle": "Continue with Google",
     "or": "or"
   },

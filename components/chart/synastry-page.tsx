@@ -14,10 +14,13 @@ import {
   type SynastryPartnerInput,
 } from "@/lib/actions";
 import type { ChartPointId, NatalChartData } from "@/lib/chart";
+import { hashNatalChart } from "@/lib/chart-hash";
 import { clampIsoDateYear } from "@/lib/date-input";
 import type { PlaceSuggestion } from "@/lib/geocoding";
 import type { Dictionary } from "@/lib/i18n";
-import { calculateSynastryAspects, compatibilityLabel, type SynastryAspect } from "@/lib/synastry";
+import { getCachedPremiumReading, setCachedPremiumReading } from "@/lib/premium-reading-cache";
+import { normalizeReadingText, splitReading } from "@/lib/reading-text";
+import { calculateSynastryAspects, type SynastryAspect } from "@/lib/synastry";
 
 type SynastryPageProps = {
   natalChart: NatalChartData;
@@ -32,6 +35,8 @@ type SynastryData = {
 
 const SARITA_DATA_MARKER = "__SARITA_DATA__";
 const READING_TIMEOUT_MS = 45000;
+const SELECTED_PARTNER_STORAGE_KEY = "sarita_synastry_selected_partner";
+const SELECTED_PARTNER_DATA_STORAGE_KEY = "sarita_synastry_selected_partner_data";
 
 type PartnerRow = {
   id: string;
@@ -55,15 +60,6 @@ const LAYERS: Array<{
   { id: "profesional", points: ["sun", "mercury", "jupiter", "saturn", "mars"] },
   { id: "evolutivo", points: ["northNode", "saturn", "pluto", "uranus", "neptune"] },
 ];
-
-function splitReading(text: string): { headline: string; body: string } {
-  const trimmed = text.trim();
-  const match = trimmed.match(/^(.+?[.!?])\s+([\s\S]+)$/);
-  if (match) {
-    return { headline: match[1].trim(), body: match[2].trim() };
-  }
-  return { headline: trimmed, body: "" };
-}
 
 function qualityBreakdown(aspects: SynastryAspect[]) {
   const total = Math.max(1, aspects.length);
@@ -108,6 +104,35 @@ function localPartnerFromForm(form: SynastryPartnerInput, chart: NatalChartData)
   };
 }
 
+function readStoredPartner(): PartnerRow | null {
+  const rawPartner = window.localStorage.getItem(SELECTED_PARTNER_DATA_STORAGE_KEY);
+  if (!rawPartner) return null;
+
+  try {
+    const parsed = JSON.parse(rawPartner) as Partial<PartnerRow>;
+    if (
+      typeof parsed.id === "string" &&
+      typeof parsed.name === "string" &&
+      typeof parsed.birth_date === "string" &&
+      typeof parsed.birth_city === "string" &&
+      parsed.chart_data
+    ) {
+      return {
+        id: parsed.id,
+        name: parsed.name,
+        birth_date: parsed.birth_date,
+        birth_time: typeof parsed.birth_time === "string" ? parsed.birth_time : null,
+        birth_city: parsed.birth_city,
+        chart_data: parsed.chart_data as NatalChartData,
+      };
+    }
+  } catch {
+    window.localStorage.removeItem(SELECTED_PARTNER_DATA_STORAGE_KEY);
+  }
+
+  return null;
+}
+
 function pointLabel(id: ChartPointId, dictionary: Dictionary) {
   return dictionary.result.points[id] ?? id;
 }
@@ -147,6 +172,16 @@ function cleanJsonPayload(rawPayload: string) {
   return withoutFence;
 }
 
+function normalizeSynastryData(data: SynastryData): SynastryData {
+  return {
+    compatibilityLabel: data.compatibilityLabel ? normalizeReadingText(data.compatibilityLabel) : undefined,
+    compatibilityDescription: data.compatibilityDescription ? normalizeReadingText(data.compatibilityDescription) : undefined,
+    layers: data.layers
+      ? Object.fromEntries(Object.entries(data.layers).map(([key, value]) => [key, normalizeReadingText(value)]))
+      : undefined,
+  };
+}
+
 export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
   const locale = useStoredLocale();
   const synastryCopy = dictionary.result.synastryPage;
@@ -168,6 +203,10 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
   const [isLoadingReading, setIsLoadingReading] = useState(false);
   const [selectedLayerId, setSelectedLayerId] = useState<SynastryLayerId>("fisico");
   const [biWheelSelected, setBiWheelSelected] = useState<{ id: ChartPointId; ring: "inner" | "outer" } | null>(null);
+  const [natalHash, setNatalHash] = useState<string | null>(null);
+  const [partnerHash, setPartnerHash] = useState<string | null>(null);
+  const [partnersLoaded, setPartnersLoaded] = useState(false);
+  const [selectionHydrated, setSelectionHydrated] = useState(false);
   const partnerChart = selectedPartner?.chart_data ?? null;
   const innerChart = flipped && partnerChart ? partnerChart : natalChart;
   const outerChart = flipped && partnerChart ? natalChart : partnerChart;
@@ -177,24 +216,84 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
     () => outerChart ? calculateSynastryAspects(innerChart, outerChart) : [],
     [innerChart, outerChart],
   );
-  const label = compatibilityLabel(aspects, locale);
+  const readingAspects = useMemo(
+    () => partnerChart ? calculateSynastryAspects(natalChart, partnerChart) : [],
+    [natalChart, partnerChart],
+  );
+  const hasAiCompatibility = Boolean(synastryData.compatibilityLabel && synastryData.compatibilityDescription);
 
   useEffect(() => {
     startTransition(async () => {
-      setPartners((await getSynastryPartnersAction()) as PartnerRow[]);
+      const savedPartners = (await getSynastryPartnersAction()) as PartnerRow[];
+      const storedPartner = readStoredPartner();
+      setPartners(storedPartner && !savedPartners.some((partner) => partner.id === storedPartner.id)
+        ? [storedPartner, ...savedPartners]
+        : savedPartners);
+      setPartnersLoaded(true);
     });
   }, []);
 
   useEffect(() => {
-    setBiWheelSelected(null);
-  }, [selectedPartner]);
+    if (selectionHydrated || selectedPartner) return;
+    const storedPartnerId = window.localStorage.getItem(SELECTED_PARTNER_STORAGE_KEY);
+    const storedPartner = storedPartnerId
+      ? partners.find((partner) => partner.id === storedPartnerId) ?? readStoredPartner()
+      : readStoredPartner();
+    if (!storedPartner && !partnersLoaded) return;
+    if (storedPartner) {
+      setPartners((current) => current.some((partner) => partner.id === storedPartner.id) ? current : [storedPartner, ...current]);
+      setSelectedPartner(storedPartner);
+    }
+    setSelectionHydrated(true);
+  }, [partners, partnersLoaded, selectedPartner, selectionHydrated]);
 
   useEffect(() => {
-    if (!selectedPartner || !partnerChart || aspects.length === 0) return;
     let active = true;
+    void hashNatalChart(natalChart).then((hash) => {
+      if (active) setNatalHash(hash);
+    });
+    return () => {
+      active = false;
+    };
+  }, [natalChart]);
+
+  useEffect(() => {
+    let active = true;
+    setPartnerHash(null);
+    if (!partnerChart) return;
+    void hashNatalChart(partnerChart).then((hash) => {
+      if (active) setPartnerHash(hash);
+    });
+    return () => {
+      active = false;
+    };
+  }, [partnerChart]);
+
+  useEffect(() => {
+    setBiWheelSelected(null);
+    if (!selectionHydrated) return;
+    if (selectedPartner) {
+      window.localStorage.setItem(SELECTED_PARTNER_STORAGE_KEY, selectedPartner.id);
+      window.localStorage.setItem(SELECTED_PARTNER_DATA_STORAGE_KEY, JSON.stringify(selectedPartner));
+    } else {
+      window.localStorage.removeItem(SELECTED_PARTNER_STORAGE_KEY);
+      window.localStorage.removeItem(SELECTED_PARTNER_DATA_STORAGE_KEY);
+    }
+  }, [selectedPartner, selectionHydrated]);
+
+  useEffect(() => {
+    if (!selectedPartner || !partnerChart || readingAspects.length === 0 || !natalHash || !partnerHash) return;
+    let active = true;
+    const cacheKey = `synastry:${partnerHash}:${locale}`;
+    const cachedData = getCachedPremiumReading<SynastryData>(natalHash, cacheKey);
     setSynastryReading("");
     setSynastryData({});
     setSynastryReadingError(null);
+    if (cachedData) {
+      setSynastryData(normalizeSynastryData(cachedData));
+      setIsLoadingReading(false);
+      return;
+    }
     setIsLoadingReading(true);
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), READING_TIMEOUT_MS);
@@ -205,7 +304,7 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
         chartA: natalChart,
         chartB: partnerChart,
         partnerName: selectedPartner.name,
-        aspects,
+        aspects: readingAspects,
         locale,
       }),
       signal: controller.signal,
@@ -232,10 +331,15 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
         const jsonPayload = cleanJsonPayload(rawPayload);
         if (jsonPayload) {
           try {
-            setSynastryData(JSON.parse(jsonPayload) as SynastryData);
+            const parsedData = normalizeSynastryData(JSON.parse(jsonPayload) as SynastryData);
+            setSynastryData(parsedData);
+            setCachedPremiumReading(natalHash, cacheKey, parsedData);
           } catch {
+            setSynastryReadingError("Synastry reading JSON could not be parsed.");
             // JSON parse failed — synastryData stays empty until a valid payload arrives
           }
+        } else {
+          setSynastryReadingError("Synastry reading response did not include SARITA data.");
         }
         setIsLoadingReading(false);
       }
@@ -252,7 +356,7 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
       controller.abort();
       clearTimeout(timeout);
     };
-  }, [aspects, selectedPartner, partnerChart, natalChart, locale]);
+  }, [readingAspects, selectedPartner, partnerChart, natalChart, natalHash, partnerHash, locale]);
 
   function savePartner() {
     setError(null);
@@ -284,7 +388,11 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
       <section className="py-10">
         <div className="mx-auto max-w-3xl text-center">
           <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">{synastryCopy.eyebrow}</p>
-          <h2 className="mt-2 font-serif text-[30px] leading-tight text-ivory sm:text-[48px]">{synastryData.compatibilityLabel ?? label.label}</h2>
+          {synastryData.compatibilityLabel ? (
+            <h2 className="mt-2 font-serif text-[30px] leading-tight text-ivory sm:text-[48px]">{synastryData.compatibilityLabel}</h2>
+          ) : (
+            <div className="mx-auto mt-4 h-10 w-72 animate-pulse rounded bg-black/8" />
+          )}
         </div>
         <div className="mt-8">
           <BiWheelChart
@@ -337,12 +445,24 @@ export function SynastryPage({ natalChart, dictionary }: SynastryPageProps) {
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
               VÍNCULO
             </p>
-            <h3 className="mt-2 font-serif text-[22px] leading-snug text-ivory">
-              {synastryData.compatibilityLabel ?? label.label}
-            </h3>
-            <p className="mt-3 text-sm leading-7 text-[#3a3048]">
-              {synastryData.compatibilityDescription ?? label.description}
-            </p>
+            {isLoadingReading && !hasAiCompatibility ? (
+              <div className="mt-3 animate-pulse space-y-2">
+                <div className="h-6 w-3/4 rounded bg-black/8" />
+                <div className="h-3 w-full rounded bg-black/6" />
+                <div className="h-3 w-5/6 rounded bg-black/6" />
+              </div>
+            ) : synastryReadingError && !hasAiCompatibility ? (
+              <p className="mt-3 text-sm leading-7 text-red-700">{synastryReadingError}</p>
+            ) : hasAiCompatibility ? (
+              <>
+                <h3 className="mt-2 font-serif text-[22px] leading-snug text-ivory">
+                  {synastryData.compatibilityLabel}
+                </h3>
+                <p className="mt-3 text-sm leading-7 text-[#3a3048]">
+                  {synastryData.compatibilityDescription}
+                </p>
+              </>
+            ) : null}
           </article>
           <div className="mt-10">
             <div className="grid grid-cols-3 gap-2">

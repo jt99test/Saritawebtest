@@ -115,10 +115,11 @@ function sortSuggestions(results: NominatimResult[], query: string) {
 
 async function fetchNominatim(query: string, limit: number) {
   const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=${limit}&addressdetails=1`;
+  const userAgent = process.env.NOMINATIM_USER_AGENT ?? "SARITA-Astrology/1.0";
 
   const response = await fetch(url, {
     headers: {
-      "User-Agent": "SARITA-Astrology/1.0 (contact@sarita.app)",
+      "User-Agent": userAgent,
       "Accept-Language": "es,en",
     },
     cache: "no-store",

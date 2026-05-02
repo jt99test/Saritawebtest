@@ -1,6 +1,7 @@
 import type { GeneralReadingTheme } from "@/lib/general-reading";
+import type { Locale } from "@/lib/i18n";
 
-const STORAGE_KEY = "sarita_general_readings";
+const STORAGE_KEY = "sarita_general_readings-v2";
 const MAX_CHARTS = 5;
 
 type ReadingCacheStore = Record<string, Record<string, string>>;
@@ -56,40 +57,51 @@ function touchChartHash(store: ReadingCacheStore, chartHash: string) {
   return nextStore;
 }
 
-export function getCachedReading(chartHash: string, theme: GeneralReadingTheme): string | null {
+function readingKey(locale: Locale, theme: GeneralReadingTheme) {
+  return `${locale}:${theme}`;
+}
+
+export function getCachedReading(chartHash: string, locale: Locale, theme: GeneralReadingTheme): string | null {
   const store = readStore();
   const chartReadings = store[chartHash];
+  const key = readingKey(locale, theme);
 
-  if (!chartReadings?.[theme]) {
+  if (!chartReadings?.[key]) {
     return null;
   }
 
   writeStore(touchChartHash(store, chartHash));
-  return chartReadings[theme];
+  return chartReadings[key];
 }
 
-export function setCachedReading(chartHash: string, theme: GeneralReadingTheme, content: string): void {
+export function setCachedReading(chartHash: string, locale: Locale, theme: GeneralReadingTheme, content: string): void {
   const store = readStore();
   const nextStore: ReadingCacheStore = {
     ...store,
     [chartHash]: {
       ...(store[chartHash] ?? {}),
-      [theme]: content,
+      [readingKey(locale, theme)]: content,
     },
   };
 
   writeStore(touchChartHash(nextStore, chartHash));
 }
 
-export function getAllCachedReadings(chartHash: string): Record<string, string> {
+export function getAllCachedReadings(chartHash: string, locale: Locale): Record<string, string> {
   const store = readStore();
   const chartReadings = store[chartHash] ?? {};
+  const prefix = `${locale}:`;
+  const localizedReadings = Object.fromEntries(
+    Object.entries(chartReadings)
+      .filter(([key]) => key.startsWith(prefix))
+      .map(([key, value]) => [key.slice(prefix.length), value]),
+  );
 
   if (store[chartHash]) {
     writeStore(touchChartHash(store, chartHash));
   }
 
-  return chartReadings;
+  return localizedReadings;
 }
 
 export function clearCacheForChart(chartHash: string): void {

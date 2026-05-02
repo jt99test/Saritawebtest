@@ -85,6 +85,11 @@ export default function LoadingPage() {
           return;
         }
 
+        if ("authRequired" in result) {
+          router.replace("/?auth=required");
+          return;
+        }
+
         sessionStorage.setItem(CHART_RESULT_KEY, JSON.stringify(result satisfies ChartCalculationResult));
         router.replace("/resultado");
       } catch (caughtError) {

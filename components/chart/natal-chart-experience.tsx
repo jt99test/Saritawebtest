@@ -64,8 +64,9 @@ function getCity(locationLabel: string) {
 }
 
 function nameSizeClass(name: string) {
-  if (name.length >= 12) return "text-[40px] sm:text-[46px] lg:text-[50px]";
-  if (name.length >= 9) return "text-[44px] sm:text-[52px] lg:text-[58px]";
+  if (name.length >= 14) return "text-[34px] sm:text-[40px] lg:text-[44px]";
+  if (name.length >= 10) return "text-[38px] sm:text-[44px] lg:text-[50px]";
+  if (name.length >= 6) return "text-[44px] sm:text-[50px] lg:text-[56px]";
   return "text-[52px] lg:text-[72px]";
 }
 
@@ -189,7 +190,7 @@ export function NatalChartExperience({
         <>
           <div className="mx-auto mt-8 max-w-2xl text-center">
             <p className="text-sm leading-7 text-[#3a3048]">
-              Esta es tu carta natal: una foto del cielo exactamente en el momento en que naciste. Cada planeta marca algo tuyo — cómo piensas, qué te mueve, dónde tienes fuerza, dónde tienes fricción. Toca cualquier planeta para leer qué dice sobre ti.
+              {dictionary.result.chartHeader.intro}
             </p>
           </div>
 
@@ -206,7 +207,7 @@ export function NatalChartExperience({
               <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-dusty-gold">
                 {dictionary.result.chartHeader.eyebrow}
               </p>
-              <h1 className={`mx-auto -mt-1 max-w-full break-words font-serif font-normal leading-none text-ivory [overflow-wrap:anywhere] ${titleNameClass}`}>
+              <h1 className={`mx-auto -mt-1 max-w-full break-words font-serif font-normal leading-none text-ivory [overflow-wrap:break-word] ${titleNameClass}`}>
                 {firstName}
               </h1>
               <p className="mt-4 font-serif text-[14px] italic text-[#3a3048]">
@@ -220,7 +221,7 @@ export function NatalChartExperience({
                   <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-dusty-gold">
                     {dictionary.result.chartHeader.eyebrow}
                   </p>
-                  <h1 className={`-mt-1 ml-auto max-w-[300px] break-words font-serif font-normal leading-none text-ivory [overflow-wrap:anywhere] ${titleNameClass}`}>
+                  <h1 className={`-mt-1 ml-auto max-w-[360px] break-words font-serif font-normal leading-none text-ivory [overflow-wrap:break-word] ${titleNameClass}`}>
                     {firstName}
                   </h1>
                   <p className="ml-auto mt-4 max-w-[260px] font-serif text-[15px] italic leading-6 text-[#3a3048]">

@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 import type { ChartPointId, NatalChartData } from "@/lib/chart";
 import { zodiacSigns } from "@/lib/chart";
+import { ANTHROPIC_STANDARD_READING_MODEL } from "@/lib/anthropic-models";
 import { ASPECT_LABELS, HOUSE_AREAS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -87,7 +88,7 @@ export async function POST(request: Request) {
     }
 
     const stream = client.messages.stream({
-      model: "claude-sonnet-4-20250514",
+      model: ANTHROPIC_STANDARD_READING_MODEL,
       max_tokens: 350,
       messages: [{ role: "user", content: prompt }],
     });

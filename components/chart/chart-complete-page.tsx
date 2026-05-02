@@ -7,8 +7,11 @@ import { BiWheelInfoPanel } from "@/components/chart/bi-wheel-info-panel";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { calculateCurrentTransitsAction } from "@/lib/actions";
 import type { ChartPoint, ChartPointId, NatalChartData } from "@/lib/chart";
+import { hashNatalChart } from "@/lib/chart-hash";
 import type { FormValues } from "@/lib/chart-session";
 import type { Dictionary } from "@/lib/i18n";
+import { getCachedPremiumReading, setCachedPremiumReading } from "@/lib/premium-reading-cache";
+import { normalizeReadingText } from "@/lib/reading-text";
 import type { ActiveTransit } from "@/lib/transits.server";
 
 type ChartCompletePageProps = {
@@ -18,6 +21,7 @@ type ChartCompletePageProps = {
 };
 
 type TransitResult = Awaited<ReturnType<typeof calculateCurrentTransitsAction>>;
+type CachedTransitResult = Extract<TransitResult, { ok: true }>;
 type TransitData = {
   dominantTitle?: string;
   dominantBody?: string;
@@ -101,6 +105,19 @@ function cleanJsonPayload(rawPayload: string) {
   return withoutFence;
 }
 
+function normalizeTransitData(data: TransitData): TransitData {
+  return {
+    dominantTitle: data.dominantTitle ? normalizeReadingText(data.dominantTitle) : undefined,
+    dominantBody: data.dominantBody ? normalizeReadingText(data.dominantBody) : undefined,
+    planetLanguage: data.planetLanguage ? normalizeReadingText(data.planetLanguage) : undefined,
+    houses: data.houses?.map((house) => ({
+      house: house.house,
+      title: normalizeReadingText(house.title),
+      body: normalizeReadingText(house.body),
+    })),
+  };
+}
+
 function findPoint(chart: NatalChartData, id: ChartPointId) {
   return chart.points.find((point) => point.id === id) ?? chart.extendedPoints?.find((point) => point.id === id);
 }
@@ -152,15 +169,6 @@ function activatedHouses(chart: NatalChartData, transits: ActiveTransit[]) {
   return [...byHouse.values()].sort((a, b) => b.count - a.count).slice(0, 3);
 }
 
-function transitSentence(chart: NatalChartData, transit: ActiveTransit) {
-  const natalPoint = findPoint(chart, transit.natalPlanet);
-  const house = natalPoint?.house;
-  const area = house ? HOUSE_AREAS[house] : "una zona sensible de tu carta";
-  const aspect = ASPECT_LABELS[transit.aspectType];
-
-  return `${pointLabel(transit.transitingPlanet)} ${aspect} tu ${pointLabel(transit.natalPlanet)} natal: activa ${area}.`;
-}
-
 function dateLabel(iso?: string, locale?: string) {
   if (!iso) return "";
   return new Intl.DateTimeFormat(locale ?? "es", {
@@ -182,22 +190,55 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
   const [isLoadingTransitReading, setIsLoadingTransitReading] = useState(false);
   const [selectedHouse, setSelectedHouse] = useState<number | null>(null);
   const [biWheelSelected, setBiWheelSelected] = useState<{ id: ChartPointId; ring: "inner" | "outer" } | null>(null);
+  const [chartHash, setChartHash] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     let active = true;
-    startTransition(async () => {
-      const next = await calculateCurrentTransitsAction(chart, request);
-      if (active) setResult(next);
+    void hashNatalChart(chart).then((hash) => {
+      if (active) setChartHash(hash);
     });
     return () => {
       active = false;
     };
-  }, [chart, request]);
+  }, [chart]);
 
   useEffect(() => {
-    if (!result?.ok || result.transits.length === 0) return;
+    if (!chartHash) return;
     let active = true;
+    const cacheKey = `transit-result:${new Date().toISOString().slice(0, 10)}`;
+    const cachedResult = getCachedPremiumReading<CachedTransitResult>(chartHash, cacheKey);
+    if (cachedResult) {
+      setResult(cachedResult);
+      return;
+    }
+
+    startTransition(async () => {
+      const next = await calculateCurrentTransitsAction(chart, request);
+      if (active) {
+        setResult(next);
+        if (next.ok) {
+          setCachedPremiumReading(chartHash, cacheKey, next);
+        }
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, [chart, request, chartHash]);
+
+  useEffect(() => {
+    if (!result?.ok || result.transits.length === 0 || !chartHash) return;
+    let active = true;
+    const cacheKey = `transits:${locale}:${result.generatedAt.slice(0, 10)}`;
+    const cachedData = getCachedPremiumReading<TransitData>(chartHash, cacheKey);
+    if (cachedData) {
+      setTransitReading("");
+      setTransitData(normalizeTransitData(cachedData));
+      setTransitReadingError(null);
+      setIsLoadingTransitReading(false);
+      return;
+    }
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), READING_TIMEOUT_MS);
     const top = topTransits(result.transits).map(t => ({
@@ -240,7 +281,9 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
         if (markerIdx !== -1) {
           const jsonPayload = cleanJsonPayload(accumulated.slice(markerIdx + SARITA_DATA_MARKER.length).trim());
           try {
-            setTransitData(JSON.parse(jsonPayload) as TransitData);
+            const parsedData = normalizeTransitData(JSON.parse(jsonPayload) as TransitData);
+            setTransitData(parsedData);
+            setCachedPremiumReading(chartHash, cacheKey, parsedData);
           } catch {
             setTransitReadingError("Transit reading JSON could not be parsed.");
           }
@@ -262,7 +305,7 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
       controller.abort();
       clearTimeout(timeout);
     };
-  }, [result, chart, locale]);
+  }, [result, chart, locale, chartHash]);
 
   const activeTransits = useMemo(() => {
     if (!result?.ok) return [];
@@ -358,12 +401,16 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
               <p className="mt-3 text-sm leading-7 text-red-700">{transitReadingError}</p>
             ) : (
               <>
-                <h3 className="mt-2 font-serif text-[22px] leading-snug text-ivory">
-                  {transitData.dominantTitle ?? `${pointLabel(dominantTransit.transitingPlanet)} está activando tu ${pointLabel(dominantTransit.natalPlanet)}`}
-                </h3>
-                <p className="mt-3 text-sm leading-7 text-[#3a3048]">
-                  {transitData.dominantBody ?? transitSentence(chart, dominantTransit)}
-                </p>
+                {transitData.dominantTitle ? (
+                  <h3 className="mt-2 font-serif text-[22px] leading-snug text-ivory">
+                    {transitData.dominantTitle}
+                  </h3>
+                ) : null}
+                {transitData.dominantBody ? (
+                  <p className="mt-3 text-sm leading-7 text-[#3a3048]">
+                    {transitData.dominantBody}
+                  </p>
+                ) : null}
               </>
             )}
           </article>
@@ -381,7 +428,7 @@ export function ChartCompletePage({ chart, request, dictionary }: ChartCompleteP
               <p className="mt-3 text-sm leading-7 text-red-700">{transitReadingError}</p>
             ) : (
               <p className="mt-3 text-sm leading-7 text-[#3a3048]">
-                {transitData.planetLanguage ?? "Este planeta marca una zona de aprendizaje activo y pide presencia."}
+                {transitData.planetLanguage}
               </p>
             )}
             <p className="mt-4 text-sm leading-7 text-[#3a3048]">

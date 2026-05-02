@@ -54,13 +54,24 @@ export function AuthModal() {
 
     const response =
       mode === "sign-up"
-        ? await supabase.auth.signUp({ email, password })
+        ? await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              emailRedirectTo: `${window.location.origin}/auth/callback`,
+            },
+          })
         : await supabase.auth.signInWithPassword({ email, password });
 
     setPending(false);
 
     if (response.error) {
       setMessage(response.error.message);
+      return;
+    }
+
+    if (mode === "sign-up" && !response.data.session) {
+      setMessage(dictionary.auth.checkEmail);
       return;
     }
 
@@ -99,7 +110,7 @@ export function AuthModal() {
   }
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/72 px-4 backdrop-blur-[10px]">
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[#1e1a2e]/35 px-4 backdrop-blur-[10px]">
       <button
         type="button"
         className="absolute inset-0 cursor-default"
@@ -107,11 +118,11 @@ export function AuthModal() {
         onClick={closeModal}
       />
 
-      <div className="relative w-full max-w-[430px] border border-[rgba(236,232,223,0.12)] bg-[rgba(8,11,18,0.98)] px-6 py-6 shadow-[0_28px_90px_rgba(0,0,0,0.58)]">
+      <div className="relative w-full max-w-[430px] border border-black/10 bg-cosmic-950 px-6 py-6 shadow-[0_28px_90px_rgba(30,26,46,0.22)]">
         <button
           type="button"
           onClick={closeModal}
-          className="absolute right-4 top-4 text-[18px] leading-none text-[#3a3048] transition hover:text-ivory"
+          className="absolute right-4 top-4 text-[18px] leading-none text-[#3a3048] transition hover:text-[#5c4a24]"
           aria-label={dictionary.common.close}
         >
           ×
@@ -133,7 +144,7 @@ export function AuthModal() {
                 "border-b px-4 pb-3 pt-1 text-[12px] font-semibold uppercase tracking-[0.2em] transition",
                 mode === tab.id
                   ? "border-dusty-gold text-dusty-gold"
-                  : "border-transparent text-[#3a3048] hover:text-[#3a3048]",
+                  : "border-transparent text-[#3a3048] hover:text-[#5c4a24]",
               ].join(" ")}
             >
               {tab.label}
@@ -145,7 +156,7 @@ export function AuthModal() {
           type="button"
           onClick={() => void handleGoogleAuth()}
           disabled={pending}
-          className="flex w-full items-center justify-center gap-3 border border-black/10 bg-black/[0.04] px-4 py-3 text-sm text-ivory/82 transition hover:bg-white/[0.07] disabled:cursor-wait disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-3 border border-black/10 bg-white px-4 py-3 text-sm text-[#3a3048] transition hover:bg-black/[0.02] disabled:cursor-wait disabled:opacity-50"
         >
           <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
             <path fill="#4285F4" d="M21.6 12.23c0-.74-.07-1.45-.19-2.13H12v4.03h5.38a4.6 4.6 0 0 1-1.99 3.02v2.51h3.23c1.89-1.74 2.98-4.3 2.98-7.43Z" />
@@ -172,7 +183,7 @@ export function AuthModal() {
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="w-full border border-black/15 bg-cosmic-900 px-4 py-3 text-sm text-ivory outline-none transition placeholder:text-muted-ivory focus:border-dusty-gold/45"
+              className="w-full border border-black/15 bg-white px-4 py-3 text-sm text-ivory outline-none transition placeholder:text-[#3a3048]/55 focus:border-dusty-gold/55"
               placeholder={dictionary.auth.emailPlaceholder}
             />
           </label>
@@ -187,13 +198,13 @@ export function AuthModal() {
               minLength={6}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="w-full border border-black/15 bg-cosmic-900 px-4 py-3 text-sm text-ivory outline-none transition placeholder:text-muted-ivory focus:border-dusty-gold/45"
+              className="w-full border border-black/15 bg-white px-4 py-3 text-sm text-ivory outline-none transition placeholder:text-[#3a3048]/55 focus:border-dusty-gold/55"
               placeholder={dictionary.auth.passwordPlaceholder}
             />
           </label>
 
           {message ? (
-            <p className="border-l border-dusty-gold/35 pl-3 text-sm leading-6 text-[#3a3048]">
+            <p className="border-l border-dusty-gold/45 bg-white/55 py-2 pl-3 pr-2 text-sm leading-6 text-[#3a3048]">
               {message}
             </p>
           ) : null}

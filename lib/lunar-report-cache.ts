@@ -1,6 +1,6 @@
 import type { LunarReportCacheEntry } from "@/lib/lunar-report";
 
-const STORAGE_KEY = "sarita_lunar_reports";
+const STORAGE_KEY = "sarita_lunar_reports-v2";
 const MAX_MONTHS_PER_CHART = 3;
 
 type LunarReportStore = Record<string, Record<string, LunarReportCacheEntry>>;

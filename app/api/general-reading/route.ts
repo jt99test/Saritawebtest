@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import type { Message } from "@anthropic-ai/sdk/resources/messages";
 
 import type { NatalChartData } from "@/lib/chart";
 import {
@@ -6,9 +7,21 @@ import {
   getThemeInstruction,
   type GeneralReadingTheme,
 } from "@/lib/general-reading";
+import { ANTHROPIC_STANDARD_READING_MODEL } from "@/lib/anthropic-models";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+function extractTextContent(message: Message) {
+  return message.content
+    .map((block) => block.type === "text" ? block.text : "")
+    .join("")
+    .replace(/^```(?:\w+)?\s*/i, "")
+    .replace(/\s*```\s*$/i, "")
+    .replace(/^\s{0,3}#{1,6}\s+/gm, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 function langInstruction(locale?: string): string {
   if (locale === "en") return "Write entirely in English.";
@@ -33,6 +46,8 @@ Escribe UN párrafo de 60-80 palabras sobre este tema específico de la carta
 de ${chart.event.name}. Identifica cómo se manifiesta en su vida cotidiana con un ejemplo
 real y concreto. Termina con algo que pueda hacer o tener en cuenta. Sin
 subtítulos, sin párrafos múltiples.
+
+No uses markdown. No uses encabezados. No empieces con "#". Respeta estrictamente el lÃ­mite: 60-80 palabras.
 
 ${langInstruction(locale)}`;
 }
@@ -73,39 +88,18 @@ export async function POST(request: Request) {
     }
 
     const prompt = buildPrompt(chart, theme, locale);
-    const stream = client.messages.stream({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 500,
+    const message = await client.messages.create({
+      model: ANTHROPIC_STANDARD_READING_MODEL,
+      max_tokens: 260,
       messages: [{ role: "user", content: prompt }],
     });
+    const content = extractTextContent(message);
 
-    const encoder = new TextEncoder();
-    const readable = new ReadableStream({
-      start(controller) {
-        let closed = false;
-        const closeSafely = () => {
-          if (closed) {
-            return;
-          }
+    if (!content) {
+      return new Response("Empty model response", { status: 502 });
+    }
 
-          closed = true;
-          controller.close();
-        };
-
-        stream.on("text", (text) => {
-          if (!closed) {
-            controller.enqueue(encoder.encode(text));
-          }
-        });
-
-        stream.finalMessage().then(closeSafely).catch(closeSafely);
-      },
-      cancel() {
-        stream.abort();
-      },
-    });
-
-    return new Response(readable, {
+    return new Response(content, {
       headers: {
         "Content-Type": "text/plain; charset=utf-8",
         "Cache-Control": "no-cache",

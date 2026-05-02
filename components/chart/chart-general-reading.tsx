@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { getGeneralReadingCards } from "@/data/chart-readings";
 import { hashNatalChart } from "@/lib/chart-hash";
@@ -8,6 +8,7 @@ import { GENERAL_READING_THEMES, type GeneralReadingTheme } from "@/lib/general-
 import { getAllCachedReadings, setCachedReading } from "@/lib/general-reading-cache";
 import type { NatalChartData } from "@/lib/chart";
 import type { Dictionary } from "@/lib/i18n";
+import { normalizeReadingText, splitReading } from "@/lib/reading-text";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 
 type ChartGeneralReadingProps = {
@@ -15,13 +16,30 @@ type ChartGeneralReadingProps = {
   dictionary: Dictionary;
 };
 
-function splitReading(text: string): { headline: string; body: string } {
-  const trimmed = text.trim();
-  const match = trimmed.match(/^(.+?[.!?])\s+([\s\S]+)$/);
-  if (match) {
-    return { headline: match[1].trim(), body: match[2].trim() };
+function renderEmphasis(text: string): ReactNode[] {
+  const nodes: ReactNode[] = [];
+  const pattern = /(\*\*([^*]+)\*\*|\*([^*]+)\*|__([^_]+)__|_([^_]+)_)/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      nodes.push(text.slice(lastIndex, match.index));
+    }
+
+    nodes.push(
+      <em key={`${match.index}-${match[0]}`} className="not-italic font-medium text-ivory">
+        {match[2] ?? match[3] ?? match[4] ?? match[5]}
+      </em>,
+    );
+    lastIndex = match.index + match[0].length;
   }
-  return { headline: trimmed, body: "" };
+
+  if (lastIndex < text.length) {
+    nodes.push(text.slice(lastIndex));
+  }
+
+  return nodes;
 }
 
 const THEME_META: Record<GeneralReadingTheme, { glyph: string; label: string }> = {
@@ -88,7 +106,9 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
         });
 
         if (!response.ok || !response.body) {
-          throw new Error(dictionary.chart.generateError);
+          const detail = await response.text().catch(() => "");
+          const suffix = detail ? ` (${response.status}: ${detail})` : ` (${response.status})`;
+          throw new Error(`${dictionary.chart.generateError}${suffix}`);
         }
 
         const reader = response.body.getReader();
@@ -105,16 +125,16 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
           setReadings((current) => ({ ...current, [theme]: content }));
         }
 
-        const finalContent = content.trim();
+        const finalContent = normalizeReadingText(content);
         if (!finalContent) {
           throw new Error(dictionary.chart.generateError);
         }
 
-        setCachedReading(currentHash, theme, finalContent);
+        setCachedReading(currentHash, locale, theme, finalContent);
         setReadings((current) => ({ ...current, [theme]: finalContent }));
       } catch (error) {
         if ((error as Error).name !== "AbortError") {
-          setErrors((current) => ({ ...current, [theme]: dictionary.chart.generateError }));
+          setErrors((current) => ({ ...current, [theme]: (error as Error).message || dictionary.chart.generateError }));
         }
       } finally {
         delete controllersRef.current[theme];
@@ -136,7 +156,7 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
         return;
       }
 
-      const cached = getAllCachedReadings(nextHash);
+      const cached = getAllCachedReadings(nextHash, locale);
       const missingThemes = GENERAL_READING_THEMES
         .filter((theme) => !cached[theme]);
 
@@ -158,7 +178,7 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
       Object.values(controllersRef.current).forEach((controller) => controller.abort());
       controllersRef.current = {};
     };
-  }, [chart, fetchReading]);
+  }, [chart, fetchReading, locale]);
 
   const selectedCard = cardByTheme.get(selectedTheme) ?? cards[0];
   const selectedReading = readings[selectedTheme] ?? "";
@@ -233,10 +253,10 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
             ) : (
               <>
                 <h3 className="mt-2 font-serif text-[24px] leading-snug text-ivory">
-                  {selectedSplit.headline}
+                  {renderEmphasis(selectedSplit.headline)}
                 </h3>
                 {selectedSplit.body ? (
-                  <p className="mt-3 text-sm leading-7 text-[#3a3048]">{selectedSplit.body}</p>
+                  <p className="mt-3 text-sm leading-7 text-[#3a3048]">{renderEmphasis(selectedSplit.body)}</p>
                 ) : null}
               </>
             )}

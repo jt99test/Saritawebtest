@@ -9,7 +9,6 @@ import { NatalChartExperience } from "@/components/chart/natal-chart-experience"
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
-import { mockNatalChart } from "@/lib/chart";
 import { CHART_RESULT_KEY, type ChartCalculationResult } from "@/lib/chart-session";
 import { dictionaries } from "@/lib/i18n";
 
@@ -72,9 +71,6 @@ function ResultPageContent() {
     () => null,
   );
 
-  const chart = result?.chart ?? mockNatalChart;
-  const isMock = result?.isMock ?? true;
-
   useEffect(() => {
     if (checkoutStatus === "success" || checkoutStatus === "cancelled") {
       setBanner(checkoutStatus);
@@ -129,9 +125,9 @@ function ResultPageContent() {
 
           {result ? (
             <NatalChartExperience
-              chart={chart}
+              chart={result.chart}
               dictionary={dictionary}
-              isMock={isMock}
+              isMock={result.isMock}
               request={result.request}
             />
           ) : (

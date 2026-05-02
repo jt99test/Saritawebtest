@@ -8,6 +8,7 @@ import * as PasswordResetModule from "../emails/password-reset";
 async function main() {
   const outputDir = "docs/supabase-email-templates";
   await mkdir(outputDir, { recursive: true });
+  process.env.NEXT_PUBLIC_SITE_URL ??= "{{ .SiteURL }}";
   const ConfirmationEmail = getDefaultExport(ConfirmationModule);
   const PasswordResetEmail = getDefaultExport(PasswordResetModule);
 

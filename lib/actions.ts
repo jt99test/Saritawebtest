@@ -1,7 +1,6 @@
 "use server";
 
 import type { NatalChartData } from "./chart";
-import { mockNatalChart } from "./chart";
 import type { ChartActionResult, ChartCalculationResult, FormValues } from "./chart-session";
 import type { PlaceSuggestion } from "./geocoding";
 import { createServerSupabaseClient } from "./supabase/server";
@@ -98,6 +97,13 @@ async function saveNatalReading(result: ChartCalculationResult, access: ReadingA
 export async function calculateChartAction(values: FormValues): Promise<ChartActionResult> {
   const access = await getReadingAccess();
 
+  if (!access) {
+    return {
+      authRequired: true,
+      error: "not_authenticated",
+    };
+  }
+
   if (access && access.count >= access.limit) {
     return {
       limitReached: true,
@@ -142,29 +148,7 @@ export async function calculateChartAction(values: FormValues): Promise<ChartAct
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error("Chart calculation error:", message);
 
-    // Return mock data with personalized name
-    const mock: NatalChartData = {
-      ...mockNatalChart,
-      event: {
-        ...mockNatalChart.event,
-        name: values.name,
-        title: `Carta natal de ${values.name}`,
-        dateLabel: `${values.birthDate} · ${values.birthTime || "12:00"}`,
-        locationLabel: values.location,
-      },
-    };
-    const result: ChartCalculationResult = {
-      chart: mock,
-      isMock: true,
-      error: message,
-      request: values,
-    };
-
-    if (access) {
-      await saveNatalReading(result, access);
-    }
-
-    return result;
+    throw new Error(message);
   }
 }
 

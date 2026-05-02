@@ -4,6 +4,7 @@
 create table if not exists public.profiles (
   id uuid references auth.users on delete cascade primary key,
   email text,
+  locale text not null default 'es',
   plan text default 'free' check (plan in ('free', 'pro', 'avanzado')),
   limpieza_unlocked boolean default false,
   stripe_customer_id text,
@@ -42,6 +43,12 @@ create table if not exists public.synastry_partners (
   created_at timestamptz default now()
 );
 
+create table if not exists public.shared_charts (
+  id text primary key default substring(gen_random_uuid()::text from 1 for 8),
+  chart_data jsonb not null,
+  created_at timestamptz default now()
+);
+
 insert into public.reading_usage_events (user_id, reading_id, type, created_at)
 select reading.user_id, reading.id, reading.type, reading.created_at
 from public.readings as reading
@@ -55,6 +62,7 @@ alter table public.profiles enable row level security;
 alter table public.readings enable row level security;
 alter table public.reading_usage_events enable row level security;
 alter table public.synastry_partners enable row level security;
+alter table public.shared_charts enable row level security;
 
 drop policy if exists "Profiles are viewable by owner" on public.profiles;
 create policy "Profiles are viewable by owner"
@@ -125,6 +133,30 @@ create policy "Synastry partners are deletable by owner"
 on public.synastry_partners
 for delete
 using (auth.uid() = user_id);
+
+drop policy if exists "Public read" on public.shared_charts;
+create policy "Public read"
+on public.shared_charts
+for select
+using (true);
+
+drop policy if exists "Authenticated insert" on public.shared_charts;
+create policy "Authenticated insert"
+on public.shared_charts
+for insert
+with check (auth.role() = 'authenticated');
+
+create index if not exists readings_user_created_at_idx
+on public.readings (user_id, created_at desc);
+
+create index if not exists reading_usage_events_user_created_at_idx
+on public.reading_usage_events (user_id, created_at desc);
+
+create index if not exists reading_usage_events_reading_id_idx
+on public.reading_usage_events (reading_id);
+
+create index if not exists synastry_partners_user_created_at_idx
+on public.synastry_partners (user_id, created_at desc);
 
 create or replace function public.handle_new_user()
 returns trigger

@@ -5,6 +5,8 @@ import { AnimatePresence, motion } from "motion/react";
 
 import type { ChartPoint, ChartPointId, NatalChartData } from "@/lib/chart";
 import { ASPECT_LABELS, HOUSE_AREAS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
+import { useStoredLocale } from "@/components/i18n/use-stored-locale";
+import { dictionaries } from "@/lib/i18n";
 import type { SynastryAspect } from "@/lib/synastry";
 import type { ActiveTransit } from "@/lib/transits.server";
 
@@ -58,27 +60,72 @@ function selectedPoint(
 function ringLabel(
   variant: BiWheelPanelVariant,
   ring: "inner" | "outer",
+  copy: ReturnType<typeof panelCopy>,
   innerName?: string,
   outerName?: string,
 ) {
   if (variant === "transits") {
-    return ring === "inner" ? "Natal" : "Tránsito ahora";
+    return ring === "inner" ? copy.natal : copy.transitNow;
   }
 
   if (variant === "solar-return") {
-    return ring === "inner" ? "Natal" : "RS Este Año";
+    return ring === "inner" ? copy.natal : copy.solarReturn;
   }
 
-  return ring === "inner" ? (innerName ?? "Tú") : (outerName ?? "Pareja");
+  return ring === "inner" ? (innerName ?? copy.you) : (outerName ?? copy.partner);
+}
+
+function panelCopy(locale: string) {
+  if (locale === "en") {
+    return {
+      natal: "Natal",
+      transitNow: "Transit now",
+      solarReturn: "SR this year",
+      you: "You",
+      partner: "Partner",
+      noNatalTransits: "No active transits right now.",
+      noTransitAspects: "No active aspects with your chart.",
+      angularHouse: "Angular house - important position this year.",
+      noSynastryAspects: "No direct aspects with this position.",
+    };
+  }
+
+  if (locale === "it") {
+    return {
+      natal: "Natale",
+      transitNow: "Transito ora",
+      solarReturn: "RS quest'anno",
+      you: "Tu",
+      partner: "Partner",
+      noNatalTransits: "Nessun transito attivo ora.",
+      noTransitAspects: "Nessun aspetto attivo con la tua carta.",
+      angularHouse: "Casa angolare - posizione importante quest'anno.",
+      noSynastryAspects: "Nessun aspetto diretto con questa posizione.",
+    };
+  }
+
+  return {
+    natal: "Natal",
+    transitNow: "Tránsito ahora",
+    solarReturn: "RS Este Año",
+    you: "Tú",
+    partner: "Pareja",
+    noNatalTransits: "Sin tránsitos activos ahora.",
+    noTransitAspects: "Sin aspectos activos con tu carta.",
+    angularHouse: "Casa angular - posición de peso este año.",
+    noSynastryAspects: "Sin aspectos directos con esta posición.",
+  };
 }
 
 function TransitRows({
   ring,
   selectedId,
+  copy,
   activeTransits = [],
 }: {
   ring: "inner" | "outer";
   selectedId: ChartPointId;
+  copy: ReturnType<typeof panelCopy>;
   activeTransits?: ActiveTransit[];
 }) {
   const rows = activeTransits
@@ -88,7 +135,7 @@ function TransitRows({
   if (!rows.length) {
     return (
       <p className="text-[13px] text-[#3a3048]">
-        {ring === "inner" ? "Sin tránsitos activos ahora." : "Sin aspectos activos con tu carta."}
+        {ring === "inner" ? copy.noNatalTransits : copy.noTransitAspects}
       </p>
     );
   }
@@ -116,11 +163,11 @@ function TransitRows({
   );
 }
 
-function SolarReturnNote({ point }: { point: ChartPoint }) {
+function SolarReturnNote({ point, copy }: { point: ChartPoint; copy: ReturnType<typeof panelCopy> }) {
   const angular = point.house === 1 || point.house === 4 || point.house === 7 || point.house === 10;
   return (
     <p className={angular ? "text-[13px] italic text-[#5c4a24]" : "text-[13px] italic text-[#3a3048]"}>
-      {angular ? "Casa angular — posición de peso este año." : HOUSE_AREAS[point.house]}
+      {angular ? copy.angularHouse : HOUSE_AREAS[point.house]}
     </p>
   );
 }
@@ -140,10 +187,12 @@ function qualityLabel(quality: SynastryAspect["quality"]) {
 function SynastryRows({
   ring,
   selectedId,
+  copy,
   synastryAspects = [],
 }: {
   ring: "inner" | "outer";
   selectedId: ChartPointId;
+  copy: ReturnType<typeof panelCopy>;
   synastryAspects?: SynastryAspect[];
 }) {
   const rows = synastryAspects
@@ -152,7 +201,7 @@ function SynastryRows({
     .slice(0, 3);
 
   if (!rows.length) {
-    return <p className="text-[13px] text-[#3a3048]">Sin aspectos directos con esta posición.</p>;
+    return <p className="text-[13px] text-[#3a3048]">{copy.noSynastryAspects}</p>;
   }
 
   return (
@@ -190,6 +239,9 @@ export function BiWheelInfoPanel({
   outerName,
   onClose,
 }: BiWheelInfoPanelProps) {
+  const locale = useStoredLocale();
+  const dictionary = dictionaries[locale];
+  const copy = panelCopy(locale);
   const isDesktop = useDesktopBreakpoint();
   const panelRef = useRef<HTMLDivElement | null>(null);
   const point = selectedPoint(selectedId, ring, innerChart, outerChart);
@@ -238,13 +290,13 @@ export function BiWheelInfoPanel({
               : "inset-x-0 bottom-0 h-[52vh] rounded-t-[2rem] border-t shadow-[0_-24px_90px_rgba(0,0,0,0.18)]",
           ].join(" ")}
           role="dialog"
-          aria-label={POINT_LABELS[selectedId]}
+          aria-label={dictionary.result.points[selectedId]}
         >
           <div ref={panelRef} className="p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
-                  {ringLabel(variant, ring, innerName, outerName)}
+                  {ringLabel(variant, ring, copy, innerName, outerName)}
                 </p>
                 <div className="mt-2 flex items-center gap-3">
                   <span className="font-serif text-[2rem] leading-none" style={{ color: point.color }}>
@@ -252,7 +304,7 @@ export function BiWheelInfoPanel({
                   </span>
                   <div>
                     <h3 className="font-serif text-[22px] leading-none text-ivory">
-                      {POINT_LABELS[selectedId]}
+                      {dictionary.result.points[selectedId]}
                     </h3>
                     <p className="mt-1.5 text-[13px] leading-6 text-[#3a3048]">
                       {SIGN_LABELS[point.sign]} · Casa {point.house} · {HOUSE_AREAS[point.house]}
@@ -274,11 +326,11 @@ export function BiWheelInfoPanel({
 
             <div className="mt-4 border-t border-black/[0.07] pt-4">
               {variant === "transits" ? (
-                <TransitRows ring={ring} selectedId={selectedId} activeTransits={activeTransits} />
+                <TransitRows ring={ring} selectedId={selectedId} copy={copy} activeTransits={activeTransits} />
               ) : null}
-              {variant === "solar-return" ? <SolarReturnNote point={point} /> : null}
+              {variant === "solar-return" ? <SolarReturnNote point={point} copy={copy} /> : null}
               {variant === "synastry" ? (
-                <SynastryRows ring={ring} selectedId={selectedId} synastryAspects={synastryAspects} />
+                <SynastryRows ring={ring} selectedId={selectedId} copy={copy} synastryAspects={synastryAspects} />
               ) : null}
             </div>
           </div>

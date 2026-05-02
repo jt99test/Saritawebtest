@@ -1,10 +1,59 @@
 import Anthropic from "@anthropic-ai/sdk";
-import type { NatalChartData, ChartPointId, SignId } from "@/lib/chart";
-import type { SynastryAspect } from "@/lib/synastry";
+import type { Message, Tool } from "@anthropic-ai/sdk/resources/messages";
+
+import { ANTHROPIC_PREMIUM_READING_MODEL } from "@/lib/anthropic-models";
+import type { ChartPointId, NatalChartData, SignId } from "@/lib/chart";
 import { ASPECT_LABELS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
+import type { SynastryAspect } from "@/lib/synastry";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const SARITA_DATA_MARKER = "__SARITA_DATA__";
+
+type SynastryPayload = {
+  reading: string;
+  compatibilityLabel: string;
+  compatibilityDescription: string;
+  layers: Record<"fisico" | "sexual" | "emocional" | "mental" | "profesional" | "evolutivo", string>;
+};
+
+const SYNASTRY_READING_TOOL: Tool = {
+  name: "synastry_reading",
+  description: "Return the complete practical synastry reading for the SARITA app.",
+  strict: true,
+  input_schema: {
+    type: "object",
+    additionalProperties: false,
+    required: ["reading", "compatibilityLabel", "compatibilityDescription", "layers"],
+    properties: {
+      reading: {
+        type: "string",
+        description: "One practical paragraph of 80-100 words about the relationship.",
+      },
+      compatibilityLabel: {
+        type: "string",
+        description: "Short relationship label, maximum six words.",
+      },
+      compatibilityDescription: {
+        type: "string",
+        description: "One or two practical sentences describing the bond.",
+      },
+      layers: {
+        type: "object",
+        additionalProperties: false,
+        required: ["fisico", "sexual", "emocional", "mental", "profesional", "evolutivo"],
+        properties: {
+          fisico: { type: "string" },
+          sexual: { type: "string" },
+          emocional: { type: "string" },
+          mental: { type: "string" },
+          profesional: { type: "string" },
+          evolutivo: { type: "string" },
+        },
+      },
+    },
+  },
+};
 
 function langInstruction(locale?: string): string {
   if (locale === "en") return "Write entirely in English.";
@@ -12,13 +61,119 @@ function langInstruction(locale?: string): string {
   return "Write in Spanish from Spain. Use the 'tú' form.";
 }
 
-function pl(id: ChartPointId) { return POINT_LABELS[id] ?? id; }
-function sl(sign: SignId) { return SIGN_LABELS[sign] ?? sign; }
+function pl(id: ChartPointId) {
+  return POINT_LABELS[id] ?? id;
+}
+
+function sl(sign: SignId) {
+  return SIGN_LABELS[sign] ?? sign;
+}
+
+function extractTextContent(message: Message) {
+  return message.content
+    .map((block) => block.type === "text" ? block.text : "")
+    .join("")
+    .trim();
+}
+
+function extractToolInput(message: Message, toolName: string) {
+  const toolBlock = message.content.find((block) => block.type === "tool_use" && block.name === toolName);
+  return toolBlock?.type === "tool_use" ? toolBlock.input : null;
+}
+
+function cleanJsonPayload(rawPayload: string) {
+  const withoutFence = rawPayload
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```\s*$/, "")
+    .trim();
+  const start = withoutFence.indexOf("{");
+  const end = withoutFence.lastIndexOf("}");
+
+  if (start !== -1 && end !== -1 && end > start) {
+    return withoutFence.slice(start, end + 1);
+  }
+
+  return withoutFence;
+}
+
+function parseJsonPayload(rawText: string) {
+  return JSON.parse(cleanJsonPayload(rawText)) as unknown;
+}
+
+function normalizeLayerAliases(layers: unknown): SynastryPayload["layers"] | null {
+  if (!layers || typeof layers !== "object") return null;
+  const source = layers as Record<string, unknown>;
+  const normalized = {
+    fisico: source.fisico ?? source.physical,
+    sexual: source.sexual ?? source.sessuale,
+    emocional: source.emocional ?? source.emotivo ?? source.emotional,
+    mental: source.mental,
+    profesional: source.profesional ?? source.professionale ?? source.professional,
+    evolutivo: source.evolutivo ?? source.evolutionary,
+  };
+
+  if (
+    typeof normalized.fisico === "string" &&
+    typeof normalized.sexual === "string" &&
+    typeof normalized.emocional === "string" &&
+    typeof normalized.mental === "string" &&
+    typeof normalized.profesional === "string" &&
+    typeof normalized.evolutivo === "string"
+  ) {
+    return normalized as SynastryPayload["layers"];
+  }
+
+  return null;
+}
+
+function normalizeSynastryPayload(value: unknown): SynastryPayload | null {
+  if (!value || typeof value !== "object") return null;
+  const payload = value as Record<string, unknown>;
+  const layers = normalizeLayerAliases(payload.layers);
+  const reading = payload.reading ?? payload.lettura;
+  const compatibilityLabel = payload.compatibilityLabel ?? payload.compatibility_label ?? payload.etichettaCompatibilita;
+  const compatibilityDescription =
+    payload.compatibilityDescription ?? payload.compatibility_description ?? payload.descrizioneCompatibilita;
+
+  if (
+    typeof reading === "string" &&
+    typeof compatibilityLabel === "string" &&
+    typeof compatibilityDescription === "string" &&
+    layers
+  ) {
+    return { reading, compatibilityLabel, compatibilityDescription, layers };
+  }
+
+  return null;
+}
+
+function isSynastryPayload(value: unknown): value is SynastryPayload {
+  if (!value || typeof value !== "object") return false;
+  const payload = value as Partial<SynastryPayload>;
+  const layers = payload.layers as Partial<SynastryPayload["layers"]> | undefined;
+
+  return (
+    typeof payload.reading === "string" &&
+    typeof payload.compatibilityLabel === "string" &&
+    typeof payload.compatibilityDescription === "string" &&
+    typeof layers === "object" &&
+    layers !== null &&
+    typeof layers.fisico === "string" &&
+    typeof layers.sexual === "string" &&
+    typeof layers.emocional === "string" &&
+    typeof layers.mental === "string" &&
+    typeof layers.profesional === "string" &&
+    typeof layers.evolutivo === "string"
+  );
+}
 
 function keyPoints(chart: NatalChartData) {
-  const get = (id: ChartPointId) => chart.points.find(p => p.id === id);
-  const sun = get("sun"); const moon = get("moon");
-  const venus = get("venus"); const mars = get("mars");
+  const get = (id: ChartPointId) => chart.points.find((point) => point.id === id);
+  const sun = get("sun");
+  const moon = get("moon");
+  const venus = get("venus");
+  const mars = get("mars");
+
   return [
     sun ? `Sol ${sl(sun.sign)} casa ${sun.house}` : null,
     moon ? `Luna ${sl(moon.sign)} casa ${moon.house}` : null,
@@ -31,16 +186,16 @@ function buildContext(chartA: NatalChartData, chartB: NatalChartData, partnerNam
   const topAspects = [...aspects]
     .sort((a, b) => a.orb - b.orb)
     .slice(0, 10)
-    .map(a => {
-      const quality = a.quality === "harmonious" ? "armónico" : a.quality === "tense" ? "tenso" : "neutro";
-      return `- ${pl(a.pointA)} (${chartA.event.name}) en ${ASPECT_LABELS[a.type] ?? a.type} con ${pl(a.pointB)} (${partnerName}) — orbe ${a.orb}°, ${quality}`;
+    .map((aspect) => {
+      const quality = aspect.quality === "harmonious" ? "armónico" : aspect.quality === "tense" ? "tenso" : "neutro";
+      return `- ${pl(aspect.pointA)} (${chartA.event.name}) en ${ASPECT_LABELS[aspect.type] ?? aspect.type} con ${pl(aspect.pointB)} (${partnerName}) - orbe ${aspect.orb}°, ${quality}`;
     });
 
   return [
     `${chartA.event.name}: ${keyPoints(chartA)}`,
     `${partnerName}: ${keyPoints(chartB)}`,
-    ``,
-    `Aspectos más fuertes (ordenados por orbe):`,
+    "",
+    "Aspectos más fuertes:",
     ...topAspects,
   ].join("\n");
 }
@@ -54,74 +209,91 @@ export async function POST(request: Request) {
   if (profile?.plan !== "avanzado") return new Response("Advanced plan required", { status: 403 });
 
   const { chartA, chartB, partnerName, aspects, locale } = await request.json() as {
-    chartA: NatalChartData; chartB: NatalChartData;
-    partnerName: string; aspects: SynastryAspect[];
+    chartA: NatalChartData;
+    chartB: NatalChartData;
+    partnerName: string;
+    aspects: SynastryAspect[];
     locale?: string;
   };
 
-  if (!process.env.ANTHROPIC_API_KEY) return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
+  }
 
   const name = chartA.event.name;
   const context = buildContext(chartA, chartB, partnerName, aspects);
 
-  const prompt = `Eres Sarita, una astróloga que habla con ${name} sobre su relación con ${partnerName}. Directa y concreta. Como una amiga que entiende de astro y te dice lo que ve, sin endulzarlo.
+  const prompt = `Eres Sarita, una astróloga que habla con ${name} sobre su relación con ${partnerName}. Directa, concreta, honesta y práctica.
 
 ${context}
 
-Escribe UN párrafo de 80-100 palabras sobre la relación de ${name} con
-${partnerName}. Usa los 2 aspectos más fuertes para describir la dinámica
-central: qué se siente, dónde hay tensión, dónde hay facilidad. Da un
-ejemplo real de cómo aparece esto en la convivencia. Termina con algo
-concreto que ${name} puede hacer para llevarse mejor con ${partnerName}. Sin
-subtítulos ni párrafos múltiples.
+Usa la herramienta synastry_reading para devolver la lectura estructurada.
+Las claves de la herramienta deben quedar exactamente como estan definidas aunque el contenido este en otro idioma.
 
-Después de la lectura principal, escribe exactamente esta línea de separación:
+Forma exacta:
+{"reading":"[UN párrafo de 80-100 palabras sobre la relación de ${name} con ${partnerName}. Usa los 2 aspectos más fuertes para describir qué se siente, dónde hay tensión, dónde hay facilidad. Da un ejemplo real de convivencia. Termina con algo concreto que ${name} puede hacer.]","compatibilityLabel":"[Etiqueta corta del vínculo, máx 6 palabras]","compatibilityDescription":"[1-2 frases honestas y prácticas sobre el tipo de vínculo]","layers":{"fisico":"[2-3 frases prácticas sobre conexión física/corporal según aspectos reales]","sexual":"[2-3 frases prácticas sobre atracción, deseo o intensidad según aspectos reales]","emocional":"[2-3 frases prácticas sobre apego, seguridad y vulnerabilidad según aspectos reales]","mental":"[2-3 frases prácticas sobre comunicación e ideas según aspectos reales]","profesional":"[2-3 frases prácticas sobre trabajar o construir algo juntos según aspectos reales]","evolutivo":"[2-3 frases prácticas sobre qué patrón o cambio activa esta relación según aspectos reales]"}}
 
-__SARITA_DATA__
-
-Luego, en una sola línea, el JSON siguiente:
-
-{"compatibilityLabel":"[Etiqueta corta que describe esta relación — máx 6 palabras, sin clichés]","compatibilityDescription":"[1-2 frases que expliquen el tipo de vínculo de forma honesta y directa. Sin el cosmos ni karma.]","layers":{"fisico":"[2-3 frases sobre la conexión física/corporal entre ${name} y ${partnerName} según los aspectos. Qué se activa. Cómo se nota.]","sexual":"[2-3 frases sobre la dimensión sexual: atracción, deseo, intensidad. Concreto y directo.]","emocional":"[2-3 frases sobre la capa emocional: apego, seguridad, vulnerabilidad. Basado en los aspectos reales.]","mental":"[2-3 frases sobre la conexión mental: comunicación, ideas, perspectivas compartidas o en conflicto.]","profesional":"[2-3 frases sobre si pueden trabajar juntos, construir algo, qué dinámicas de poder aparecen.]","evolutivo":"[2-3 frases sobre qué le enseña esta relación a ${name}: qué patrones activa, qué empuja a cambiar.]"}}
-
-Cada valor del JSON usa los aspectos reales de la carta comparada. No genérico.
-Primera letra de cada campo siempre mayúscula.
-Una sola línea de JSON, sin saltos de línea dentro del JSON.
-
-Reglas estrictas:
-- Habla siempre a ${name} directamente
-- El primer carácter es siempre mayúscula
-- La prosa debe respetar el párrafo único indicado antes
-- Sin listas ni subtítulos en la prosa
-- Tono SARITA: directo, práctico, como una amiga que sabe astrología. Sin solemnidad.
-- Sin frases vagas, misticismos ni lenguaje New Age
+Reglas:
+- Cada valor usa aspectos reales. Nada genérico.
+- Habla siempre a ${name} directamente.
+- El primer carácter de cada campo de texto siempre es mayúscula.
+- "reading" es un solo párrafo, sin listas ni subtítulos.
+- Sin misticismos ni lenguaje New Age.
+- No anadas campos nuevos.
 
 ${langInstruction(locale)}`;
 
-  const stream = client.messages.stream({
-    model: "claude-sonnet-4-20250514",
-      max_tokens: 700,
-    messages: [{ role: "user", content: prompt }],
-  });
+  let parsed: SynastryPayload | null = null;
 
-  const encoder = new TextEncoder();
-  const readable = new ReadableStream({
-    start(controller) {
-      let closed = false;
-      const closeSafely = () => { if (!closed) { closed = true; controller.close(); } };
-      const failSafely = (error: unknown) => {
-        console.error("Synastry reading stream failed", error);
-        if (!closed) {
-          closed = true;
-          controller.error(error);
-        }
-      };
-      stream.on("text", (text) => { if (!closed) controller.enqueue(encoder.encode(text)); });
-      stream.finalMessage().then(closeSafely).catch(failSafely);
+  try {
+    const message = await client.messages.create({
+      model: ANTHROPIC_PREMIUM_READING_MODEL,
+      max_tokens: 1800,
+      tools: [SYNASTRY_READING_TOOL],
+      tool_choice: { type: "tool", name: SYNASTRY_READING_TOOL.name },
+      messages: [{ role: "user", content: prompt }],
+    });
+    const firstInput = extractToolInput(message, SYNASTRY_READING_TOOL.name);
+    parsed = normalizeSynastryPayload(firstInput);
+
+    if (!parsed) {
+      const firstText = extractTextContent(message) || JSON.stringify(firstInput);
+      const repair = await client.messages.create({
+        model: ANTHROPIC_PREMIUM_READING_MODEL,
+        max_tokens: 1200,
+        tools: [SYNASTRY_READING_TOOL],
+        tool_choice: { type: "tool", name: SYNASTRY_READING_TOOL.name },
+        messages: [{
+          role: "user",
+          content: `Convierte esta respuesta en una llamada valida a la herramienta synastry_reading. No traduzcas las claves.
+
+Respuesta a reparar:
+${firstText}`,
+        }],
+      });
+      parsed = normalizeSynastryPayload(extractToolInput(repair, SYNASTRY_READING_TOOL.name));
+    }
+  } catch (error) {
+    console.error("Synastry reading JSON generation failed", error);
+    return new Response("Synastry reading JSON could not be parsed", { status: 502 });
+  }
+
+  if (!parsed || !isSynastryPayload(parsed)) {
+    console.error("Synastry reading JSON shape invalid", parsed);
+    return new Response("Synastry reading JSON shape invalid", { status: 502 });
+  }
+
+  const data = {
+    compatibilityLabel: parsed.compatibilityLabel,
+    compatibilityDescription: parsed.compatibilityDescription,
+    layers: parsed.layers,
+  };
+
+  return new Response(`${parsed.reading}\n\n${SARITA_DATA_MARKER}\n${JSON.stringify(data)}`, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-cache",
+      "X-Content-Type-Options": "nosniff",
     },
-    cancel() { stream.abort(); },
-  });
-
-  return new Response(readable, {
-    headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-cache", "X-Content-Type-Options": "nosniff" },
   });
 }

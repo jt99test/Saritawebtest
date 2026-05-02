@@ -8,10 +8,13 @@ import { LocationAutocomplete } from "@/components/form/location-autocomplete";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { calculateSolarReturnAction } from "@/lib/actions";
-import { formatSignPosition, type ChartPointId, type NatalChartData } from "@/lib/chart";
+import type { ChartPointId, NatalChartData } from "@/lib/chart";
+import { hashNatalChart } from "@/lib/chart-hash";
 import type { FormValues } from "@/lib/chart-session";
 import type { PlaceSuggestion } from "@/lib/geocoding";
 import type { Dictionary } from "@/lib/i18n";
+import { getCachedPremiumReading, setCachedPremiumReading } from "@/lib/premium-reading-cache";
+import { normalizeReadingText } from "@/lib/reading-text";
 
 type SolarReturnPageProps = {
   natalChart: NatalChartData;
@@ -24,22 +27,19 @@ type SolarData = {
   priorities?: Array<{ title: string; body: string }>;
 };
 
+type CachedSolarReturnReading = {
+  chart: NatalChartData;
+  data: SolarData;
+};
+
 const SARITA_DATA_MARKER = "__SARITA_DATA__";
 const READING_TIMEOUT_MS = 45000;
+const SOLAR_RETURN_SELECTION_KEY = "sarita_solar_return_selection";
 
-const HOUSE_AREAS: Record<number, string> = {
-  1: "identidad y cuerpo",
-  2: "recursos y valor propio",
-  3: "voz, mente y entorno",
-  4: "hogar y raiz emocional",
-  5: "creatividad y deseo",
-  6: "rutina, salud y oficio",
-  7: "vinculos y acuerdos",
-  8: "intimidad y transformacion",
-  9: "sentido, viajes y expansion",
-  10: "direccion publica",
-  11: "redes y futuro",
-  12: "cierre, descanso e inconsciente",
+type StoredSolarReturnSelection = {
+  targetYear: number;
+  city: string;
+  selectedLocation: PlaceSuggestion | null;
 };
 
 function currentSolarReturnYear(request: FormValues | null) {
@@ -49,14 +49,6 @@ function currentSolarReturnYear(request: FormValues | null) {
 
   const birthdayThisYear = new Date(now.getFullYear(), birthDate.getMonth(), birthDate.getDate());
   return now >= birthdayThisYear ? now.getFullYear() : now.getFullYear() - 1;
-}
-
-function solarPriorityAreas(sunHouse: number, moonHouse: number) {
-  return [
-    { title: `Prioriza ${HOUSE_AREAS[sunHouse]}`, body: "" },
-    { title: `Cuida ${HOUSE_AREAS[moonHouse]}`, body: "" },
-    { title: "Reduce ruido innecesario", body: "" },
-  ];
 }
 
 function cardTabLabel(key: string, solarCopy: Dictionary["result"]["solarReturnPage"]) {
@@ -81,6 +73,20 @@ function cleanJsonPayload(rawPayload: string) {
   return withoutFence;
 }
 
+function normalizeSolarData(data: SolarData): SolarData {
+  return {
+    cards: data.cards?.map((card) => ({
+      key: card.key,
+      title: normalizeReadingText(card.title),
+      body: normalizeReadingText(card.body),
+    })),
+    priorities: data.priorities?.map((priority) => ({
+      title: normalizeReadingText(priority.title),
+      body: normalizeReadingText(priority.body),
+    })),
+  };
+}
+
 export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturnPageProps) {
   const locale = useStoredLocale();
   const solarCopy = dictionary.result.solarReturnPage;
@@ -96,30 +102,85 @@ export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturn
   const [isLoadingReading, setIsLoadingReading] = useState(false);
   const [selectedCardKey, setSelectedCardKey] = useState("theme");
   const [biWheelSelected, setBiWheelSelected] = useState<{ id: ChartPointId; ring: "inner" | "outer" } | null>(null);
+  const [chartHash, setChartHash] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const yearOptions = useMemo(
     () => Array.from({ length: 11 }, (_, index) => defaultYear - 5 + index),
     [defaultYear],
   );
-  const rsAscendantPosition = solarChart ? formatSignPosition(solarChart.meta.ascendant) : null;
-  const rsAscendantSign = rsAscendantPosition ? dictionary.result.signs[rsAscendantPosition.sign] : "";
-  const rsMoon = solarChart?.points.find((point) => point.id === "moon");
-  const rsSun = solarChart?.points.find((point) => point.id === "sun");
-  const fallbackCards = [
-    { key: "theme", title: solarCopy.themeCard, body: rsAscendantPosition ? `Ascendente ${rsAscendantSign}` : "Ascendente -" },
-    { key: "area", title: solarCopy.areaCard, body: `Sol · Casa ${rsSun?.house ?? "-"}` },
-    { key: "tone", title: solarCopy.toneCard, body: `Luna · ${rsMoon ? dictionary.result.signs[rsMoon.sign] : "-"}` },
-  ];
-  const summaryCards = solarData.cards?.length === 3 ? solarData.cards : fallbackCards;
-  const selectedSummaryCard = summaryCards.find((card) => card.key === selectedCardKey) ?? summaryCards[0];
-  const priorityAreas = solarData.priorities ?? (solarChart ? solarPriorityAreas(rsSun?.house ?? 1, rsMoon?.house ?? 4) : []);
+  const summaryTabs = ["theme", "area", "tone"];
+  const summaryCards = solarData.cards?.length === 3 ? solarData.cards : [];
+  const selectedSummaryCard = summaryCards.find((card) => card.key === selectedCardKey) ?? summaryCards[0] ?? null;
+  const priorityAreas = solarData.priorities ?? [];
+  const solarCacheKey = useMemo(() => {
+    const locationKey = selectedLocation
+      ? `${selectedLocation.lat.toFixed(4)},${selectedLocation.lng.toFixed(4)}`
+      : city.trim().toLowerCase();
+    return `solar-return:${targetYear}:${locale}:${locationKey}`;
+  }, [city, locale, selectedLocation, targetYear]);
 
   useEffect(() => {
     setBiWheelSelected(null);
   }, [solarChart]);
 
+  useEffect(() => {
+    const rawSelection = window.localStorage.getItem(SOLAR_RETURN_SELECTION_KEY);
+    if (!rawSelection) return;
+
+    try {
+      const storedSelection = JSON.parse(rawSelection) as Partial<StoredSolarReturnSelection>;
+      if (typeof storedSelection.targetYear === "number") {
+        setTargetYear(storedSelection.targetYear);
+      }
+      if (typeof storedSelection.city === "string" && storedSelection.city.trim()) {
+        setCity(storedSelection.city);
+      }
+      if (storedSelection.selectedLocation) {
+        setSelectedLocation(storedSelection.selectedLocation);
+      }
+    } catch {
+      window.localStorage.removeItem(SOLAR_RETURN_SELECTION_KEY);
+    }
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    void hashNatalChart(natalChart).then((hash) => {
+      if (active) setChartHash(hash);
+    });
+    return () => {
+      active = false;
+    };
+  }, [natalChart]);
+
+  useEffect(() => {
+    if (!chartHash || solarChart) return;
+    const cachedReading = getCachedPremiumReading<CachedSolarReturnReading>(chartHash, solarCacheKey);
+    if (!cachedReading) return;
+
+    setSolarChart(cachedReading.chart);
+    setSolarData(normalizeSolarData(cachedReading.data));
+    setAiReading("");
+    setReadingError(null);
+    setSelectedCardKey("theme");
+    setIsLoadingReading(false);
+  }, [chartHash, solarCacheKey, solarChart]);
+
   function calculate() {
     setError(null);
+    if (chartHash) {
+      const cachedReading = getCachedPremiumReading<CachedSolarReturnReading>(chartHash, solarCacheKey);
+      if (cachedReading) {
+        window.localStorage.setItem(SOLAR_RETURN_SELECTION_KEY, JSON.stringify({ targetYear, city, selectedLocation }));
+        setSolarChart(cachedReading.chart);
+        setSolarData(normalizeSolarData(cachedReading.data));
+        setAiReading("");
+        setReadingError(null);
+        setSelectedCardKey("theme");
+        setIsLoadingReading(false);
+        return;
+      }
+    }
     startTransition(async () => {
       const result = await calculateSolarReturnAction({
         natalChart,
@@ -131,6 +192,7 @@ export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturn
       });
 
       if (result.ok) {
+        window.localStorage.setItem(SOLAR_RETURN_SELECTION_KEY, JSON.stringify({ targetYear, city, selectedLocation }));
         setSolarChart(result.chart);
         setAiReading("");
         setSolarData({});
@@ -167,10 +229,20 @@ export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturn
           const jsonPayload = cleanJsonPayload(rawPayload);
           if (jsonPayload) {
             try {
-              setSolarData(JSON.parse(jsonPayload) as SolarData);
+              const parsedData = normalizeSolarData(JSON.parse(jsonPayload) as SolarData);
+              setSolarData(parsedData);
+              if (chartHash) {
+                setCachedPremiumReading<CachedSolarReturnReading>(chartHash, solarCacheKey, {
+                  chart: result.chart,
+                  data: parsedData,
+                });
+              }
             } catch {
+              setReadingError(`${solarCopy.errorMessage} JSON`);
               // JSON parse failed — solarData stays empty, fallback cards show
             }
+          } else {
+            setReadingError(`${solarCopy.errorMessage} DATA`);
           }
 
           setIsLoadingReading(false);
@@ -211,13 +283,13 @@ export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturn
 
         <div className="mx-auto mt-10 max-w-5xl">
           <div className="flex gap-0 border border-black/10">
-            {summaryCards.map((card) => {
-              const active = selectedSummaryCard?.key === card.key;
+            {summaryTabs.map((key) => {
+              const active = selectedCardKey === key;
               return (
                 <button
-                  key={card.key}
+                  key={key}
                   type="button"
-                  onClick={() => setSelectedCardKey(card.key)}
+                  onClick={() => setSelectedCardKey(key)}
                   className={[
                     "flex-1 border-r border-black/10 px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.2em] transition last:border-r-0",
                     active
@@ -225,7 +297,7 @@ export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturn
                       : "bg-white text-[#3a3048] hover:bg-black/[0.02]",
                   ].join(" ")}
                 >
-                  {cardTabLabel(card.key, solarCopy)}
+                  {cardTabLabel(key, solarCopy)}
                 </button>
               );
             })}
@@ -253,7 +325,7 @@ export function SolarReturnPage({ natalChart, request, dictionary }: SolarReturn
           ) : selectedSummaryCard ? (
             <article className="mt-4 min-h-[160px] border border-black/10 bg-white p-6">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
-                {selectedSummaryCard.key.toUpperCase()}
+                {cardTabLabel(selectedSummaryCard.key, solarCopy).toUpperCase()}
               </p>
               <h3 className="mt-2 font-serif text-[24px] leading-snug text-ivory">
                 {selectedSummaryCard.title}

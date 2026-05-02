@@ -27,6 +27,8 @@ export function EmailLayout({ children, previewText }: EmailLayoutProps) {
   void Link;
   void Row;
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
   return (
     <Html>
       <Head />
@@ -43,7 +45,7 @@ export function EmailLayout({ children, previewText }: EmailLayoutProps) {
           <Section style={footerStyle}>
             <Text style={footerTextStyle}>© 2026 SARITA · Astrología Occidental</Text>
             <Text style={footerTextStyle}>
-              Para cancelar tu suscripción, accede a tu cuenta en saritaweb.com
+              Para gestionar tu cuenta o cancelar tu suscripción, entra en {siteUrl}
             </Text>
           </Section>
         </Container>

@@ -182,7 +182,11 @@
     "practiceThisMonth": "tu práctica este mes",
     "elementLabel": "Elemento {element}",
     "seeRoutine": "Ver rutina completa",
-    "moonIllustrationAlt": "Ilustración de {moon}"
+    "moonIllustrationAlt": "Ilustración de {moon}",
+    "activeTransitsEyebrow": "lo que también se mueve",
+    "activeTransitsTitle": "Tránsitos activos este mes",
+    "solarEclipse": "Eclipse solar",
+    "lunarEclipse": "Eclipse lunar"
   },
   "result": {
     "intro": "Así estaban alineados los planetas cuando naciste.",
@@ -211,7 +215,8 @@
     },
     "chartHeader": {
       "eyebrow": "la carta de",
-      "selectPlanet": "toca un planeta para leer su historia"
+      "selectPlanet": "toca un planeta para leer su historia",
+      "intro": "Esta es tu carta natal: una foto del cielo exactamente en el momento en que naciste. Cada planeta marca algo tuyo: cómo piensas, qué te mueve, dónde tienes fuerza, dónde tienes fricción. Toca cualquier planeta para leer qué dice sobre ti."
     },
     "solarReturnPage": {
       "eyebrow": "revolución solar",
@@ -496,7 +501,8 @@
       "majorAspects": "Aspectos mayores",
       "minorAspects": "Aspectos menores",
       "minorPoints": "Puntos menores",
-      "degrees": "Grados y minutos"
+      "degrees": "Grados y minutos",
+      "view": "vista"
     },
     "messages": {
       "detailsHint": "Pulsa sobre un planeta o un punto para ver su ficha.",
@@ -790,6 +796,7 @@
     "emailPlaceholder": "tu@email.com",
     "passwordPlaceholder": "mínimo 6 caracteres",
     "processing": "Procesando",
+    "checkEmail": "Te hemos enviado un correo para confirmar tu cuenta.",
     "continueWithGoogle": "Continuar con Google",
     "or": "o"
   },

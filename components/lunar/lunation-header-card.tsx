@@ -7,19 +7,21 @@ type LunationHeaderCardProps = {
   metadata: LunarReportMetadata;
   dictionary: Dictionary;
   timezone: string;
+  locale: string;
 };
 
 export function LunationHeaderCard({
   metadata,
   dictionary,
   timezone,
+  locale,
 }: LunationHeaderCardProps) {
   const signLabel =
     dictionary.result.signs[metadata.position.sign as keyof typeof dictionary.result.signs] ??
     metadata.position.sign;
   const dateLabel = DateTime.fromISO(metadata.timestamp, { zone: "utc" })
     .setZone(timezone)
-    .setLocale("es")
+    .setLocale(locale)
     .toFormat("d LLL");
   const degreeLabel = `${metadata.position.degree}° ${String(metadata.position.minutes).padStart(
     2,
@@ -33,7 +35,7 @@ export function LunationHeaderCard({
         {degreeLabel}
       </h2>
       <p className="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-xs uppercase tracking-[0.14em] text-[#3a3048] [font-variant-numeric:tabular-nums]">
-        <span>{`Casa ${metadata.activatedHouse}`}</span>
+        <span>{`${dictionary.result.fields.house} ${metadata.activatedHouse}`}</span>
         <span aria-hidden="true">·</span>
         <span>{metadata.areaOfLife}</span>
         <span aria-hidden="true">·</span>
@@ -41,7 +43,7 @@ export function LunationHeaderCard({
       </p>
       {metadata.eclipse?.isEclipse ? (
         <p className="mt-5 inline-flex border border-amber-300/28 bg-amber-300/[0.08] px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.22em] text-amber-200/82">
-          {metadata.eclipse.kind === "solar" ? "Eclipse solar" : "Eclipse lunar"}
+          {metadata.eclipse.kind === "solar" ? dictionary.lunar.solarEclipse : dictionary.lunar.lunarEclipse}
         </p>
       ) : null}
     </section>

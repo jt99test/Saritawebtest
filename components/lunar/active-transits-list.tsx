@@ -12,57 +12,59 @@ type ActiveTransitsListProps = {
   dictionary: Dictionary;
 };
 
-const SLOW_PLANETS = new Set(["Saturno", "Júpiter", "Urano", "Neptuno", "Plutón"]);
+const SLOW_PLANETS = new Set(["Saturno", "Jupiter", "Júpiter", "Urano", "Neptuno", "Pluton", "Plutón"]);
 
 const PLANET_GLYPHS: Record<string, string> = {
   Saturno: "♄",
+  Jupiter: "♃",
   Júpiter: "♃",
   Urano: "⛢",
   Neptuno: "♆",
+  Pluton: "♇",
   Plutón: "♇",
   Marte: "♂",
   Venus: "♀",
 };
 
-function getTransitWindowLabel(exactnessDate: string, planet: string, timezone: string) {
-  const exact = DateTime.fromISO(exactnessDate, { zone: "utc" }).setZone(timezone).setLocale("es");
+function localeFromDictionary(dictionary: Dictionary) {
+  if (dictionary.lunar.fullMoon === "Full Moon") return "en";
+  if (dictionary.lunar.fullMoon === "Luna Piena") return "it";
+  return "es";
+}
+
+function getTransitWindowLabel(exactnessDate: string, planet: string, timezone: string, locale: string) {
+  const exact = DateTime.fromISO(exactnessDate, { zone: "utc" }).setZone(timezone).setLocale(locale);
   const offsetDays = SLOW_PLANETS.has(planet) ? 21 : 4;
   const start = exact.minus({ days: offsetDays });
   const end = exact.plus({ days: offsetDays });
+
+  if (locale === "en") {
+    return `from ${start.toFormat("LLLL d")} to ${end.toFormat("LLLL d")}`;
+  }
+
+  if (locale === "it") {
+    return `dal ${start.toFormat("d LLLL")} al ${end.toFormat("d LLLL")}`;
+  }
 
   return `del ${start.toFormat("d 'de' LLLL")} al ${end.toFormat("d 'de' LLLL")}`;
 }
 
 function getThemeLabel(transit: LunarReportMetadata["activeTransits"][number]) {
-  if (transit.practicalSummary?.trim()) {
-    return transit.practicalSummary.trim();
-  }
-
-  const source = transit.relevance || transit.description;
-  const [first] = source.split(",");
-  return first.trim() || "movimiento";
-}
-
-function getThemeBody(transit: LunarReportMetadata["activeTransits"][number]) {
-  return (
-    transit.practicalSummary?.trim() ||
-    transit.relevance?.trim() ||
-    transit.description?.trim() ||
-    getThemeLabel(transit)
-  );
+  return transit.practicalSummary?.trim() ?? "";
 }
 
 export function ActiveTransitsList({ transits, timezone, dictionary }: ActiveTransitsListProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const locale = localeFromDictionary(dictionary);
 
   return (
     <section className="mx-auto max-w-[720px] lg:max-w-[800px]">
       <div className="text-center">
         <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
-          lo que también se mueve
+          {dictionary.lunar.activeTransitsEyebrow}
         </p>
         <h3 className="mt-1.5 font-serif text-[32px] font-normal leading-tight text-ivory">
-          Tránsitos activos este mes
+          {dictionary.lunar.activeTransitsTitle}
         </h3>
       </div>
 
@@ -96,17 +98,18 @@ export function ActiveTransitsList({ transits, timezone, dictionary }: ActiveTra
           {(() => {
             const transit = transits[selectedIndex];
             if (!transit) return null;
+            const body = getThemeLabel(transit);
             return (
               <article className="mt-4 border border-black/10 bg-white p-6">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
                   {`${transit.transitingPlanetLabel} ${transit.aspectLabel.toLowerCase()} ${transit.natalPlanetLabel}`}
                 </p>
                 <p className="mt-1 font-serif text-[13px] italic text-[#3a3048]">
-                  {getTransitWindowLabel(transit.exactnessDate, transit.transitingPlanetLabel, timezone)}
+                  {getTransitWindowLabel(transit.exactnessDate, transit.transitingPlanetLabel, timezone, locale)}
                 </p>
-                <p className="mt-4 text-sm leading-7 text-[#3a3048]">
-                  {getThemeBody(transit)}
-                </p>
+                {body ? (
+                  <p className="mt-4 text-sm leading-7 text-[#3a3048]">{body}</p>
+                ) : null}
               </article>
             );
           })()}

@@ -17,8 +17,9 @@ export async function sendEmail({
   }
   const resend = new Resend(apiKey);
   const from = process.env.RESEND_FROM ?? "onboarding@resend.dev";
+  const replyTo = process.env.RESEND_REPLY_TO;
   try {
-    await resend.emails.send({ from, to, subject, react });
+    await resend.emails.send({ from, to, subject, react, ...(replyTo ? { replyTo } : {}) });
   } catch (err) {
     console.error("[email]", err);
   }

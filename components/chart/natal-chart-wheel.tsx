@@ -1324,7 +1324,7 @@ export function ChartLayerRail() {
   return (
     <div className="mx-auto flex w-full max-w-[34rem] flex-col border border-black/12 bg-white/85 p-4 shadow-[0_8px_24px_rgba(0,0,0,0.08)] lg:mx-0 lg:w-auto lg:min-w-[12rem]">
       <p className="mb-3 text-center font-serif text-[14px] italic lowercase tracking-[0.15em] text-[#5c4a24] lg:text-left">
-        vista
+        {dictionary.result.toggles.view}
       </p>
       <div className="grid grid-cols-2 gap-x-4 gap-y-3 lg:flex lg:flex-col lg:gap-3">
         {controls.map((control) => (

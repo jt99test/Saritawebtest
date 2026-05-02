@@ -17,6 +17,7 @@ import {
   getAllCachedLunarReports,
   setCachedLunarReport,
 } from "@/lib/lunar-report-cache";
+import { normalizeReadingText } from "@/lib/reading-text";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { LunationToggle } from "@/components/lunar/lunation-toggle";
 import { LunationHeaderCard } from "@/components/lunar/lunation-header-card";
@@ -47,8 +48,8 @@ function monthDateForChart(chart: NatalChartData) {
   return DateTime.now().setZone(zone);
 }
 
-function reportKeyFor(year: number, month: number, type: LunationType) {
-  return `${DateTime.utc(year, month, 1).toFormat(REPORT_MONTH_FORMAT)}-${type}`;
+function reportKeyFor(year: number, month: number, type: LunationType, locale: string) {
+  return `${locale}-${DateTime.utc(year, month, 1).toFormat(REPORT_MONTH_FORMAT)}-${type}`;
 }
 
 function formatToggleDate(timestamp: string, timezone: string, locale: string) {
@@ -181,10 +182,10 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
   }, [chart, locale, month, timezone, year]);
 
   const selectedMetadata = previews[selectedType] ?? null;
-  const selectedReportKey = reportKeyFor(year, month, selectedType);
+  const selectedReportKey = reportKeyFor(year, month, selectedType, locale);
   const cachedEntry = chartHash ? cachedReports[selectedReportKey] ?? null : null;
   const activeStream = streamState[selectedType];
-  const prose = activeStream.prose || cachedEntry?.prose || "";
+  const prose = normalizeReadingText(activeStream.prose || cachedEntry?.prose || "");
   const actions = activeStream.actions ?? cachedEntry?.actions ?? null;
 
   useEffect(() => {
@@ -303,19 +304,20 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
 
     const nextEntry = {
       metadata,
-      prose: proseAccumulator.trim(),
+      prose: normalizeReadingText(proseAccumulator),
       actions: actionsPayload,
     };
 
-    setCachedLunarReport(chartHash, reportKeyFor(year, month, type), nextEntry);
+    const nextReportKey = reportKeyFor(year, month, type, locale);
+    setCachedLunarReport(chartHash, nextReportKey, nextEntry);
     setCachedReports((current) => ({
       ...current,
-      [reportKeyFor(year, month, type)]: nextEntry,
+      [nextReportKey]: nextEntry,
     }));
     setStreamState((current) => ({
       ...current,
       [type]: {
-        prose: proseAccumulator.trim(),
+        prose: normalizeReadingText(proseAccumulator),
         actions: actionsPayload,
         loading: false,
         error: null,
@@ -384,6 +386,7 @@ export function LunaDelMesPage({ chart, dictionary }: LunaDelMesPageProps) {
               metadata={selectedMetadata}
               dictionary={dictionary}
               timezone={timezone}
+              locale={locale}
             />
           </div>
 

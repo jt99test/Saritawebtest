@@ -13,6 +13,7 @@ import {
   type NatalChartData,
 } from "@/lib/chart";
 import type { Dictionary } from "@/lib/i18n";
+import { normalizeReadingText } from "@/lib/reading-text";
 
 import { useChartStore } from "@/components/chart/chart-store";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
@@ -175,7 +176,7 @@ export function PlanetDetailPanel({ chart, dictionary }: Props) {
             break;
           }
 
-          setReading((current) => current + decoder.decode(value, { stream: true }));
+          setReading((current) => normalizeReadingText(current + decoder.decode(value, { stream: true })));
         }
       } catch (issue: unknown) {
         if ((issue as Error).name !== "AbortError") {
