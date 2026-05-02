@@ -13,6 +13,7 @@ import { houseMessages } from "@/data/sarita/house-messages";
 import { elementRoutines } from "@/data/sarita/element-routines";
 import { transitDescriptions } from "@/data/sarita/transit-descriptions";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { ANTHROPIC_FAST_MODEL, ANTHROPIC_STANDARD_READING_MODEL } from "@/lib/anthropic-models";
 import { ASPECT_LABELS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
 
 type LunarReportRequest = {
@@ -112,26 +113,25 @@ async function enrichTransitSummaries({
     return transits;
   }
 
-  const prompt = `Escribe microlecturas prÃ¡cticas para los trÃ¡nsitos activos de ${chart.event.name}.
+  const prompt = `Escribe consejos prácticos breves para ${chart.event.name} sobre sus tránsitos activos este mes.
 
-Cada microlectura debe:
-- Hablarle directamente a ${chart.event.name} en segunda persona.
-- Explicar quÃ© significa en la vida diaria, no repetir el nombre del trÃ¡nsito.
-- Tener mÃ¡ximo 18 palabras.
-- Ser concreta y Ãºtil: una decisiÃ³n, ajuste, conversaciÃ³n o conducta.
-- No usar misticismos, emojis, markdown ni listas fuera del JSON.
+Cada consejo:
+- Máximo 2 frases cortas. Total máximo 20 palabras.
+- Empieza con un verbo imperativo o una instrucción directa. Ejemplo: "Cierra lo que tienes abierto antes de abrir algo nuevo." o "Esta semana, di lo que piensas aunque incomode."
+- NO describas el planeta ni el aspecto. NO digas "Venus hace..." ni "Saturno pide...". Ve directo a la acción.
+- Tono: amiga directa, sin misticismo ni jerga astrológica.
 
-TrÃ¡nsitos, en orden:
-${visibleTransits.map((transit, index) => `${index + 1}. ${transit.transitingPlanetLabel} ${transit.aspectLabel} ${transit.natalPlanetLabel}. Contexto base: ${transit.relevance || transit.description}`).join("\n")}
+Tránsitos:
+${visibleTransits.map((transit, index) => `${index + 1}. ${transit.transitingPlanetLabel} ${transit.aspectLabel} ${transit.natalPlanetLabel}. Tema: ${transit.relevance || transit.description}`).join("\n")}
 
-Devuelve solo JSON vÃ¡lido en una lÃ­nea con esta forma:
+Devuelve solo JSON válido en una línea:
 {"summaries":["...", "...", "..."]}
 
 ${langInstruction(locale)}`;
 
   try {
     const message = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: ANTHROPIC_FAST_MODEL,
       max_tokens: 220,
       messages: [{ role: "user", content: prompt }],
     });
@@ -334,7 +334,7 @@ Reglas para esa línea final:
 - La lectura principal debe ir primero, y la línea ${ACTIONS_MARKER} al final.`;
 
     const stream = client.messages.stream({
-      model: "claude-sonnet-4-20250514",
+      model: ANTHROPIC_STANDARD_READING_MODEL,
       max_tokens: 600,
       messages: [{ role: "user", content: streamingPrompt }],
     });
