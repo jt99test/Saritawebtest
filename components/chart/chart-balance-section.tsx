@@ -97,9 +97,12 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
 
   const dominantElement = dominantKey(elementCounts, ELEMENT_ORDER);
   const dominantModality = dominantKey(modalityCounts, MODALITY_ORDER);
+  const balanceTitle = dictionary.result.balance.dominantTitle
+    .replace("{element}", dictionary.result.elements[dominantElement])
+    .replace("{modality}", dictionary.result.modalities[dominantModality]);
   const modalityLine = MODALITY_ORDER.map(
     (modality) => `${dictionary.result.modalities[modality]} ${percent(modalityCounts[modality], total)}%`,
-  ).join(" · ");
+  ).join(" \u00b7 ");
 
   const quadrants: Array<{ element: Element; start: number; end: number; labelAngle: number }> = [
     { element: "fire", start: -89.5, end: -0.5, labelAngle: -45 },
@@ -111,17 +114,17 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
   return (
     <section className="py-5 lg:pt-0 lg:pb-14">
       <div className="mx-auto max-w-[720px] text-center">
-        <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[rgba(232,197,71,0.5)]">
-          tu equilibrio
+        <p className="font-serif text-[13px] font-semibold italic lowercase tracking-[0.18em] text-[#8a7a4e]">
+          {dictionary.result.balance.eyebrow}
         </p>
         <h2 className="mt-1.5 font-serif text-[30px] font-normal leading-tight text-ivory lg:text-[36px]">
-          {dictionary.result.elements[dominantElement]} dominante · {dictionary.result.modalities[dominantModality]} en exceso
+          {balanceTitle}
         </h2>
       </div>
 
       <div className="mx-auto mt-8 grid max-w-[720px] gap-8 md:grid-cols-[200px_minmax(0,1fr)] md:items-center lg:mt-10 lg:max-w-[820px] lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-14">
         <div className="text-center">
-          <svg viewBox="0 0 240 240" className="h-[200px] w-[200px] lg:h-[270px] lg:w-[270px]" role="img" aria-label="Equilibrio de elementos">
+          <svg viewBox="0 0 240 240" className="h-[200px] w-[200px] lg:h-[270px] lg:w-[270px]" role="img" aria-label={dictionary.result.balance.title}>
             {quadrants.map(({ element, start, end, labelAngle }) => {
               const elementPercent = percent(elementCounts[element], total);
               const labelPoint = polarPoint(80, labelAngle);
@@ -134,15 +137,15 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
                     fill="none"
                     stroke={ELEMENT_COLORS[element]}
                     strokeWidth={active ? "46" : "40"}
-                    opacity={Math.min(1, Math.max(0.25, elementPercent / 50))}
+                    opacity={active ? 0.94 : Math.min(0.82, Math.max(0.56, elementPercent / 35))}
                     className="transition-all duration-200"
                   />
                   <text
                     x={labelPoint.x}
                     y={labelPoint.y - 4}
                     textAnchor="middle"
-                    className="font-serif text-[12px]"
-                    fill={active ? "#e8c547" : "rgba(255,255,255,0.7)"}
+                    className="font-serif text-[12px] font-semibold"
+                    fill={active ? "#5c4a24" : "#1e1a2e"}
                   >
                     {dictionary.result.elements[element]}
                   </text>
@@ -150,8 +153,8 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
                     x={labelPoint.x}
                     y={labelPoint.y + 10}
                     textAnchor="middle"
-                    className="font-serif text-[12px]"
-                    fill={active ? "#e8c547" : "rgba(255,255,255,0.7)"}
+                    className="font-serif text-[12px] font-semibold"
+                    fill={active ? "#5c4a24" : "#1e1a2e"}
                   >
                     {elementPercent}%
                   </text>
@@ -159,7 +162,7 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
               );
             })}
           </svg>
-          <p className="mt-3 text-center text-xs leading-6 text-[#3a3048] lg:hidden">
+          <p className="mt-3 text-center text-xs font-medium leading-6 text-[#3a3048] lg:hidden">
             {modalityLine}
           </p>
         </div>
@@ -187,7 +190,7 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
         </div>
       </div>
 
-      <p className="mx-auto mt-7 hidden max-w-[720px] text-center font-serif text-sm italic leading-6 text-[#3a3048] lg:block">
+      <p className="mx-auto mt-7 hidden max-w-[720px] text-center font-serif text-sm font-medium italic leading-6 text-[#1e1a2e] lg:block">
         {modalityLine}
       </p>
     </section>

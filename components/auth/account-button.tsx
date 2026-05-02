@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
@@ -17,10 +18,12 @@ export function AccountButton() {
   const dictionary = dictionaries[locale];
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const { plan } = usePlan();
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuPinned, setMenuPinned] = useState(false);
+  const [menuPosition, setMenuPosition] = useState<{ top: number; right: number } | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
 
@@ -54,6 +57,9 @@ export function AccountButton() {
       if (target instanceof Node && menuRef.current?.contains(target)) {
         return;
       }
+      if (target instanceof Node && buttonRef.current?.contains(target)) {
+        return;
+      }
 
       setMenuOpen(false);
       setMenuPinned(false);
@@ -71,6 +77,27 @@ export function AccountButton() {
     return () => {
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    function updateMenuPosition() {
+      const rect = buttonRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      setMenuPosition({
+        top: rect.bottom + 12,
+        right: Math.max(12, window.innerWidth - rect.right),
+      });
+    }
+
+    updateMenuPosition();
+    window.addEventListener("resize", updateMenuPosition);
+    window.addEventListener("scroll", updateMenuPosition, true);
+    return () => {
+      window.removeEventListener("resize", updateMenuPosition);
+      window.removeEventListener("scroll", updateMenuPosition, true);
     };
   }, [menuOpen]);
 
@@ -115,6 +142,10 @@ export function AccountButton() {
     setPortalLoading(false);
   }
 
+  function openMenu() {
+    setMenuOpen(true);
+  }
+
   if (!user) {
     return (
       <button
@@ -129,11 +160,11 @@ export function AccountButton() {
 
   return (
     <div
-      ref={menuRef}
       className="relative z-50"
-      onMouseEnter={() => setMenuOpen(true)}
+      onMouseEnter={openMenu}
     >
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => {
           setMenuPinned((current) => {
@@ -149,11 +180,14 @@ export function AccountButton() {
         {dictionary.common.account}
       </button>
 
-      {menuOpen ? (
+      {menuOpen && menuPosition
+        ? createPortal(
         <div
+          ref={menuRef}
           role="menu"
           onPointerDown={(event) => event.stopPropagation()}
-          className="absolute right-0 top-full z-[90] min-w-52 border border-black/12 bg-white px-4 py-3 text-right shadow-[0_18px_48px_rgba(0,0,0,0.16)]"
+          className="fixed z-[1000] min-w-52 border border-black/12 bg-white px-4 py-3 text-right shadow-[0_18px_48px_rgba(0,0,0,0.16)]"
+          style={{ top: menuPosition.top, right: menuPosition.right }}
         >
           <Link
             href="/form"
@@ -209,8 +243,10 @@ export function AccountButton() {
           >
             {signingOut ? dictionary.auth.processing : dictionary.common.signOut}
           </button>
-        </div>
-      ) : null}
+        </div>,
+        document.body,
+      )
+        : null}
     </div>
   );
 }

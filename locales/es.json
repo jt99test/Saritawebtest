@@ -436,6 +436,7 @@
     "balance": {
       "eyebrow": "Distribución",
       "title": "Tu equilibrio interno",
+      "dominantTitle": "{element} dominante · {modality} en exceso",
       "elementsTitle": "Elementos",
       "modalitiesTitle": "Modalidades"
     },
@@ -769,6 +770,9 @@
     "read": "Leer +",
     "retry": "Intentar de nuevo",
     "generateError": "No se pudo generar. Intentar de nuevo.",
+    "lockedEyebrow": "Lectura bloqueada",
+    "lockedTitle": "Esta lectura requiere un plan activo",
+    "lockedBody": "Tu carta está guardada. Mejora tu plan para generar esta lectura y volver a ella cuando quieras.",
     "usageBanner": "Has usado {used} de {limit} lecturas este mes.",
     "seePlans": "Ver planes",
     "share": "Compartir carta",

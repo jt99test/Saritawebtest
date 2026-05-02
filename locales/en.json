@@ -436,6 +436,7 @@
     "balance": {
       "eyebrow": "Distribution",
       "title": "Your inner balance",
+      "dominantTitle": "{element} dominant · excess {modality}",
       "elementsTitle": "Elements",
       "modalitiesTitle": "Modalities"
     },
@@ -769,6 +770,9 @@
     "read": "Read +",
     "retry": "Try again",
     "generateError": "Could not generate. Try again.",
+    "lockedEyebrow": "Locked reading",
+    "lockedTitle": "This reading requires an active plan",
+    "lockedBody": "Your chart is saved. Upgrade your plan to generate this reading and come back to it anytime.",
     "usageBanner": "You've used {used} of {limit} readings this month.",
     "seePlans": "See plans",
     "share": "Share chart",

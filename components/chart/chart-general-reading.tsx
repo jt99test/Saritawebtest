@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import Link from "next/link";
 
 import { getGeneralReadingCards } from "@/data/chart-readings";
 import { hashNatalChart } from "@/lib/chart-hash";
@@ -15,6 +16,8 @@ type ChartGeneralReadingProps = {
   chart: NatalChartData;
   dictionary: Dictionary;
 };
+
+const PLAN_REQUIRED_ERROR = "SARITA_PLAN_REQUIRED";
 
 function renderEmphasis(text: string): ReactNode[] {
   const nodes: ReactNode[] = [];
@@ -73,6 +76,28 @@ function ReadingPanelSkeleton() {
   );
 }
 
+function LockedReadingPanel({ dictionary }: { dictionary: Dictionary }) {
+  return (
+    <article className="mt-4 min-h-[160px] border border-dusty-gold/30 bg-white p-6 shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+        {dictionary.chart.lockedEyebrow}
+      </p>
+      <h3 className="mt-2 font-serif text-[24px] leading-snug text-ivory">
+        {dictionary.chart.lockedTitle}
+      </h3>
+      <p className="mt-3 text-sm leading-7 text-[#3a3048]">
+        {dictionary.chart.lockedBody}
+      </p>
+      <Link
+        href="/precios"
+        className="mt-5 inline-flex border border-dusty-gold/45 bg-dusty-gold/[0.07] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/70 hover:bg-dusty-gold/[0.12]"
+      >
+        {dictionary.chart.seePlans}
+      </Link>
+    </article>
+  );
+}
+
 export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingProps) {
   const locale = useStoredLocale();
   const [chartHash, setChartHash] = useState<string | null>(null);
@@ -104,6 +129,10 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
           body: JSON.stringify({ chart, theme, locale }),
           signal: controller.signal,
         });
+
+        if (response.status === 403) {
+          throw new Error(PLAN_REQUIRED_ERROR);
+        }
 
         if (!response.ok || !response.body) {
           const detail = await response.text().catch(() => "");
@@ -228,7 +257,9 @@ export function ChartGeneralReading({ chart, dictionary }: ChartGeneralReadingPr
           })}
         </div>
 
-        {selectedLoading ? (
+        {selectedError === PLAN_REQUIRED_ERROR ? (
+          <LockedReadingPanel dictionary={dictionary} />
+        ) : selectedLoading ? (
           <ReadingPanelSkeleton />
         ) : (
           <article className="mt-4 min-h-[160px] border border-black/10 bg-white p-6">

@@ -17,6 +17,13 @@ export default function PasswordResetEmail({ resetUrl }: PasswordResetEmailProps
         Hemos recibido una solicitud para restablecer la contraseña de tu cuenta SARITA.
       </Text>
       <EmailButton href={resetUrl}>Restablecer contraseña</EmailButton>
+      <Text style={linkHelpStyle}>
+        Si el botón no abre, copia y pega este enlace en tu navegador:
+        <br />
+        <a href={resetUrl} style={rawLinkStyle}>
+          {resetUrl}
+        </a>
+      </Text>
       <Text style={mutedStyle}>
         Este enlace expira en 1 hora. Si no solicitaste esto, ignora este mensaje.
       </Text>
@@ -44,4 +51,17 @@ const mutedStyle = {
   color: "#8f8a96",
   fontSize: "13px",
   lineHeight: "22px",
+};
+
+const linkHelpStyle = {
+  margin: "22px 0 0",
+  color: "#8f8a96",
+  fontSize: "12px",
+  lineHeight: "20px",
+  wordBreak: "break-word" as const,
+};
+
+const rawLinkStyle = {
+  color: "#b5a36e",
+  textDecoration: "underline",
 };

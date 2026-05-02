@@ -17,6 +17,13 @@ export default function ConfirmationEmail({ confirmationUrl }: ConfirmationEmail
         Para activar tu cuenta SARITA, confirma tu dirección de correo electrónico.
       </Text>
       <EmailButton href={confirmationUrl}>Confirmar cuenta</EmailButton>
+      <Text style={linkHelpStyle}>
+        Si el botón no abre, copia y pega este enlace en tu navegador:
+        <br />
+        <a href={confirmationUrl} style={rawLinkStyle}>
+          {confirmationUrl}
+        </a>
+      </Text>
       <Text style={mutedStyle}>Si no creaste esta cuenta, ignora este mensaje.</Text>
     </EmailLayout>
   );
@@ -42,4 +49,17 @@ const mutedStyle = {
   color: "#8f8a96",
   fontSize: "13px",
   lineHeight: "22px",
+};
+
+const linkHelpStyle = {
+  margin: "22px 0 0",
+  color: "#8f8a96",
+  fontSize: "12px",
+  lineHeight: "20px",
+  wordBreak: "break-word" as const,
+};
+
+const rawLinkStyle = {
+  color: "#b5a36e",
+  textDecoration: "underline",
 };
