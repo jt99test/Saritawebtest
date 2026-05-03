@@ -50,7 +50,14 @@
       "name": "Name",
       "birthdate": "Birth date",
       "birthtime": "Birth time",
+      "gender": "Gender for the reading",
       "location": "Birth place"
+    },
+    "genderOptions": {
+      "unspecified": "Prefer not to say",
+      "female": "Female",
+      "male": "Male",
+      "neutral": "Neutral"
     },
     "placeholders": {
       "name": "Your name",
@@ -433,6 +440,7 @@
         }
       }
     },
+    "readingContextLabel": "Reading now",
     "balance": {
       "eyebrow": "Distribution",
       "title": "Your inner balance",

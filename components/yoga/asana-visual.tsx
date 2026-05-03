@@ -9,11 +9,11 @@ type AsanaVisualProps = {
 };
 
 const TONE_GLOW: Record<AsanaVisualTone, string> = {
-  fuego: "rgba(181,163,110,0.06)",
-  tierra: "rgba(181,163,110,0.05)",
-  agua: "rgba(236,232,223,0.05)",
-  aire: "rgba(236,232,223,0.05)",
-  neutral: "rgba(236,232,223,0.05)",
+  fuego: "rgba(182,106,76,0.12)",
+  tierra: "rgba(111,127,89,0.1)",
+  agua: "rgba(95,131,144,0.1)",
+  aire: "rgba(121,113,167,0.1)",
+  neutral: "rgba(111,90,42,0.08)",
 };
 
 export function AsanaVisual({
@@ -22,16 +22,20 @@ export function AsanaVisual({
   className = "",
 }: AsanaVisualProps) {
   const frameClassName =
-    `aspect-[3/4] w-full overflow-hidden rounded-[1.15rem] border border-[rgba(236,232,223,0.09)] bg-[rgba(255,255,255,0.025)] shadow-none ${className}`.trim();
+    `aspect-[3/4] w-full overflow-hidden rounded-[1.15rem] border border-black/10 bg-[#f5f0e6] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.44)] ${className}`.trim();
 
   if (asana.imagePath) {
     return (
-      <div className={frameClassName}>
+      <div className={`relative ${frameClassName}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={asana.imagePath}
           alt={`${asana.nameSanskrit} · ${asana.nameSpanish}`}
-          className="h-full w-full object-contain object-center"
+          className="h-full w-full object-contain object-center opacity-[0.88] brightness-[1.22] contrast-[0.88] saturate-[0.78] sepia-[0.18]"
+        />
+        <div
+          className="pointer-events-none absolute inset-0 bg-[#f5f0e6]/20 mix-blend-screen"
+          style={{ backgroundImage: `radial-gradient(circle at 50% 34%, ${TONE_GLOW[tone]}, transparent 48%)` }}
         />
       </div>
     );
@@ -41,11 +45,11 @@ export function AsanaVisual({
     <div
       className={`flex ${frameClassName} items-center justify-center px-6 text-center`}
       style={{
-        backgroundImage: `radial-gradient(circle at 50% 34%, ${TONE_GLOW[tone]}, transparent 46%), linear-gradient(180deg, rgba(10,14,22,0.88), rgba(0,0,0,0.04))`,
+        backgroundImage: `radial-gradient(circle at 50% 34%, ${TONE_GLOW[tone]}, transparent 46%), linear-gradient(180deg, rgba(255,250,240,0.92), rgba(245,240,230,0.62))`,
       }}
     >
       <div className="flex max-w-[15rem] flex-col items-center">
-        <div className="relative h-12 w-12 text-[#e8c547]/72" aria-hidden="true">
+        <div className="relative h-12 w-12 text-dusty-gold/72" aria-hidden="true">
           <span className="absolute inset-0 rounded-full border border-current/35" />
           <span className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full border border-current/45" />
           <span className="absolute left-1 top-1/2 h-8 w-8 -translate-y-1/2 rounded-full border border-current/20" />

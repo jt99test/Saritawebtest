@@ -47,7 +47,7 @@ export function RoutineCompletionButton({
       type="button"
       onClick={toggleCompletion}
       aria-pressed={completed}
-      className="inline-flex items-center justify-center rounded-full border border-[#e8c547]/24 bg-[#e8c547]/10 px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-[#e8c547] transition hover:border-[#e8c547]/44 hover:bg-[#e8c547]/14"
+      className="inline-flex items-center justify-center rounded-full border border-dusty-gold/35 bg-dusty-gold/12 px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] text-[#5c4a24] transition hover:border-dusty-gold/55 hover:bg-dusty-gold/18"
     >
       {completed ? "Completada" : "Marcar como completada"}
     </button>

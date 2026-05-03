@@ -24,6 +24,7 @@ export default function FormPage() {
     name: "",
     birthDate: "",
     birthTime: "",
+    gender: "",
     location: "",
     selectedLocation: null,
   });
@@ -103,6 +104,21 @@ export default function FormPage() {
                     disabled={submitting}
                     className={inputClass}
                   />
+                </label>
+
+                <label className="block">
+                  <span className={labelClass}>{dictionary.form.fields.gender}</span>
+                  <select
+                    value={values.gender ?? ""}
+                    onChange={(event) => setValue("gender", event.target.value as FormValues["gender"])}
+                    disabled={submitting}
+                    className={inputClass}
+                  >
+                    <option value="">{dictionary.form.genderOptions.unspecified}</option>
+                    <option value="female">{dictionary.form.genderOptions.female}</option>
+                    <option value="male">{dictionary.form.genderOptions.male}</option>
+                    <option value="neutral">{dictionary.form.genderOptions.neutral}</option>
+                  </select>
                 </label>
 
                 <label className="block sm:col-span-2">

@@ -13,6 +13,7 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import { ANTHROPIC_STANDARD_READING_MODEL } from "@/lib/anthropic-models";
+import { genderPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -34,7 +35,7 @@ function langInstruction(locale?: string): string {
   return "Write in Spanish from Spain. Use the 'tú' form.";
 }
 
-function buildPrompt(chart: NatalChartData, theme: GeneralReadingTheme, locale?: string) {
+function buildPrompt(chart: NatalChartData, theme: GeneralReadingTheme, locale?: string, gender?: ReadingGender) {
   const chartSummary = getChartSummaryForPrompt(chart);
   const themeInstruction = getThemeInstruction(chart, theme);
 
@@ -47,9 +48,11 @@ ${chartSummary}
 
 ${themeInstruction}
 
+${genderPromptInstruction(gender, locale)}
+
 Escribe UN párrafo de 60-80 palabras sobre este tema específico de la carta
 de ${chart.event.name}. Identifica cómo se manifiesta en su vida cotidiana con un ejemplo
-real y concreto. Termina con algo que pueda hacer o tener en cuenta. Sin
+real y concreto. Termina con algo que pueda hacer o tener en cuenta. Varia el inicio de cada lectura: no empieces con "Mira", "La verdad es que", "Lo que pasa es que" ni con una muletilla fija. Sin
 subtítulos, sin párrafos múltiples.
 
 No uses markdown. No uses encabezados. No empieces con "#". Respeta estrictamente el lÃ­mite: 60-80 palabras.
@@ -68,12 +71,15 @@ export async function POST(request: Request) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const { chart, theme, locale, readingId } = (await request.json()) as {
+    const { chart, theme, locale, readingId, gender } = (await request.json()) as {
       chart: NatalChartData;
       theme: GeneralReadingTheme;
       locale?: string;
       readingId?: string;
+      gender?: ReadingGender;
     };
+    const readingGender = normalizeReadingGender(gender);
+    const itemKey = `v2:${theme}:${readingGender || "unspecified"}`;
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
@@ -93,7 +99,7 @@ export async function POST(request: Request) {
       user,
       readingId,
       scope: "general",
-      itemKey: theme,
+      itemKey,
       locale,
     });
 
@@ -117,7 +123,7 @@ export async function POST(request: Request) {
       return new Response("Plan required", { status: 403 });
     }
 
-    const prompt = buildPrompt(chart, theme, locale);
+    const prompt = buildPrompt(chart, theme, locale, readingGender);
     const message = await client.messages.create({
       model: ANTHROPIC_STANDARD_READING_MODEL,
       max_tokens: 260,
@@ -134,7 +140,7 @@ export async function POST(request: Request) {
       user,
       readingId,
       scope: "general",
-      itemKey: theme,
+      itemKey,
       locale,
       content,
     });

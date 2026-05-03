@@ -50,7 +50,14 @@
       "name": "Nome",
       "birthdate": "Data di nascita",
       "birthtime": "Ora di nascita",
+      "gender": "Genere per la lettura",
       "location": "Luogo di nascita"
+    },
+    "genderOptions": {
+      "unspecified": "Preferisco non dirlo",
+      "female": "Femminile",
+      "male": "Maschile",
+      "neutral": "Neutro"
     },
     "placeholders": {
       "name": "Il tuo nome",
@@ -433,6 +440,7 @@
         }
       }
     },
+    "readingContextLabel": "Stai leggendo",
     "balance": {
       "eyebrow": "Distribuzione",
       "title": "Il tuo equilibrio interiore",

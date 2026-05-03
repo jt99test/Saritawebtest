@@ -71,6 +71,12 @@ function nameSizeClass(name: string) {
   return "text-[52px] lg:text-[72px]";
 }
 
+function stickyChartTitle(eyebrow: string, name: string) {
+  const withoutArticle = eyebrow.replace(/^(la|the)\s+/i, "").trim();
+  const normalized = withoutArticle || eyebrow.trim();
+  return `${normalized.charAt(0).toUpperCase()}${normalized.slice(1)} ${name}`;
+}
+
 function formatHeaderDate(dateLabel: string) {
   const normalized = dateLabel.replace(/\s+/g, " ").trim();
   const match = normalized.match(/^(.+?)(?:,|\s+·)?\s+(\d{1,2}:\d{2})\b/);
@@ -99,6 +105,7 @@ export function NatalChartExperience({
     getCity(chart.event.locationLabel),
   ].filter(Boolean).join(" · ");
   const firstName = getFirstName(chart.event.name);
+  const stickyTitle = stickyChartTitle(dictionary.result.chartHeader.eyebrow, firstName);
   const titleNameClass = nameSizeClass(firstName);
   const activeRequiredPlan = TAB_REQUIREMENTS[pageTab];
   const activeTabLocked = !planLoading && !hasPlanAccess(plan, activeRequiredPlan);
@@ -109,10 +116,23 @@ export function NatalChartExperience({
   }
 
   return (
-    <div className="relative mx-auto max-w-[880px] px-4 pb-20 sm:px-6 lg:max-w-[1180px] lg:px-8">
+    <div className="relative mx-auto max-w-[880px] px-4 pb-20 pt-4 sm:px-6 lg:max-w-[1180px] lg:px-8">
       <div className="space-y-3">
         <div className="relative">
-        <nav className="flex gap-0 overflow-x-auto border-b border-black/10 pb-0 pt-1 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
+        <div className="mb-2 flex flex-col gap-1 border-b border-dusty-gold/14 pb-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5c4a24]">
+              {dictionary.result.readingContextLabel}
+            </p>
+            <p className="mt-1 truncate font-serif text-[18px] leading-6 text-ivory">
+              {stickyTitle}
+            </p>
+          </div>
+          <p className="truncate text-[11px] font-semibold uppercase tracking-[0.18em] text-[#3a3048] sm:max-w-[48%] sm:text-right">
+            {dictionary.result.primaryTabs[pageTab]}{headerSubtitle ? ` · ${headerSubtitle}` : ""}
+          </p>
+        </div>
+        <nav className="flex gap-0 overflow-x-auto border-b border-black/10 pb-0 pt-0 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
           {PAGE_TABS.map((tab) => {
             const active = pageTab === tab;
             const requiredPlan = TAB_REQUIREMENTS[tab];
@@ -157,8 +177,6 @@ export function NatalChartExperience({
         <div className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-cosmic-950 to-transparent md:hidden" />
         </div>
         <ReadingUsageBanner dictionary={dictionary} />
-
-        {pageTab === "yoga" && !activeTabLocked ? <YogaAstralPage chart={chart} /> : null}
       </div>
 
       {activeTabLocked && activeRequiredPlan ? (
@@ -252,16 +270,18 @@ export function NatalChartExperience({
             <div className="mt-12 space-y-0 lg:mt-16">
               <ChartBalanceSection chart={chart} dictionary={dictionary} />
               <ChartSignaturesSection chart={chart} dictionary={dictionary} />
-              <ChartGeneralReading chart={chart} dictionary={dictionary} readingId={readingId} />
+              <ChartGeneralReading chart={chart} dictionary={dictionary} readingId={readingId} gender={request?.gender || undefined} />
             </div>
           ) : null}
 
-          <PlanetDetailPanel chart={chart} dictionary={dictionary} readingId={readingId} />
+          <PlanetDetailPanel chart={chart} dictionary={dictionary} readingId={readingId} gender={request?.gender || undefined} />
           <AspectDetailPanel chart={chart} />
         </>
       ) : null}
 
-      {pageTab === "moon" && !activeTabLocked ? <LunaDelMesPage chart={chart} dictionary={dictionary} readingId={readingId} /> : null}
+      {pageTab === "moon" && !activeTabLocked ? <LunaDelMesPage chart={chart} dictionary={dictionary} readingId={readingId} gender={request?.gender || undefined} /> : null}
+
+      {pageTab === "yoga" && !activeTabLocked ? <YogaAstralPage chart={chart} /> : null}
 
       {pageTab === "complete" && !activeTabLocked ? (
         <ChartCompletePage chart={chart} request={request} dictionary={dictionary} readingId={readingId} />
@@ -272,7 +292,7 @@ export function NatalChartExperience({
       ) : null}
 
       {pageTab === "synastry" && !activeTabLocked ? (
-        <SynastryPage natalChart={chart} dictionary={dictionary} readingId={readingId} />
+        <SynastryPage natalChart={chart} dictionary={dictionary} readingId={readingId} gender={request?.gender || undefined} />
       ) : null}
 
       <PricingModal

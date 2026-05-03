@@ -1,10 +1,12 @@
 import type { NatalChartData } from "@/lib/chart";
 import type { PlaceSuggestion } from "@/lib/geocoding";
+import type { ReadingGender } from "@/lib/reading-gender";
 
 export type FormValues = {
   name: string;
   birthDate: string;
   birthTime: string;
+  gender?: ReadingGender | "";
   location: string;
   selectedLocation: PlaceSuggestion | null;
 };

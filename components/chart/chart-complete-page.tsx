@@ -30,6 +30,8 @@ type TransitData = {
   houses?: Array<{ house: number; title: string; body: string }>;
 };
 
+type TransitWheelMode = "all" | "active";
+
 const SARITA_DATA_MARKER = "__SARITA_DATA__";
 const READING_TIMEOUT_MS = 45000;
 
@@ -104,6 +106,44 @@ function cleanJsonPayload(rawPayload: string) {
   }
 
   return withoutFence;
+}
+
+function WheelModeToggle({
+  mode,
+  onChange,
+  activeCount,
+}: {
+  mode: TransitWheelMode;
+  onChange: (mode: TransitWheelMode) => void;
+  activeCount: number;
+}) {
+  return (
+    <div className="mx-auto mb-5 max-w-3xl text-center">
+      <div className="inline-flex rounded-full border border-black/10 bg-white/80 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
+        {[
+          { id: "all" as const, label: "Todos" },
+          { id: "active" as const, label: "Activos" },
+        ].map((option) => (
+          <button
+            key={option.id}
+            type="button"
+            onClick={() => onChange(option.id)}
+            className={[
+              "rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition",
+              mode === option.id ? "bg-dusty-gold/16 text-[#5c4a24]" : "text-[#3a3048] hover:text-ivory",
+            ].join(" ")}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+      <p className="mx-auto mt-3 max-w-xl text-xs leading-5 text-[#3a3048]">
+        {mode === "active"
+          ? `Mostrando solo los ${activeCount} puntos que participan en los tránsitos activos.`
+          : "Mostrando todos los puntos para ver el contexto completo del cielo."}
+      </p>
+    </div>
+  );
 }
 
 function normalizeTransitData(data: TransitData): TransitData {
@@ -191,6 +231,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
   const [isLoadingTransitReading, setIsLoadingTransitReading] = useState(false);
   const [selectedHouse, setSelectedHouse] = useState<number | null>(null);
   const [biWheelSelected, setBiWheelSelected] = useState<{ id: ChartPointId; ring: "inner" | "outer" } | null>(null);
+  const [transitWheelMode, setTransitWheelMode] = useState<TransitWheelMode>("all");
   const [chartHash, setChartHash] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -231,7 +272,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
   useEffect(() => {
     if (!result?.ok || result.transits.length === 0 || !chartHash) return;
     let active = true;
-    const cacheKey = `transits:${locale}:${result.generatedAt.slice(0, 10)}`;
+    const cacheKey = `transits:${locale}:${request?.gender || "unspecified"}:${result.generatedAt.slice(0, 10)}`;
     const cachedData = getCachedPremiumReading<TransitData>(chartHash, cacheKey);
     if (cachedData) {
       setTransitReading("");
@@ -257,7 +298,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
     void fetch("/api/transit-reading", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chart, transits: top, locale, readingId, cacheKey }),
+      body: JSON.stringify({ chart, transits: top, locale, readingId, cacheKey, gender: request?.gender || undefined }),
       signal: controller.signal,
     }).then(async (res) => {
       if (!active || !res.ok || !res.body) {
@@ -306,12 +347,14 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
       controller.abort();
       clearTimeout(timeout);
     };
-  }, [result, chart, locale, chartHash, readingId]);
+  }, [result, chart, locale, chartHash, readingId, request?.gender]);
 
   const activeTransits = useMemo(() => {
     if (!result?.ok) return [];
     return topTransits(result.transits);
   }, [result]);
+  const activeTransitInnerIds = useMemo(() => [...new Set(activeTransits.map((transit) => transit.natalPlanet))], [activeTransits]);
+  const activeTransitOuterIds = useMemo(() => [...new Set(activeTransits.map((transit) => transit.transitingPlanet))], [activeTransits]);
 
   const houses = useMemo(() => activatedHouses(chart, activeTransits), [chart, activeTransits]);
   const dominantTransit = activeTransits[0];
@@ -328,6 +371,10 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
       current && aiHouses.some((house) => house.house === current) ? current : aiHouses[0]!.house
     ));
   }, [aiHouses]);
+
+  useEffect(() => {
+    setBiWheelSelected(null);
+  }, [transitWheelMode]);
 
   return (
     <section className="mx-auto max-w-6xl py-10">
@@ -351,12 +398,19 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
       <div className="mt-10">
         {result?.ok ? (
           <>
+            <WheelModeToggle
+              mode={transitWheelMode}
+              onChange={setTransitWheelMode}
+              activeCount={activeTransitInnerIds.length + activeTransitOuterIds.length}
+            />
             <BiWheelChart
               innerChart={chart}
               outerChart={result.chart}
               innerLabel={chart.event.name}
               outerLabel={dictionary.result.primaryTabs.complete}
               variant="synastry"
+              innerPointIds={transitWheelMode === "active" ? activeTransitInnerIds : undefined}
+              outerPointIds={transitWheelMode === "active" ? activeTransitOuterIds : undefined}
               onInnerPlanetSelect={(id) => setBiWheelSelected({ id, ring: "inner" })}
               onOuterPlanetSelect={(id) => setBiWheelSelected({ id, ring: "outer" })}
             />

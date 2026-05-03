@@ -20,12 +20,14 @@ import type { PlaceSuggestion } from "@/lib/geocoding";
 import type { Dictionary } from "@/lib/i18n";
 import { getCachedPremiumReading, setCachedPremiumReading } from "@/lib/premium-reading-cache";
 import { normalizeReadingText, splitReading } from "@/lib/reading-text";
+import type { ReadingGender } from "@/lib/reading-gender";
 import { calculateSynastryAspects, type SynastryAspect } from "@/lib/synastry";
 
 type SynastryPageProps = {
   natalChart: NatalChartData;
   dictionary: Dictionary;
   readingId?: string;
+  gender?: ReadingGender;
 };
 
 type SynastryData = {
@@ -49,6 +51,7 @@ type PartnerRow = {
 };
 
 type SynastryLayerId = "fisico" | "sexual" | "emocional" | "mental" | "profesional" | "evolutivo";
+type SynastryWheelMode = "all" | "aspected";
 
 const LAYERS: Array<{
   id: SynastryLayerId;
@@ -91,6 +94,44 @@ function CompatibilityRing({ aspects, dictionary }: { aspects: SynastryAspect[];
       <text x="85" y="80" textAnchor="middle" className="font-serif text-[22px]" fill="#1e1a2e">{aspects.length}</text>
       <text x="85" y="101" textAnchor="middle" className="text-[12px] uppercase tracking-[0.16em]" fill="#3a3048">{dictionary.result.synastryPage.aspectsCount}</text>
     </svg>
+  );
+}
+
+function WheelModeToggle({
+  mode,
+  onChange,
+  activeCount,
+}: {
+  mode: SynastryWheelMode;
+  onChange: (mode: SynastryWheelMode) => void;
+  activeCount: number;
+}) {
+  return (
+    <div className="mx-auto mb-5 max-w-3xl text-center">
+      <div className="inline-flex rounded-full border border-black/10 bg-white/80 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
+        {[
+          { id: "all" as const, label: "Todos" },
+          { id: "aspected" as const, label: "Aspectos" },
+        ].map((option) => (
+          <button
+            key={option.id}
+            type="button"
+            onClick={() => onChange(option.id)}
+            className={[
+              "rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition",
+              mode === option.id ? "bg-dusty-gold/16 text-[#5c4a24]" : "text-[#3a3048] hover:text-ivory",
+            ].join(" ")}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+      <p className="mx-auto mt-3 max-w-xl text-xs leading-5 text-[#3a3048]">
+        {mode === "aspected"
+          ? `Mostrando solo los ${activeCount} planetas que forman aspectos entre las dos cartas.`
+          : "Mostrando ambas cartas completas para leer el contexto del vínculo."}
+      </p>
+    </div>
   );
 }
 
@@ -183,7 +224,7 @@ function normalizeSynastryData(data: SynastryData): SynastryData {
   };
 }
 
-export function SynastryPage({ natalChart, dictionary, readingId }: SynastryPageProps) {
+export function SynastryPage({ natalChart, dictionary, readingId, gender }: SynastryPageProps) {
   const locale = useStoredLocale();
   const synastryCopy = dictionary.result.synastryPage;
   const [partners, setPartners] = useState<PartnerRow[]>([]);
@@ -204,6 +245,7 @@ export function SynastryPage({ natalChart, dictionary, readingId }: SynastryPage
   const [isLoadingReading, setIsLoadingReading] = useState(false);
   const [selectedLayerId, setSelectedLayerId] = useState<SynastryLayerId>("fisico");
   const [biWheelSelected, setBiWheelSelected] = useState<{ id: ChartPointId; ring: "inner" | "outer" } | null>(null);
+  const [synastryWheelMode, setSynastryWheelMode] = useState<SynastryWheelMode>("all");
   const [natalHash, setNatalHash] = useState<string | null>(null);
   const [partnerHash, setPartnerHash] = useState<string | null>(null);
   const [partnersLoaded, setPartnersLoaded] = useState(false);
@@ -217,6 +259,8 @@ export function SynastryPage({ natalChart, dictionary, readingId }: SynastryPage
     () => outerChart ? calculateSynastryAspects(innerChart, outerChart) : [],
     [innerChart, outerChart],
   );
+  const aspectedInnerIds = useMemo(() => [...new Set(aspects.map((aspect) => aspect.pointA))], [aspects]);
+  const aspectedOuterIds = useMemo(() => [...new Set(aspects.map((aspect) => aspect.pointB))], [aspects]);
   const readingAspects = useMemo(
     () => partnerChart ? calculateSynastryAspects(natalChart, partnerChart) : [],
     [natalChart, partnerChart],
@@ -283,9 +327,13 @@ export function SynastryPage({ natalChart, dictionary, readingId }: SynastryPage
   }, [selectedPartner, selectionHydrated]);
 
   useEffect(() => {
+    setBiWheelSelected(null);
+  }, [synastryWheelMode, flipped]);
+
+  useEffect(() => {
     if (!selectedPartner || !partnerChart || readingAspects.length === 0 || !natalHash || !partnerHash) return;
     let active = true;
-    const cacheKey = `synastry:${partnerHash}:${locale}`;
+    const cacheKey = `synastry:${partnerHash}:${locale}:${gender || "unspecified"}`;
     const cachedData = getCachedPremiumReading<SynastryData>(natalHash, cacheKey);
     setSynastryReading("");
     setSynastryData({});
@@ -309,6 +357,7 @@ export function SynastryPage({ natalChart, dictionary, readingId }: SynastryPage
         locale,
         readingId,
         cacheKey,
+        gender,
       }),
       signal: controller.signal,
     }).then(async (res) => {
@@ -359,7 +408,7 @@ export function SynastryPage({ natalChart, dictionary, readingId }: SynastryPage
       controller.abort();
       clearTimeout(timeout);
     };
-  }, [readingAspects, selectedPartner, partnerChart, natalChart, natalHash, partnerHash, locale, readingId]);
+  }, [readingAspects, selectedPartner, partnerChart, natalChart, natalHash, partnerHash, locale, readingId, gender]);
 
   function savePartner() {
     setError(null);
@@ -398,12 +447,19 @@ export function SynastryPage({ natalChart, dictionary, readingId }: SynastryPage
           )}
         </div>
         <div className="mt-8">
+          <WheelModeToggle
+            mode={synastryWheelMode}
+            onChange={setSynastryWheelMode}
+            activeCount={aspectedInnerIds.length + aspectedOuterIds.length}
+          />
           <BiWheelChart
             innerChart={innerChart}
             outerChart={wheelOuterChart}
             innerLabel={innerName}
             outerLabel={outerName}
             variant="synastry"
+            innerPointIds={synastryWheelMode === "aspected" ? aspectedInnerIds : undefined}
+            outerPointIds={synastryWheelMode === "aspected" ? aspectedOuterIds : undefined}
             onInnerPlanetSelect={(id) => setBiWheelSelected({ id, ring: "inner" })}
             onOuterPlanetSelect={(id) => setBiWheelSelected({ id, ring: "outer" })}
           />

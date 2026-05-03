@@ -21,7 +21,7 @@ import {
 // Stable SE numeric constants (never change across SE versions)
 const SE_SUN = 0, SE_MOON = 1, SE_MERCURY = 2, SE_VENUS = 3, SE_MARS = 4;
 const SE_JUPITER = 5, SE_SATURN = 6, SE_URANUS = 7, SE_NEPTUNE = 8, SE_PLUTO = 9;
-const SE_TRUE_NODE = 11, SE_MEAN_APOG = 13, SE_CHIRON = 15, SE_CERES = 17;
+const SE_TRUE_NODE = 11, SE_MEAN_APOG = 12, SE_CHIRON = 15, SE_CERES = 17;
 const SEFLG_SPEED = 256, SEFLG_SWIEPH = 2;
 
 let _se: SwissEph | null = null;

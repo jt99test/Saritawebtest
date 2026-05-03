@@ -28,6 +28,8 @@ type SolarData = {
   priorities?: Array<{ title: string; body: string }>;
 };
 
+type SolarWheelMode = "all" | "focus";
+
 type CachedSolarReturnReading = {
   chart: NatalChartData;
   data: SolarData;
@@ -88,6 +90,44 @@ function normalizeSolarData(data: SolarData): SolarData {
   };
 }
 
+function WheelModeToggle({
+  mode,
+  onChange,
+  focusCount,
+}: {
+  mode: SolarWheelMode;
+  onChange: (mode: SolarWheelMode) => void;
+  focusCount: number;
+}) {
+  return (
+    <div className="mx-auto mb-5 max-w-3xl text-center">
+      <div className="inline-flex rounded-full border border-black/10 bg-white/80 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
+        {[
+          { id: "all" as const, label: "Todos" },
+          { id: "focus" as const, label: "En foco" },
+        ].map((option) => (
+          <button
+            key={option.id}
+            type="button"
+            onClick={() => onChange(option.id)}
+            className={[
+              "rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition",
+              mode === option.id ? "bg-dusty-gold/16 text-[#5c4a24]" : "text-[#3a3048] hover:text-ivory",
+            ].join(" ")}
+          >
+            {option.label}
+          </button>
+        ))}
+      </div>
+      <p className="mx-auto mt-3 max-w-xl text-xs leading-5 text-[#3a3048]">
+        {mode === "focus"
+          ? `Mostrando ${focusCount} puntos de la Revolución Solar: Sol, Luna y planetas en casas angulares.`
+          : "Mostrando la Revolución Solar completa para leer el año entero."}
+      </p>
+    </div>
+  );
+}
+
 export function SolarReturnPage({ natalChart, request, dictionary, readingId }: SolarReturnPageProps) {
   const locale = useStoredLocale();
   const solarCopy = dictionary.result.solarReturnPage;
@@ -103,6 +143,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
   const [isLoadingReading, setIsLoadingReading] = useState(false);
   const [selectedCardKey, setSelectedCardKey] = useState("theme");
   const [biWheelSelected, setBiWheelSelected] = useState<{ id: ChartPointId; ring: "inner" | "outer" } | null>(null);
+  const [solarWheelMode, setSolarWheelMode] = useState<SolarWheelMode>("all");
   const [chartHash, setChartHash] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const yearOptions = useMemo(
@@ -113,16 +154,28 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
   const summaryCards = solarData.cards?.length === 3 ? solarData.cards : [];
   const selectedSummaryCard = summaryCards.find((card) => card.key === selectedCardKey) ?? summaryCards[0] ?? null;
   const priorityAreas = solarData.priorities ?? [];
+  const solarFocusIds = useMemo(() => {
+    if (!solarChart) return [];
+    return [...new Set(
+      solarChart.points
+        .filter((point) => point.id === "sun" || point.id === "moon" || [1, 4, 7, 10].includes(point.house))
+        .map((point) => point.id),
+    )];
+  }, [solarChart]);
   const solarCacheKey = useMemo(() => {
     const locationKey = selectedLocation
       ? `${selectedLocation.lat.toFixed(4)},${selectedLocation.lng.toFixed(4)}`
       : city.trim().toLowerCase();
-    return `solar-return:${targetYear}:${locale}:${locationKey}`;
-  }, [city, locale, selectedLocation, targetYear]);
+    return `solar-return:${targetYear}:${locale}:${request?.gender || "unspecified"}:${locationKey}`;
+  }, [city, locale, request?.gender, selectedLocation, targetYear]);
 
   useEffect(() => {
     setBiWheelSelected(null);
   }, [solarChart]);
+
+  useEffect(() => {
+    setBiWheelSelected(null);
+  }, [solarWheelMode]);
 
   useEffect(() => {
     const rawSelection = window.localStorage.getItem(SOLAR_RETURN_SELECTION_KEY);
@@ -205,7 +258,14 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
         void fetch("/api/solar-return-reading", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ natalChartData: natalChart, solarReturnData: result.chart, locale, readingId, cacheKey: solarCacheKey }),
+          body: JSON.stringify({
+            natalChartData: natalChart,
+            solarReturnData: result.chart,
+            locale,
+            readingId,
+            cacheKey: solarCacheKey,
+            gender: request?.gender || undefined,
+          }),
           signal: controller.signal,
         }).then(async (res) => {
           if (!res.ok || !res.body) {
@@ -262,12 +322,19 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
   if (solarChart) {
     return (
       <section className="py-10">
+        <WheelModeToggle
+          mode={solarWheelMode}
+          onChange={setSolarWheelMode}
+          focusCount={solarFocusIds.length}
+        />
         <BiWheelChart
           innerChart={natalChart}
           outerChart={solarChart}
           innerLabel={natalChart.event.name}
           outerLabel={`RS ${targetYear}`}
           variant="solar-return"
+          innerPointIds={solarWheelMode === "focus" ? solarFocusIds : undefined}
+          outerPointIds={solarWheelMode === "focus" ? solarFocusIds : undefined}
           onInnerPlanetSelect={(id) => setBiWheelSelected({ id, ring: "inner" })}
           onOuterPlanetSelect={(id) => setBiWheelSelected({ id, ring: "outer" })}
         />

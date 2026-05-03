@@ -9,6 +9,7 @@ import {
 } from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData } from "@/lib/chart";
 import { ASPECT_LABELS, HOUSE_AREAS, POINT_LABELS } from "@/lib/chart-labels";
+import { genderPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -88,15 +89,17 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return new Response("Unauthorized", { status: 401 });
 
-  const { chart, transits, locale, readingId, cacheKey } = await request.json() as {
+  const { chart, transits, locale, readingId, cacheKey, gender } = await request.json() as {
     chart: NatalChartData;
     transits: TransitInput[];
     locale?: string;
     readingId?: string;
     cacheKey?: string;
+    gender?: ReadingGender;
   };
 
-  const itemKey = cacheKey ?? `transit:${transits.map((transit) => `${transit.transitingPlanet}-${transit.aspectType}-${transit.natalPlanet}`).join("|")}`;
+  const readingGender = normalizeReadingGender(gender);
+  const itemKey = `${cacheKey ?? `transit:${transits.map((transit) => `${transit.transitingPlanet}-${transit.aspectType}-${transit.natalPlanet}`).join("|")}`}:${readingGender || "unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 
@@ -149,10 +152,14 @@ Carta natal de ${name}:
 Tránsitos activos ahora mismo:
 ${transitLines}
 
+${genderPromptInstruction(readingGender, locale)}
+
 Devuelve SOLO JSON válido. Sin markdown, sin bloque de código, sin texto antes ni después.
 
+Importante: dominantBody, planetLanguage y cada houses[].body deben ser mas desarrollados: 3-5 frases concretas, unas 55-85 palabras cada uno, para que ocupen aproximadamente 3-5 lineas en la tarjeta.
+
 Forma exacta:
-{"reading":"[UN párrafo de 60-80 palabras. Nombra el tránsito más fuerte, di en qué área de la vida de ${name} se va a notar y da un ejemplo real de cómo puede aparecer en los próximos días. Termina con una recomendación concreta.]","dominantTitle":"[Nombre del planeta tránsito + verbo, máx 10 palabras]","dominantBody":"[1-2 frases sobre este tránsito concreto. Qué activa. Cómo se nota. Sin misticismos.]","planetLanguage":"[1-2 frases sobre el carácter de este planeta transitante. Qué pide. Cómo trabaja.]","houses":[{"house":[número de casa],"title":"[Título evocador para esta casa en este momento, máx 8 palabras]","body":"[1-2 frases sobre qué pide esta área ahora mismo para ${name}. Concreto.]"}]}
+{"reading":"[UN párrafo de 80-110 palabras. Nombra el tránsito más fuerte, di en qué área de la vida de ${name} se va a notar y da un ejemplo real de cómo puede aparecer en los próximos días. Termina con una recomendación concreta.]","dominantTitle":"[Nombre del planeta tránsito + verbo, máx 10 palabras]","dominantBody":"[3-5 frases sobre este tránsito concreto. Qué activa. Cómo se nota. Qué conviene hacer. Sin misticismos.]","planetLanguage":"[3-4 frases sobre el carácter de este planeta transitante. Qué pide. Cómo trabaja. Cómo se siente en la práctica.]","houses":[{"house":[número de casa],"title":"[Título evocador para esta casa en este momento, máx 8 palabras]","body":"[3-5 frases sobre qué pide esta área ahora mismo para ${name}. Concreto, cotidiano y basado en los tránsitos dados.]"}]}
 
 Los valores "house" en el array deben ser los números: ${houseHint}.
 
@@ -170,7 +177,7 @@ ${langInstruction(locale)}`;
   try {
     const message = await client.messages.create({
       model: ANTHROPIC_PREMIUM_READING_MODEL,
-      max_tokens: 700,
+      max_tokens: 1100,
       messages: [{ role: "user", content: prompt }],
     });
     parsed = JSON.parse(cleanJsonPayload(extractTextContent(message)));

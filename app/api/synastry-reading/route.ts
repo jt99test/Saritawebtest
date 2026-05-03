@@ -9,6 +9,7 @@ import {
 } from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData, SignId } from "@/lib/chart";
 import { ASPECT_LABELS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
+import { genderPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import type { SynastryAspect } from "@/lib/synastry";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -210,7 +211,7 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return new Response("Unauthorized", { status: 401 });
 
-  const { chartA, chartB, partnerName, aspects, locale, readingId, cacheKey } = await request.json() as {
+  const { chartA, chartB, partnerName, aspects, locale, readingId, cacheKey, gender } = await request.json() as {
     chartA: NatalChartData;
     chartB: NatalChartData;
     partnerName: string;
@@ -218,13 +219,15 @@ export async function POST(request: Request) {
     locale?: string;
     readingId?: string;
     cacheKey?: string;
+    gender?: ReadingGender;
   };
 
   if (!process.env.ANTHROPIC_API_KEY) {
     return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
   }
 
-  const itemKey = cacheKey ?? `synastry:${partnerName}:${chartB.event.julianDay}`;
+  const readingGender = normalizeReadingGender(gender);
+  const itemKey = `${cacheKey ?? `synastry:${partnerName}:${chartB.event.julianDay}`}:${readingGender || "unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 
@@ -253,11 +256,15 @@ export async function POST(request: Request) {
 
 ${context}
 
+${genderPromptInstruction(readingGender, locale)}
+
 Usa la herramienta synastry_reading para devolver la lectura estructurada.
 Las claves de la herramienta deben quedar exactamente como estan definidas aunque el contenido este en otro idioma.
 
+Importante: compatibilityDescription y cada layers.* deben ser mas desarrollados: 3-5 frases concretas, unas 60-95 palabras cada uno, para que ocupen aproximadamente 3-5 lineas en la tarjeta.
+
 Forma exacta:
-{"reading":"[UN párrafo de 80-100 palabras sobre la relación de ${name} con ${partnerName}. Usa los 2 aspectos más fuertes para describir qué se siente, dónde hay tensión, dónde hay facilidad. Da un ejemplo real de convivencia. Termina con algo concreto que ${name} puede hacer.]","compatibilityLabel":"[Etiqueta corta del vínculo, máx 6 palabras]","compatibilityDescription":"[1-2 frases honestas y prácticas sobre el tipo de vínculo]","layers":{"fisico":"[2-3 frases prácticas sobre conexión física/corporal según aspectos reales]","sexual":"[2-3 frases prácticas sobre atracción, deseo o intensidad según aspectos reales]","emocional":"[2-3 frases prácticas sobre apego, seguridad y vulnerabilidad según aspectos reales]","mental":"[2-3 frases prácticas sobre comunicación e ideas según aspectos reales]","profesional":"[2-3 frases prácticas sobre trabajar o construir algo juntos según aspectos reales]","evolutivo":"[2-3 frases prácticas sobre qué patrón o cambio activa esta relación según aspectos reales]"}}
+{"reading":"[UN párrafo de 80-100 palabras sobre la relación de ${name} con ${partnerName}. Usa los 2 aspectos más fuertes para describir qué se siente, dónde hay tensión, dónde hay facilidad. Da un ejemplo real de convivencia. Termina con algo concreto que ${name} puede hacer.]","compatibilityLabel":"[Etiqueta corta del vínculo, máx 6 palabras]","compatibilityDescription":"[3-5 frases honestas y prácticas sobre el tipo de vínculo. Describe cómo se siente, dónde se traba y qué ayuda a cuidarlo.]","layers":{"fisico":"[3-5 frases prácticas sobre conexión física/corporal según aspectos reales]","sexual":"[3-5 frases prácticas sobre atracción, deseo o intensidad según aspectos reales]","emocional":"[3-5 frases prácticas sobre apego, seguridad y vulnerabilidad según aspectos reales]","mental":"[3-5 frases prácticas sobre comunicación e ideas según aspectos reales]","profesional":"[3-5 frases prácticas sobre trabajar o construir algo juntos según aspectos reales]","evolutivo":"[3-5 frases prácticas sobre qué patrón o cambio activa esta relación según aspectos reales]"}}
 
 Reglas:
 - Cada valor usa aspectos reales. Nada genérico.
@@ -274,7 +281,7 @@ ${langInstruction(locale)}`;
   try {
     const message = await client.messages.create({
       model: ANTHROPIC_PREMIUM_READING_MODEL,
-      max_tokens: 1800,
+      max_tokens: 2400,
       tools: [SYNASTRY_READING_TOOL],
       tool_choice: { type: "tool", name: SYNASTRY_READING_TOOL.name },
       messages: [{ role: "user", content: prompt }],

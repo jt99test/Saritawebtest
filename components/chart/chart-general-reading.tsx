@@ -9,6 +9,7 @@ import { GENERAL_READING_THEMES, type GeneralReadingTheme } from "@/lib/general-
 import { getAllCachedReadings, setCachedReading } from "@/lib/general-reading-cache";
 import type { NatalChartData } from "@/lib/chart";
 import type { Dictionary } from "@/lib/i18n";
+import type { ReadingGender } from "@/lib/reading-gender";
 import { normalizeReadingText, splitReading } from "@/lib/reading-text";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 
@@ -16,6 +17,7 @@ type ChartGeneralReadingProps = {
   chart: NatalChartData;
   dictionary: Dictionary;
   readingId?: string;
+  gender?: ReadingGender;
 };
 
 const PLAN_REQUIRED_ERROR = "SARITA_PLAN_REQUIRED";
@@ -99,7 +101,7 @@ function LockedReadingPanel({ dictionary }: { dictionary: Dictionary }) {
   );
 }
 
-export function ChartGeneralReading({ chart, dictionary, readingId }: ChartGeneralReadingProps) {
+export function ChartGeneralReading({ chart, dictionary, readingId, gender }: ChartGeneralReadingProps) {
   const locale = useStoredLocale();
   const [chartHash, setChartHash] = useState<string | null>(null);
   const [readings, setReadings] = useState<Record<string, string>>({});
@@ -127,7 +129,7 @@ export function ChartGeneralReading({ chart, dictionary, readingId }: ChartGener
         const response = await fetch("/api/general-reading", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chart, theme, locale, readingId }),
+          body: JSON.stringify({ chart, theme, locale, readingId, gender }),
           signal: controller.signal,
         });
 
@@ -160,7 +162,7 @@ export function ChartGeneralReading({ chart, dictionary, readingId }: ChartGener
           throw new Error(dictionary.chart.generateError);
         }
 
-        setCachedReading(currentHash, locale, theme, finalContent);
+        setCachedReading(currentHash, locale, theme, finalContent, gender);
         setReadings((current) => ({ ...current, [theme]: finalContent }));
       } catch (error) {
         if ((error as Error).name !== "AbortError") {
@@ -171,7 +173,7 @@ export function ChartGeneralReading({ chart, dictionary, readingId }: ChartGener
         setLoading((current) => ({ ...current, [theme]: false }));
       }
     },
-    [chart, dictionary.chart.generateError, locale, readingId],
+    [chart, dictionary.chart.generateError, gender, locale, readingId],
   );
 
   useEffect(() => {
@@ -186,7 +188,7 @@ export function ChartGeneralReading({ chart, dictionary, readingId }: ChartGener
         return;
       }
 
-      const cached = getAllCachedReadings(nextHash, locale);
+      const cached = getAllCachedReadings(nextHash, locale, gender);
       const missingThemes = GENERAL_READING_THEMES
         .filter((theme) => !cached[theme]);
 
@@ -208,7 +210,7 @@ export function ChartGeneralReading({ chart, dictionary, readingId }: ChartGener
       Object.values(controllersRef.current).forEach((controller) => controller.abort());
       controllersRef.current = {};
     };
-  }, [chart, fetchReading, locale]);
+  }, [chart, fetchReading, gender, locale]);
 
   const selectedCard = cardByTheme.get(selectedTheme) ?? cards[0];
   const selectedReading = readings[selectedTheme] ?? "";
@@ -231,6 +233,7 @@ export function ChartGeneralReading({ chart, dictionary, readingId }: ChartGener
         <div className="grid grid-cols-5 gap-3 md:grid-cols-7">
           {GENERAL_READING_THEMES.map((theme) => {
             const meta = THEME_META[theme];
+            const card = cardByTheme.get(theme);
             const active = selectedTheme === theme;
             return (
               <button
@@ -251,7 +254,7 @@ export function ChartGeneralReading({ chart, dictionary, readingId }: ChartGener
                   {meta.glyph}
                 </span>
                 <span className="max-w-12 truncate text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-[#3a3048]">
-                  {meta.label}
+                  {card?.title ?? meta.label}
                 </span>
               </button>
             );

@@ -20,6 +20,7 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import { ASPECT_LABELS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
+import { genderPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 
 type LunarReportRequest = {
   chart: NatalChartData;
@@ -30,6 +31,7 @@ type LunarReportRequest = {
   locale?: string;
   readingId?: string;
   cacheKey?: string;
+  gender?: ReadingGender;
 };
 
 type CachedLunarContent = {
@@ -113,11 +115,13 @@ async function enrichTransitSummaries({
   chart,
   transits,
   locale,
+  gender,
 }: {
   client: Anthropic;
   chart: NatalChartData;
   transits: LunarTransitSummaryInput;
   locale?: string;
+  gender?: ReadingGender;
 }) {
   const visibleTransits = transits.slice(0, 3);
 
@@ -138,6 +142,8 @@ ${visibleTransits.map((transit, index) => `${index + 1}. ${transit.transitingPla
 
 Devuelve solo JSON válido en una línea:
 {"summaries":["...", "...", "..."]}
+
+${genderPromptInstruction(gender, locale)}
 
 ${langInstruction(locale)}`;
 
@@ -176,6 +182,7 @@ function buildPrompt({
   metadata,
   transitLines,
   locale,
+  gender,
 }: {
   chart: NatalChartData;
   year: number;
@@ -192,6 +199,7 @@ function buildPrompt({
   };
   transitLines: string;
   locale?: string;
+  gender?: ReadingGender;
 }) {
   const name = chart.event.name;
   const lunaLabel = lunationType === "nueva" ? "Nueva" : "Llena";
@@ -245,8 +253,9 @@ export async function POST(request: Request) {
       return new Response("Plan required", { status: 403 });
     }
 
-    const { chart, year, month, lunationType, metadataOnly = false, locale, readingId, cacheKey } =
+    const { chart, year, month, lunationType, metadataOnly = false, locale, readingId, cacheKey, gender } =
       (await request.json()) as LunarReportRequest;
+    const readingGender = normalizeReadingGender(gender);
 
     const monthlyData = await getMonthlyLunarData(chart, year, month);
     const lunation =
@@ -272,6 +281,7 @@ export async function POST(request: Request) {
           chart,
           transits: transitData.structured,
           locale,
+          gender: readingGender,
         })
       : transitData.structured;
     const baseMessage =
@@ -309,7 +319,7 @@ export async function POST(request: Request) {
       return Response.json(metadata);
     }
 
-    const itemKey = cacheKey ?? `lunar:${locale ?? "es"}:${year}-${month}-${lunationType}`;
+    const itemKey = `${cacheKey ?? `lunar:${locale ?? "es"}:${year}-${month}-${lunationType}`}:${readingGender || "unspecified"}`;
     const access = await validateReadingGenerationAccess({ supabase, user, readingId });
     if (!access.ok) {
       return access.response;
@@ -372,6 +382,7 @@ export async function POST(request: Request) {
       },
       transitLines: transitData.lines,
       locale,
+      gender: readingGender,
     });
 
     const streamingPrompt = `${prompt}

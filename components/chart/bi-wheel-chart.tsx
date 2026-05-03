@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 
 import type { ChartPoint, ChartPointId, NatalChartData } from "@/lib/chart";
-import { formatSignPosition, normalizeLongitude, zodiacSigns } from "@/lib/chart";
+import { getAugmentedChartPoints, normalizeLongitude, zodiacSigns } from "@/lib/chart";
 
 export type BiWheelVariant = "solar-return" | "synastry";
 
@@ -13,17 +13,22 @@ type BiWheelChartProps = {
   innerLabel?: string;
   outerLabel?: string;
   variant?: BiWheelVariant;
+  innerPointIds?: ChartPointId[];
+  outerPointIds?: ChartPointId[];
   onInnerPlanetSelect?: (pointId: ChartPointId) => void;
   onOuterPlanetSelect?: (pointId: ChartPointId) => void;
 };
 
 const CENTER = 430;
 const INNER_ZODIAC_R = 372;
+const ZODIAC_OUTER_R = 402;
+const ZODIAC_INNER_R = 344;
 const INNER_PLANET_R = 286;
 const INNER_LABEL_R = 316;
 const OUTER_SEP_R = 343;
-const OUTER_PLANET_R = 374;
-const OUTER_LABEL_R = 412;
+const OUTER_PLANET_R = 414;
+const OUTER_LABEL_R = 432;
+const HOUSE_INNER_R = 168;
 const DRAWABLE_IDS = new Set<ChartPointId>([
   "sun",
   "moon",
@@ -35,20 +40,61 @@ const DRAWABLE_IDS = new Set<ChartPointId>([
   "uranus",
   "neptune",
   "pluto",
+  "northNode",
+  "southNode",
+  "chiron",
+  "partOfFortune",
+  "lilith",
+  "ceres",
 ]);
+
+const SIGN_SYMBOLS = {
+  aries: "\u2648",
+  taurus: "\u2649",
+  gemini: "\u264a",
+  cancer: "\u264b",
+  leo: "\u264c",
+  virgo: "\u264d",
+  libra: "\u264e",
+  scorpio: "\u264f",
+  Sagittarius: "\u2650",
+  sagittarius: "\u2650",
+  capricorn: "\u2651",
+  aquarius: "\u2652",
+  pisces: "\u2653",
+} as const;
+
+const POINT_SYMBOLS: Record<ChartPointId, string> = {
+  sun: "\u2609",
+  moon: "\u263d",
+  mercury: "\u263f",
+  venus: "\u2640",
+  mars: "\u2642",
+  jupiter: "\u2643",
+  saturn: "\u2644",
+  uranus: "\u2645",
+  neptune: "\u2646",
+  pluto: "\u2647",
+  northNode: "\u260a",
+  southNode: "\u260b",
+  chiron: "\u26b7",
+  partOfFortune: "\u2297",
+  lilith: "\u26b8",
+  ceres: "\u26b3",
+};
 
 const VARIANTS = {
   "solar-return": {
-    primary: "#8a7a4e",
-    muted: "rgba(111,97,58,0.9)",
-    ring: "rgba(138,122,78,0.38)",
-    bg: "rgba(138,122,78,0.08)",
+    primary: "#8f7b45",
+    muted: "rgba(105,91,52,0.94)",
+    ring: "rgba(143,123,69,0.46)",
+    bg: "rgba(143,123,69,0.1)",
   },
   synastry: {
-    primary: "#8a7a4e",
-    muted: "rgba(111,97,58,0.9)",
-    ring: "rgba(138,122,78,0.38)",
-    bg: "rgba(138,122,78,0.08)",
+    primary: "#8f7b45",
+    muted: "rgba(105,91,52,0.94)",
+    ring: "rgba(143,123,69,0.46)",
+    bg: "rgba(143,123,69,0.1)",
   },
 } as const;
 
@@ -68,6 +114,13 @@ function pointAtRadius(radius: number, longitude: number, ascendant: number) {
   return {
     x: CENTER + radius * Math.cos(angle),
     y: CENTER + radius * Math.sin(angle),
+  };
+}
+
+function lineBetween(innerRadius: number, outerRadius: number, longitude: number, ascendant: number) {
+  return {
+    inner: pointAtRadius(innerRadius, longitude, ascendant),
+    outer: pointAtRadius(outerRadius, longitude, ascendant),
   };
 }
 
@@ -92,12 +145,22 @@ function midpointLongitude(start: number, end: number) {
   return normalizeLongitude(start + normalizeLongitude(end - start) / 2);
 }
 
+function zodiacLabelFill(element: (typeof zodiacSigns)[number]["element"]) {
+  return "#1e1a2e";
+}
+
 function visiblePoints(chart: NatalChartData) {
-  return chart.points.filter((point) => DRAWABLE_IDS.has(point.id));
+  return getAugmentedChartPoints(chart).filter((point) => DRAWABLE_IDS.has(point.id));
+}
+
+function filterPoints(points: ChartPoint[], pointIds?: ChartPointId[]) {
+  if (!pointIds) return points;
+  const visibleIds = new Set(pointIds);
+  return points.filter((point) => visibleIds.has(point.id));
 }
 
 function degreeLabel(point: ChartPoint) {
-  return `${point.degreeInSign}°${String(point.minutesInSign).padStart(2, "0")}'`;
+  return `${point.degreeInSign}\u00b0${String(point.minutesInSign).padStart(2, "0")}'`;
 }
 
 function aspectStroke(type: string) {
@@ -106,12 +169,151 @@ function aspectStroke(type: string) {
   return "rgba(138,122,78,0.72)";
 }
 
+function DegreeTickRing({ ascendant }: { ascendant: number }) {
+  const ticks = [];
+
+  for (const sign of zodiacSigns) {
+    for (let degree = 0; degree < 30; degree += 1) {
+      const longitude = sign.start + degree;
+      const major = degree === 0 || degree === 15;
+      const medium = degree % 5 === 0;
+      const radii = lineBetween(
+        major ? ZODIAC_INNER_R : medium ? ZODIAC_INNER_R + 5 : ZODIAC_INNER_R + 10,
+        ZODIAC_OUTER_R,
+        longitude,
+        ascendant,
+      );
+
+      ticks.push(
+        <line
+          key={`tick-${longitude}`}
+          x1={radii.inner.x}
+          y1={radii.inner.y}
+          x2={radii.outer.x}
+          y2={radii.outer.y}
+          stroke={major ? "rgba(30,26,46,0.22)" : medium ? "rgba(30,26,46,0.14)" : "rgba(30,26,46,0.08)"}
+          strokeWidth={major ? "0.8" : "0.45"}
+        />,
+      );
+
+      if (degree === 0) {
+        const label = pointAtRadius(ZODIAC_INNER_R + 26, longitude + 1.2, ascendant);
+        ticks.push(
+          <text
+            key={`tick-label-${longitude}`}
+            x={label.x}
+            y={label.y}
+            textAnchor="middle"
+            dominantBaseline="central"
+            className="text-[10px] font-semibold"
+            fill="rgba(30,26,46,0.56)"
+          >
+            {degree}
+          </text>,
+        );
+      }
+    }
+  }
+
+  return <>{ticks}</>;
+}
+
+function AxisLines({ chart, ascendant }: { chart: NatalChartData; ascendant: number }) {
+  const axes = [
+    { longitude: chart.meta.ascendant, opposite: chart.meta.descendant, start: "AC", end: "DC" },
+    { longitude: chart.meta.mc, opposite: chart.meta.ic, start: "MC", end: "IC" },
+  ];
+
+  return (
+    <>
+      {axes.map((axis) => {
+        const start = pointAtRadius(ZODIAC_OUTER_R + 4, axis.longitude, ascendant);
+        const end = pointAtRadius(ZODIAC_OUTER_R + 4, axis.opposite, ascendant);
+        const startLabel = pointAtRadius(ZODIAC_OUTER_R - 12, axis.longitude, ascendant);
+        const endLabel = pointAtRadius(ZODIAC_OUTER_R - 12, axis.opposite, ascendant);
+
+        return (
+          <g key={axis.start}>
+            <line x1={start.x} y1={start.y} x2={end.x} y2={end.y} stroke="rgba(30,26,46,0.58)" strokeWidth="1.1" />
+            {[
+              { label: axis.start, point: startLabel },
+              { label: axis.end, point: endLabel },
+            ].map(({ label, point }) => (
+              <g key={label}>
+                <rect x={point.x - 13} y={point.y - 8} width="26" height="16" rx="7" fill="#fffaf0" stroke="rgba(30,26,46,0.28)" strokeWidth="0.8" />
+                <text x={point.x} y={point.y + 0.5} textAnchor="middle" dominantBaseline="central" className="font-serif text-[11px] font-semibold" fill="#1e1a2e">
+                  {label}
+                </text>
+              </g>
+            ))}
+          </g>
+        );
+      })}
+    </>
+  );
+}
+
+function SolarReturnAngleMarkers({ chart, ascendant }: { chart: NatalChartData; ascendant: number }) {
+  const angles = [
+    { key: "rs-asc", longitude: chart.meta.ascendant, label: "ASC RS" },
+    { key: "rs-mc", longitude: chart.meta.mc, label: "MC RS" },
+  ];
+
+  return (
+    <g>
+      {angles.map((angle) => {
+        const lineStart = pointAtRadius(OUTER_SEP_R + 4, angle.longitude, ascendant);
+        const lineEnd = pointAtRadius(OUTER_LABEL_R + 4, angle.longitude, ascendant);
+        const label = pointAtRadius(OUTER_LABEL_R + 22, angle.longitude, ascendant);
+
+        return (
+          <g key={angle.key}>
+            <line
+              x1={lineStart.x}
+              y1={lineStart.y}
+              x2={lineEnd.x}
+              y2={lineEnd.y}
+              stroke="rgba(95,75,31,0.72)"
+              strokeWidth="1.2"
+              strokeDasharray="5 5"
+              strokeLinecap="round"
+            />
+            <rect
+              x={label.x - 22}
+              y={label.y - 10}
+              width="44"
+              height="20"
+              rx="10"
+              fill="#fffaf0"
+              stroke="rgba(143,123,69,0.48)"
+              strokeWidth="0.9"
+              filter="url(#bw-glow)"
+            />
+            <text
+              x={label.x}
+              y={label.y + 0.5}
+              textAnchor="middle"
+              dominantBaseline="central"
+              className="text-[10px] font-semibold"
+              fill="#5f4b1f"
+            >
+              {angle.label}
+            </text>
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
 export function BiWheelChart({
   innerChart,
   outerChart,
   innerLabel = innerChart.event.name,
   outerLabel = outerChart?.event.name,
   variant = "solar-return",
+  innerPointIds,
+  outerPointIds,
   onInnerPlanetSelect,
   onOuterPlanetSelect,
 }: BiWheelChartProps) {
@@ -120,8 +322,8 @@ export function BiWheelChart({
   const [selectedInner, setSelectedInner] = useState<ChartPointId | null>(null);
   const [hoveredOuter, setHoveredOuter] = useState<ChartPointId | null>(null);
   const [selectedOuter, setSelectedOuter] = useState<ChartPointId | null>(null);
-  const innerPoints = useMemo(() => visiblePoints(innerChart), [innerChart]);
-  const outerPoints = useMemo(() => outerChart ? visiblePoints(outerChart) : [], [outerChart]);
+  const innerPoints = useMemo(() => filterPoints(visiblePoints(innerChart), innerPointIds), [innerChart, innerPointIds]);
+  const outerPoints = useMemo(() => outerChart ? filterPoints(visiblePoints(outerChart), outerPointIds) : [], [outerChart, outerPointIds]);
   const ascendant = innerChart.meta.ascendant;
   const outerActive = hoveredOuter || selectedOuter;
   const activePoint = [...innerPoints, ...outerPoints].find(
@@ -151,56 +353,70 @@ export function BiWheelChart({
           <filter id="bw-outer-glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
         </defs>
 
-        <circle cx={CENTER} cy={CENTER} r="412" fill="url(#bw-surface-bg)" stroke="rgba(30,26,46,0.16)" strokeWidth="1.2" />
-        <circle cx={CENTER} cy={CENTER} r="398" fill="none" stroke="rgba(138,122,78,0.1)" strokeWidth="10" />
+        <circle cx={CENTER} cy={CENTER} r="412" fill="url(#bw-surface-bg)" stroke="rgba(30,26,46,0.18)" strokeWidth="1.3" />
+        <circle cx={CENTER} cy={CENTER} r="398" fill="none" stroke="rgba(143,123,69,0.13)" strokeWidth="10" />
         <circle cx={CENTER} cy={CENTER} r="420" fill="url(#bw-field-glow)" />
         <circle cx={CENTER} cy={CENTER} r="392" fill="none" stroke="rgba(30,26,46,0.06)" strokeWidth="16" filter="url(#bw-soft-halo)" />
         {outerChart ? (
           <>
-            <circle cx={CENTER} cy={CENTER} r={OUTER_SEP_R} fill="none" stroke="rgba(30,26,46,0.18)" strokeWidth="1.2" strokeDasharray="4 9" />
-            <circle cx={CENTER} cy={CENTER} r={OUTER_PLANET_R} fill="none" stroke="rgba(30,26,46,0.06)" strokeWidth="16" filter="url(#bw-soft-halo)" />
+            <circle cx={CENTER} cy={CENTER} r={OUTER_SEP_R} fill="none" stroke="rgba(30,26,46,0.2)" strokeWidth="1.2" strokeDasharray="4 9" />
+            <circle cx={CENTER} cy={CENTER} r={OUTER_PLANET_R} fill="none" stroke="rgba(143,123,69,0.09)" strokeWidth="16" filter="url(#bw-soft-halo)" />
           </>
         ) : null}
 
-        <g transform="translate(430 430) scale(0.78) translate(-430 -430)">
+        <g>
           <circle cx={CENTER} cy={CENTER} r="386" fill="rgba(255,250,240,0.28)" stroke="rgba(30,26,46,0.2)" />
           <circle cx={CENTER} cy={CENTER} r="356" fill="none" stroke="rgba(30,26,46,0.08)" strokeWidth="18" />
-          {zodiacSigns.map((sign) => (
-            <path
-              key={sign.id}
-              d={describeRingSegment(sign.start, sign.start + 30, 324, INNER_ZODIAC_R, ascendant)}
-              fill={ELEMENT_TINTS[sign.element]}
-              stroke="rgba(30,26,46,0.18)"
-            />
-          ))}
-          {innerChart.houses.map((house) => {
-            const line = pointAtRadius(324, house.longitude, ascendant);
-            const cuspTick = pointAtRadius(360, house.longitude, ascendant);
-            const cuspLabel = pointAtRadius(398, house.longitude, ascendant);
-            const position = formatSignPosition(house.longitude);
+          {zodiacSigns.map((sign) => {
+            const label = pointAtRadius((ZODIAC_OUTER_R + ZODIAC_INNER_R) / 2, midpointLongitude(sign.start, sign.start + 30), ascendant);
+
             return (
-              <g key={house.house}>
-                <line x1={CENTER} y1={CENTER} x2={line.x} y2={line.y} stroke="rgba(30,26,46,0.28)" />
-                <line x1={cuspTick.x} y1={cuspTick.y} x2={cuspLabel.x} y2={cuspLabel.y} stroke="rgba(30,26,46,0.28)" />
-                <g>
-                  <circle cx={cuspLabel.x} cy={cuspLabel.y} r="9" fill="rgba(255,250,240,0.74)" />
-                  <text
-                    x={cuspLabel.x}
-                    y={cuspLabel.y}
-                    textAnchor="middle"
-                    dominantBaseline="central"
-                    className="text-[11px] font-bold"
-                    fill="rgba(30,26,46,0.84)"
-                  >
-                    {position.degreeInSign}°
-                  </text>
-                </g>
+              <g key={sign.id}>
+                <path
+                  d={describeRingSegment(sign.start, sign.start + 30, ZODIAC_INNER_R, ZODIAC_OUTER_R, ascendant)}
+                  fill={ELEMENT_TINTS[sign.element]}
+                  stroke="rgba(30,26,46,0.18)"
+                  strokeWidth="1"
+                />
+                <text
+                  x={label.x}
+                  y={label.y + 1}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  className="font-serif text-[22px] font-semibold"
+                  fill={zodiacLabelFill(sign.element)}
+                  fillOpacity="0.58"
+                  fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
+                >
+                  {SIGN_SYMBOLS[sign.id]}
+                </text>
               </g>
             );
           })}
+          <circle cx={CENTER} cy={CENTER} r={ZODIAC_OUTER_R + 2} fill="none" stroke="rgba(30,26,46,0.38)" strokeWidth="1.2" />
+          <circle cx={CENTER} cy={CENTER} r={ZODIAC_OUTER_R - 12} fill="none" stroke="rgba(30,26,46,0.14)" strokeWidth="0.7" />
+          <circle cx={CENTER} cy={CENTER} r={ZODIAC_INNER_R + 12} fill="none" stroke="rgba(30,26,46,0.14)" strokeWidth="0.7" />
+          <circle cx={CENTER} cy={CENTER} r={ZODIAC_INNER_R} fill="none" stroke="rgba(30,26,46,0.42)" strokeWidth="1.2" />
+          <DegreeTickRing ascendant={ascendant} />
+          {innerChart.houses.map((house) => {
+            const lineStart = pointAtRadius(ZODIAC_INNER_R, house.longitude, ascendant);
+            const lineEnd = pointAtRadius(HOUSE_INNER_R, house.longitude, ascendant);
+            return (
+              <line
+                key={house.house}
+                x1={lineStart.x}
+                y1={lineStart.y}
+                x2={lineEnd.x}
+                y2={lineEnd.y}
+                stroke="rgba(30,26,46,0.22)"
+                strokeWidth="0.8"
+              />
+            );
+          })}
+          <AxisLines chart={innerChart} ascendant={ascendant} />
           {innerChart.houses.map((house, index) => {
             const nextHouse = innerChart.houses[(index + 1) % innerChart.houses.length] ?? innerChart.houses[0]!;
-            const label = pointAtRadius(215, midpointLongitude(house.longitude, nextHouse.longitude), ascendant);
+            const label = pointAtRadius(230, midpointLongitude(house.longitude, nextHouse.longitude), ascendant);
             return (
               <text
                 key={`house-label-${house.house}`}
@@ -245,9 +461,26 @@ export function BiWheelChart({
                 className="cursor-pointer outline-none"
                 style={{ outline: "none" }}
               >
-                <circle cx={position.x} cy={position.y} r={active ? "30" : "25"} fill={point.color} opacity={active ? "0.18" : "0.1"} filter="url(#bw-soft-halo)" />
-                <circle cx={position.x} cy={position.y} r="18" fill="#fffaf0" stroke={active ? point.color : "rgba(138,122,78,0.42)"} strokeWidth={active ? "1.6" : "1"} filter={active ? "url(#bw-hover-glow)" : "url(#bw-glow)"} />
-                <text x={position.x} y={position.y + 1} textAnchor="middle" dominantBaseline="central" className="font-serif text-[22px]" fill={point.color} stroke="#fffaf0" strokeWidth="1.4" paintOrder="stroke fill">{point.glyph}</text>
+                {active ? (
+                  <circle cx={position.x} cy={position.y} r="29" fill="rgba(232,197,71,0.08)" stroke={point.color} strokeOpacity="0.55" strokeWidth="1.2" />
+                ) : null}
+                <circle cx={position.x} cy={position.y} r="20" fill="#fffaf0" stroke="rgba(138,122,78,0.42)" strokeWidth="0.8" filter="url(#bw-glow)" />
+                <text
+                  x={position.x}
+                  y={position.y + 1}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  fill={point.color}
+                  fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
+                  fontSize="27"
+                  fontWeight="700"
+                  stroke="#fffaf0"
+                  strokeWidth="1.6"
+                  paintOrder="stroke fill"
+                  style={{ filter: active ? "url(#bw-hover-glow)" : "url(#bw-glow)" }}
+                >
+                  {POINT_SYMBOLS[point.id]}
+                </text>
                 {active ? <text x={label.x} y={label.y} textAnchor="middle" className="text-[12px] font-semibold" fill="#1e1a2e">{degreeLabel(point)}</text> : null}
               </g>
             );
@@ -275,14 +508,35 @@ export function BiWheelChart({
               className="cursor-pointer outline-none"
               style={{ outline: "none" }}
             >
-              <line x1={tickStart.x} y1={tickStart.y} x2={tickEnd.x} y2={tickEnd.y} stroke={active ? colors.primary : colors.ring} strokeWidth={active ? "1.8" : "1.1"} />
-              <circle cx={position.x} cy={position.y} r={active ? "32" : "26"} fill={colors.primary} opacity={active ? "0.18" : "0.09"} filter="url(#bw-soft-halo)" />
-              <circle cx={position.x} cy={position.y} r="19" fill="#fffaf0" stroke={active ? colors.primary : colors.ring} strokeWidth={active ? "1.7" : "1.1"} filter={active ? "url(#bw-outer-glow)" : "url(#bw-glow)"} />
-              <text x={position.x} y={position.y + 1} textAnchor="middle" dominantBaseline="central" className="font-serif text-[22px]" fill={active ? colors.primary : colors.muted} stroke="#fffaf0" strokeWidth="1.4" paintOrder="stroke fill">{point.glyph}</text>
+              <line x1={tickStart.x} y1={tickStart.y} x2={tickEnd.x} y2={tickEnd.y} stroke={active ? colors.primary : "rgba(30,26,46,0.18)"} strokeWidth={active ? "1.4" : "0.7"} strokeLinecap="round" />
+              {active ? (
+                <circle cx={position.x} cy={position.y} r="28" fill="rgba(232,197,71,0.08)" stroke={colors.primary} strokeOpacity="0.55" strokeWidth="1.1" />
+              ) : null}
+              <circle cx={position.x} cy={position.y} r="20" fill="#fffaf0" stroke="rgba(138,122,78,0.42)" strokeWidth="0.8" filter="url(#bw-glow)" />
+              <text
+                x={position.x}
+                y={position.y + 1}
+                textAnchor="middle"
+                dominantBaseline="central"
+                fill={point.color}
+                fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
+                fontSize="27"
+                fontWeight="700"
+                stroke="#fffaf0"
+                strokeWidth="1.6"
+                paintOrder="stroke fill"
+                style={{ filter: active ? "url(#bw-outer-glow)" : "url(#bw-glow)" }}
+              >
+                {POINT_SYMBOLS[point.id]}
+              </text>
               {active ? <text x={label.x} y={label.y} textAnchor="middle" className="text-[12px] font-semibold" fill={colors.primary}>{degreeLabel(point)}</text> : null}
             </g>
           );
         })}
+
+        {outerChart && variant === "solar-return" ? (
+          <SolarReturnAngleMarkers chart={outerChart} ascendant={ascendant} />
+        ) : null}
 
       </svg>
 

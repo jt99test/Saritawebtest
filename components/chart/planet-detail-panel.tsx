@@ -13,6 +13,7 @@ import {
   type NatalChartData,
 } from "@/lib/chart";
 import type { Dictionary } from "@/lib/i18n";
+import type { ReadingGender } from "@/lib/reading-gender";
 import { normalizeReadingText } from "@/lib/reading-text";
 
 import { useChartStore } from "@/components/chart/chart-store";
@@ -23,6 +24,7 @@ type Props = {
   chart: NatalChartData;
   dictionary: Dictionary;
   readingId?: string;
+  gender?: ReadingGender;
 };
 
 const PANEL_POINT_COLORS: Partial<Record<ChartPointId, string>> = {
@@ -94,7 +96,7 @@ function formatAspectLabel(dictionary: Dictionary, aspect: Aspect, pointId: Char
   };
 }
 
-export function PlanetDetailPanel({ chart, dictionary, readingId }: Props) {
+export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Props) {
   const locale = useStoredLocale();
   const {
     selectedPointId,
@@ -156,7 +158,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId }: Props) {
         const response = await fetch("/api/reading", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chart, pointId: selectedPointId, locale, readingId }),
+          body: JSON.stringify({ chart, pointId: selectedPointId, locale, readingId, gender }),
           signal: controller.signal,
         });
 
@@ -188,7 +190,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId }: Props) {
     })();
 
     return () => controller.abort();
-  }, [chart, dictionary.loading.errorFallback, hoverAspect, locale, panelOpen, readingId, selectedPointId]);
+  }, [chart, dictionary.loading.errorFallback, gender, hoverAspect, locale, panelOpen, readingId, selectedPointId]);
 
   useEffect(() => {
     if (!panelOpen) {
@@ -276,7 +278,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId }: Props) {
             className={[
               "fixed z-40 overflow-hidden border-black/10 bg-cosmic-950/97 text-ivory backdrop-blur-[12px]",
               isDesktop
-                ? "right-0 top-0 h-screen w-[380px] border-l shadow-[-24px_0_90px_rgba(0,0,0,0.18)]"
+                ? "right-4 top-[104px] h-[calc(100vh-120px)] w-[360px] rounded-[1.4rem] border shadow-[-18px_18px_70px_rgba(0,0,0,0.16)]"
                 : "inset-x-0 bottom-0 h-[58vh] rounded-t-[2rem] border-t shadow-[0_-24px_90px_rgba(0,0,0,0.18)]",
             ].join(" ")}
             aria-modal="false"

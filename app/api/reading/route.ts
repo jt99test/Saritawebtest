@@ -9,6 +9,7 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import { ASPECT_LABELS, HOUSE_AREAS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
+import { genderPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -72,6 +73,8 @@ esto. Sin subtítulos. Sin párrafos múltiples. Sin metáforas poéticas.
 
 Datos técnicos internos si ayudan: ${element} / ${modality}.
 
+Varia los inicios: no empieces con "Mira", "La verdad es que", "Lo que pasa es que" ni con una muletilla fija.
+
 ${langInstruction(locale)}`;
 }
 
@@ -86,12 +89,15 @@ export async function POST(request: Request) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const { chart, pointId, locale, readingId } = (await request.json()) as {
+    const { chart, pointId, locale, readingId, gender } = (await request.json()) as {
       chart: NatalChartData;
       pointId: ChartPointId;
       locale?: string;
       readingId?: string;
+      gender?: ReadingGender;
     };
+    const readingGender = normalizeReadingGender(gender);
+    const itemKey = `v2:${pointId}:${readingGender || "unspecified"}`;
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
@@ -107,7 +113,7 @@ export async function POST(request: Request) {
       user,
       readingId,
       scope: "planet",
-      itemKey: pointId,
+      itemKey,
       locale,
     });
 
@@ -121,11 +127,13 @@ export async function POST(request: Request) {
       });
     }
 
-    const prompt = buildPrompt(chart, pointId, locale);
+    const basePrompt = buildPrompt(chart, pointId, locale);
 
-    if (!prompt) {
+    if (!basePrompt) {
       return new Response("Unknown point", { status: 400 });
     }
+
+    const prompt = `${basePrompt}\n\n${genderPromptInstruction(readingGender, locale)}`;
 
     const stream = client.messages.stream({
       model: ANTHROPIC_STANDARD_READING_MODEL,
@@ -162,7 +170,7 @@ export async function POST(request: Request) {
                 user,
                 readingId,
                 scope: "planet",
-                itemKey: pointId,
+                itemKey,
                 locale,
                 content: finalContent,
               });

@@ -9,6 +9,7 @@ import {
 } from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData, SignId } from "@/lib/chart";
 import { HOUSE_AREAS, SIGN_LABELS } from "@/lib/chart-labels";
+import { genderPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -133,19 +134,21 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return new Response("Unauthorized", { status: 401 });
 
-  const { natalChartData, solarReturnData, locale, readingId, cacheKey } = await request.json() as {
+  const { natalChartData, solarReturnData, locale, readingId, cacheKey, gender } = await request.json() as {
     natalChartData: NatalChartData;
     solarReturnData: NatalChartData;
     locale?: string;
     readingId?: string;
     cacheKey?: string;
+    gender?: ReadingGender;
   };
 
   if (!process.env.ANTHROPIC_API_KEY) {
     return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
   }
 
-  const itemKey = cacheKey ?? `solar-return:${solarReturnData.meta.solarReturnYear ?? solarReturnData.event.title}`;
+  const readingGender = normalizeReadingGender(gender);
+  const itemKey = `${cacheKey ?? `solar-return:${solarReturnData.meta.solarReturnYear ?? solarReturnData.event.title}`}:${readingGender || "unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 
@@ -174,10 +177,14 @@ export async function POST(request: Request) {
 
 ${context}
 
+${genderPromptInstruction(readingGender, locale)}
+
 Devuelve SOLO JSON válido. Sin markdown, sin bloque de código, sin texto antes ni después.
 
+Importante: los tres campos cards[].body (theme, area y tone) deben ser largos: 4-5 frases concretas, unas 70-95 palabras cada uno, para que ocupen aproximadamente 5-6 lineas en la tarjeta.
+
 Forma exacta:
-{"reading":"[UN párrafo de 80-100 palabras sobre el año de ${name}. Usa Ascendente RS y Sol RS para decir el tema central. Da un ejemplo concreto de cómo puede notarlo en su vida. Termina con una o dos cosas prácticas.]","cards":[{"key":"theme","title":"[Título breve del tema del año, máx 6 palabras]","body":"[1-2 frases prácticas sobre el Ascendente RS y el tono general]"},{"key":"area","title":"[Título breve del área principal, máx 6 palabras]","body":"[1-2 frases prácticas sobre el Sol RS: área de foco y cómo se nota]"},{"key":"tone","title":"[Título breve del tono emocional, máx 6 palabras]","body":"[1-2 frases prácticas sobre la Luna RS: necesidades internas presentes]"}],"priorities":[{"title":"[Prioridad 1, máx 7 palabras]","body":"[1-2 frases concretas sobre qué hacer este año]"},{"title":"[Prioridad 2, máx 7 palabras]","body":"[1-2 frases concretas]"},{"title":"[Prioridad 3, máx 7 palabras]","body":"[1-2 frases concretas]"}]}
+{"reading":"[UN párrafo de 80-100 palabras sobre el año de ${name}. Usa Ascendente RS y Sol RS para decir el tema central. Da un ejemplo concreto de cómo puede notarlo en su vida. Termina con una o dos cosas prácticas.]","cards":[{"key":"theme","title":"[Título breve del tema del año, máx 6 palabras]","body":"[4-5 frases prácticas sobre el Ascendente RS y el tono general. Qué cambia, cómo se nota, qué observar y una acción concreta.]"},{"key":"area","title":"[Título breve del área principal, máx 6 palabras]","body":"[4-5 frases prácticas sobre el Sol RS: área de foco, cómo se nota, qué pide sostener y un ejemplo cotidiano.]"},{"key":"tone","title":"[Título breve del tono emocional, máx 6 palabras]","body":"[4-5 frases prácticas sobre la Luna RS: necesidades internas, reacción emocional posible, cuidado y recomendación concreta.]"}],"priorities":[{"title":"[Prioridad 1, máx 7 palabras]","body":"[3-4 frases concretas sobre qué hacer este año]"},{"title":"[Prioridad 2, máx 7 palabras]","body":"[3-4 frases concretas]"},{"title":"[Prioridad 3, máx 7 palabras]","body":"[3-4 frases concretas]"}]}
 
 Reglas:
 - Las 3 prioridades nacen de Ascendente RS, Sol RS y Luna RS.
@@ -193,7 +200,7 @@ ${langInstruction(locale)}`;
   try {
     const message = await client.messages.create({
       model: ANTHROPIC_PREMIUM_READING_MODEL,
-      max_tokens: 1200,
+      max_tokens: 1700,
       messages: [{ role: "user", content: prompt }],
     });
     parsed = JSON.parse(cleanJsonPayload(extractTextContent(message)));

@@ -86,7 +86,7 @@ function ResultPageContent() {
       <AtmosphericBackground variant="page" />
 
       <section className="relative min-h-screen py-5 sm:py-6">
-        <Container className="relative flex min-h-screen flex-col">
+        <Container className="relative flex min-h-screen flex-col pt-14">
           {banner ? (
             <div className="mb-4 flex items-center justify-between gap-4 border border-dusty-gold/20 bg-dusty-gold/10 px-4 py-3 text-sm text-ivory/78">
               <span>{banner === "success" ? dictionary.paywall.successBanner : dictionary.paywall.cancelBanner}</span>
@@ -100,7 +100,8 @@ function ResultPageContent() {
             </div>
           ) : null}
 
-          <div className="mb-4 grid min-h-10 grid-cols-[1fr_auto_1fr] items-center gap-4 border-b border-black/10 pb-3 pt-1">
+          <div className="fixed inset-x-0 top-0 z-[60] border-b border-black/10 bg-cosmic-950/92 backdrop-blur-xl">
+            <div className="mx-auto grid min-h-12 max-w-[1180px] grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 sm:px-6 lg:px-8">
             <Link
               href="/"
               className="justify-self-start text-xs font-medium uppercase tracking-[0.24em] text-[#3a3048] transition hover:text-ivory"
@@ -121,6 +122,8 @@ function ResultPageContent() {
               </Link>
               <AccountButton />
             </div>
+          </div>
+
           </div>
 
           {result ? (
