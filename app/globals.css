@@ -30,12 +30,15 @@
 
 html {
   background: #f5f0e6;
+  overflow-x: hidden;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-manrope), sans-serif;
+  max-width: 100vw;
+  overflow-x: hidden;
   text-rendering: optimizeLegibility;
 }
 

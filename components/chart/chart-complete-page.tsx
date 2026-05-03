@@ -119,7 +119,7 @@ function WheelModeToggle({
 }) {
   return (
     <div className="mx-auto mb-5 max-w-3xl text-center">
-      <div className="inline-flex rounded-full border border-black/10 bg-white/80 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
+      <div className="inline-flex max-w-full rounded-full border border-black/10 bg-white/80 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
         {[
           { id: "all" as const, label: "Todos" },
           { id: "active" as const, label: "Activos" },
@@ -129,7 +129,7 @@ function WheelModeToggle({
             type="button"
             onClick={() => onChange(option.id)}
             className={[
-              "rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition",
+              "rounded-full px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] transition sm:px-4 sm:text-[11px] sm:tracking-[0.2em]",
               mode === option.id ? "bg-dusty-gold/16 text-[#5c4a24]" : "text-[#3a3048] hover:text-ivory",
             ].join(" ")}
           >
@@ -382,7 +382,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
         <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
           {transitCopy.eyebrow}
         </p>
-        <h2 className="mt-2 font-serif text-[42px] leading-tight text-ivory md:text-[56px]">
+        <h2 className="mt-2 break-words font-serif text-[34px] leading-tight text-ivory sm:text-[42px] md:text-[56px]">
           {transitCopy.title}
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[#3a3048]">
@@ -427,7 +427,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
             ) : null}
           </>
         ) : (
-          <div className="mx-auto flex min-h-[420px] max-w-[860px] items-center justify-center border border-black/10 bg-white text-center shadow-[0_4px_16px_rgba(0,0,0,0.2)]">
+          <div className="mx-auto flex min-h-[280px] max-w-[860px] items-center justify-center border border-black/10 bg-white p-5 text-center shadow-[0_4px_16px_rgba(0,0,0,0.2)] sm:min-h-[420px]">
             <div>
               <p className="font-serif text-3xl text-ivory">{isPending ? transitCopy.calculatingHeading : transitCopy.errorHeading}</p>
               <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#3a3048]">
@@ -457,7 +457,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
             ) : (
               <>
                 {transitData.dominantTitle ? (
-                  <h3 className="mt-2 font-serif text-[22px] leading-snug text-ivory">
+                  <h3 className="mt-2 break-words font-serif text-[21px] leading-snug text-ivory sm:text-[22px]">
                     {transitData.dominantTitle}
                   </h3>
                 ) : null}
@@ -543,7 +543,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
                 CASA {selectedAiHouse.house} · {HOUSE_AREAS[selectedAiHouse.house]}
               </p>
-              <h3 className="mt-2 font-serif text-[24px] leading-snug text-ivory">
+              <h3 className="mt-2 break-words font-serif text-[22px] leading-snug text-ivory sm:text-[24px]">
                 {selectedAiHouse.title}
               </h3>
               <p className="mt-3 text-sm leading-7 text-[#3a3048]">{selectedAiHouse.body}</p>

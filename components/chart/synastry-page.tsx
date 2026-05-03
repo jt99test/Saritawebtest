@@ -110,7 +110,7 @@ function WheelModeToggle({
 }) {
   return (
     <div className="mx-auto mb-5 max-w-3xl text-center">
-      <div className="inline-flex rounded-full border border-black/10 bg-white/80 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
+      <div className="inline-flex max-w-full rounded-full border border-black/10 bg-white/80 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
         {[
           { id: "all" as const, label: "Todos" },
           { id: "aspected" as const, label: "Aspectos" },
@@ -120,7 +120,7 @@ function WheelModeToggle({
             type="button"
             onClick={() => onChange(option.id)}
             className={[
-              "rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition",
+              "rounded-full px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] transition sm:px-4 sm:text-[11px] sm:tracking-[0.2em]",
               mode === option.id ? "bg-dusty-gold/16 text-[#5c4a24]" : "text-[#3a3048] hover:text-ivory",
             ].join(" ")}
           >
@@ -455,7 +455,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
         <div className="mx-auto max-w-3xl text-center">
           <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">{synastryCopy.eyebrow}</p>
           {synastryData.compatibilityLabel ? (
-            <h2 className="mt-2 font-serif text-[30px] leading-tight text-ivory sm:text-[48px]">{synastryData.compatibilityLabel}</h2>
+            <h2 className="mt-2 break-words font-serif text-[28px] leading-tight text-ivory sm:text-[48px]">{synastryData.compatibilityLabel}</h2>
           ) : (
             <div className="mx-auto mt-4 h-10 w-72 animate-pulse rounded bg-black/8" />
           )}
@@ -528,7 +528,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
               <p className="mt-3 text-sm leading-7 text-red-700">{synastryReadingError}</p>
             ) : hasAiCompatibility ? (
               <>
-                <h3 className="mt-2 font-serif text-[22px] leading-snug text-ivory">
+                <h3 className="mt-2 break-words font-serif text-[21px] leading-snug text-ivory sm:text-[22px]">
                   {synastryData.compatibilityLabel}
                 </h3>
                 <p className="mt-3 text-sm leading-7 text-[#3a3048]">
@@ -538,7 +538,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
             ) : null}
           </article>
           <div className="mt-10">
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
               {LAYERS.map((layer) => {
                 const active = selectedLayerId === layer.id;
                 return (
@@ -579,7 +579,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
                   ) : (
                     <>
                       {headline ? (
-                        <h3 className="mt-2 font-serif text-[24px] leading-snug text-ivory">
+                        <h3 className="mt-2 break-words font-serif text-[22px] leading-snug text-ivory sm:text-[24px]">
                           {headline}
                         </h3>
                       ) : null}
@@ -611,7 +611,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
         </p>
       </div>
       <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">{synastryCopy.eyebrow}</p>
-      <h2 className="mt-2 font-serif text-[34px] leading-tight text-ivory sm:text-[52px]">{synastryCopy.title}</h2>
+      <h2 className="mt-2 break-words font-serif text-[32px] leading-tight text-ivory sm:text-[52px]">{synastryCopy.title}</h2>
       {partners.length ? (
         <div className="mt-8 border-y border-black/10">
           {partners.map((partner) => (
@@ -678,7 +678,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
         </div>
         <div>
           <p className="mb-2 text-xs uppercase tracking-[0.28em] text-[#3a3048]">{dictionary.form.fields.gender}</p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid gap-2 sm:grid-cols-2">
             {(["female", "male"] as const).map((option) => (
               <button
                 key={option}

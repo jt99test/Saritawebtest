@@ -112,19 +112,19 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
   ];
 
   return (
-    <section className="py-5 lg:pt-0 lg:pb-14">
-      <div className="mx-auto max-w-[720px] text-center">
+    <section className="overflow-hidden py-5 lg:pt-0 lg:pb-14">
+      <div className="mx-auto max-w-[720px] px-1 text-center">
         <p className="font-serif text-[13px] font-semibold italic lowercase tracking-[0.18em] text-[#8a7a4e]">
           {dictionary.result.balance.eyebrow}
         </p>
-        <h2 className="mt-1.5 font-serif text-[30px] font-normal leading-tight text-ivory lg:text-[36px]">
+        <h2 className="mt-1.5 break-words font-serif text-[28px] font-normal leading-tight text-ivory sm:text-[30px] lg:text-[36px]">
           {balanceTitle}
         </h2>
       </div>
 
-      <div className="mx-auto mt-8 grid max-w-[720px] gap-8 md:grid-cols-[200px_minmax(0,1fr)] md:items-center lg:mt-10 lg:max-w-[820px] lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-14">
+      <div className="mx-auto mt-6 grid max-w-[720px] gap-5 sm:mt-8 sm:gap-8 md:grid-cols-[200px_minmax(0,1fr)] md:items-center lg:mt-10 lg:max-w-[820px] lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-14">
         <div className="text-center">
-          <svg viewBox="0 0 240 240" className="h-[200px] w-[200px] lg:h-[270px] lg:w-[270px]" role="img" aria-label={dictionary.result.balance.title}>
+          <svg viewBox="0 0 240 240" className="mx-auto h-[172px] w-[172px] sm:h-[200px] sm:w-[200px] lg:h-[270px] lg:w-[270px]" role="img" aria-label={dictionary.result.balance.title}>
             {quadrants.map(({ element, start, end, labelAngle }) => {
               const elementPercent = percent(elementCounts[element], total);
               const labelPoint = polarPoint(80, labelAngle);
@@ -162,26 +162,26 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
               );
             })}
           </svg>
-          <p className="mt-3 text-center text-xs font-medium leading-6 text-[#3a3048] lg:hidden">
+          <p className="mx-auto mt-3 max-w-[20rem] text-center text-xs font-medium leading-5 text-[#3a3048] sm:leading-6 lg:hidden">
             {modalityLine}
           </p>
         </div>
 
-        <div className="grid gap-3">
+        <div className="grid gap-2 sm:gap-3">
           {ELEMENT_ORDER.map((element) => {
             const active = element === dominantElement;
             return (
               <div
                 key={element}
                 className={[
-                  "flex items-center justify-between border-b border-black/10 py-3 last:border-b-0",
+                  "flex items-center justify-between border-b border-black/10 py-2.5 last:border-b-0 sm:py-3",
                   active ? "text-ivory" : "text-[#3a3048]",
                 ].join(" ")}
               >
                 <span className="text-[11px] font-semibold uppercase tracking-[0.22em]">
                   {dictionary.result.elements[element]}
                 </span>
-                <span className="font-serif text-[22px] leading-none">
+                <span className="font-serif text-[20px] leading-none sm:text-[22px]">
                   {percent(elementCounts[element], total)}%
                 </span>
               </div>

@@ -101,7 +101,7 @@ function WheelModeToggle({
 }) {
   return (
     <div className="mx-auto mb-5 max-w-3xl text-center">
-      <div className="inline-flex rounded-full border border-black/10 bg-white/80 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
+      <div className="inline-flex max-w-full rounded-full border border-black/10 bg-white/80 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
         {[
           { id: "all" as const, label: "Todos" },
           { id: "focus" as const, label: "En foco" },
@@ -111,7 +111,7 @@ function WheelModeToggle({
             type="button"
             onClick={() => onChange(option.id)}
             className={[
-              "rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition",
+              "rounded-full px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] transition sm:px-4 sm:text-[11px] sm:tracking-[0.2em]",
               mode === option.id ? "bg-dusty-gold/16 text-[#5c4a24]" : "text-[#3a3048] hover:text-ivory",
             ].join(" ")}
           >
@@ -385,7 +385,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
                 {selectedSummaryCard?.key.toUpperCase() ?? "AI"}
               </p>
-              <h3 className="mt-2 font-serif text-[24px] leading-snug text-ivory">
+              <h3 className="mt-2 break-words font-serif text-[22px] leading-snug text-ivory sm:text-[24px]">
                 {solarCopy.errorMessage}
               </h3>
               <p className="mt-3 text-sm leading-7 text-red-700">{readingError}</p>
@@ -395,7 +395,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
                 {cardTabLabel(selectedSummaryCard.key, solarCopy).toUpperCase()}
               </p>
-              <h3 className="mt-2 font-serif text-[24px] leading-snug text-ivory">
+              <h3 className="mt-2 break-words font-serif text-[22px] leading-snug text-ivory sm:text-[24px]">
                 {selectedSummaryCard.title}
               </h3>
               {selectedSummaryCard.body ? (
@@ -456,14 +456,14 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
       <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
         {solarCopy.eyebrow}
       </p>
-      <h2 className="mt-2 font-serif text-[34px] leading-tight text-ivory sm:text-[52px]">{solarCopy.title}</h2>
+      <h2 className="mt-2 break-words font-serif text-[32px] leading-tight text-ivory sm:text-[52px]">{solarCopy.title}</h2>
       <p className="mt-5 max-w-xl text-sm leading-7 text-[#3a3048]">
         {solarCopy.intro}
       </p>
       <div className="mt-8 grid gap-5">
         <label className="block">
           <span className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#3a3048]">Año</span>
-          <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-6">
+          <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-6">
             {yearOptions.map((year) => (
               <button
                 key={year}

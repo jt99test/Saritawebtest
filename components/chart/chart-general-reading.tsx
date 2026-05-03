@@ -67,7 +67,7 @@ const THEME_META: Record<GeneralReadingTheme, { glyph: string; label: string }> 
 
 function ReadingPanelSkeleton() {
   return (
-    <article className="mt-4 min-h-[160px] animate-pulse border border-black/10 bg-white p-6">
+    <article className="mt-4 min-h-[160px] overflow-hidden border border-black/10 bg-white p-5 sm:p-6 animate-pulse">
       <div className="h-3 w-24 rounded bg-black/8" />
       <div className="mt-3 h-6 w-3/4 rounded bg-black/8" />
       <div className="mt-3 space-y-2">
@@ -81,11 +81,11 @@ function ReadingPanelSkeleton() {
 
 function LockedReadingPanel({ dictionary }: { dictionary: Dictionary }) {
   return (
-    <article className="mt-4 min-h-[160px] border border-dusty-gold/30 bg-white p-6 shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
+    <article className="mt-4 min-h-[160px] overflow-hidden border border-dusty-gold/30 bg-white p-5 shadow-[0_4px_16px_rgba(0,0,0,0.06)] sm:p-6">
       <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
         {dictionary.chart.lockedEyebrow}
       </p>
-      <h3 className="mt-2 font-serif text-[24px] leading-snug text-ivory">
+      <h3 className="mt-2 break-words font-serif text-[22px] leading-snug text-ivory sm:text-[24px]">
         {dictionary.chart.lockedTitle}
       </h3>
       <p className="mt-3 text-sm leading-7 text-[#3a3048]">
@@ -219,18 +219,18 @@ export function ChartGeneralReading({ chart, dictionary, readingId, gender }: Ch
   const selectedSplit = splitReading(selectedReading);
 
   return (
-    <section className="pb-12 lg:pb-14">
-      <div className="mx-auto max-w-[720px] text-center">
+    <section className="overflow-hidden pb-12 lg:pb-14">
+      <div className="mx-auto max-w-[720px] px-1 text-center">
         <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
           {dictionary.result.generalReading.eyebrow}
         </p>
-        <h2 className="mt-1.5 font-serif text-[30px] font-normal leading-tight text-ivory lg:text-[36px]">
+        <h2 className="mt-1.5 break-words font-serif text-[28px] font-normal leading-tight text-ivory sm:text-[30px] lg:text-[36px]">
           {dictionary.result.generalReading.title}
         </h2>
       </div>
 
-      <div className="mx-auto mt-10 max-w-[760px]">
-        <div className="grid grid-cols-5 gap-3 md:grid-cols-7">
+      <div className="mx-auto mt-8 max-w-[760px] sm:mt-10">
+        <div className="-mx-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-3 pb-2 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] sm:mx-0 sm:grid sm:grid-cols-5 sm:overflow-visible sm:px-0 sm:pb-0 md:grid-cols-7 [&::-webkit-scrollbar]:hidden">
           {GENERAL_READING_THEMES.map((theme) => {
             const meta = THEME_META[theme];
             const card = cardByTheme.get(theme);
@@ -240,7 +240,7 @@ export function ChartGeneralReading({ chart, dictionary, readingId, gender }: Ch
                 key={theme}
                 type="button"
                 onClick={() => setSelectedTheme(theme)}
-                className="flex min-w-0 flex-col items-center gap-1 p-2"
+                className="flex w-[84px] shrink-0 snap-center flex-col items-center gap-1 p-1.5 sm:w-auto sm:min-w-0 sm:p-2"
                 aria-pressed={active}
               >
                 <span
@@ -253,7 +253,7 @@ export function ChartGeneralReading({ chart, dictionary, readingId, gender }: Ch
                 >
                   {meta.glyph}
                 </span>
-                <span className="max-w-12 truncate text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-[#3a3048]">
+                <span className="block w-full max-w-[76px] whitespace-normal text-center text-[9px] font-semibold uppercase leading-[1.2] tracking-[0.1em] text-[#3a3048] sm:max-w-[4.9rem] sm:text-[10px] sm:tracking-[0.12em]">
                   {card?.title ?? meta.label}
                 </span>
               </button>
@@ -266,7 +266,7 @@ export function ChartGeneralReading({ chart, dictionary, readingId, gender }: Ch
         ) : selectedLoading ? (
           <ReadingPanelSkeleton />
         ) : (
-          <article className="mt-4 min-h-[160px] border border-black/10 bg-white p-6">
+          <article className="mt-4 min-h-[160px] overflow-hidden border border-black/10 bg-white p-5 sm:p-6">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
               {(selectedCard?.title ?? THEME_META[selectedTheme].label).toUpperCase()}
             </p>
@@ -287,7 +287,7 @@ export function ChartGeneralReading({ chart, dictionary, readingId, gender }: Ch
               </div>
             ) : (
               <>
-                <h3 className="mt-2 font-serif text-[24px] leading-snug text-ivory">
+                <h3 className="mt-2 break-words font-serif text-[22px] leading-snug text-ivory sm:text-[24px]">
                   {renderEmphasis(selectedSplit.headline)}
                 </h3>
                 {selectedSplit.body ? (

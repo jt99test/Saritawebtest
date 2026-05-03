@@ -93,12 +93,12 @@ export function ChartShareActions({ chart, dictionary, plan }: ChartShareActions
 
   return (
     <div className="mx-auto mt-4 max-w-3xl">
-      <div className="flex flex-wrap justify-center gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:flex sm:flex-wrap sm:justify-center">
         <button
           type="button"
           onClick={() => void shareChart()}
           disabled={pending}
-          className="border border-black/20 bg-transparent px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-ivory transition hover:bg-black/[0.05] disabled:opacity-50"
+          className="w-full border border-black/20 bg-transparent px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-ivory transition hover:bg-black/[0.05] disabled:opacity-50 sm:w-auto sm:text-[12px] sm:tracking-[0.18em]"
         >
           {pending ? dictionary.chart.creatingLink : dictionary.chart.share}
         </button>
@@ -107,7 +107,7 @@ export function ChartShareActions({ chart, dictionary, plan }: ChartShareActions
           onClick={downloadChart}
           disabled={!canDownload}
           title={!canDownload ? dictionary.chart.downloadLockedTooltip : undefined}
-          className="border border-black/20 bg-transparent px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-ivory transition hover:bg-black/[0.05] disabled:cursor-not-allowed disabled:opacity-45"
+          className="w-full border border-black/20 bg-transparent px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-ivory transition hover:bg-black/[0.05] disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto sm:text-[12px] sm:tracking-[0.18em]"
         >
           {!canDownload ? "🔒 " : ""}
           {dictionary.chart.download}

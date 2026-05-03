@@ -331,7 +331,7 @@ export function BiWheelChart({
   );
 
   return (
-    <div className="relative mx-auto max-w-[860px]">
+    <div className="relative mx-auto w-[min(100%,calc(100vw-1.5rem))] max-w-[860px]">
       <svg viewBox="0 0 860 860" className="relative h-auto w-full overflow-visible" role="img" aria-label={outerChart ? `${innerLabel} / ${outerLabel}` : innerLabel}>
         <defs>
           <radialGradient id="bw-field-glow" cx="50%" cy="50%" r="50%">

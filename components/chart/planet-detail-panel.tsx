@@ -269,6 +269,14 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
     <AnimatePresence>
       {panelOpen ? (
         <>
+          {!isDesktop ? (
+            <button
+              type="button"
+              aria-label={dictionary.common.close}
+              onClick={closePanel}
+              className="fixed inset-x-0 top-0 z-30 h-[32vh] bg-black/0"
+            />
+          ) : null}
           <motion.aside
             key="drawer-panel"
             initial={isDesktop ? { x: "100%", opacity: 0.92 } : { y: "100%", opacity: 0.92 }}
@@ -279,7 +287,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
               "fixed z-40 overflow-hidden border-black/10 bg-cosmic-950/97 text-ivory backdrop-blur-[12px]",
               isDesktop
                 ? "right-4 top-[104px] h-[calc(100vh-120px)] w-[360px] rounded-[1.4rem] border shadow-[-18px_18px_70px_rgba(0,0,0,0.16)]"
-                : "inset-x-0 bottom-0 h-[58vh] rounded-t-[2rem] border-t shadow-[0_-24px_90px_rgba(0,0,0,0.18)]",
+                : "inset-x-0 bottom-0 h-[min(74svh,calc(100svh-4.5rem))] rounded-t-[1.5rem] border-t shadow-[0_-24px_90px_rgba(0,0,0,0.18)]",
             ].join(" ")}
             aria-modal="false"
             role="dialog"
@@ -355,7 +363,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-5 pb-6 pt-5 sm:px-6">
+              <div className="flex-1 overflow-y-auto px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-5 sm:px-6">
                 {detailTab === "essence" ? (
                   <div className="space-y-6">
                     <div className="grid gap-4">

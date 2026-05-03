@@ -151,7 +151,7 @@ export function AccountButton() {
       <button
         type="button"
         onClick={openAuthModal}
-        className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1e1a2e] transition hover:text-[#5c4a24]"
+        className="max-w-[6.8rem] truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[#1e1a2e] transition hover:text-[#5c4a24] min-[430px]:text-xs min-[430px]:tracking-[0.2em]"
       >
         {dictionary.common.account}
       </button>
@@ -175,7 +175,7 @@ export function AccountButton() {
         }}
         aria-haspopup="menu"
         aria-expanded={menuOpen}
-        className="text-xs font-semibold uppercase tracking-[0.2em] text-[#1e1a2e] transition hover:text-[#5c4a24]"
+        className="max-w-[6.8rem] truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[#1e1a2e] transition hover:text-[#5c4a24] min-[430px]:text-xs min-[430px]:tracking-[0.2em]"
       >
         {dictionary.common.account}
       </button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import type { Dictionary } from "@/lib/i18n";
 import type { NatalChartData } from "@/lib/chart";
@@ -100,6 +100,7 @@ export function NatalChartExperience({
   const [pageTab, setPageTab] = useState<PageTabId>("natal");
   const [pricingOpen, setPricingOpen] = useState(false);
   const [pricingRequiredPlan, setPricingRequiredPlan] = useState<PaidPlan>("pro");
+  const tabRefs = useRef<Partial<Record<PageTabId, HTMLButtonElement | null>>>({});
   const headerDate = formatHeaderDate(chart.event.dateLabel);
   const headerSubtitle = [
     headerDate.date,
@@ -116,6 +117,14 @@ export function NatalChartExperience({
     setPricingRequiredPlan(requiredPlan);
     setPricingOpen(true);
   }
+
+  useEffect(() => {
+    tabRefs.current[pageTab]?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center",
+    });
+  }, [pageTab]);
 
   return (
     <div className="relative mx-auto max-w-[880px] px-3 pb-16 pt-3 sm:px-6 sm:pb-20 sm:pt-4 lg:max-w-[1180px] lg:px-8">
@@ -134,7 +143,8 @@ export function NatalChartExperience({
             {dictionary.result.primaryTabs[pageTab]}{headerSubtitle ? ` · ${headerSubtitle}` : ""}
           </p>
         </div>
-        <nav className="flex gap-0 overflow-x-auto border-b border-black/10 pb-0 pt-0 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
+        <div className="relative">
+        <nav className="flex snap-x snap-mandatory gap-0 overflow-x-auto border-b border-black/10 pb-0 pt-0 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
           {PAGE_TABS.map((tab) => {
             const active = pageTab === tab;
             const requiredPlan = TAB_REQUIREMENTS[tab];
@@ -142,6 +152,9 @@ export function NatalChartExperience({
             return (
               <button
                 key={tab}
+                ref={(node) => {
+                  tabRefs.current[tab] = node;
+                }}
                 type="button"
                 onClick={() => {
                   setPageTab(tab);
@@ -150,7 +163,7 @@ export function NatalChartExperience({
                   }
                 }}
                 className={[
-                  "group flex-shrink-0 border-b-[1.5px] px-3 pb-2.5 pt-2 text-left transition sm:px-5 sm:pb-3",
+                  "group flex-shrink-0 snap-center border-b-[1.5px] px-3 pb-2.5 pt-2 text-left transition sm:px-5 sm:pb-3",
                   active
                     ? "border-dusty-gold bg-transparent"
                     : locked
@@ -176,7 +189,20 @@ export function NatalChartExperience({
             );
           })}
         </nav>
-        <div className="pointer-events-none absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-cosmic-950 to-transparent md:hidden" />
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-cosmic-950 to-transparent md:hidden" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-cosmic-950 to-transparent md:hidden" />
+        </div>
+        <div className="mt-2 flex justify-center gap-1.5 md:hidden" aria-hidden="true">
+          {PAGE_TABS.map((tab) => (
+            <span
+              key={tab}
+              className={[
+                "h-1 rounded-full transition-all",
+                pageTab === tab ? "w-5 bg-dusty-gold" : "w-1.5 bg-black/18",
+              ].join(" ")}
+            />
+          ))}
+        </div>
         </div>
         <ReadingUsageBanner dictionary={dictionary} />
       </div>

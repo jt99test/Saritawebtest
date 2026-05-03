@@ -101,22 +101,23 @@ function ResultPageContent() {
           ) : null}
 
           <div className="fixed inset-x-0 top-0 z-[60] border-b border-black/10 bg-cosmic-950/92 backdrop-blur-xl">
-            <div className="mx-auto grid min-h-12 max-w-[1180px] grid-cols-[auto_1fr_auto] items-center gap-2 px-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-4 sm:px-6 lg:px-8">
+            <div className="mx-auto grid min-h-12 max-w-[1180px] grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-4 sm:px-6 lg:px-8">
             <Link
               href="/"
-              className="justify-self-start text-[10px] font-medium uppercase tracking-[0.16em] text-[#3a3048] transition hover:text-ivory sm:text-xs sm:tracking-[0.24em]"
+              className="min-w-0 justify-self-start truncate text-[10px] font-medium uppercase tracking-[0.14em] text-[#3a3048] transition hover:text-ivory min-[430px]:tracking-[0.16em] sm:text-xs sm:tracking-[0.24em]"
             >
-              ← {dictionary.result.back}
+              <span className="sm:hidden">← Inicio</span>
+              <span className="hidden sm:inline">← {dictionary.result.back}</span>
             </Link>
 
             <p className="hidden justify-self-center text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5c4a24] sm:block">
               {result?.saved ? dictionary.standalonePages.savedReading : ""}
             </p>
 
-            <div className="flex items-center gap-2 justify-self-end border-l border-black/15 pl-2 sm:gap-4 sm:pl-4">
+            <div className="flex min-w-0 items-center gap-2 justify-self-end border-l border-black/15 pl-2 sm:gap-4 sm:pl-4">
               <Link
                 href="/form"
-                className="text-right text-[10px] font-medium uppercase tracking-[0.16em] text-[#3a3048] transition hover:text-ivory/80 sm:text-xs sm:tracking-[0.24em]"
+                className="hidden text-right text-[10px] font-medium uppercase tracking-[0.16em] text-[#3a3048] transition hover:text-ivory/80 min-[430px]:inline sm:text-xs sm:tracking-[0.24em]"
               >
                 {dictionary.form.back}
               </Link>
