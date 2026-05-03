@@ -13,7 +13,7 @@ const siteDescription =
   "Una experiencia astrológica cinematográfica para descubrir la carta natal, la lectura planetaria y un universo visual premium.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://saritawebtest.vercel.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://saritaastrology.com"),
   title: "SARITA",
   description: siteDescription,
   openGraph: {

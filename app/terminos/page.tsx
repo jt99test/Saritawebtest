@@ -48,8 +48,8 @@ export default async function TermsPage() {
               <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5c4a24]">
                 {dictionary.legal.contact}
               </p>
-              <a href="mailto:hola@saritashakti.com" className="mt-3 inline-block text-base text-ivory underline underline-offset-4">
-                hola@saritashakti.com
+              <a href="mailto:contacto@saritaastrology.com" className="mt-3 inline-block text-base text-ivory underline underline-offset-4">
+                contacto@saritaastrology.com
               </a>
             </div>
           </div>

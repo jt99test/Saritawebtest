@@ -27,7 +27,7 @@ export function EmailLayout({ children, previewText }: EmailLayoutProps) {
   void Link;
   void Row;
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://saritaastrology.com";
 
   return (
     <Html>

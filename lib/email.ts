@@ -16,7 +16,7 @@ export async function sendEmail({
     return;
   }
   const resend = new Resend(apiKey);
-  const from = process.env.RESEND_FROM ?? "onboarding@resend.dev";
+  const from = process.env.RESEND_FROM ?? "SARITA <contacto@saritaastrology.com>";
   const replyTo = process.env.RESEND_REPLY_TO;
   try {
     await resend.emails.send({ from, to, subject, react, ...(replyTo ? { replyTo } : {}) });

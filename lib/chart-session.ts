@@ -6,6 +6,7 @@ export type FormValues = {
   name: string;
   birthDate: string;
   birthTime: string;
+  birthTimeUnknown?: boolean;
   gender?: ReadingGender | "";
   location: string;
   selectedLocation: PlaceSuggestion | null;

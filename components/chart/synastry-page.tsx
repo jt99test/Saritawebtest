@@ -46,6 +46,8 @@ type PartnerRow = {
   name: string;
   birth_date: string;
   birth_time: string | null;
+  birth_time_unknown?: boolean;
+  gender?: ReadingGender | "";
   birth_city: string;
   chart_data: NatalChartData | null;
 };
@@ -141,6 +143,8 @@ function localPartnerFromForm(form: SynastryPartnerInput, chart: NatalChartData)
     name: form.name,
     birth_date: form.birthDate,
     birth_time: form.birthTime || "12:00",
+    birth_time_unknown: form.birthTimeUnknown,
+    gender: form.gender,
     birth_city: form.birthCity,
     chart_data: chart,
   };
@@ -164,6 +168,8 @@ function readStoredPartner(): PartnerRow | null {
         name: parsed.name,
         birth_date: parsed.birth_date,
         birth_time: typeof parsed.birth_time === "string" ? parsed.birth_time : null,
+        birth_time_unknown: parsed.birth_time_unknown === true,
+        gender: parsed.gender === "female" || parsed.gender === "male" ? parsed.gender : "",
         birth_city: parsed.birth_city,
         chart_data: parsed.chart_data as NatalChartData,
       };
@@ -233,6 +239,8 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
     name: "",
     birthDate: "",
     birthTime: "12:00",
+    birthTimeUnknown: false,
+    gender: "",
     birthCity: "",
     selectedLocation: null,
   });
@@ -333,7 +341,8 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
   useEffect(() => {
     if (!selectedPartner || !partnerChart || readingAspects.length === 0 || !natalHash || !partnerHash) return;
     let active = true;
-    const cacheKey = `synastry:${partnerHash}:${locale}:${gender || "unspecified"}`;
+    const partnerGender = selectedPartner.gender === "female" || selectedPartner.gender === "male" ? selectedPartner.gender : undefined;
+    const cacheKey = `synastry:${partnerHash}:${locale}:${gender || "unspecified"}:${partnerGender || "partner-unspecified"}`;
     const cachedData = getCachedPremiumReading<SynastryData>(natalHash, cacheKey);
     setSynastryReading("");
     setSynastryData({});
@@ -358,6 +367,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
         readingId,
         cacheKey,
         gender,
+        partnerGender,
       }),
       signal: controller.signal,
     }).then(async (res) => {
@@ -420,17 +430,21 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
           setPartners((current) => [localPartner, ...current]);
           setSelectedPartner(localPartner);
           setFlipped(false);
-          setForm({ name: "", birthDate: "", birthTime: "12:00", birthCity: "", selectedLocation: null });
+          setForm({ name: "", birthDate: "", birthTime: "12:00", birthTimeUnknown: false, gender: "", birthCity: "", selectedLocation: null });
           return;
         }
         setError(result.error ?? synastryCopy.saveError);
         return;
       }
-      const nextPartner = result.partner as PartnerRow;
+      const nextPartner = {
+        ...(result.partner as PartnerRow),
+        gender: form.gender,
+        birth_time_unknown: form.birthTimeUnknown,
+      };
       setPartners((current) => [nextPartner, ...current]);
       setSelectedPartner(nextPartner);
       setFlipped(false);
-      setForm({ name: "", birthDate: "", birthTime: "12:00", birthCity: "", selectedLocation: null });
+      setForm({ name: "", birthDate: "", birthTime: "12:00", birthTimeUnknown: false, gender: "", birthCity: "", selectedLocation: null });
     });
   }
 
@@ -632,7 +646,57 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
         <p className="font-serif text-2xl text-ivory">{synastryCopy.addPerson}</p>
         <input className="rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-sm text-ivory outline-none transition placeholder:text-muted-ivory hover:border-black/25" placeholder={dictionary.form.fields.name} value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
         <input className="rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-sm text-ivory outline-none transition placeholder:text-muted-ivory hover:border-black/25" type="date" value={form.birthDate} onChange={(event) => setForm((current) => ({ ...current, birthDate: clampIsoDateYear(event.target.value) }))} />
-        <input className="rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-sm text-ivory outline-none transition placeholder:text-muted-ivory hover:border-black/25" type="time" value={form.birthTime} onChange={(event) => setForm((current) => ({ ...current, birthTime: event.target.value }))} />
+        <div>
+          <input
+            className="w-full rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-sm text-ivory outline-none transition placeholder:text-muted-ivory hover:border-black/25 disabled:opacity-50"
+            type="time"
+            value={form.birthTimeUnknown ? "" : form.birthTime}
+            disabled={form.birthTimeUnknown}
+            onChange={(event) => setForm((current) => ({ ...current, birthTime: event.target.value }))}
+          />
+          <label className="mt-3 flex items-start gap-3 text-sm leading-6 text-[#3a3048]">
+            <input
+              type="checkbox"
+              checked={Boolean(form.birthTimeUnknown)}
+              onChange={(event) => {
+                const checked = event.target.checked;
+                setForm((current) => ({
+                  ...current,
+                  birthTimeUnknown: checked,
+                  birthTime: checked ? "" : current.birthTime,
+                }));
+              }}
+              className="mt-1 h-4 w-4 rounded border-black/20 text-dusty-gold"
+            />
+            <span>
+              <span className="block font-medium text-ivory">{dictionary.form.birthTimeUnknown.label}</span>
+              {form.birthTimeUnknown ? (
+                <span className="block text-xs leading-5 text-[#3a3048]">{dictionary.form.birthTimeUnknown.body}</span>
+              ) : null}
+            </span>
+          </label>
+        </div>
+        <div>
+          <p className="mb-2 text-xs uppercase tracking-[0.28em] text-[#3a3048]">{dictionary.form.fields.gender}</p>
+          <div className="grid grid-cols-2 gap-2">
+            {(["female", "male"] as const).map((option) => (
+              <button
+                key={option}
+                type="button"
+                aria-pressed={form.gender === option}
+                onClick={() => setForm((current) => ({ ...current, gender: current.gender === option ? "" : option }))}
+                className={[
+                  "rounded-2xl border px-4 py-4 text-sm font-semibold uppercase tracking-[0.18em] transition",
+                  form.gender === option
+                    ? "border-dusty-gold/55 bg-dusty-gold/14 text-[#5c4a24]"
+                    : "border-black/15 bg-cosmic-900 text-ivory hover:border-black/25",
+                ].join(" ")}
+              >
+                {dictionary.form.genderOptions[option]}
+              </button>
+            ))}
+          </div>
+        </div>
         <LocationAutocomplete
           value={form.birthCity}
           selectedLocation={form.selectedLocation}

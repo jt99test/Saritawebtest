@@ -22,7 +22,9 @@
       "Bash(git push *)",
       "Bash(node -e ' *)",
       "Bash(git commit -m 'Fix UTF-8 BOM in locale JSON files causing 500 on checkout *)",
-      "Bash(git commit -m 'Fix Resend lazy init — don'\\\\''t crash at build if RESEND_API_KEY missing *)"
+      "Bash(git commit -m 'Fix Resend lazy init — don'\\\\''t crash at build if RESEND_API_KEY missing *)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\user\\\\astrology-observatory\" -Directory)",
+      "Bash(Select-Object Name)"
     ]
   }
 }

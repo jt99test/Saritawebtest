@@ -13,7 +13,7 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import { ANTHROPIC_STANDARD_READING_MODEL } from "@/lib/anthropic-models";
-import { genderPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
+import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -49,6 +49,7 @@ ${chartSummary}
 ${themeInstruction}
 
 ${genderPromptInstruction(gender, locale)}
+${grammarPromptInstruction(locale)}
 
 Escribe UN párrafo de 60-80 palabras sobre este tema específico de la carta
 de ${chart.event.name}. Identifica cómo se manifiesta en su vida cotidiana con un ejemplo

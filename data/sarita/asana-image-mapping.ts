@@ -18,6 +18,7 @@ export const asanaImages: Record<string, string> = {
   "marjaryasana-bitilasana": "/yoga/marjaryasana-bitilasana.png",
   malasana: "/yoga/malasana.png",
   matsyasana: "/yoga/matsyasana.png",
+  "mula-bandha": "/yoga/mula-bandha.png",
   navasana: "/yoga/navasana.png",
   "parivrtta-janu-sirsasana": "/yoga/parivrtta-janu-sirsasana.png",
   "parivrtta-trikonasana": "/yoga/parivrtta-trikonasana.png",

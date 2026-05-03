@@ -15,13 +15,6 @@ const ELEMENT_LABELS = {
   water: "Agua",
 } as const;
 
-const ROUTE_SEGMENTS = {
-  fuego: "fuego",
-  tierra: "tierra",
-  agua: "agua",
-  aire: "aire",
-} as const;
-
 const ELEMENT_COPY: Record<LunarReportMetadata["assignedRoutine"], string> = {
   fuego:
     "Esta luna te pide encender. La rutina del Fuego activa lo cardinal y rompe el estancamiento.",
@@ -59,7 +52,7 @@ export function MonthlyRoutineCard({ metadata, dictionary }: MonthlyRoutineCardP
       </p>
 
       <PrimaryButton
-        href={`/yoga-astral/${ROUTE_SEGMENTS[metadata.assignedRoutine]}`}
+        href="/yoga-astral/personalizada"
         variant="ghostGold"
         className="mt-8 px-6 py-3 text-[12px] uppercase tracking-[0.2em]"
       >

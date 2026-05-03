@@ -27,7 +27,7 @@ export default function WelcomeEmail({ firstName = "" }: WelcomeEmailProps) {
   );
 }
 
-const getSiteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const getSiteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://saritaastrology.com";
 
 const kickerStyle = {
   margin: "0 0 10px",

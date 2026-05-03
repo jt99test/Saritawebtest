@@ -14,7 +14,7 @@ const FAQ: Record<Locale, Array<{ question: string; answer: string }>> = {
     { question: "¿Qué es la Revolución Solar?", answer: "Es la carta del momento en que el Sol vuelve a su posición natal. Muestra temas del año." },
     { question: "¿Qué es el Lavado Intestinal?", answer: "Es una guía digital de Laghoo Shankhaprakshala, una práctica corta de limpieza intestinal." },
     { question: "¿Mis datos están seguros?", answer: "Usamos Supabase para proteger cuentas y datos, y Stripe para pagos. Puedes pedir eliminación cuando quieras." },
-    { question: "¿Cómo contacto con soporte?", answer: "Escríbenos a hola@saritashakti.com." },
+    { question: "¿Cómo contacto con soporte?", answer: "Escríbenos a contacto@saritaastrology.com." },
   ],
   en: [
     { question: "How do I calculate my natal chart?", answer: "Open the form, add your birth date, time and city, and SARITA will calculate your chart." },
@@ -24,7 +24,7 @@ const FAQ: Record<Locale, Array<{ question: string; answer: string }>> = {
     { question: "What is the Solar Return?", answer: "It is the chart for the moment the Sun returns to its natal position. It shows themes for the year." },
     { question: "What is the Intestinal Cleanse?", answer: "It is a digital guide to Laghoo Shankhaprakshala, a short intestinal cleansing practice." },
     { question: "Is my data safe?", answer: "We use Supabase to protect accounts and data, and Stripe for payments. You can request deletion anytime." },
-    { question: "How do I contact support?", answer: "Write to hola@saritashakti.com." },
+    { question: "How do I contact support?", answer: "Write to contacto@saritaastrology.com." },
   ],
   it: [
     { question: "Come calcolo la mia carta natale?", answer: "Apri il modulo, inserisci data, ora e città di nascita, e SARITA calcolerà la tua carta." },
@@ -34,7 +34,7 @@ const FAQ: Record<Locale, Array<{ question: string; answer: string }>> = {
     { question: "Che cos’è la Rivoluzione Solare?", answer: "È la carta del momento in cui il Sole torna alla sua posizione natale. Mostra i temi dell’anno." },
     { question: "Che cos’è il Lavaggio Intestinale?", answer: "È una guida digitale a Laghoo Shankhaprakshala, una pratica breve di pulizia intestinale." },
     { question: "I miei dati sono al sicuro?", answer: "Usiamo Supabase per proteggere account e dati, e Stripe per i pagamenti. Puoi chiedere l’eliminazione quando vuoi." },
-    { question: "Come contatto il supporto?", answer: "Scrivici a hola@saritashakti.com." },
+    { question: "Come contatto il supporto?", answer: "Scrivici a contacto@saritaastrology.com." },
   ],
 };
 
@@ -65,12 +65,12 @@ export default async function HelpPage() {
               ))}
             </div>
             <div className="mt-12 text-center">
-              <p className="text-sm leading-7 text-[#3a3048]">Email: hola@saritashakti.com</p>
+              <p className="text-sm leading-7 text-[#3a3048]">Email: contacto@saritaastrology.com</p>
               <a
-                href="mailto:hola@saritashakti.com"
+                href="mailto:contacto@saritaastrology.com"
                 className="mt-5 inline-flex border border-dusty-gold/35 bg-dusty-gold/12 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold transition hover:bg-dusty-gold/18"
               >
-                hola@saritashakti.com
+                contacto@saritaastrology.com
               </a>
             </div>
           </div>

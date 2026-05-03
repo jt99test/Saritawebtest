@@ -12,9 +12,9 @@ Use this checklist when moving SARITA email from test/dev to production.
 3. Create a production API key.
 4. Add these environment variables in Vercel:
    - `RESEND_API_KEY`
-   - `RESEND_FROM`, for example `SARITA <hola@yourdomain.com>`
-   - `RESEND_REPLY_TO`, for example `support@yourdomain.com`
-   - `NEXT_PUBLIC_SITE_URL`, for example `https://yourdomain.com`
+   - `RESEND_FROM`, for example `SARITA <contacto@saritaastrology.com>`
+   - `RESEND_REPLY_TO`, for example `contacto@saritaastrology.com`
+   - `NEXT_PUBLIC_SITE_URL`, for example `https://saritaastrology.com`
 
 For the temporary Vercel domain, `RESEND_FROM` still needs to use a domain verified in Resend.
 

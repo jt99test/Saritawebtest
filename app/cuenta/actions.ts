@@ -18,7 +18,7 @@ export async function sendPasswordResetAction() {
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/auth/callback`,
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://saritaastrology.com"}/auth/callback`,
   });
 
   return { ok: !error };

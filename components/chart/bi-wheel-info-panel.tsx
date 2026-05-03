@@ -88,6 +88,8 @@ function panelCopy(locale: string) {
       noTransitAspects: "No active aspects with your chart.",
       angularHouse: "Angular house - important position this year.",
       noSynastryAspects: "No direct aspects with this position.",
+      sections: { reading: "Reading", essence: "Essence", data: "Data", connections: "Connections" },
+      close: "Close",
     };
   }
 
@@ -102,6 +104,8 @@ function panelCopy(locale: string) {
       noTransitAspects: "Nessun aspetto attivo con la tua carta.",
       angularHouse: "Casa angolare - posizione importante quest'anno.",
       noSynastryAspects: "Nessun aspetto diretto con questa posizione.",
+      sections: { reading: "Lettura", essence: "Essenza", data: "Dati", connections: "Connessioni" },
+      close: "Chiudi",
     };
   }
 
@@ -124,6 +128,18 @@ function SectionLabel({ children }: { children: string }) {
       {children}
     </p>
   );
+}
+
+function panelSectionLabels(locale: string) {
+  if (locale === "en") {
+    return { reading: "Reading", essence: "Essence", data: "Data", connections: "Connections", close: "Close" };
+  }
+
+  if (locale === "it") {
+    return { reading: "Lettura", essence: "Essenza", data: "Dati", connections: "Connessioni", close: "Chiudi" };
+  }
+
+  return { reading: "Lectura", essence: "Esencia", data: "Datos", connections: "Conexiones", close: "Cerrar" };
 }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
@@ -183,22 +199,22 @@ function pointRole(pointId: ChartPointId, locale: string) {
     ceres: "parla di cura, nutrimento, perdita e riparazione",
   };
   const es: Partial<Record<ChartPointId, string>> = {
-    sun: "marca identidad, vitalidad y direccion consciente",
-    moon: "describe necesidades emocionales, cuerpo sensible y seguridad",
-    mercury: "organiza pensamiento, lenguaje, decisiones y aprendizaje",
-    venus: "habla de deseo, placer, valor propio y vinculos",
-    mars: "muestra impulso, energia, deseo directo y conflicto",
-    jupiter: "abre crecimiento, confianza, sentido y oportunidades",
-    saturn: "pide estructura, madurez, limites y responsabilidad",
-    uranus: "despierta cambio, libertad, ruptura de patrones y novedad",
-    neptune: "sensibiliza intuicion, entrega, imaginacion y zonas difusas",
-    pluto: "intensifica transformacion, poder, duelo y verdad profunda",
-    northNode: "senala aprendizaje, direccion evolutiva y terreno nuevo",
-    southNode: "muestra memoria, automatismos y lugares conocidos",
-    chiron: "toca heridas antiguas, medicina propia y aprendizaje sensible",
+    sun: "identidad, vitalidad, confianza y dirección consciente",
+    moon: "necesidades emocionales, sensibilidad del cuerpo, hábitos y seguridad",
+    mercury: "pensamiento, lenguaje, decisiones y aprendizaje",
+    venus: "deseo, placer, valor propio, dinero, afecto y vínculos",
+    mars: "impulso, energía, deseo directo y conflicto",
+    jupiter: "crecimiento, confianza, sentido y oportunidades",
+    saturn: "estructura, madurez, límites y responsabilidad",
+    uranus: "cambio, libertad, ruptura de patrones y novedad",
+    neptune: "intuición, entrega, imaginación y zonas difusas",
+    pluto: "transformación, poder, duelo y verdad profunda",
+    northNode: "aprendizaje, dirección evolutiva y terreno nuevo",
+    southNode: "memoria, automatismos y lugares conocidos",
+    chiron: "heridas antiguas, medicina propia y aprendizaje sensible",
     partOfFortune: "marca facilidad, recursos naturales y bienestar disponible",
-    lilith: "nombra autonomia visceral, sombra, deseo no domesticado y limites",
-    ceres: "habla de cuidado, nutricion, perdida y reparacion",
+    lilith: "autonomía visceral, sombra, deseo no domesticado y límites",
+    ceres: "cuidado, nutrición, pérdida y reparación",
   };
 
   const roles = locale === "en" ? en : locale === "it" ? it : es;
@@ -235,22 +251,22 @@ function signTone(sign: string, locale: string) {
     pisces: "sensibilizza, scioglie difese e chiede ascolto interiore",
   };
   const es: Record<string, string> = {
-    aries: "actua rapido, busca iniciativa y no espera demasiada validacion",
+    aries: "actúa rápido, busca iniciativa y no espera demasiada validación",
     taurus: "necesita cuerpo, constancia y decisiones que se puedan sostener",
-    gemini: "se mueve a traves de conversaciones, ideas, dudas y cambios de enfoque",
+    gemini: "se mueve a través de conversaciones, ideas, dudas y cambios de enfoque",
     cancer: "pasa por el cuidado, la memoria, la familia y lo que da seguridad",
-    leo: "pide expresion, orgullo sano, visibilidad y corazon en lo que se hace",
-    virgo: "ordena, corrige, mejora habitos y baja todo a lo practico",
-    libra: "se activa en vinculos, acuerdos, estetica y decisiones compartidas",
+    leo: "pide expresión, orgullo sano, visibilidad y corazón en lo que se hace",
+    virgo: "ordena, corrige, mejora hábitos y baja todo a lo práctico",
+    libra: "se activa en vínculos, acuerdos, estética y decisiones compartidas",
     scorpio: "intensifica, revela lo oculto y pide honestidad emocional",
-    sagittarius: "abre perspectiva, movimiento, estudio, viaje o una verdad mas amplia",
+    sagittarius: "abre perspectiva, movimiento, estudio, viaje o una verdad más amplia",
     capricorn: "exige estructura, madurez, estrategia y compromiso real",
     aquarius: "rompe inercias, busca aire, diferencia y una forma mas libre de actuar",
     pisces: "sensibiliza, disuelve defensas y pide escucha interna",
   };
 
   const tones = locale === "en" ? en : locale === "it" ? it : es;
-  return tones[sign] ?? (locale === "en" ? "takes on the tone of the sign" : locale === "it" ? "prende il tono del segno" : "toma un tono particular segun el signo");
+  return tones[sign] ?? (locale === "en" ? "takes on the tone of the sign" : locale === "it" ? "prende il tono del segno" : "toma un tono particular según el signo");
 }
 
 function houseAction(house: number, locale: string) {
@@ -286,13 +302,13 @@ function houseAction(house: number, locale: string) {
     1: "se nota en identidad, cuerpo, presencia y decisiones que te ponen primero",
     2: "se juega en dinero, valor propio, seguridad material y autoestima concreta",
     3: "aparece en conversaciones, estudios, hermanos, traslados cortos y forma de pensar",
-    4: "mueve hogar, familia, raiz emocional y necesidad de intimidad",
+    4: "mueve hogar, familia, raíz emocional y necesidad de intimidad",
     5: "enciende deseo, creatividad, romances, placer y ganas de jugarte por algo",
-    6: "ordena rutina, salud, trabajo diario y la manera de cuidar tu energia",
+    6: "ordena rutina, salud, trabajo diario y la manera de cuidar tu energía",
     7: "se manifiesta en pareja, acuerdos, clientes y espejos importantes",
     8: "toca intimidad, confianza, duelos, deudas, deseo y poder compartido",
     9: "abre estudios, viajes, creencias, sentido y decisiones de horizonte",
-    10: "se ve en carrera, reputacion, metas publicas y responsabilidad",
+    10: "se ve en carrera, reputación, metas públicas y responsabilidad",
     11: "se activa en amistades, redes, proyectos colectivos y futuro",
     12: "trabaja en descanso, cierre, inconsciente, soledad y lo que necesitas soltar",
   };
@@ -363,19 +379,19 @@ function biWheelReading({
 
   if (variant === "solar-return") {
     return ring === "outer"
-      ? `${planet} de la Revolucion Solar marca una escena viva de este ano: ${role}. En ${sign}, ${tone}; en casa ${point.house}, ${area}. En la practica, esta posicion muestra donde el ano te pide actuar distinto, tomar una decision mas consciente o atender algo que ya no puede quedar en automatico.`
-      : `${planet} natal es una parte estable de tu carta: ${role}. Cuando la Revolucion Solar lo toca, el ano no inventa un tema nuevo, lo despierta. Esta activacion puede sentirse como una llamada a revisar como estas usando esa energia en casa ${point.house}: ${area}, especialmente si hay planetas del retorno cerca.`;
+      ? `${planet} de la Revolución Solar marca una escena viva del año: activa ${role}. En ${sign}, ${tone}; en casa ${point.house}, ${area}. En la práctica, esta posición muestra dónde el año te pide actuar distinto, tomar una decisión más consciente o atender algo que ya no puede quedar en automático.`
+      : `${planet} natal es una parte estable de tu carta vinculada con ${role}. Cuando la Revolución Solar lo toca, el año no inventa un tema nuevo: lo despierta. Esta activación puede sentirse como una llamada a revisar cómo usas esa energía en casa ${point.house}, donde ${area}.`;
   }
 
   if (variant === "transits") {
     return ring === "outer"
-      ? `${planet} en transito esta moviendo el clima actual: ${role}. En ${sign}, ${tone}; en casa ${point.house}, ${area}. Si este planeta aspecta un punto natal, ahi se nota el evento: una conversacion, una tension, una oportunidad o una decision que te obliga a responder de otra manera.`
-      : `${planet} natal es el punto de tu carta que ahora puede estar recibiendo presion o movimiento externo. ${role}. Si un transito lo aspecta, esta funcion se vuelve mas visible: puedes reaccionar mas fuerte, necesitar ajustar habitos o ver claro algo que antes estaba normalizado en casa ${point.house}, donde ${area}.`;
+      ? `${planet} en tránsito está moviendo el clima actual a través de ${role}. En ${sign}, ${tone}; en casa ${point.house}, ${area}. Si este planeta toca un punto natal, ahí se nota el evento: una conversación, una tensión, una oportunidad o una decisión que te hace responder de otra manera.`
+      : `${planet} natal es el punto de tu carta que ahora recibe presión o movimiento externo. Habla de ${role}. Si un tránsito lo aspecta, esa función se vuelve más visible: puedes reaccionar con más intensidad, ajustar hábitos o ver claro algo que antes estaba normalizado en casa ${point.house}, donde ${area}.`;
   }
 
   return ring === "outer"
-    ? `${planet} de ${owner} trae al vinculo esta funcion: ${role}. En ${sign}, ${tone}; al caer en casa ${point.house}, puede tocar en ti temas donde ${area}. Si hay aspectos fuertes, esta persona no solo "influye": despierta una reaccion concreta, ya sea atraccion, friccion, aprendizaje o necesidad de negociar.`
-    : `${planet} de ${owner} muestra una zona tuya que la otra persona puede activar con facilidad. ${role}. En sinastria, cuando sus planetas tocan este punto, el vinculo se vuelve experiencia cotidiana: te mueve en casa ${point.house}, donde ${area}, y te muestra que patron repites o que respuesta nueva puedes ensayar.`;
+    ? `${planet} de ${owner} trae al vínculo temas de ${role}. En ${sign}, ${tone}; al caer en casa ${point.house}, puede tocar en ti situaciones donde ${area}. Si hay aspectos fuertes, esta persona no solo "influye": despierta una reacción concreta, ya sea atracción, fricción, aprendizaje o necesidad de negociar.`
+    : `${planet} de ${owner} muestra una zona tuya que la otra persona puede activar con facilidad: ${role}. En sinastría, cuando sus planetas tocan este punto, el vínculo se vuelve experiencia cotidiana: te mueve en casa ${point.house}, donde ${area}, y te muestra qué patrón repites o qué respuesta nueva puedes ensayar.`;
 }
 
 function TransitRows({
@@ -513,6 +529,7 @@ export function BiWheelInfoPanel({
   const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
   const copy = panelCopy(locale);
+  const sectionCopy = panelSectionLabels(locale);
   const isDesktop = useDesktopBreakpoint();
   const panelRef = useRef<HTMLDivElement | null>(null);
   const point = selectedPoint(selectedId, ring, innerChart, outerChart);
@@ -592,7 +609,7 @@ export function BiWheelInfoPanel({
                 type="button"
                 onClick={onClose}
                 className="rounded-full border border-black/10 bg-white/70 p-2.5 text-[#3a3048] transition hover:border-black/15 hover:bg-white hover:text-ivory"
-                aria-label="Cerrar"
+                aria-label={sectionCopy.close}
               >
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
                   <path d="M3 3l10 10M13 3L3 13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
@@ -602,12 +619,12 @@ export function BiWheelInfoPanel({
 
             <div className="mt-5 space-y-5 border-t border-black/[0.07] pt-5">
               <section className="rounded-[1.45rem] border border-black/10 bg-white p-4">
-                <SectionLabel>Lectura</SectionLabel>
+                <SectionLabel>{sectionCopy.reading}</SectionLabel>
                 <p className="mt-3 text-sm leading-7 text-[#3a3048]">{reading}</p>
               </section>
 
               <section className="rounded-[1.45rem] border border-black/10 bg-white p-4">
-                <SectionLabel>Esencia</SectionLabel>
+                <SectionLabel>{sectionCopy.essence}</SectionLabel>
                 {signMeta ? (
                   <ul className="mt-3 space-y-2 text-sm leading-7 text-[#3a3048]">
                     <li className="flex gap-2">
@@ -627,7 +644,7 @@ export function BiWheelInfoPanel({
               </section>
 
               <section className="rounded-[1.45rem] border border-black/10 bg-white p-4">
-                <SectionLabel>Datos</SectionLabel>
+                <SectionLabel>{sectionCopy.data}</SectionLabel>
                 {position && signMeta ? (
                   <dl className="mt-3">
                     <InfoRow label={dictionary.result.fields.position} value={formatPointPosition(point)} />
@@ -646,7 +663,7 @@ export function BiWheelInfoPanel({
               </section>
 
               <section className="rounded-[1.45rem] border border-black/10 bg-white p-4">
-                <SectionLabel>Conexiones</SectionLabel>
+                <SectionLabel>{sectionCopy.connections}</SectionLabel>
                 <div className="mt-3">
               {variant === "transits" ? (
                 <TransitRows ring={ring} selectedId={selectedId} copy={copy} activeTransits={activeTransits} />

@@ -9,7 +9,7 @@ import {
 } from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData, SignId } from "@/lib/chart";
 import { ASPECT_LABELS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
-import { genderPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
+import { genderPromptInstruction, genderPromptInstructionForSubject, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import type { SynastryAspect } from "@/lib/synastry";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -211,7 +211,7 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return new Response("Unauthorized", { status: 401 });
 
-  const { chartA, chartB, partnerName, aspects, locale, readingId, cacheKey, gender } = await request.json() as {
+  const { chartA, chartB, partnerName, aspects, locale, readingId, cacheKey, gender, partnerGender } = await request.json() as {
     chartA: NatalChartData;
     chartB: NatalChartData;
     partnerName: string;
@@ -220,6 +220,7 @@ export async function POST(request: Request) {
     readingId?: string;
     cacheKey?: string;
     gender?: ReadingGender;
+    partnerGender?: ReadingGender;
   };
 
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -227,7 +228,8 @@ export async function POST(request: Request) {
   }
 
   const readingGender = normalizeReadingGender(gender);
-  const itemKey = `${cacheKey ?? `synastry:${partnerName}:${chartB.event.julianDay}`}:${readingGender || "unspecified"}`;
+  const partnerReadingGender = normalizeReadingGender(partnerGender);
+  const itemKey = `${cacheKey ?? `synastry:${partnerName}:${chartB.event.julianDay}`}:${readingGender || "unspecified"}:${partnerReadingGender || "partner-unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 
@@ -257,6 +259,8 @@ export async function POST(request: Request) {
 ${context}
 
 ${genderPromptInstruction(readingGender, locale)}
+${genderPromptInstructionForSubject(partnerName, partnerReadingGender, locale)}
+${grammarPromptInstruction(locale)}
 
 Usa la herramienta synastry_reading para devolver la lectura estructurada.
 Las claves de la herramienta deben quedar exactamente como estan definidas aunque el contenido este en otro idioma.

@@ -26,7 +26,7 @@ export default function CancellationEmail({ planName, accessUntil }: Cancellatio
   );
 }
 
-const getSiteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const getSiteUrl = () => process.env.NEXT_PUBLIC_SITE_URL ?? "https://saritaastrology.com";
 
 const headingStyle = {
   margin: "0 0 22px",

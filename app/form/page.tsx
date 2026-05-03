@@ -24,6 +24,7 @@ export default function FormPage() {
     name: "",
     birthDate: "",
     birthTime: "",
+    birthTimeUnknown: false,
     gender: "",
     location: "",
     selectedLocation: null,
@@ -95,31 +96,61 @@ export default function FormPage() {
                   />
                 </label>
 
-                <label className="block">
+                <div className="block">
                   <span className={labelClass}>{dictionary.form.fields.birthtime}</span>
                   <input
                     type="time"
-                    value={values.birthTime}
+                    value={values.birthTimeUnknown ? "" : values.birthTime}
                     onChange={(event) => setValue("birthTime", event.target.value)}
-                    disabled={submitting}
+                    disabled={submitting || values.birthTimeUnknown}
                     className={inputClass}
                   />
-                </label>
+                  <label className="mt-3 flex items-start gap-3 text-sm leading-6 text-[#3a3048]">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(values.birthTimeUnknown)}
+                      onChange={(event) => {
+                        const checked = event.target.checked;
+                        setValues((current) => ({
+                          ...current,
+                          birthTimeUnknown: checked,
+                          birthTime: checked ? "" : current.birthTime,
+                        }));
+                      }}
+                      disabled={submitting}
+                      className="mt-1 h-4 w-4 rounded border-black/20 text-dusty-gold"
+                    />
+                    <span>
+                      <span className="block font-medium text-ivory">{dictionary.form.birthTimeUnknown.label}</span>
+                      {values.birthTimeUnknown ? (
+                        <span className="block text-xs leading-5 text-[#3a3048]">{dictionary.form.birthTimeUnknown.body}</span>
+                      ) : null}
+                    </span>
+                  </label>
+                </div>
 
-                <label className="block">
+                <div className="block">
                   <span className={labelClass}>{dictionary.form.fields.gender}</span>
-                  <select
-                    value={values.gender ?? ""}
-                    onChange={(event) => setValue("gender", event.target.value as FormValues["gender"])}
-                    disabled={submitting}
-                    className={inputClass}
-                  >
-                    <option value="">{dictionary.form.genderOptions.unspecified}</option>
-                    <option value="female">{dictionary.form.genderOptions.female}</option>
-                    <option value="male">{dictionary.form.genderOptions.male}</option>
-                    <option value="neutral">{dictionary.form.genderOptions.neutral}</option>
-                  </select>
-                </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {(["female", "male"] as const).map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        disabled={submitting}
+                        aria-pressed={values.gender === option}
+                        onClick={() => setValue("gender", values.gender === option ? "" : option)}
+                        className={[
+                          "rounded-2xl border px-4 py-4 text-sm font-semibold uppercase tracking-[0.18em] transition",
+                          values.gender === option
+                            ? "border-dusty-gold/55 bg-dusty-gold/14 text-[#5c4a24]"
+                            : "border-black/15 bg-cosmic-900 text-ivory hover:border-black/25",
+                        ].join(" ")}
+                      >
+                        {dictionary.form.genderOptions[option]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
                 <label className="block sm:col-span-2">
                   <span className={labelClass}>{dictionary.form.fields.location}</span>

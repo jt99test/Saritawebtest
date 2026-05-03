@@ -20,7 +20,7 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import { ASPECT_LABELS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
-import { genderPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
+import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 
 type LunarReportRequest = {
   chart: NatalChartData;
@@ -129,13 +129,13 @@ async function enrichTransitSummaries({
     return transits;
   }
 
-  const prompt = `Escribe consejos prácticos breves para ${chart.event.name} sobre sus tránsitos activos este mes.
+  const prompt = `Explica de forma breve qué significan para ${chart.event.name} sus tránsitos activos este mes.
 
-Cada consejo:
-- Máximo 2 frases cortas. Total máximo 20 palabras.
-- Empieza con un verbo imperativo o una instrucción directa. Ejemplo: "Cierra lo que tienes abierto antes de abrir algo nuevo." o "Esta semana, di lo que piensas aunque incomode."
-- NO describas el planeta ni el aspecto. NO digas "Venus hace..." ni "Saturno pide...". Ve directo a la acción.
-- Tono: amiga directa, sin misticismo ni jerga astrológica.
+Cada texto:
+- 1-2 frases cortas. Total máximo 34 palabras.
+- Explica qué activa ese tránsito en la vida concreta de la persona y cierra con una pista práctica.
+- Puede nombrar el planeta o el aspecto si ayuda, pero sin jerga pesada.
+- Tono: amiga directa que sabe astrología, claro y útil.
 
 Tránsitos:
 ${visibleTransits.map((transit, index) => `${index + 1}. ${transit.transitingPlanetLabel} ${transit.aspectLabel} ${transit.natalPlanetLabel}. Tema: ${transit.relevance || transit.description}`).join("\n")}
@@ -144,6 +144,7 @@ Devuelve solo JSON válido en una línea:
 {"summaries":["...", "...", "..."]}
 
 ${genderPromptInstruction(gender, locale)}
+${grammarPromptInstruction(locale)}
 
 ${langInstruction(locale)}`;
 
@@ -228,6 +229,9 @@ real. Menciona brevemente el tránsito más relevante si lo hay. Termina con
 algo concreto que hacer o evitar. Sin subtítulos. Sin párrafos múltiples.
 
 No reescribas el mensaje de Sarita: úsalo como base y exprésalo en el tono amigo. La autoridad astrológica es de Sarita; tú la traduces a una conversación cercana.
+
+${genderPromptInstruction(gender, locale)}
+${grammarPromptInstruction(locale)}
 
 ${langInstruction(locale)}`;
 }
@@ -396,7 +400,7 @@ Reglas para esa línea final:
 - "hazEsto" debe ser una acción específica con verbo y objeto. Nunca "trabaja tu interior"; sí "Escribe una lista de lo que quieres cerrar antes de fin de mes."
 - "evitaEsto" debe ser una conducta específica. Nunca "evita el exceso"; sí "No empieces proyectos nuevos si tienes tres a medias."
 - "preguntate" debe ser una pregunta que la persona pueda sentarse a responder. Nunca "¿Qué quiere tu alma?"; sí "¿Qué llevas más de seis meses diciendo que vas a hacer y no has hecho?"
-- Mantén el español de España y el tono cercano.
+- ${langInstruction(locale)}
 - La lectura principal debe ir primero, y la línea ${ACTIONS_MARKER} al final.`;
 
     const stream = client.messages.stream({

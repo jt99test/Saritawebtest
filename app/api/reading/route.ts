@@ -9,7 +9,7 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import { ASPECT_LABELS, HOUSE_AREAS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
-import { genderPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
+import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -133,7 +133,7 @@ export async function POST(request: Request) {
       return new Response("Unknown point", { status: 400 });
     }
 
-    const prompt = `${basePrompt}\n\n${genderPromptInstruction(readingGender, locale)}`;
+    const prompt = `${basePrompt}\n\n${genderPromptInstruction(readingGender, locale)}\n${grammarPromptInstruction(locale)}`;
 
     const stream = client.messages.stream({
       model: ANTHROPIC_STANDARD_READING_MODEL,

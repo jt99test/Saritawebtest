@@ -5,12 +5,18 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { DateTime } from "luxon";
 
-import type { NatalChartData, ChartPointId, Element } from "@/lib/chart";
+import type { NatalChartData, Element } from "@/lib/chart";
 import type { LunarReportCacheEntry } from "@/lib/lunar-report";
 
-import { getSignFromLongitude, zodiacSigns } from "@/lib/chart";
 import { hashNatalChart } from "@/lib/chart-hash";
 import { getAllCachedLunarReports } from "@/lib/lunar-report-cache";
+import {
+  getDominantElement,
+  getPersonalizedYogaRoutine,
+  toRoutineElement,
+  type PersonalizedYogaRoutine,
+  type RoutineElement,
+} from "@/lib/personalized-yoga";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { illustrations } from "@/data/illustrations";
 import { yogaRoutines } from "@/data/sarita/yoga-routines";
@@ -18,8 +24,6 @@ import { yogaRoutines } from "@/data/sarita/yoga-routines";
 type YogaAstralPageProps = {
   chart: NatalChartData;
 };
-
-type RoutineElement = keyof typeof yogaRoutines;
 
 type CachedMonthlyRoutine = {
   key: string;
@@ -116,19 +120,6 @@ const ANCHOR_POSE_BY_ELEMENT: Record<
   },
 };
 
-const TRADITIONAL_POINT_IDS = new Set<ChartPointId>([
-  "sun",
-  "moon",
-  "mercury",
-  "venus",
-  "mars",
-  "jupiter",
-  "saturn",
-  "uranus",
-  "neptune",
-  "pluto",
-]);
-
 const mojibakePattern = /[\u00C3\u00C2\u00E2]/;
 
 function decodeMojibake(value: string) {
@@ -151,83 +142,6 @@ function displayText(value: string) {
 
 function formatElementForMetadata(element: Element) {
   return ELEMENT_LABELS[toRoutineElement(element)];
-}
-
-function toRoutineElement(element: Element): RoutineElement {
-  return element === "fire"
-    ? "fuego"
-    : element === "earth"
-      ? "tierra"
-      : element === "water"
-        ? "agua"
-        : "aire";
-}
-
-function getElementCounts(chart: NatalChartData): Record<Element, number> {
-  const counts: Record<Element, number> = {
-    fire: 0,
-    earth: 0,
-    air: 0,
-    water: 0,
-  };
-
-  for (const point of chart.points) {
-    if (!TRADITIONAL_POINT_IDS.has(point.id)) {
-      continue;
-    }
-
-    const signMeta = zodiacSigns.find((entry) => entry.id === point.sign);
-    if (signMeta) {
-      counts[signMeta.element] += 1;
-    }
-  }
-
-  const ascendantSign = getSignFromLongitude(chart.meta.ascendant);
-  const ascendantMeta = zodiacSigns.find((entry) => entry.id === ascendantSign);
-  if (ascendantMeta) {
-    counts[ascendantMeta.element] += 1;
-  }
-
-  return counts;
-}
-
-function getSortedElements(chart: NatalChartData) {
-  const counts = getElementCounts(chart);
-  const order: Element[] = ["fire", "earth", "air", "water"];
-
-  return order
-    .map((element) => ({ element, count: counts[element] }))
-    .sort((left, right) => right.count - left.count);
-}
-
-function getDominantElement(chart: NatalChartData): Element {
-  // Count the ten main planets plus the Ascendant by sign element, then pick the highest count.
-  return getSortedElements(chart)[0]?.element ?? "fire";
-}
-
-function getBlendedRoutine(chart: NatalChartData) {
-  const [first, second] = getSortedElements(chart);
-
-  if (!first || !second || first.count - second.count > 2) {
-    return null;
-  }
-
-  const firstKey = toRoutineElement(first.element);
-  const secondKey = toRoutineElement(second.element);
-  const firstAsanas = yogaRoutines[firstKey].asanas.slice(
-    0,
-    Math.ceil(yogaRoutines[firstKey].asanas.length / 2),
-  );
-  const secondAsanas = yogaRoutines[secondKey].asanas.slice(
-    0,
-    Math.floor(yogaRoutines[secondKey].asanas.length / 2),
-  );
-
-  return {
-    primary: firstKey,
-    secondary: secondKey,
-    asanas: [...firstAsanas, ...secondAsanas],
-  };
 }
 
 function parseCachedLunationKey(
@@ -362,6 +276,7 @@ function getPortalMeta(element: RoutineElement) {
 
 export function YogaAstralPage({ chart }: YogaAstralPageProps) {
   const [cachedReports, setCachedReports] = useState<Record<string, LunarReportCacheEntry>>({});
+  const [personalizedRoutine, setPersonalizedRoutine] = useState<PersonalizedYogaRoutine | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -382,14 +297,28 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
     };
   }, [chart]);
 
+  useEffect(() => {
+    let cancelled = false;
+    void getPersonalizedYogaRoutine(chart).then((routine) => {
+      if (!cancelled) {
+        setPersonalizedRoutine(routine);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [chart]);
+
   const monthlyRoutine = useMemo(
     () => chooseMonthlyRoutine(cachedReports, chart),
     [cachedReports, chart],
   );
-  const blendedRoutine = useMemo(() => getBlendedRoutine(chart), [chart]);
   const anchorPose = useMemo(() => getAnchorPose(chart), [chart]);
   const fallbackElement = toRoutineElement(anchorPose.element);
-  const monthlyElement = blendedRoutine?.primary ?? monthlyRoutine?.entry.metadata.assignedRoutine ?? fallbackElement;
+  const monthlyElement = personalizedRoutine?.primary ?? monthlyRoutine?.entry.metadata.assignedRoutine ?? fallbackElement;
+  const blendedRoutine = personalizedRoutine! as PersonalizedYogaRoutine & { secondary: RoutineElement };
+  const secondaryElement = personalizedRoutine?.secondary ?? monthlyElement;
   const anchorImage = anchorPose.asana?.imagePath ?? illustrations.elements[fallbackElement];
   const anchorName = anchorPose.asana
     ? displayText(anchorPose.asana.nameSanskrit)
@@ -440,18 +369,18 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
           </div>
 
           <div>
-            {monthlyRoutine || blendedRoutine ? (
+            {monthlyRoutine || personalizedRoutine ? (
               <>
                 <p className="font-serif text-[13px] italic lowercase text-[#3a3048]">
-                  {blendedRoutine ? "rutina combinada" : "esta luna te pide"}
+                  {personalizedRoutine?.secondary ? "rutina combinada" : "esta luna te pide"}
                 </p>
                 <h2 className="mt-2 font-serif text-[48px] font-normal leading-tight text-ivory lg:text-[64px]">
-                  {blendedRoutine
-                    ? `${ELEMENT_LABELS[blendedRoutine.primary]} + ${ELEMENT_LABELS[blendedRoutine.secondary]}`
+                  {personalizedRoutine?.secondary
+                    ? `${ELEMENT_LABELS[personalizedRoutine.primary]} ${personalizedRoutine.primaryPercent}% + ${ELEMENT_LABELS[personalizedRoutine.secondary]} ${personalizedRoutine.secondaryPercent}%`
                     : ELEMENT_HEADLINES[monthlyElement]}
                 </h2>
                 <p className="mt-6 font-serif text-lg leading-[1.6] text-ivory/80 lg:max-w-[440px] lg:text-[20px] lg:leading-[1.7]">
-                  {blendedRoutine
+                  {personalizedRoutine?.secondary
                     ? `En tu carta, ${ELEMENT_LABELS[blendedRoutine.primary]} y ${ELEMENT_LABELS[blendedRoutine.secondary]} se responden. Esta práctica cruza sus ritmos para que la mente, el cuerpo y la respiración encuentren un mismo cauce.`
                     : ELEMENT_COPY[monthlyElement]}
                 </p>
@@ -478,7 +407,7 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
                   </div>
                 ) : null}
                 <PrimaryButton
-                  href={`/yoga-astral/${monthlyElement}`}
+                  href="/yoga-astral/personalizada"
                   variant="ghostGold"
                   className="mt-8 px-6 py-3 text-[12px] uppercase tracking-[0.2em]"
                 >

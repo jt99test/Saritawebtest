@@ -26,7 +26,7 @@ Important:
 
 ### Tierra
 
-- [ ] `Mula Bandha` - no single pose photo expected; text-only guidance
+- [x] `Mula Bandha` -> `mula-bandha.png`
 - [x] `Malasana` -> `malasana.png`
 - [x] `Balasana` -> `balasana.png`
 - [x] `Marjaryasana-Bitilasana` -> `marjaryasana-bitilasana.png`

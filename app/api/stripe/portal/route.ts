@@ -4,7 +4,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 export const runtime = "nodejs";
 
 function getOrigin(request: Request) {
-  return request.headers.get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  return request.headers.get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "https://saritaastrology.com";
 }
 
 export async function POST(request: Request) {

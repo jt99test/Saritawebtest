@@ -6,7 +6,8 @@ export type AiReadingScope =
   | "lunar"
   | "transit"
   | "solar_return"
-  | "synastry";
+  | "synastry"
+  | "astrocartography";
 
 type AiReadingGenerationRow = {
   content: unknown;

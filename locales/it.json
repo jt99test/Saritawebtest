@@ -54,10 +54,12 @@
       "location": "Luogo di nascita"
     },
     "genderOptions": {
-      "unspecified": "Preferisco non dirlo",
       "female": "Femminile",
-      "male": "Maschile",
-      "neutral": "Neutro"
+      "male": "Maschile"
+    },
+    "birthTimeUnknown": {
+      "label": "Non so l'ora esatta",
+      "body": "Useremo le 12:00 come riferimento. La lettura funzionerà comunque, ma case, ascendente e alcuni tempi possono essere meno precisi."
     },
     "placeholders": {
       "name": "Il tuo nome",
@@ -170,7 +172,10 @@
     "cancelAnytime": "Cancella quando vuoi"
   },
   "yogaAstral": {
-    "asanas": "asana"
+    "asanas": "asana",
+    "markComplete": "Segna come completata",
+    "completed": "Routine completata",
+    "completedNote": "Pratica registrata. Puoi deselezionarla se la ripeti un altro giorno."
   },
   "lunar": {
     "eyebrow": "luna del mese",
@@ -192,6 +197,7 @@
     "moonIllustrationAlt": "Illustrazione di {moon}",
     "activeTransitsEyebrow": "ciò che si muove ancora",
     "activeTransitsTitle": "Transiti attivi questo mese",
+    "activeTransitMeaning": "Cosa significa per te",
     "solarEclipse": "Eclissi solare",
     "lunarEclipse": "Eclissi lunare"
   },
@@ -209,6 +215,7 @@
       "complete": "Transiti",
       "solarReturn": "Rivoluzione Solare",
       "synastry": "Sinastria",
+      "astrocartography": "Astrocartografia",
       "transits": "Transiti del mese",
       "premium": "Premium",
       "upcoming": "Disponibile",
@@ -310,6 +317,43 @@
       "silentSkyHeading": "Un cielo più silenzioso.",
       "silentSkyBody": "Non ci sono transiti maggiori esatti sui principali pianeti natali in questo momento. Indica che l'enfasi è meno concentrata e può sembrare più un'integrazione che un cambiamento visibile.",
       "orbLabel": "Orbo"
+    },
+    "astrocartographyPage": {
+      "eyebrow": "mappa astrocartografica",
+      "title": "Le tue linee nel mondo.",
+      "description": "Scegli una città e guarda quali linee della tua carta passano vicino. La lettura combina distanza, pianeta e angolo in scelte pratiche.",
+      "mapAria": "Mappa mondiale interattiva di astrocartografia",
+      "panelEyebrow": "lettura del luogo",
+      "panelTitle": "Cerca una città",
+      "panelEmptyBody": "Quando selezioni un luogo, la mappa si avvicina e questo pannello mostra le linee più vicine.",
+      "panelSelectedBody": "Queste sono le linee più vicine al luogo selezionato. Tocca una linea per evidenziarla sulla mappa.",
+      "closestLine": "Linea più vicina",
+      "readingEyebrow": "lettura generata",
+      "readingPlaceholder": "Seleziona una città per generare una lettura chiara di vantaggi, attriti e come usare bene quel luogo.",
+      "readingError": "Impossibile generare la lettura di astrocartografia.",
+      "prosTitle": "A favore",
+      "cautionsTitle": "Da curare",
+      "influenceStrong": "influenza forte",
+      "influenceNoticeable": "influenza evidente",
+      "influenceBackground": "influenza di fondo",
+      "planets": {
+        "sun": "Sole",
+        "moon": "Luna",
+        "mercury": "Mercurio",
+        "venus": "Venere",
+        "mars": "Marte",
+        "jupiter": "Giove",
+        "saturn": "Saturno",
+        "uranus": "Urano",
+        "neptune": "Nettuno",
+        "pluto": "Plutone"
+      },
+      "angles": {
+        "AC": "AC",
+        "DC": "DC",
+        "MC": "MC",
+        "IC": "IC"
+      }
     },
     "completeChart": {
       "eyebrow": "carta completa",
@@ -672,7 +716,7 @@
       },
       {
         "title": "I tuoi diritti",
-        "body": "Puoi chiedere accesso, eliminazione o portabilità dei tuoi dati scrivendo a hola@saritashakti.com."
+        "body": "Puoi chiedere accesso, eliminazione o portabilità dei tuoi dati scrivendo a contacto@saritaastrology.com."
       }
     ],
     "termsTitle": "Termini di servizio",

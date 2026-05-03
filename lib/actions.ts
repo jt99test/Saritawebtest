@@ -3,6 +3,7 @@
 import type { NatalChartData } from "./chart";
 import type { ChartActionResult, ChartCalculationResult, FormValues } from "./chart-session";
 import type { PlaceSuggestion } from "./geocoding";
+import type { ReadingGender } from "./reading-gender";
 import { getPlanReadingLimit } from "./reading-limits";
 import { createServerSupabaseClient } from "./supabase/server";
 
@@ -294,6 +295,8 @@ export type SynastryPartnerInput = {
   name: string;
   birthDate: string;
   birthTime?: string;
+  birthTimeUnknown?: boolean;
+  gender?: ReadingGender | "";
   birthCity: string;
   selectedLocation: PlaceSuggestion | null;
 };

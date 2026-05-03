@@ -4,7 +4,7 @@ import { createServerSupabaseClient, createServiceSupabaseClient } from "@/lib/s
 export const runtime = "nodejs";
 
 function getOrigin(request: Request) {
-  return request.headers.get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  return request.headers.get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "https://saritaastrology.com";
 }
 
 function isPriceKey(value: unknown): value is PriceKey {

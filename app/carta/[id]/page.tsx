@@ -35,28 +35,30 @@ export default async function SharedChartPage({ params }: { params: Promise<{ id
   return (
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
-      <section className="relative py-10 sm:py-14">
-        <Container className="min-h-screen text-center">
+      <section className="relative min-h-screen py-8 sm:py-10">
+        <Container className="flex min-h-screen items-center justify-center text-center">
+          <div className="mx-auto w-full max-w-4xl">
           <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
             {dictionary.chart.shareTitle}
           </p>
-          <h1 className="mt-3 font-serif text-[48px] leading-tight text-ivory sm:text-[72px]">
+          <h1 className="mt-2 font-serif text-[48px] leading-tight text-ivory sm:text-[68px]">
             {chart.event.name}
           </h1>
-          <div className="mx-auto mt-5 flex max-w-2xl flex-wrap justify-center gap-3 text-[12px] uppercase tracking-[0.18em] text-[#3a3048]">
+          <div className="mx-auto mt-4 flex max-w-2xl flex-wrap justify-center gap-3 text-[12px] uppercase tracking-[0.18em] text-[#3a3048]">
             {sun ? <span>{dictionary.result.points.sun}: {dictionary.result.signs[sun.sign]}</span> : null}
             {moon ? <span>{dictionary.result.points.moon}: {dictionary.result.signs[moon.sign]}</span> : null}
             <span>{dictionary.chart.ascendantLabel}: {dictionary.result.signs[ascendant.sign]}</span>
           </div>
-          <div className="mt-10">
+          <div className="mx-auto mt-7 max-w-[min(78vh,760px)]">
             <PublicChartWheel chart={chart} />
           </div>
           <Link
             href="/"
-            className="mt-10 inline-flex border border-dusty-gold/35 bg-dusty-gold/12 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold transition hover:bg-dusty-gold/18"
+            className="mt-7 inline-flex border border-dusty-gold/35 bg-dusty-gold/12 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold transition hover:bg-dusty-gold/18"
           >
             {dictionary.chart.createCta}
           </Link>
+          </div>
         </Container>
       </section>
     </main>

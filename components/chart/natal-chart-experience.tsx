@@ -7,6 +7,7 @@ import type { NatalChartData } from "@/lib/chart";
 import type { FormValues } from "@/lib/chart-session";
 
 import { AspectDetailPanel } from "@/components/chart/aspect-detail-panel";
+import { AstrocartographyPage } from "@/components/chart/astrocartography-page";
 import { ChartBalanceSection } from "@/components/chart/chart-balance-section";
 import { ChartCompletePage } from "@/components/chart/chart-complete-page";
 import { ChartGeneralReading } from "@/components/chart/chart-general-reading";
@@ -32,9 +33,9 @@ type NatalChartExperienceProps = {
   readingId?: string;
 };
 
-type PageTabId = "natal" | "moon" | "yoga" | "complete" | "solarReturn" | "synastry";
+type PageTabId = "natal" | "moon" | "yoga" | "complete" | "solarReturn" | "synastry" | "astrocartography";
 
-const PAGE_TABS: PageTabId[] = ["natal", "moon", "yoga", "complete", "solarReturn", "synastry"];
+const PAGE_TABS: PageTabId[] = ["natal", "moon", "yoga", "complete", "solarReturn", "synastry", "astrocartography"];
 
 const TAB_REQUIREMENTS: Partial<Record<PageTabId, PaidPlan>> = {
   moon: "pro",
@@ -42,6 +43,7 @@ const TAB_REQUIREMENTS: Partial<Record<PageTabId, PaidPlan>> = {
   complete: "avanzado",
   solarReturn: "avanzado",
   synastry: "avanzado",
+  astrocartography: "avanzado",
 };
 
 function hasPlanAccess(currentPlan: string, requiredPlan?: PaidPlan) {
@@ -293,6 +295,10 @@ export function NatalChartExperience({
 
       {pageTab === "synastry" && !activeTabLocked ? (
         <SynastryPage natalChart={chart} dictionary={dictionary} readingId={readingId} gender={request?.gender || undefined} />
+      ) : null}
+
+      {pageTab === "astrocartography" && !activeTabLocked ? (
+        <AstrocartographyPage chart={chart} request={request} dictionary={dictionary} readingId={readingId} gender={request?.gender || undefined} />
       ) : null}
 
       <PricingModal

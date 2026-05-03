@@ -9,7 +9,7 @@ import {
 } from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData } from "@/lib/chart";
 import { ASPECT_LABELS, HOUSE_AREAS, POINT_LABELS } from "@/lib/chart-labels";
-import { genderPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
+import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -153,6 +153,7 @@ Tránsitos activos ahora mismo:
 ${transitLines}
 
 ${genderPromptInstruction(readingGender, locale)}
+${grammarPromptInstruction(locale)}
 
 Devuelve SOLO JSON válido. Sin markdown, sin bloque de código, sin texto antes ni después.
 

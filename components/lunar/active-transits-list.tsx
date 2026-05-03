@@ -108,7 +108,12 @@ export function ActiveTransitsList({ transits, timezone, dictionary }: ActiveTra
                   {getTransitWindowLabel(transit.exactnessDate, transit.transitingPlanetLabel, timezone, locale)}
                 </p>
                 {body ? (
-                  <p className="mt-4 text-sm leading-7 text-[#3a3048]">{body}</p>
+                  <div className="mt-4 border-t border-black/10 pt-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                      {dictionary.lunar.activeTransitMeaning}
+                    </p>
+                    <p className="mt-2 text-sm leading-7 text-[#3a3048]">{body}</p>
+                  </div>
                 ) : null}
               </article>
             );
