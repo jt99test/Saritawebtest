@@ -100,6 +100,7 @@ export function NatalChartExperience({
   const [pageTab, setPageTab] = useState<PageTabId>("natal");
   const [pricingOpen, setPricingOpen] = useState(false);
   const [pricingRequiredPlan, setPricingRequiredPlan] = useState<PaidPlan>("pro");
+  const tabListRef = useRef<HTMLElement | null>(null);
   const tabRefs = useRef<Partial<Record<PageTabId, HTMLButtonElement | null>>>({});
   const headerDate = formatHeaderDate(chart.event.dateLabel);
   const headerSubtitle = [
@@ -119,15 +120,28 @@ export function NatalChartExperience({
   }
 
   useEffect(() => {
-    tabRefs.current[pageTab]?.scrollIntoView({
+    const tabList = tabListRef.current;
+    const activeTab = tabRefs.current[pageTab];
+
+    if (!tabList || !activeTab) {
+      return;
+    }
+
+    const tabListRect = tabList.getBoundingClientRect();
+    const activeTabRect = activeTab.getBoundingClientRect();
+    const centeredOffset =
+      activeTabRect.left -
+      tabListRect.left -
+      (tabListRect.width - activeTabRect.width) / 2;
+
+    tabList.scrollTo({
+      left: tabList.scrollLeft + centeredOffset,
       behavior: "smooth",
-      block: "nearest",
-      inline: "center",
     });
   }, [pageTab]);
 
   return (
-    <div className="relative mx-auto max-w-[880px] px-3 pb-16 pt-3 sm:px-6 sm:pb-20 sm:pt-4 lg:max-w-[1180px] lg:px-8">
+    <div className="relative mx-auto w-full min-w-0 max-w-[880px] px-3 pb-16 pt-3 sm:px-6 sm:pb-20 sm:pt-4 lg:max-w-[1180px] lg:px-8">
       <div className="space-y-3">
         <div className="relative">
         <div className="mb-2 flex flex-col gap-1 border-b border-dusty-gold/14 pb-3 sm:flex-row sm:items-end sm:justify-between">
@@ -144,7 +158,7 @@ export function NatalChartExperience({
           </p>
         </div>
         <div className="relative">
-        <nav className="flex snap-x snap-mandatory gap-0 overflow-x-auto border-b border-black/10 pb-0 pt-0 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
+        <nav ref={tabListRef} className="flex max-w-full snap-x snap-mandatory gap-0 overflow-x-auto overscroll-x-contain border-b border-black/10 pb-0 pt-0 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
           {PAGE_TABS.map((tab) => {
             const active = pageTab === tab;
             const requiredPlan = TAB_REQUIREMENTS[tab];
