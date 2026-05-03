@@ -17,7 +17,7 @@ function SectionHeader({ children }: { children: ReactNode }) {
       <h2 className="font-serif text-[2rem] leading-tight text-ivory sm:text-[2.35rem]">
         {children}
       </h2>
-      <div className="mt-3 h-0.5 w-10 rounded-full bg-[#e8c547]" />
+      <div className="mt-3 h-0.5 w-10 rounded-full bg-dusty-gold/70" />
     </div>
   );
 }
@@ -44,7 +44,7 @@ export default async function LavadoIntestinalPage() {
     <main className="relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
 
-      <section className="relative py-4 sm:py-8">
+      <section className="relative pb-4 pt-[calc(1rem+env(safe-area-inset-top))] sm:py-8">
         <Container className="relative">
           <div className="mb-4 flex items-center justify-between gap-4 pt-2 sm:mb-6">
             <Link
@@ -56,7 +56,7 @@ export default async function LavadoIntestinalPage() {
           </div>
 
           <div className="space-y-8 pb-10 sm:space-y-10">
-            <PremiumCard className="overflow-hidden border-[rgba(236,232,223,0.09)] bg-[rgba(255,255,255,0.025)] p-5 shadow-none sm:p-7">
+            <PremiumCard className="overflow-hidden border-black/10 bg-white/88 p-5 shadow-[0_18px_48px_rgba(30,26,46,0.08)] sm:p-7">
               <div className="px-2 py-5 sm:px-8 sm:py-10">
                 <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#3a3048]">
                   Kriyas y limpieza
@@ -70,11 +70,11 @@ export default async function LavadoIntestinalPage() {
               </div>
             </PremiumCard>
 
-            <section className="border border-amber-300/30 bg-amber-300/[0.08] p-5 sm:p-6">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.26em] text-amber-200/90">
-                Precaucion importante
+            <section className="rounded-[1.2rem] border border-dusty-gold/24 bg-[#f8f4eb] p-5 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)] sm:p-6">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.26em] text-[#6f5a2a]">
+                Precauci�n importante
               </p>
-              <p className="mt-3 max-w-4xl text-sm leading-7 text-amber-50/78">
+              <p className="mt-3 max-w-4xl text-sm leading-7 text-[#3a3048]">
                 {lavadoIntestinal.precautions}
               </p>
             </section>
@@ -104,7 +104,7 @@ export default async function LavadoIntestinalPage() {
 
             {hasAccess ? (
               <>
-            <PremiumCard className="border-t border-[rgba(181,163,110,0.15)] bg-transparent px-5 py-8 shadow-none sm:px-7 sm:py-10">
+            <PremiumCard className="border-black/10 bg-white/70 px-5 py-8 shadow-[0_12px_34px_rgba(30,26,46,0.06)] sm:px-7 sm:py-10">
               <h2 className="font-serif text-3xl text-ivory">Preparación</h2>
               <p className="mt-4 max-w-4xl text-sm leading-7 text-[#3a3048]">
                 {lavadoIntestinal.preparation}
@@ -116,9 +116,9 @@ export default async function LavadoIntestinalPage() {
               <ol className="grid gap-4">
                 {lavadoIntestinal.protocol.map((step, index) => (
                   <li key={step}>
-                    <PremiumCard className="rounded-none border-x-0 border-b-0 border-t border-[rgba(236,232,223,0.08)] bg-transparent p-5 shadow-none">
+                    <PremiumCard className="rounded-[1.1rem] border-black/10 bg-white/74 p-5 shadow-[0_10px_28px_rgba(30,26,46,0.05)]">
                       <div className="flex gap-4">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#e8c547]/28 bg-[#e8c547]/10 font-serif text-lg text-[#e8c547]">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-dusty-gold/28 bg-dusty-gold/10 font-serif text-lg text-[#5c4a24]">
                           {index + 1}
                         </span>
                         <p className="pt-1 text-sm leading-7 text-[#3a3048]">{step}</p>
@@ -137,7 +137,7 @@ export default async function LavadoIntestinalPage() {
 
                   return (
                     <li key={asana.slug}>
-                      <PremiumCard className="overflow-hidden border-[rgba(236,232,223,0.09)] bg-[rgba(255,255,255,0.025)] shadow-none">
+                      <PremiumCard className="overflow-hidden border-black/10 bg-white/88 shadow-[0_16px_44px_rgba(30,26,46,0.08)]">
                         <div className="grid gap-0 lg:grid-cols-[minmax(16rem,0.72fr)_minmax(0,1fr)]">
                           <div
                             className={`border-b border-black/10 p-4 sm:p-5 lg:border-b-0 ${
@@ -148,7 +148,7 @@ export default async function LavadoIntestinalPage() {
                           </div>
                           <div className="flex flex-col justify-center p-6 sm:p-8">
                             <div className="flex items-center gap-4">
-                              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#e8c547]/28 bg-[#e8c547]/10 font-serif text-xl text-[#e8c547]">
+                              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-dusty-gold/28 bg-dusty-gold/10 font-serif text-xl text-[#5c4a24]">
                                 {index + 1}
                               </span>
                               <span className="rounded-full border border-dusty-gold/25 bg-dusty-gold/12 px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24]">
@@ -167,11 +167,11 @@ export default async function LavadoIntestinalPage() {
                               </p>
                             ) : null}
                             {asana.warning ? (
-                              <div className="mt-5 border border-amber-300/28 bg-amber-300/[0.08] px-4 py-3">
-                                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-amber-200/86">
-                                  Precaucion
+                              <div className="mt-5 rounded-[1rem] border border-dusty-gold/26 bg-[#f8f4eb] px-4 py-3 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]">
+                                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#6f5a2a]">
+                                  Precauci�n
                                 </p>
-                                <p className="mt-2 text-sm leading-6 text-amber-50/72">
+                                <p className="mt-2 text-sm leading-6 text-[#3a3048]">
                                   {asana.warning}
                                 </p>
                               </div>
@@ -185,7 +185,7 @@ export default async function LavadoIntestinalPage() {
               </ol>
             </section>
 
-            <section className="grid gap-0 border-y border-[rgba(236,232,223,0.09)] sm:grid-cols-2 lg:grid-cols-4">
+            <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {[
                 ["Momento", lavadoIntestinal.timing.momento],
                 ["Duración", lavadoIntestinal.timing.duracion],
@@ -194,7 +194,7 @@ export default async function LavadoIntestinalPage() {
               ].map(([label, value]) => (
                 <div
                   key={label}
-                  className="border-t border-[rgba(236,232,223,0.08)] p-5 first:border-t-0 sm:border-l sm:first:border-l-0 lg:border-t-0"
+                  className="rounded-[1.1rem] border border-black/10 bg-white/74 p-5 shadow-[0_10px_28px_rgba(30,26,46,0.05)]"
                 >
                   <p className="text-[12px] font-semibold uppercase tracking-[0.24em] text-[#3a3048]">
                     {label}
@@ -204,14 +204,14 @@ export default async function LavadoIntestinalPage() {
               ))}
             </section>
 
-            <section className="border-l-2 border-dusty-gold/40 pl-5">
-              <h2 className="font-serif text-3xl text-ivory">Precauciones</h2>
+            <section className="rounded-[1.2rem] border border-dusty-gold/20 bg-white/70 p-5 shadow-[0_10px_28px_rgba(30,26,46,0.05)] sm:p-7">
+              <h2 className="font-serif text-3xl text-ivory">Precauci�nes</h2>
               <p className="mt-4 max-w-4xl text-sm leading-7 text-[#3a3048]">
                 {lavadoIntestinal.precautions}
               </p>
             </section>
 
-            <section className="border-l-2 border-dusty-gold/40 pl-5">
+            <section className="rounded-[1.2rem] border border-dusty-gold/20 bg-white/70 p-5 shadow-[0_10px_28px_rgba(30,26,46,0.05)] sm:p-7">
               <h2 className="font-serif text-3xl text-ivory">Beneficios</h2>
               <div className="mt-4 max-w-4xl space-y-4 text-sm leading-7 text-[#3a3048]">
                 {lavadoIntestinal.benefits.split("\n\n").map((paragraph) => (
@@ -229,7 +229,7 @@ export default async function LavadoIntestinalPage() {
                 {lavadoIntestinal.threeDayDiet.days.map((day) => (
                   <PremiumCard
                     key={day.day}
-                    className="border-x-0 border-b-0 border-t border-black/10 bg-transparent p-6 shadow-none"
+                    className="border-black/10 bg-white/88 p-6 shadow-[0_14px_38px_rgba(30,26,46,0.07)]"
                   >
                     <h3 className="font-serif text-3xl font-semibold text-ivory">Día {day.day}</h3>
                     <div className="mt-5 space-y-5">

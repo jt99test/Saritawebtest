@@ -243,9 +243,11 @@ export default async function YogaAstralElementPage({
                             <p className="mt-5 text-sm leading-7 text-[#3a3048]">
                               {asana.description}
                             </p>
-                            <div className="mt-5 rounded-[1rem] border border-dusty-gold/24 bg-[#fff8df] p-4 text-sm leading-7 text-[#5c4a24]">
-                              <span className="mr-2 font-semibold">Precaución:</span>
-                              {asana.warning}
+                            <div className="mt-5 rounded-[1rem] border border-dusty-gold/26 bg-[#f8f4eb] p-4 text-sm leading-7 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]">
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6f5a2a]">
+                                Precauci�n
+                              </p>
+                              <p className="mt-2">{asana.warning}</p>
                             </div>
                           </div>
                         </div>
@@ -269,8 +271,9 @@ export default async function YogaAstralElementPage({
                       {item.description}
                     </p>
                     {item.contraindications ? (
-                      <div className="mt-5 rounded-[1rem] border border-dusty-gold/24 bg-[#fff8df] p-4 text-sm leading-7 text-[#5c4a24]">
-                        {item.contraindications}
+                      <div className="mt-5 rounded-[1rem] border border-dusty-gold/26 bg-[#f8f4eb] p-4 text-sm leading-7 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6f5a2a]">Precauci�n</p>
+                        <p className="mt-2">{item.contraindications}</p>
                       </div>
                     ) : null}
                   </PremiumCard>

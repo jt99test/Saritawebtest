@@ -125,7 +125,7 @@ export default function PersonalizedYogaPage() {
                     : `Elemento ${ELEMENT_LABELS[routine.primary]}`}
                 </h1>
                 <p className="mt-6 max-w-3xl text-sm leading-7 text-[#3a3048]">
-                  Esta secuencia se calcula con tu carta y rota cada mes. Mantiene el elemento dominante como base y mezcla el segundo elemento activo para que la práctica sea más personal y menos repetitiva.
+                  Esta secuencia nace de tu carta: toma tu elemento dominante como punto de partida y selecciona las posturas que mejor acompa�an tu energ�a actual. Cada asana est� elegida para ordenar el cuerpo, la respiraci�n y el foco desde tu propia lectura.
                 </p>
               </header>
 
@@ -166,9 +166,11 @@ export default function PersonalizedYogaPage() {
                               <h3 className="mt-5 font-serif text-2xl leading-tight text-ivory sm:text-3xl">{asana.nameSanskrit}</h3>
                               <p className="mt-1 text-sm uppercase tracking-[0.2em] text-[#3a3048]">{asana.nameSpanish}</p>
                               <p className="mt-5 text-sm leading-7 text-[#3a3048]">{asana.description}</p>
-                              <div className="mt-5 rounded-[1rem] border border-dusty-gold/24 bg-[#fff8df] p-4 text-sm leading-7 text-[#5c4a24]">
-                                <span className="mr-2 font-semibold">Precaución:</span>
-                                {asana.warning}
+                              <div className="mt-5 rounded-[1rem] border border-dusty-gold/26 bg-[#f8f4eb] p-4 text-sm leading-7 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]">
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6f5a2a]">
+                                  Precauci�n
+                                </p>
+                                <p className="mt-2">{asana.warning}</p>
                               </div>
                             </div>
                           </div>
