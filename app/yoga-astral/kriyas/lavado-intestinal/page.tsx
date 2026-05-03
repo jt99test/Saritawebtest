@@ -44,27 +44,27 @@ export default async function LavadoIntestinalPage() {
     <main className="relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
 
-      <section className="relative py-6 sm:py-8">
+      <section className="relative py-4 sm:py-8">
         <Container className="relative">
-          <div className="mb-6 flex items-center justify-between gap-4 pt-2">
+          <div className="mb-4 flex items-center justify-between gap-4 pt-2 sm:mb-6">
             <Link
               href="/yoga-astral"
-              className="text-xs font-medium uppercase tracking-[0.28em] text-[#3a3048] transition hover:text-ivory"
+              className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-ivory sm:text-xs sm:tracking-[0.28em]"
             >
               {dictionary.form.back}
             </Link>
           </div>
 
-          <div className="space-y-10 pb-10">
+          <div className="space-y-8 pb-10 sm:space-y-10">
             <PremiumCard className="overflow-hidden border-[rgba(236,232,223,0.09)] bg-[rgba(255,255,255,0.025)] p-5 shadow-none sm:p-7">
-              <div className="px-5 py-8 sm:px-8 sm:py-10">
+              <div className="px-2 py-5 sm:px-8 sm:py-10">
                 <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#3a3048]">
                   Kriyas y limpieza
                 </p>
-                <h1 className="mt-4 font-serif text-5xl leading-tight text-ivory sm:text-6xl">
+                <h1 className="mt-3 font-serif text-[38px] leading-tight text-ivory sm:mt-4 sm:text-6xl">
                   {lavadoIntestinal.title}
                 </h1>
-                <p className="mt-4 max-w-3xl text-base leading-8 text-[#3a3048]">
+                <p className="mt-4 max-w-3xl text-sm leading-7 text-[#3a3048] sm:text-base sm:leading-8">
                   Laghoo Shankhaprakshala · Una práctica suave de limpieza intestinal
                 </p>
               </div>

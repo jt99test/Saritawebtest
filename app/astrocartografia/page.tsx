@@ -73,23 +73,23 @@ export default function AstrocartografiaRoutePage() {
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
 
-      <section className="relative min-h-screen py-5 sm:py-6">
-        <Container className="relative flex min-h-screen flex-col">
-          <div className="mb-4 flex items-center justify-between gap-4 pt-1">
+      <section className="relative min-h-[100svh] py-4 sm:min-h-screen sm:py-6">
+        <Container className="relative flex min-h-[100svh] flex-col sm:min-h-screen">
+          <div className="mb-3 flex items-center justify-between gap-4 pt-1 sm:mb-4">
             <Link
               href="/resultado"
-              className="text-xs font-medium uppercase tracking-[0.28em] text-[#3a3048] transition hover:text-ivory"
+              className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-ivory sm:text-xs sm:tracking-[0.28em]"
             >
               {dictionary.form.back}
             </Link>
           </div>
 
           {result?.chart && locked ? (
-            <div className="mx-auto mt-16 max-w-2xl border-y border-dusty-gold/14 py-14 text-center">
+            <div className="mx-auto mt-10 max-w-2xl border-y border-dusty-gold/14 py-10 text-center sm:mt-16 sm:py-14">
               <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
                 {dictionary.result.primaryTabs.astrocartography}
               </p>
-              <h1 className="mt-3 font-serif text-[38px] leading-tight text-ivory">
+              <h1 className="mt-3 font-serif text-[32px] leading-tight text-ivory sm:text-[38px]">
                 {dictionary.paywall.lockedTabTitle.replace("{plan}", dictionary.paywall.avanzadoName)}
               </h1>
               <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-[#3a3048]">

@@ -18,19 +18,19 @@ export default async function TermsPage() {
   return (
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
-      <section className="relative py-10 sm:py-14">
-        <Container className="min-h-screen">
-          <Link href="/" className="text-xs font-medium uppercase tracking-[0.24em] text-[#3a3048] transition hover:text-ivory">
+      <section className="relative py-7 sm:py-14">
+        <Container className="min-h-[100svh] sm:min-h-screen">
+          <Link href="/" className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-ivory sm:text-xs sm:tracking-[0.24em]">
             {dictionary.result.back}
           </Link>
-          <div className="mx-auto mt-14 max-w-3xl">
+          <div className="mx-auto mt-9 max-w-3xl sm:mt-14">
             <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
               {dictionary.legal.terms}
             </p>
-            <h1 className="mt-3 font-serif text-[44px] leading-tight text-ivory sm:text-[64px]">
+            <h1 className="mt-3 font-serif text-[36px] leading-tight text-ivory sm:text-[64px]">
               {dictionary.legal.termsTitle}
             </h1>
-            <p className="mt-5 text-base leading-8 text-[#3a3048]">{dictionary.legal.termsIntro}</p>
+            <p className="mt-4 text-sm leading-7 text-[#3a3048] sm:mt-5 sm:text-base sm:leading-8">{dictionary.legal.termsIntro}</p>
             <p className="mt-4 text-[12px] uppercase tracking-[0.2em] text-[#3a3048]">
               {dictionary.legal.lastUpdated}: {dictionary.legal.updatedDate}
             </p>

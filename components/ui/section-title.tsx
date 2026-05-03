@@ -6,7 +6,7 @@ export function SectionTitle({
 }: ComponentPropsWithoutRef<"h2">) {
   return (
     <h2
-      className={`text-4xl leading-tight text-ivory sm:text-5xl ${className}`.trim()}
+      className={`text-[2.35rem] leading-tight text-ivory sm:text-5xl ${className}`.trim()}
       {...props}
     />
   );

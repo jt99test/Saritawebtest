@@ -85,8 +85,8 @@ function ResultPageContent() {
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
 
-      <section className="relative min-h-screen py-5 sm:py-6">
-        <Container className="relative flex min-h-screen flex-col pt-14">
+      <section className="relative min-h-[100svh] py-4 sm:min-h-screen sm:py-6">
+        <Container className="relative flex min-h-[100svh] flex-col pt-12 sm:min-h-screen sm:pt-14">
           {banner ? (
             <div className="mb-4 flex items-center justify-between gap-4 border border-dusty-gold/20 bg-dusty-gold/10 px-4 py-3 text-sm text-ivory/78">
               <span>{banner === "success" ? dictionary.paywall.successBanner : dictionary.paywall.cancelBanner}</span>
@@ -101,22 +101,22 @@ function ResultPageContent() {
           ) : null}
 
           <div className="fixed inset-x-0 top-0 z-[60] border-b border-black/10 bg-cosmic-950/92 backdrop-blur-xl">
-            <div className="mx-auto grid min-h-12 max-w-[1180px] grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto grid min-h-12 max-w-[1180px] grid-cols-[auto_1fr_auto] items-center gap-2 px-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-4 sm:px-6 lg:px-8">
             <Link
               href="/"
-              className="justify-self-start text-xs font-medium uppercase tracking-[0.24em] text-[#3a3048] transition hover:text-ivory"
+              className="justify-self-start text-[10px] font-medium uppercase tracking-[0.16em] text-[#3a3048] transition hover:text-ivory sm:text-xs sm:tracking-[0.24em]"
             >
               ← {dictionary.result.back}
             </Link>
 
-            <p className="justify-self-center text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5c4a24]">
+            <p className="hidden justify-self-center text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5c4a24] sm:block">
               {result?.saved ? dictionary.standalonePages.savedReading : ""}
             </p>
 
-            <div className="flex items-center gap-4 justify-self-end border-l border-black/15 pl-4">
+            <div className="flex items-center gap-2 justify-self-end border-l border-black/15 pl-2 sm:gap-4 sm:pl-4">
               <Link
                 href="/form"
-                className="text-right text-xs font-medium uppercase tracking-[0.24em] text-[#3a3048] transition hover:text-ivory/80"
+                className="text-right text-[10px] font-medium uppercase tracking-[0.16em] text-[#3a3048] transition hover:text-ivory/80 sm:text-xs sm:tracking-[0.24em]"
               >
                 {dictionary.form.back}
               </Link>

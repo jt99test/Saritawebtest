@@ -29,9 +29,9 @@ export function LunationHeaderCard({
   )}'`;
 
   return (
-    <section className="mx-auto max-w-[720px] border-l border-dusty-gold/18 pl-5 text-left sm:pl-7">
+    <section className="mx-auto max-w-[720px] border-l border-dusty-gold/18 pl-4 text-left sm:pl-7">
       <p className="text-xs uppercase tracking-[0.22em] text-[#5c4a24]">{signLabel}</p>
-      <h2 className="mt-1 font-serif text-[72px] font-normal leading-none text-ivory">
+      <h2 className="mt-1 font-serif text-[48px] font-normal leading-none text-ivory sm:text-[72px]">
         {degreeLabel}
       </h2>
       <p className="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-xs uppercase tracking-[0.14em] text-[#3a3048] [font-variant-numeric:tabular-nums]">

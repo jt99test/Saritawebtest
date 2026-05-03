@@ -45,8 +45,8 @@ export default async function ReadingsPage() {
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
 
-      <section className="relative py-6 sm:py-8">
-        <Container className="min-h-screen">
+      <section className="relative py-5 sm:py-8">
+        <Container className="min-h-[100svh] sm:min-h-screen">
           <ReadingsArchiveHeader />
 
           <div className="mx-auto max-w-3xl">

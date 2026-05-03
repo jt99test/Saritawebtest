@@ -145,6 +145,7 @@ const TEST_CHART_REFERENCES: ComparisonReference[] = [
   { label: "Pluto", source: "point", id: "pluto", sign: "sagittarius", degree: 13, minute: 30 },
   { label: "True Node", source: "point", id: "northNode", sign: "gemini", degree: 29, minute: 2 },
   { label: "Chiron", source: "point", id: "chiron", sign: "sagittarius", degree: 25, minute: 14 },
+  { label: "Lilith Natural", source: "point", id: "lilith", sign: "pisces", degree: 2, minute: 30 },
   { label: "Ascendant", source: "meta", id: "ascendant", sign: "sagittarius", degree: 29, minute: 58 },
   { label: "MC", source: "meta", id: "mc", sign: "libra", degree: 22, minute: 47 },
 ];

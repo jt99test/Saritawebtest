@@ -39,6 +39,11 @@
         "title": "Yoga astrale",
         "description": "Pratiche corporee allineate al tuo elemento.",
         "href": "/yoga-astral"
+      },
+      {
+        "title": "Astrocartografia",
+        "description": "Le tue linee planetarie sulla mappa del mondo.",
+        "href": "/astrocartografia"
       }
     ]
   },
@@ -54,8 +59,10 @@
       "location": "Luogo di nascita"
     },
     "genderOptions": {
+      "unspecified": "Preferisco non dirlo",
       "female": "Femminile",
-      "male": "Maschile"
+      "male": "Maschile",
+      "neutral": "Neutro"
     },
     "birthTimeUnknown": {
       "label": "Non so l'ora esatta",
@@ -145,7 +152,7 @@
     "proName": "Pro",
     "avanzadoName": "Avanzato",
     "proTagline": "Luna, yoga e la tua carta completa",
-    "avanzadoTagline": "Tutto. Transiti, rivoluzione solare e sinastria.",
+    "avanzadoTagline": "Tutto. Transiti, rivoluzione solare, sinastria e astrocartografia.",
     "proFeatures": [
       "Luna del mese personalizzata",
       "Yoga astrale secondo la tua carta",
@@ -156,6 +163,7 @@
       "Transiti in tempo reale",
       "Rivoluzione Solare",
       "Sinastria",
+      "Astrocartografia",
       "Lavaggio intestinale gratis con piano annuale"
     ],
     "lavadoFreeHighlight": "Gratis con piano annuale",
@@ -333,6 +341,9 @@
       "readingError": "Impossibile generare la lettura di astrocartografia.",
       "prosTitle": "A favore",
       "cautionsTitle": "Da curare",
+      "lineInfoEyebrow": "linea selezionata",
+      "lineInfoPlaceholder": "Tocca una linea della mappa o una linea vicina per vedere quale pianeta e quale angolo attiva.",
+      "angleInfoLabel": "Angolo",
       "influenceStrong": "influenza forte",
       "influenceNoticeable": "influenza evidente",
       "influenceBackground": "influenza di fondo",
@@ -353,6 +364,24 @@
         "DC": "DC",
         "MC": "MC",
         "IC": "IC"
+      },
+      "planetMeanings": {
+        "sun": "Indica luoghi dove identità, fiducia e direzione di vita diventano più visibili.",
+        "moon": "Attiva appartenenza, memoria, corpo emotivo e bisogno di sentirti a casa.",
+        "mercury": "Muove studio, scrittura, conversazione, contatti e decisioni pratiche.",
+        "venus": "Apre relazioni, piacere, estetica, socialità e modi più morbidi di ricevere.",
+        "mars": "Alza spinta, desiderio, competizione, iniziativa e anche attrito se corri troppo.",
+        "jupiter": "Espande opportunità, viaggi, insegnamento, fiducia e senso di crescita.",
+        "saturn": "Chiede struttura, responsabilità, maturità, limiti e lavoro costante.",
+        "uranus": "Risveglia cambiamento, indipendenza, sperimentazione e svolte inattese.",
+        "neptune": "Sensibilizza intuizione, spiritualità, arte e anche la tendenza a idealizzare.",
+        "pluto": "Intensifica trasformazione, potere personale, profondità psicologica e chiusure."
+      },
+      "angleMeanings": {
+        "AC": "Si vive in prima persona: corpo, identità, presenza e modo di entrare nella vita.",
+        "DC": "Si attiva attraverso i legami: partner, clienti, accordi, specchi e negoziazione.",
+        "MC": "Tocca la vita pubblica: vocazione, carriera, reputazione, obiettivi e direzione visibile.",
+        "IC": "Si sente dentro: casa, radici, famiglia, intimità e base emotiva."
       }
     },
     "completeChart": {
@@ -724,7 +753,7 @@
     "termsSections": [
       {
         "title": "Descrizione del servizio",
-        "body": "SARITA offre calcolo della carta natale, letture astrologiche, Luna del mese, Yoga astrale, transiti, Rivoluzione Solare, sinastria e contenuti digitali collegati."
+        "body": "SARITA offre calcolo della carta natale, letture astrologiche, Luna del mese, Yoga astrale, transiti, Rivoluzione Solare, sinastria, astrocartografia e contenuti digitali collegati."
       },
       {
         "title": "Abbonamenti",
@@ -763,7 +792,9 @@
     "limited": "limitato",
     "notIncluded": "—",
     "tableTitle": "Confronto completo",
+    "readingsPerMonth": "{count}/mese",
     "rows": [
+      "Letture al mese",
       "Carta natale completa",
       "Letture dei pianeti",
       "Luna del mese",
@@ -771,6 +802,7 @@
       "Transiti in tempo reale",
       "Rivoluzione Solare",
       "Sinastria",
+      "Astrocartografia",
       "Lavaggio intestinale"
     ],
     "faqs": [
@@ -788,7 +820,7 @@
       },
       {
         "question": "Qual è la differenza tra Pro e Avanzato?",
-        "answer": "Pro include Luna del mese e Yoga astrale. Avanzato aggiunge Transiti, Rivoluzione Solare e Sinastria."
+        "answer": "Pro include Luna del mese, Yoga astrale e 5 letture al mese. Avanzato aggiunge 20 letture al mese, Transiti, Rivoluzione Solare, Sinastria e Astrocartografia."
       },
       {
         "question": "Offrite rimborsi?",

@@ -14,7 +14,7 @@ export function Container<T extends ElementType = "div">({
   const Component = (as ?? "div") as ElementType;
 
   return createElement(Component, {
-    className: `mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10 ${className}`.trim(),
+    className: `mx-auto w-full max-w-7xl px-4 sm:px-8 lg:px-10 ${className}`.trim(),
     ...props,
   });
 }

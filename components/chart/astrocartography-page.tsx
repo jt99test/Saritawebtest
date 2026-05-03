@@ -1,6 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { geoEquirectangular, geoGraticule, geoPath } from "d3-geo";
+import { feature, mesh } from "topojson-client";
+import worldLand from "world-atlas/land-110m.json";
+import worldCountries from "world-atlas/countries-110m.json";
 
 import { LocationAutocomplete } from "@/components/form/location-autocomplete";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
@@ -43,12 +47,20 @@ const ANGLES: AstrocartographyAngle[] = ["AC", "DC", "MC", "IC"];
 const MAP_WIDTH = 1000;
 const MAP_HEIGHT = 500;
 const READING_TIMEOUT_MS = 45000;
+const projection = geoEquirectangular()
+  .scale(MAP_WIDTH / (2 * Math.PI))
+  .translate([MAP_WIDTH / 2, MAP_HEIGHT / 2])
+  .precision(0.2);
+const mapPath = geoPath(projection);
+const graticule = geoGraticule().step([30, 30]);
+const landTopology = worldLand as unknown as { objects: { land: never } };
+const countriesTopology = worldCountries as unknown as { objects: { countries: never } };
+const landFeature = feature(worldLand as never, landTopology.objects.land);
+const countryMesh = mesh(worldCountries as never, countriesTopology.objects.countries);
 
 function projectPoint(point: { lat: number; lng: number }) {
-  return {
-    x: ((point.lng + 180) / 360) * MAP_WIDTH,
-    y: ((90 - point.lat) / 180) * MAP_HEIGHT,
-  };
+  const projected = projection([point.lng, point.lat]) ?? [0, 0];
+  return { x: projected[0], y: projected[1] };
 }
 
 function linePath(points: Array<{ lat: number; lng: number }>) {
@@ -56,16 +68,6 @@ function linePath(points: Array<{ lat: number; lng: number }>) {
     const projected = projectPoint(point);
     return `${index === 0 ? "M" : "L"} ${projected.x.toFixed(2)} ${projected.y.toFixed(2)}`;
   }).join(" ");
-}
-
-function viewBoxForLocation(location: PlaceSuggestion | null) {
-  if (!location) return `0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`;
-  const projected = projectPoint(location);
-  const width = 430;
-  const height = 245;
-  const x = Math.min(Math.max(0, projected.x - width / 2), MAP_WIDTH - width);
-  const y = Math.min(Math.max(0, projected.y - height / 2), MAP_HEIGHT - height);
-  return `${x} ${y} ${width} ${height}`;
 }
 
 function normalizeReading(data: AstrocartographyReading): AstrocartographyReading {
@@ -93,6 +95,15 @@ function influenceLabel(influence: AstrocartographyNearbyLine["influence"], copy
   return copy.influenceBackground;
 }
 
+function lineTheme(line: AstrocartographyLine, copy: Dictionary["result"]["astrocartographyPage"]) {
+  const planetMeanings: Partial<Record<ChartPointId, string>> = copy.planetMeanings;
+  return planetMeanings[line.planetId] ?? "";
+}
+
+function angleTheme(angle: AstrocartographyAngle, copy: Dictionary["result"]["astrocartographyPage"]) {
+  return copy.angleMeanings[angle] ?? "";
+}
+
 function WorldMap({
   lines,
   selectedLocation,
@@ -110,35 +121,25 @@ function WorldMap({
 
   return (
     <svg
-      viewBox={viewBoxForLocation(selectedLocation)}
+      viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
       role="img"
       aria-label={copy.mapAria}
-      className="h-full min-h-[420px] w-full bg-[#f6f0e4] transition-all duration-500"
+      className="aspect-[2/1] w-full bg-[#f6f0e4]"
     >
       <defs>
         <pattern id="acg-grid" width="50" height="50" patternUnits="userSpaceOnUse">
           <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(58,48,72,0.1)" strokeWidth="1" />
         </pattern>
+        <linearGradient id="acg-ocean" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stopColor="#fbf6eb" />
+          <stop offset="100%" stopColor="#eee3cf" />
+        </linearGradient>
       </defs>
-      <rect width={MAP_WIDTH} height={MAP_HEIGHT} fill="#f4eddf" />
-      <rect width={MAP_WIDTH} height={MAP_HEIGHT} fill="url(#acg-grid)" />
-      <path
-        d="M146 139 L218 115 L282 139 L335 128 L372 171 L334 206 L262 201 L209 223 L160 194 Z
-           M438 121 L525 98 L622 126 L662 178 L614 213 L526 202 L464 234 L406 198 Z
-           M703 151 L792 125 L886 153 L923 214 L858 255 L756 236 L706 202 Z
-           M476 253 L542 242 L585 294 L559 365 L503 414 L466 348 Z
-           M734 303 L829 291 L907 334 L882 395 L785 409 L724 364 Z
-           M255 270 L319 266 L347 340 L305 425 L242 391 Z"
-        fill="rgba(138,122,78,0.18)"
-        stroke="rgba(92,74,36,0.22)"
-        strokeWidth="2"
-      />
-      {[0, 250, 500, 750, 1000].map((x) => (
-        <path key={`meridian-${x}`} d={`M ${x} 0 L ${x} ${MAP_HEIGHT}`} stroke="rgba(58,48,72,0.08)" strokeWidth="1" />
-      ))}
-      {[83, 167, 250, 333, 417].map((y) => (
-        <path key={`parallel-${y}`} d={`M 0 ${y} L ${MAP_WIDTH} ${y}`} stroke="rgba(58,48,72,0.08)" strokeWidth="1" />
-      ))}
+      <rect width={MAP_WIDTH} height={MAP_HEIGHT} fill="url(#acg-ocean)" />
+      <rect width={MAP_WIDTH} height={MAP_HEIGHT} fill="url(#acg-grid)" opacity="0.55" />
+      <path d={mapPath(graticule()) ?? ""} fill="none" stroke="rgba(58,48,72,0.09)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+      <path d={mapPath(landFeature) ?? ""} fill="rgba(138,122,78,0.24)" stroke="rgba(92,74,36,0.38)" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
+      <path d={mapPath(countryMesh) ?? ""} fill="none" stroke="rgba(92,74,36,0.14)" strokeWidth="0.7" vectorEffect="non-scaling-stroke" />
       {lines.map((line) => (
         <g key={line.id}>
           {astrocartographySegments(line).map((segment, index) => (
@@ -207,6 +208,10 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
   const filteredLines = useMemo(
     () => lines.filter((line) => visiblePlanets.has(line.planetId) && visibleAngles.has(line.angle)),
     [lines, visibleAngles, visiblePlanets],
+  );
+  const selectedLine = useMemo(
+    () => lines.find((line) => line.id === selectedLineId) ?? null,
+    [lines, selectedLineId],
   );
 
   const nearbyLines = useMemo(() => {
@@ -302,7 +307,7 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
         </p>
       </div>
 
-      <div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="mt-8">
         <div className="min-w-0 overflow-hidden border border-black/10 bg-white shadow-[0_16px_40px_rgba(0,0,0,0.1)]">
           <div className="border-b border-black/10 p-4">
             <LocationAutocomplete
@@ -327,80 +332,6 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
             copy={copy}
           />
         </div>
-
-        <aside className="border border-black/10 bg-white p-5 shadow-[0_16px_40px_rgba(0,0,0,0.08)]">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
-            {copy.panelEyebrow}
-          </p>
-          <h3 className="mt-2 font-serif text-[28px] leading-tight text-ivory">
-            {selectedLocation?.displayName ?? copy.panelTitle}
-          </h3>
-          <p className="mt-3 text-sm leading-7 text-[#3a3048]">
-            {selectedLocation ? copy.panelSelectedBody : copy.panelEmptyBody}
-          </p>
-
-          {nearbyLines.length ? (
-            <div className="mt-5 space-y-2">
-              {nearbyLines.map((line) => (
-                <button
-                  key={line.lineId}
-                  type="button"
-                  onClick={() => setSelectedLineId(line.lineId)}
-                  className={[
-                    "flex w-full items-center justify-between gap-3 border px-3 py-2 text-left transition",
-                    selectedLineId === line.lineId ? "border-dusty-gold/55 bg-dusty-gold/[0.08]" : "border-black/10 hover:bg-black/[0.03]",
-                  ].join(" ")}
-                >
-                  <span className="text-sm text-[#3a3048]">
-                    <span className="mr-2 inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: line.color }} />
-                    {line.planetLabel} {line.angle}
-                  </span>
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8a7a4e]">
-                    {line.distanceKm} km
-                  </span>
-                </button>
-              ))}
-            </div>
-          ) : null}
-
-          {nearbyLines[0] ? (
-            <p className="mt-3 text-xs leading-5 text-[#5c4a24]">
-              {copy.closestLine}: {nearbyLines[0].planetLabel} {nearbyLines[0].angle}, {influenceLabel(nearbyLines[0].influence, copy)}
-            </p>
-          ) : null}
-
-          <div className="mt-6 border-t border-black/10 pt-5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
-              {copy.readingEyebrow}
-            </p>
-            {isLoadingReading ? (
-              <div className="mt-4 animate-pulse space-y-3">
-                <div className="h-6 w-3/4 bg-black/8" />
-                <div className="h-3 w-full bg-black/6" />
-                <div className="h-3 w-5/6 bg-black/6" />
-                <div className="h-3 w-2/3 bg-black/6" />
-              </div>
-            ) : readingError ? (
-              <p className="mt-3 text-sm leading-7 text-red-700">{readingError}</p>
-            ) : reading ? (
-              <div className="mt-3">
-                <h4 className="font-serif text-[22px] leading-snug text-ivory">{reading.summaryTitle}</h4>
-                <p className="mt-3 text-sm leading-7 text-[#3a3048]">{reading.summaryBody}</p>
-                <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">{copy.prosTitle}</p>
-                <ul className="mt-2 space-y-2 text-sm leading-6 text-[#3a3048]">
-                  {reading.pros.map((item) => <li key={item}>{item}</li>)}
-                </ul>
-                <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">{copy.cautionsTitle}</p>
-                <ul className="mt-2 space-y-2 text-sm leading-6 text-[#3a3048]">
-                  {reading.cautions.map((item) => <li key={item}>{item}</li>)}
-                </ul>
-                <p className="mt-5 text-sm leading-7 text-[#5c4a24]">{reading.practicalFocus}</p>
-              </div>
-            ) : (
-              <p className="mt-3 text-sm leading-7 text-[#3a3048]">{copy.readingPlaceholder}</p>
-            )}
-          </div>
-        </aside>
       </div>
 
       <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_auto]">
@@ -443,6 +374,113 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
           })}
         </div>
       </div>
+
+      <div className="mt-8 grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+        <article className="border border-black/10 bg-white p-5 shadow-[0_10px_30px_rgba(0,0,0,0.07)]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+            {copy.lineInfoEyebrow}
+          </p>
+          {selectedLine ? (
+            <>
+              <div className="mt-3 flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="font-serif text-[28px] leading-tight text-ivory">
+                    {(copy.planets as Partial<Record<ChartPointId, string>>)[selectedLine.planetId] ?? selectedLine.planetLabel} {selectedLine.angle}
+                  </h3>
+                  <p className="mt-2 text-sm leading-7 text-[#3a3048]">
+                    {lineTheme(selectedLine, copy)}
+                  </p>
+                </div>
+                <span className="mt-1 inline-block h-3 w-3 rounded-full" style={{ backgroundColor: selectedLine.color }} />
+              </div>
+              <div className="mt-4 border-t border-black/10 pt-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                  {copy.angleInfoLabel}
+                </p>
+                <p className="mt-2 text-sm leading-7 text-[#3a3048]">
+                  {angleTheme(selectedLine.angle, copy)}
+                </p>
+              </div>
+            </>
+          ) : (
+            <p className="mt-3 text-sm leading-7 text-[#3a3048]">{copy.lineInfoPlaceholder}</p>
+          )}
+        </article>
+
+        <article className="border border-black/10 bg-white p-5 shadow-[0_10px_30px_rgba(0,0,0,0.07)]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+            {copy.panelEyebrow}
+          </p>
+          <h3 className="mt-2 font-serif text-[28px] leading-tight text-ivory">
+            {selectedLocation?.displayName ?? copy.panelTitle}
+          </h3>
+          <p className="mt-3 text-sm leading-7 text-[#3a3048]">
+            {selectedLocation ? copy.panelSelectedBody : copy.panelEmptyBody}
+          </p>
+
+          {nearbyLines.length ? (
+            <div className="mt-5 grid gap-2 sm:grid-cols-2">
+              {nearbyLines.map((line) => (
+                <button
+                  key={line.lineId}
+                  type="button"
+                  onClick={() => setSelectedLineId(line.lineId)}
+                  className={[
+                    "flex items-center justify-between gap-3 border px-3 py-2 text-left transition",
+                    selectedLineId === line.lineId ? "border-dusty-gold/55 bg-dusty-gold/[0.08]" : "border-black/10 hover:bg-black/[0.03]",
+                  ].join(" ")}
+                >
+                  <span className="text-sm text-[#3a3048]">
+                    <span className="mr-2 inline-block h-2.5 w-2.5 rounded-full" style={{ backgroundColor: line.color }} />
+                    {line.planetLabel} {line.angle}
+                  </span>
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#8a7a4e]">
+                    {line.distanceKm} km
+                  </span>
+                </button>
+              ))}
+            </div>
+          ) : null}
+
+          {nearbyLines[0] ? (
+            <p className="mt-3 text-xs leading-5 text-[#5c4a24]">
+              {copy.closestLine}: {nearbyLines[0].planetLabel} {nearbyLines[0].angle}, {influenceLabel(nearbyLines[0].influence, copy)}
+            </p>
+          ) : null}
+        </article>
+      </div>
+
+      <article className="mt-4 border border-black/10 bg-white p-6 shadow-[0_10px_30px_rgba(0,0,0,0.07)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+              {copy.readingEyebrow}
+            </p>
+            {isLoadingReading ? (
+              <div className="mt-4 animate-pulse space-y-3">
+                <div className="h-6 w-3/4 bg-black/8" />
+                <div className="h-3 w-full bg-black/6" />
+                <div className="h-3 w-5/6 bg-black/6" />
+                <div className="h-3 w-2/3 bg-black/6" />
+              </div>
+            ) : readingError ? (
+              <p className="mt-3 text-sm leading-7 text-red-700">{readingError}</p>
+            ) : reading ? (
+              <div className="mt-3">
+                <h4 className="font-serif text-[22px] leading-snug text-ivory">{reading.summaryTitle}</h4>
+                <p className="mt-3 text-sm leading-7 text-[#3a3048]">{reading.summaryBody}</p>
+                <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">{copy.prosTitle}</p>
+                <ul className="mt-2 space-y-2 text-sm leading-6 text-[#3a3048]">
+                  {reading.pros.map((item) => <li key={item}>{item}</li>)}
+                </ul>
+                <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">{copy.cautionsTitle}</p>
+                <ul className="mt-2 space-y-2 text-sm leading-6 text-[#3a3048]">
+                  {reading.cautions.map((item) => <li key={item}>{item}</li>)}
+                </ul>
+                <p className="mt-5 text-sm leading-7 text-[#5c4a24]">{reading.practicalFocus}</p>
+              </div>
+            ) : (
+              <p className="mt-3 text-sm leading-7 text-[#3a3048]">{copy.readingPlaceholder}</p>
+            )}
+      </article>
     </section>
   );
 }

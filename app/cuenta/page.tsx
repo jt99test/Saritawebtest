@@ -55,22 +55,22 @@ export default async function AccountPage() {
   return (
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
-      <section className="relative py-10 sm:py-14">
-        <Container className="min-h-screen">
+      <section className="relative py-7 sm:py-14">
+        <Container className="min-h-[100svh] sm:min-h-screen">
           <div className="mx-auto max-w-3xl">
-            <Link href="/" className="text-xs font-medium uppercase tracking-[0.24em] text-[#3a3048] transition hover:text-ivory">
+            <Link href="/" className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-ivory sm:text-xs sm:tracking-[0.24em]">
               {dictionary.result.back}
             </Link>
-            <h1 className="mt-10 font-serif text-[48px] leading-tight text-ivory sm:text-[64px]">
+            <h1 className="mt-8 font-serif text-[40px] leading-tight text-ivory sm:mt-10 sm:text-[64px]">
               {dictionary.account.title}
             </h1>
 
-            <div className="mt-10 space-y-8">
-              <section className="border border-black/10 bg-white p-6 shadow-[0_4px_16px_rgba(0,0,0,0.2)]">
+            <div className="mt-8 space-y-6 sm:mt-10 sm:space-y-8">
+              <section className="border border-black/10 bg-white p-5 shadow-[0_4px_16px_rgba(0,0,0,0.2)] sm:p-6">
                 <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5c4a24]">
                   {dictionary.account.plan}
                 </p>
-                <h2 className="mt-3 font-serif text-4xl text-ivory">{planLabel}</h2>
+                <h2 className="mt-3 font-serif text-3xl text-ivory sm:text-4xl">{planLabel}</h2>
                 <p className="mt-3 text-sm text-[#3a3048]">
                   {dictionary.account.billingPeriod}: {profile?.billing_period ?? dictionary.pricing.free}
                 </p>

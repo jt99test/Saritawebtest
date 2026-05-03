@@ -21,7 +21,7 @@ import {
 // Stable SE numeric constants (never change across SE versions)
 const SE_SUN = 0, SE_MOON = 1, SE_MERCURY = 2, SE_VENUS = 3, SE_MARS = 4;
 const SE_JUPITER = 5, SE_SATURN = 6, SE_URANUS = 7, SE_NEPTUNE = 8, SE_PLUTO = 9;
-const SE_TRUE_NODE = 11, SE_MEAN_APOG = 12, SE_CHIRON = 15, SE_CERES = 17;
+const SE_TRUE_NODE = 11, SE_INTP_APOG = 21, SE_CHIRON = 15, SE_CERES = 17;
 const SEFLG_SPEED = 256, SEFLG_SWIEPH = 2;
 
 let _se: SwissEph | null = null;
@@ -75,7 +75,7 @@ const PLANET_CONFIG: Array<{
   { id: "pluto",     body: SE_PLUTO,     glyph: "♇", color: "#d768bd" },
   { id: "northNode", body: SE_TRUE_NODE, glyph: "☊", color: "#d2d0d8" },
   { id: "chiron",    body: SE_CHIRON,    glyph: "⚷", color: "#ceb39b" },
-  { id: "lilith",    body: SE_MEAN_APOG, glyph: "⚸", color: "#b893d6" },
+  { id: "lilith",    body: SE_INTP_APOG, glyph: "⚸", color: "#b893d6" },
 ];
 
 const ASPECT_DEFS: Array<{ type: AspectId; angle: number; orb: number }> = [

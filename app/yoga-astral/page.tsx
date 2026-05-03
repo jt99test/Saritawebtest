@@ -68,12 +68,12 @@ export default function YogaAstralRoutePage() {
     <main className="relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
 
-      <section className="relative min-h-screen py-6 sm:py-8">
-        <Container className="relative flex min-h-screen flex-col">
-          <div className="mb-6 flex items-center justify-between gap-4 pt-2">
+      <section className="relative min-h-[100svh] py-4 sm:min-h-screen sm:py-8">
+        <Container className="relative flex min-h-[100svh] flex-col sm:min-h-screen">
+          <div className="mb-4 flex items-center justify-between gap-4 pt-2 sm:mb-6">
             <Link
               href="/resultado"
-              className="text-xs font-medium uppercase tracking-[0.28em] text-[#3a3048] transition hover:text-ivory"
+              className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-ivory sm:text-xs sm:tracking-[0.28em]"
             >
               {dictionary.form.back}
             </Link>
@@ -87,10 +87,10 @@ export default function YogaAstralRoutePage() {
                 <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
                   yoga astral
                 </p>
-                <h1 className="mt-2 font-serif text-[48px] font-normal leading-tight text-ivory">
+                <h1 className="mt-2 font-serif text-[38px] font-normal leading-tight text-ivory sm:text-[48px]">
                   {dictionary.standalonePages.needChartTitle}
                 </h1>
-                <p className="mx-auto mt-4 max-w-2xl font-serif text-[17px] italic leading-8 text-[#3a3048]">
+                <p className="mx-auto mt-4 max-w-2xl font-serif text-[15px] italic leading-7 text-[#3a3048] sm:text-[17px] sm:leading-8">
                   {dictionary.standalonePages.needChartBody}
                 </p>
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-6">

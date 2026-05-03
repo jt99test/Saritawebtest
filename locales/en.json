@@ -39,6 +39,11 @@
         "title": "Astral yoga",
         "description": "Body practices aligned with your element.",
         "href": "/yoga-astral"
+      },
+      {
+        "title": "Astrocartography",
+        "description": "Your planetary lines across the world map.",
+        "href": "/astrocartografia"
       }
     ]
   },
@@ -54,8 +59,10 @@
       "location": "Birth place"
     },
     "genderOptions": {
+      "unspecified": "Prefer not to say",
       "female": "Female",
-      "male": "Male"
+      "male": "Male",
+      "neutral": "Neutral"
     },
     "birthTimeUnknown": {
       "label": "I do not know the exact time",
@@ -145,7 +152,7 @@
     "proName": "Pro",
     "avanzadoName": "Advanced",
     "proTagline": "Moon, yoga and your full chart",
-    "avanzadoTagline": "Everything. Transits, solar return and synastry.",
+    "avanzadoTagline": "Everything. Transits, solar return, synastry and astrocartography.",
     "proFeatures": [
       "Personalised moon of the month",
       "Astral yoga based on your chart",
@@ -156,6 +163,7 @@
       "Real-time transits",
       "Solar Return",
       "Synastry",
+      "Astrocartography",
       "Intestinal cleanse free with yearly plan"
     ],
     "lavadoFreeHighlight": "Free with yearly plan",
@@ -333,6 +341,9 @@
       "readingError": "Could not generate the astrocartography reading.",
       "prosTitle": "Strengths",
       "cautionsTitle": "Watch-outs",
+      "lineInfoEyebrow": "selected line",
+      "lineInfoPlaceholder": "Tap a map line or a nearby line to see which planet and angle it activates.",
+      "angleInfoLabel": "Angle",
       "influenceStrong": "strong influence",
       "influenceNoticeable": "noticeable influence",
       "influenceBackground": "background influence",
@@ -353,6 +364,24 @@
         "DC": "DC",
         "MC": "MC",
         "IC": "IC"
+      },
+      "planetMeanings": {
+        "sun": "Highlights places where your identity, confidence and life direction become more visible.",
+        "moon": "Activates belonging, memory, the emotional body and the need to feel at home.",
+        "mercury": "Moves study, writing, conversation, contacts and practical decisions.",
+        "venus": "Opens relationships, pleasure, aesthetics, sociability and softer ways of receiving.",
+        "mars": "Raises drive, desire, competition, initiative and also friction if you move too fast.",
+        "jupiter": "Expands opportunity, travel, teaching, confidence and a sense of growth.",
+        "saturn": "Asks for structure, responsibility, maturity, limits and sustained work.",
+        "uranus": "Awakens change, independence, experimentation and unexpected turns.",
+        "neptune": "Sensitizes intuition, spirituality, art and also the tendency to idealize.",
+        "pluto": "Intensifies transformation, personal power, psychological depth and closure processes."
+      },
+      "angleMeanings": {
+        "AC": "You live it personally: body, identity, presence and how you enter life.",
+        "DC": "It activates through bonds: partners, clients, agreements, mirrors and negotiation.",
+        "MC": "It touches public life: vocation, career, reputation, goals and visible direction.",
+        "IC": "It is felt inwardly: home, roots, family, intimacy and emotional ground."
       }
     },
     "completeChart": {
@@ -724,7 +753,7 @@
     "termsSections": [
       {
         "title": "Service description",
-        "body": "SARITA offers natal chart calculation, astrology readings, Moon of the Month, Astral Yoga, transits, Solar Return, synastry and related digital content."
+        "body": "SARITA offers natal chart calculation, astrology readings, Moon of the Month, Astral Yoga, transits, Solar Return, synastry, astrocartography and related digital content."
       },
       {
         "title": "Subscriptions",
@@ -763,7 +792,9 @@
     "limited": "limited",
     "notIncluded": "—",
     "tableTitle": "Full comparison",
+    "readingsPerMonth": "{count}/mo",
     "rows": [
+      "Readings per month",
       "Full natal chart",
       "Planet readings",
       "Moon of the month",
@@ -771,6 +802,7 @@
       "Real-time transits",
       "Solar Return",
       "Synastry",
+      "Astrocartography",
       "Intestinal Cleanse"
     ],
     "faqs": [
@@ -788,7 +820,7 @@
       },
       {
         "question": "What is the difference between Pro and Avanzado?",
-        "answer": "Pro gives you Moon of the Month and Astral Yoga. Avanzado adds Transits, Solar Return and Synastry."
+        "answer": "Pro gives you Moon of the Month, Astral Yoga and 5 readings per month. Avanzado adds 20 readings per month, Transits, Solar Return, Synastry and Astrocartography."
       },
       {
         "question": "Do you offer refunds?",

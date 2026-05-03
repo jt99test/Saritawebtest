@@ -50,9 +50,9 @@ export default function FormPage() {
     <main className="relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
 
-      <section className="relative min-h-screen py-8 sm:py-10">
-        <Container className="relative flex min-h-screen items-center">
-          <Reveal mode="immediate" className="mx-auto grid w-full max-w-5xl gap-10 lg:grid-cols-[0.8fr_1fr] lg:items-end">
+      <section className="relative min-h-[100svh] py-5 sm:py-10">
+        <Container className="relative flex min-h-[100svh] items-start py-4 sm:min-h-screen lg:items-center lg:py-0">
+          <Reveal mode="immediate" className="mx-auto grid w-full max-w-5xl gap-7 lg:grid-cols-[0.8fr_1fr] lg:items-center lg:gap-10">
             <div className="pb-2">
               <Link
                 href="/"
@@ -61,15 +61,15 @@ export default function FormPage() {
                 {dictionary.form.back}
               </Link>
 
-              <SectionTitle className="mt-6">{dictionary.form.title}</SectionTitle>
-              <p className="mt-4 max-w-xl text-base leading-8 text-[#3a3048]">
+              <SectionTitle className="mt-5">{dictionary.form.title}</SectionTitle>
+              <p className="mt-3 max-w-xl text-sm leading-7 text-[#3a3048] sm:text-base sm:leading-8">
                 {dictionary.form.subtitle}
               </p>
             </div>
 
               <form
                 onSubmit={handleSubmit}
-                className="grid gap-4 border-t border-dusty-gold/16 pt-8 sm:grid-cols-2 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0"
+                className="grid gap-4 border-t border-dusty-gold/16 pt-6 sm:grid-cols-2 sm:pt-8 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0"
               >
                 <label className="block">
                   <span className={labelClass}>{dictionary.form.fields.name}</span>
@@ -105,7 +105,7 @@ export default function FormPage() {
                     disabled={submitting || values.birthTimeUnknown}
                     className={inputClass}
                   />
-                  <label className="mt-3 flex items-start gap-3 text-sm leading-6 text-[#3a3048]">
+                  <label className="mt-3 flex items-center gap-3 text-sm leading-6 text-[#3a3048]">
                     <input
                       type="checkbox"
                       checked={Boolean(values.birthTimeUnknown)}
@@ -120,36 +120,35 @@ export default function FormPage() {
                       disabled={submitting}
                       className="mt-1 h-4 w-4 rounded border-black/20 text-dusty-gold"
                     />
-                    <span>
-                      <span className="block font-medium text-ivory">{dictionary.form.birthTimeUnknown.label}</span>
-                      {values.birthTimeUnknown ? (
-                        <span className="block text-xs leading-5 text-[#3a3048]">{dictionary.form.birthTimeUnknown.body}</span>
-                      ) : null}
+                    <span className="font-medium text-ivory">{dictionary.form.birthTimeUnknown.label}</span>
+                    <span className="group relative inline-flex">
+                      <button
+                        type="button"
+                        className="flex h-5 w-5 items-center justify-center rounded-full border border-black/15 bg-white/60 text-[11px] font-semibold text-[#5c4a24] outline-none transition hover:border-dusty-gold/55 focus:border-dusty-gold/55"
+                        aria-label={dictionary.form.birthTimeUnknown.body}
+                      >
+                        ?
+                      </button>
+                      <span className="pointer-events-none absolute left-1/2 top-7 z-30 w-64 -translate-x-1/2 border border-black/10 bg-white px-4 py-3 text-xs leading-5 text-[#3a3048] opacity-0 shadow-[0_18px_45px_rgba(0,0,0,0.14)] transition group-hover:opacity-100 group-focus-within:opacity-100">
+                        {dictionary.form.birthTimeUnknown.body}
+                      </span>
                     </span>
                   </label>
                 </div>
 
                 <div className="block">
                   <span className={labelClass}>{dictionary.form.fields.gender}</span>
-                  <div className="grid grid-cols-2 gap-2">
-                    {(["female", "male"] as const).map((option) => (
-                      <button
-                        key={option}
-                        type="button"
-                        disabled={submitting}
-                        aria-pressed={values.gender === option}
-                        onClick={() => setValue("gender", values.gender === option ? "" : option)}
-                        className={[
-                          "rounded-2xl border px-4 py-4 text-sm font-semibold uppercase tracking-[0.18em] transition",
-                          values.gender === option
-                            ? "border-dusty-gold/55 bg-dusty-gold/14 text-[#5c4a24]"
-                            : "border-black/15 bg-cosmic-900 text-ivory hover:border-black/25",
-                        ].join(" ")}
-                      >
-                        {dictionary.form.genderOptions[option]}
-                      </button>
-                    ))}
-                  </div>
+                  <select
+                    value={values.gender}
+                    onChange={(event) => setValue("gender", event.target.value as FormValues["gender"])}
+                    disabled={submitting}
+                    className={inputClass}
+                  >
+                    <option value="">{dictionary.form.genderOptions.unspecified}</option>
+                    <option value="female">{dictionary.form.genderOptions.female}</option>
+                    <option value="male">{dictionary.form.genderOptions.male}</option>
+                    <option value="neutral">{dictionary.form.genderOptions.neutral}</option>
+                  </select>
                 </div>
 
                 <label className="block sm:col-span-2">

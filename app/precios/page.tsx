@@ -19,23 +19,23 @@ export default async function PricingPage() {
   return (
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
-      <section className="relative py-10 sm:py-14">
-        <Container className="min-h-screen">
+      <section className="relative py-7 sm:py-14">
+        <Container className="min-h-[100svh] sm:min-h-screen">
           <div className="mx-auto max-w-5xl text-center">
             <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
               {dictionary.pricing.eyebrow}
             </p>
-            <h1 className="mt-3 font-serif text-[48px] leading-tight text-ivory sm:text-[72px]">
+            <h1 className="mt-3 font-serif text-[40px] leading-tight text-ivory sm:text-[72px]">
               {dictionary.pricing.headline}
             </h1>
-            <p className="mx-auto mt-5 max-w-xl text-base leading-8 text-[#3a3048]">
+            <p className="mx-auto mt-4 max-w-xl text-sm leading-7 text-[#3a3048] sm:mt-5 sm:text-base sm:leading-8">
               {dictionary.pricing.subtitle}
             </p>
             <PricingPlans dictionary={dictionary} />
           </div>
 
-          <section className="mx-auto mt-16 max-w-3xl">
-            <h2 className="text-center font-serif text-4xl text-ivory">{dictionary.pricing.faqTitle}</h2>
+          <section className="mx-auto mt-12 max-w-3xl sm:mt-16">
+            <h2 className="text-center font-serif text-3xl text-ivory sm:text-4xl">{dictionary.pricing.faqTitle}</h2>
             <div className="mt-8 border-t border-black/10">
               {dictionary.pricing.faqs.map((faq) => (
                 <details key={faq.question} className="group border-b border-black/10 py-5">

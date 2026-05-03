@@ -349,9 +349,9 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
   });
 
   return (
-    <div className="mx-auto max-w-[1080px] pb-0 pt-8 lg:pt-10">
-      <div className="mx-auto mb-8 max-w-2xl text-center">
-        <p className="text-sm leading-7 text-[#3a3048]">
+    <div className="mx-auto max-w-[1080px] pb-0 pt-5 sm:pt-8 lg:pt-10">
+      <div className="mx-auto mb-6 max-w-2xl text-center sm:mb-8">
+        <p className="text-[13px] leading-6 text-[#3a3048] sm:text-sm sm:leading-7">
           {dictionary.lunar.intro}
         </p>
       </div>
@@ -360,14 +360,14 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
         <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
           {dictionary.lunar.eyebrow}
         </p>
-        <h1 className="mt-1.5 font-serif text-[52px] font-normal leading-none tracking-[-0.01em] text-ivory lg:text-[68px]">
+        <h1 className="mt-1.5 font-serif text-[42px] font-normal leading-none text-ivory sm:text-[52px] lg:text-[68px]">
           {currentMonth.setLocale(locale).toFormat("LLLL yyyy").toLowerCase()}
         </h1>
         <p className="mx-auto mt-3 max-w-[480px] font-serif text-[15px] italic leading-7 text-[#3a3048] lg:max-w-[540px]">
           {dictionary.lunar.subtitle}
         </p>
 
-        <div className="mt-10 lg:mt-12">
+        <div className="mt-8 sm:mt-10 lg:mt-12">
           {toggleOptions.length > 0 ? (
             <LunationToggle
               options={toggleOptions}
@@ -389,7 +389,7 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
         </p>
       ) : selectedMetadata ? (
         <div>
-          <div className="mt-12 lg:mt-14">
+          <div className="mt-9 sm:mt-12 lg:mt-14">
             <LunationHeaderCard
               metadata={selectedMetadata}
               dictionary={dictionary}
@@ -398,7 +398,7 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
             />
           </div>
 
-          <div className="mt-20 lg:mt-28">
+          <div className="mt-12 sm:mt-20 lg:mt-28">
             <LunationReadingCard
               prose={prose}
               loading={activeStream.loading}
@@ -420,7 +420,7 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
             <PracticalActions actions={actions} loading={activeStream.loading} />
           </div>
 
-          <div className="mt-16 lg:mt-20">
+          <div className="mt-12 sm:mt-16 lg:mt-20">
             <MonthlyRoutineCard metadata={selectedMetadata} dictionary={dictionary} />
           </div>
         </div>

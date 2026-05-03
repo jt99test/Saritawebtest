@@ -100,19 +100,19 @@ export default async function YogaAstralElementPage({
     <main className="relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
 
-      <section className="relative py-6 sm:py-8">
+      <section className="relative py-4 sm:py-8">
         <Container className="relative">
-          <div className="mb-6 flex items-center justify-between gap-4 pt-2">
+          <div className="mb-4 flex items-center justify-between gap-4 pt-2 sm:mb-6">
             <Link
               href="/yoga-astral"
-              className="text-xs font-medium uppercase tracking-[0.28em] text-[#3a3048] transition hover:text-ivory"
+              className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-ivory sm:text-xs sm:tracking-[0.28em]"
             >
               {dictionary.form.back} · {dictionary.result.primaryTabs.yoga}
             </Link>
           </div>
 
-          <div className="space-y-10 pb-10">
-            <header className="border-t border-[rgba(181,163,110,0.15)] pt-8">
+          <div className="space-y-8 pb-10 sm:space-y-10">
+            <header className="border-t border-[rgba(181,163,110,0.15)] pt-6 sm:pt-8">
               <div>
                 <div className="flex flex-col items-center gap-5 text-center md:flex-row md:text-left">
                   <Image
@@ -121,14 +121,14 @@ export default async function YogaAstralElementPage({
                     width={120}
                     height={120}
                     priority
-                    className="h-[120px] w-[120px] object-contain drop-shadow-[0_0_30px_rgba(232,197,71,0.18)]"
+                    className="h-[92px] w-[92px] object-contain drop-shadow-[0_0_30px_rgba(232,197,71,0.18)] sm:h-[120px] sm:w-[120px]"
                     sizes="120px"
                   />
                   <div>
                     <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#3a3048]">
                       Yoga astral
                     </p>
-                    <h1 className="mt-4 font-serif text-5xl leading-tight text-ivory sm:text-6xl">
+                    <h1 className="mt-3 font-serif text-[38px] leading-tight text-ivory sm:mt-4 sm:text-6xl">
                       {routine.title}
                     </h1>
                     <div className="mt-4 flex flex-wrap gap-2">
@@ -178,12 +178,12 @@ export default async function YogaAstralElementPage({
                 {routine.signsAndHouses.map((entry) => (
                   <PremiumCard
                     key={entry.sign}
-                    className="border-black/10 bg-white/85 p-6 shadow-[0_14px_38px_rgba(30,26,46,0.08)]"
+                    className="border-black/10 bg-white/85 p-5 shadow-[0_14px_38px_rgba(30,26,46,0.08)] sm:p-6"
                   >
                     <p className="text-[12px] font-semibold uppercase tracking-[0.26em] text-[#3a3048]">
                       Casa {entry.houseNumber}
                     </p>
-                    <h3 className="mt-3 font-serif text-3xl text-ivory">
+                    <h3 className="mt-3 font-serif text-2xl text-ivory sm:text-3xl">
                       {SIGN_GLYPHS[entry.sign] ?? "✦"} {entry.sign}
                     </h3>
                     <p className="mt-4 text-sm leading-7 text-[#3a3048]">
@@ -221,7 +221,7 @@ export default async function YogaAstralElementPage({
                             <AsanaVisual asana={asana} tone={elemento} />
                           </div>
                           <div className="flex flex-col justify-center p-6 sm:p-8">
-                            <div className="flex items-center gap-4">
+                            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-dusty-gold/28 bg-dusty-gold/10 font-serif text-xl text-[#5c4a24]">
                                 {index + 1}
                               </span>
@@ -234,7 +234,7 @@ export default async function YogaAstralElementPage({
                                 {asana.duration}
                               </span>
                             </div>
-                            <h3 className="mt-5 font-serif text-3xl leading-tight text-ivory">
+                            <h3 className="mt-5 font-serif text-2xl leading-tight text-ivory sm:text-3xl">
                               {asana.nameSanskrit}
                             </h3>
                             <p className="mt-1 text-sm uppercase tracking-[0.2em] text-[#3a3048]">
@@ -264,7 +264,7 @@ export default async function YogaAstralElementPage({
                     key={item.name}
                     className="border-black/10 bg-white/88 p-6 shadow-[0_14px_38px_rgba(30,26,46,0.08)] sm:p-7"
                   >
-                    <h3 className="font-serif text-3xl text-ivory">{item.name}</h3>
+                    <h3 className="font-serif text-2xl text-ivory sm:text-3xl">{item.name}</h3>
                     <p className="mt-4 text-sm leading-7 text-[#3a3048]">
                       {item.description}
                     </p>
@@ -284,7 +284,7 @@ export default async function YogaAstralElementPage({
                 <p className="text-base leading-8 text-[#3a3048]">
                   {routine.savasana.visualization}
                 </p>
-                <p className="mt-8 font-serif text-3xl text-[#5c4a24]">
+                <p className="mt-7 font-serif text-2xl text-[#5c4a24] sm:mt-8 sm:text-3xl">
                   Mantra bija: {routine.chakra.mantra} · {chakraName}
                 </p>
               </PremiumCard>

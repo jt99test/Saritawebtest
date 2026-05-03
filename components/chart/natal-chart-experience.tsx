@@ -67,10 +67,10 @@ function getCity(locationLabel: string) {
 }
 
 function nameSizeClass(name: string) {
-  if (name.length >= 14) return "text-[34px] sm:text-[40px] lg:text-[44px]";
-  if (name.length >= 10) return "text-[38px] sm:text-[44px] lg:text-[50px]";
-  if (name.length >= 6) return "text-[44px] sm:text-[50px] lg:text-[56px]";
-  return "text-[52px] lg:text-[72px]";
+  if (name.length >= 14) return "text-[30px] sm:text-[40px] lg:text-[44px]";
+  if (name.length >= 10) return "text-[34px] sm:text-[44px] lg:text-[50px]";
+  if (name.length >= 6) return "text-[40px] sm:text-[50px] lg:text-[56px]";
+  return "text-[44px] sm:text-[52px] lg:text-[72px]";
 }
 
 function stickyChartTitle(eyebrow: string, name: string) {
@@ -118,7 +118,7 @@ export function NatalChartExperience({
   }
 
   return (
-    <div className="relative mx-auto max-w-[880px] px-4 pb-20 pt-4 sm:px-6 lg:max-w-[1180px] lg:px-8">
+    <div className="relative mx-auto max-w-[880px] px-3 pb-16 pt-3 sm:px-6 sm:pb-20 sm:pt-4 lg:max-w-[1180px] lg:px-8">
       <div className="space-y-3">
         <div className="relative">
         <div className="mb-2 flex flex-col gap-1 border-b border-dusty-gold/14 pb-3 sm:flex-row sm:items-end sm:justify-between">
@@ -150,7 +150,7 @@ export function NatalChartExperience({
                   }
                 }}
                 className={[
-                  "group flex-shrink-0 border-b-[1.5px] px-5 pb-3 pt-2 text-left transition",
+                  "group flex-shrink-0 border-b-[1.5px] px-3 pb-2.5 pt-2 text-left transition sm:px-5 sm:pb-3",
                   active
                     ? "border-dusty-gold bg-transparent"
                     : locked
@@ -160,14 +160,14 @@ export function NatalChartExperience({
               >
                 <span
                   className={[
-                    "flex items-center gap-2 text-[12px] font-semibold uppercase leading-none tracking-[0.22em] transition",
+                    "flex items-center gap-1.5 text-[10px] font-semibold uppercase leading-none tracking-[0.16em] transition sm:gap-2 sm:text-[12px] sm:tracking-[0.22em]",
                     active ? "text-dusty-gold" : "text-[#3a3048] group-hover:text-ivory/78",
                   ].join(" ")}
                 >
                   {locked ? <span aria-hidden="true">🔒</span> : null}
                   {dictionary.result.primaryTabs[tab]}
                   {locked && requiredPlan ? (
-                    <span className="border border-dusty-gold/20 px-1.5 py-0.5 text-[12px] tracking-[0.14em] text-[#5c4a24]">
+                    <span className="border border-dusty-gold/20 px-1.5 py-0.5 text-[10px] tracking-[0.1em] text-[#5c4a24] sm:text-[12px] sm:tracking-[0.14em]">
                       {requiredPlan === "pro" ? dictionary.paywall.lockedBadgePro : dictionary.paywall.lockedBadgeAvanzado}
                     </span>
                   ) : null}
@@ -186,7 +186,7 @@ export function NatalChartExperience({
           <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
             {dictionary.result.primaryTabs[pageTab]}
           </p>
-          <h2 className="mt-3 font-serif text-[38px] leading-tight text-ivory">
+          <h2 className="mt-3 font-serif text-[32px] leading-tight text-ivory sm:text-[38px]">
             {dictionary.paywall.lockedTabTitle.replace(
               "{plan}",
               activeRequiredPlan === "pro" ? dictionary.paywall.proName : dictionary.paywall.avanzadoName,
@@ -210,8 +210,8 @@ export function NatalChartExperience({
 
       {pageTab === "natal" && !activeTabLocked ? (
         <>
-          <div className="mx-auto mt-8 max-w-2xl text-center">
-            <p className="text-sm leading-7 text-[#3a3048]">
+          <div className="mx-auto mt-7 max-w-2xl text-center sm:mt-8">
+            <p className="text-[13px] leading-6 text-[#3a3048] sm:text-sm sm:leading-7">
               {dictionary.result.chartHeader.intro}
             </p>
           </div>
@@ -225,7 +225,7 @@ export function NatalChartExperience({
               ) : null}
             </div>
 
-            <div className="mt-10 mb-10 text-center lg:hidden">
+            <div className="mb-7 mt-8 text-center sm:mb-10 sm:mt-10 lg:hidden">
               <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-dusty-gold">
                 {dictionary.result.chartHeader.eyebrow}
               </p>
@@ -237,7 +237,7 @@ export function NatalChartExperience({
               </p>
             </div>
 
-            <div className="relative mx-auto max-w-[56rem] py-6 lg:max-w-[1180px]">
+            <div className="relative mx-auto max-w-[56rem] py-4 sm:py-6 lg:max-w-[1180px]">
               <div className="space-y-6 lg:grid lg:grid-cols-[minmax(220px,1fr)_minmax(500px,640px)_minmax(180px,0.75fr)] lg:items-center lg:gap-8 lg:space-y-0">
                 <div className="hidden min-w-0 text-right lg:block">
                   <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-dusty-gold">
