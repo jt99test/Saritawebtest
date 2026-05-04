@@ -44,7 +44,13 @@ type StreamState = {
 type PreviewMap = Partial<Record<LunationType, LunarReportMetadata>>;
 
 const REPORT_MONTH_FORMAT = "yyyy-LL";
-const REPORT_TYPES: LunationType[] = ["nueva", "llena"];
+const REPORT_TYPES: LunationType[] = ["nueva", "llena", "nueva-2", "llena-2"];
+const EMPTY_STREAM_STATE: Record<LunationType, StreamState> = {
+  nueva: { prose: "", actions: null, loading: false, error: null },
+  llena: { prose: "", actions: null, loading: false, error: null },
+  "nueva-2": { prose: "", actions: null, loading: false, error: null },
+  "llena-2": { prose: "", actions: null, loading: false, error: null },
+};
 
 function monthDateForChart(chart: NatalChartData) {
   const zone = chart.event.timezoneIdentifier || "UTC";
@@ -117,10 +123,7 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
   const [previewError, setPreviewError] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(true);
   const [cachedReports, setCachedReports] = useState<Record<string, LunarReportCacheEntry>>({});
-  const [streamState, setStreamState] = useState<Record<LunationType, StreamState>>({
-    nueva: { prose: "", actions: null, loading: false, error: null },
-    llena: { prose: "", actions: null, loading: false, error: null },
-  });
+  const [streamState, setStreamState] = useState<Record<LunationType, StreamState>>(EMPTY_STREAM_STATE);
 
   useEffect(() => {
     let cancelled = false;
@@ -137,10 +140,7 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
       setSelectedType("nueva");
       setPreviewError(null);
       setPreviewLoading(true);
-      setStreamState({
-        nueva: { prose: "", actions: null, loading: false, error: null },
-        llena: { prose: "", actions: null, loading: false, error: null },
-      });
+      setStreamState(EMPTY_STREAM_STATE);
     })();
 
     return () => {
@@ -156,16 +156,20 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
       setPreviewError(null);
 
       try {
-        const [nueva, llena] = await Promise.all([
-          fetchPreview(chart, year, month, "nueva", locale),
-          fetchPreview(chart, year, month, "llena", locale),
-        ]);
+        const previewEntries = await Promise.all(
+          REPORT_TYPES.map(async (type) => {
+            const metadata = await fetchPreview(chart, year, month, type, locale).catch(() => null);
+            return [type, metadata] as const;
+          }),
+        );
 
         if (cancelled) {
           return;
         }
 
-        const nextPreviews = { nueva, llena };
+        const nextPreviews = Object.fromEntries(
+          previewEntries.filter((entry): entry is [LunationType, LunarReportMetadata] => Boolean(entry[1])),
+        ) as PreviewMap;
         setPreviews(nextPreviews);
         setSelectedType(getClosestType(nextPreviews, timezone));
       } catch {
@@ -342,7 +346,9 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
     return [
       {
         id: type,
-        label: type === "nueva" ? dictionary.lunar.newMoon : dictionary.lunar.fullMoon,
+        label: type.startsWith("nueva")
+          ? type.endsWith("-2") ? `${dictionary.lunar.newMoon} 2` : dictionary.lunar.newMoon
+          : type.endsWith("-2") ? `${dictionary.lunar.fullMoon} 2` : dictionary.lunar.fullMoon,
         date: formatToggleDate(metadata.timestamp, timezone, locale),
       },
     ];

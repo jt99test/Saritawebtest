@@ -188,7 +188,7 @@ function buildPrompt({
   chart: NatalChartData;
   year: number;
   month: number;
-  lunationType: "nueva" | "llena";
+  lunationType: LunationType;
   metadata: {
     signLabel: string;
     degree: number;
@@ -203,7 +203,7 @@ function buildPrompt({
   gender?: ReadingGender;
 }) {
   const name = chart.event.name;
-  const lunaLabel = lunationType === "nueva" ? "Nueva" : "Llena";
+  const lunaLabel = lunationType.startsWith("nueva") ? "Nueva" : "Llena";
 
   return `Eres una astróloga amiga de ${name} que le está explicando qué le toca este mes según la Luna ${lunaLabel} en su carta.
 
@@ -263,7 +263,13 @@ export async function POST(request: Request) {
 
     const monthlyData = await getMonthlyLunarData(chart, year, month);
     const lunation =
-      lunationType === "nueva" ? monthlyData.lunaNueva : monthlyData.lunaLlena;
+      lunationType === "nueva"
+        ? monthlyData.lunaNueva
+        : lunationType === "nueva-2"
+          ? monthlyData.lunaNuevaSecondary
+          : lunationType === "llena-2"
+            ? monthlyData.lunaLlenaSecondary
+            : monthlyData.lunaLlena;
 
     if (!lunation) {
       return new Response("No lunation found for the requested month", { status: 404 });
@@ -288,8 +294,9 @@ export async function POST(request: Request) {
           gender: readingGender,
         })
       : transitData.structured;
+    const isNewMoon = lunationType.startsWith("nueva");
     const baseMessage =
-      lunationType === "nueva"
+      isNewMoon
         ? houseMessage.lunaNueva.baseMessage
         : houseMessage.lunaLlena.baseMessage;
 
@@ -302,7 +309,7 @@ export async function POST(request: Request) {
       activatedHouse: lunation.activatedHouse,
       areaOfLife: houseMessage.areaOfLife,
       subtitle:
-        lunationType === "nueva"
+        isNewMoon
           ? houseMessage.lunaNueva.subtitle
           : houseMessage.lunaLlena.subtitle,
       baseMessage,

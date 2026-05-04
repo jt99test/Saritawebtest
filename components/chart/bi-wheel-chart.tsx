@@ -306,6 +306,41 @@ function SolarReturnAngleMarkers({ chart, ascendant }: { chart: NatalChartData; 
   );
 }
 
+function SolarReturnHouseLabels({ chart, ascendant }: { chart: NatalChartData; ascendant: number }) {
+  return (
+    <g>
+      {chart.houses.map((house, index) => {
+        const nextHouse = chart.houses[(index + 1) % chart.houses.length] ?? chart.houses[0]!;
+        const label = pointAtRadius(OUTER_SEP_R + 18, midpointLongitude(house.longitude, nextHouse.longitude), ascendant);
+
+        return (
+          <g key={`rs-house-label-${house.house}`}>
+            <circle
+              cx={label.x}
+              cy={label.y}
+              r="11"
+              fill="#fffaf0"
+              stroke="rgba(143,123,69,0.42)"
+              strokeWidth="0.8"
+              filter="url(#bw-glow)"
+            />
+            <text
+              x={label.x}
+              y={label.y + 0.5}
+              textAnchor="middle"
+              dominantBaseline="central"
+              className="text-[10px] font-semibold"
+              fill="#5f4b1f"
+            >
+              {house.house}
+            </text>
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
 export function BiWheelChart({
   innerChart,
   outerChart,
@@ -535,18 +570,21 @@ export function BiWheelChart({
         })}
 
         {outerChart && variant === "solar-return" ? (
-          <SolarReturnAngleMarkers chart={outerChart} ascendant={ascendant} />
+          <>
+            <SolarReturnHouseLabels chart={outerChart} ascendant={ascendant} />
+            <SolarReturnAngleMarkers chart={outerChart} ascendant={ascendant} />
+          </>
         ) : null}
 
       </svg>
 
       <div className="mx-auto mt-8 flex flex-wrap items-center justify-center gap-3 px-4">
-        <span className="inline-flex items-center gap-2 rounded-full border border-black/12 bg-white px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-ivory shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+        <span className="inline-flex max-w-[min(22rem,86vw)] items-center justify-center gap-2 rounded-full border border-black/12 bg-white px-4 py-2 text-center text-[12px] font-semibold uppercase tracking-[0.2em] text-ivory shadow-[0_8px_24px_rgba(0,0,0,0.08)] [overflow-wrap:normal] [word-break:normal]">
           <span className="h-2.5 w-2.5 rounded-full bg-ivory" />
           {innerLabel}
         </span>
         {outerChart ? (
-          <span className="inline-flex items-center gap-2 rounded-full border border-black/12 bg-white px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-ivory shadow-[0_8px_24px_rgba(0,0,0,0.08)]">
+          <span className="inline-flex max-w-[min(22rem,86vw)] items-center justify-center gap-2 rounded-full border border-black/12 bg-white px-4 py-2 text-center text-[12px] font-semibold uppercase tracking-[0.2em] text-ivory shadow-[0_8px_24px_rgba(0,0,0,0.08)] [overflow-wrap:normal] [word-break:normal]">
             <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: colors.primary }} />
             {outerLabel}
           </span>

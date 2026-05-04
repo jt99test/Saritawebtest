@@ -1,4 +1,4 @@
-export type LunationType = "nueva" | "llena";
+export type LunationType = "nueva" | "llena" | "nueva-2" | "llena-2";
 
 export type LunarReportActionSet = {
   hazEsto: string;

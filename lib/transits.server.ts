@@ -44,6 +44,12 @@ export type ActiveTransit = {
   orb: number;
   exactnessDate: string;
   strength: "tight" | "moderate" | "wide";
+  activatedNatalAspects: Array<{
+    pointA: ChartPointId;
+    pointB: ChartPointId;
+    aspectType: AspectId;
+    orb: number;
+  }>;
 };
 
 type SupportedTransitPlanet =
@@ -123,6 +129,19 @@ function findExactnessDate(se: SwissEph, planet: SupportedTransitPlanet, natalLo
   return DateTime.fromJSDate(best.date, { zone: "utc" }).toISO({ suppressMilliseconds: true, includeOffset: false }) + "Z";
 }
 
+function natalAspectsForPoint(natalChart: NatalChartData, pointId: ChartPointId): ActiveTransit["activatedNatalAspects"] {
+  return natalChart.aspects
+    .filter((aspect) => aspect.from === pointId || aspect.to === pointId)
+    .sort((left, right) => left.orb - right.orb)
+    .slice(0, 4)
+    .map((aspect) => ({
+      pointA: aspect.from,
+      pointB: aspect.to,
+      aspectType: aspect.type,
+      orb: aspect.orb,
+    }));
+}
+
 export async function getTransitingPositions(date: Date): Promise<TransitingPoint[]> {
   const se = await initSwisseph();
   const jd = toJulianDay(se, date);
@@ -161,6 +180,7 @@ export async function getActiveTransits(natalChart: NatalChartData, date: Date):
             orb: Math.round(orb * 100) / 100,
             exactnessDate: findExactnessDate(se, transit.id, natalPoint.longitude, aspect.angle, date),
             strength: toStrength(orb, rules.orb),
+            activatedNatalAspects: natalAspectsForPoint(natalChart, natalPoint.id),
           });
         }
       }

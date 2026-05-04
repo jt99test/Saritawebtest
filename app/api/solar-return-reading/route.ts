@@ -177,6 +177,13 @@ export async function POST(request: Request) {
 
 ${context}
 
+Logica de lectura de Revolucion Solar:
+- La carta natal es el terreno: memoria profunda, patrones de base y significado principal.
+- La Revolucion Solar no sustituye ni contradice la carta natal; muestra el escenario anual donde ese terreno se despliega.
+- Lee la RS siempre en dialogo con la carta natal: el Sol RS, la Luna RS, el Ascendente RS y los planetas angulares muestran como y donde se activa el aprendizaje natal durante este ano.
+- No presentes la lectura como prediccion fatalista. Presentala como proceso, clima evolutivo y guia de conciencia para vivir el ano con mas presencia.
+- Si una casa RS esta enfatizada, explica el area anual; si un planeta RS esta angular o destacado, explica que experiencia busca volverse visible.
+
 ${genderPromptInstruction(readingGender, locale)}
 ${grammarPromptInstruction(locale)}
 

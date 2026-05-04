@@ -182,7 +182,8 @@ function transitWeight(transit: ActiveTransit) {
     quincunx: 1.6,
   };
   const tightness = transit.strength === "tight" ? 3 : transit.strength === "moderate" ? 2 : 1;
-  return (planetWeight[transit.transitingPlanet] ?? 1) + aspectWeight[transit.aspectType] + tightness - transit.orb;
+  const natalPatternBonus = Math.min(1.5, transit.activatedNatalAspects.length * 0.35);
+  return (planetWeight[transit.transitingPlanet] ?? 1) + aspectWeight[transit.aspectType] + tightness + natalPatternBonus - transit.orb;
 }
 
 function topTransits(transits: ActiveTransit[]) {
@@ -290,6 +291,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
       orb: t.orb,
       strength: t.strength,
       natalHouse: findPoint(chart, t.natalPlanet)?.house,
+      activatedNatalAspects: t.activatedNatalAspects,
     }));
     setTransitReading("");
     setTransitData({});

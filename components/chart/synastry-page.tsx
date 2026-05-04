@@ -269,9 +269,16 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
   );
   const aspectedInnerIds = useMemo(() => [...new Set(aspects.map((aspect) => aspect.pointA))], [aspects]);
   const aspectedOuterIds = useMemo(() => [...new Set(aspects.map((aspect) => aspect.pointB))], [aspects]);
+  const readingChartA = innerChart;
+  const readingChartB = outerChart;
+  const readingSubjectName = innerName;
+  const readingPartnerName = outerName;
+  const readingSubjectGender = flipped ? selectedPartner?.gender : gender;
+  const readingPartnerGender = flipped ? gender : selectedPartner?.gender;
+  const readingSubjectHash = flipped ? partnerHash : natalHash;
   const readingAspects = useMemo(
-    () => partnerChart ? calculateSynastryAspects(natalChart, partnerChart) : [],
-    [natalChart, partnerChart],
+    () => readingChartB ? calculateSynastryAspects(readingChartA, readingChartB) : [],
+    [readingChartA, readingChartB],
   );
   const hasAiCompatibility = Boolean(synastryData.compatibilityLabel && synastryData.compatibilityDescription);
 
@@ -339,11 +346,13 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
   }, [synastryWheelMode, flipped]);
 
   useEffect(() => {
-    if (!selectedPartner || !partnerChart || readingAspects.length === 0 || !natalHash || !partnerHash) return;
+    if (!selectedPartner || !partnerChart || !readingChartB || readingAspects.length === 0 || !readingSubjectHash || !partnerHash || !natalHash) return;
     let active = true;
-    const partnerGender = selectedPartner.gender === "female" || selectedPartner.gender === "male" ? selectedPartner.gender : undefined;
-    const cacheKey = `synastry:${partnerHash}:${locale}:${gender || "unspecified"}:${partnerGender || "partner-unspecified"}`;
-    const cachedData = getCachedPremiumReading<SynastryData>(natalHash, cacheKey);
+    const subjectGender = readingSubjectGender === "female" || readingSubjectGender === "male" ? readingSubjectGender : undefined;
+    const otherGender = readingPartnerGender === "female" || readingPartnerGender === "male" ? readingPartnerGender : undefined;
+    const otherHash = flipped ? natalHash : partnerHash;
+    const cacheKey = `synastry:${otherHash}:${flipped ? "flipped" : "normal"}:${locale}:${subjectGender || "unspecified"}:${otherGender || "partner-unspecified"}`;
+    const cachedData = getCachedPremiumReading<SynastryData>(readingSubjectHash, cacheKey);
     setSynastryReading("");
     setSynastryData({});
     setSynastryReadingError(null);
@@ -359,15 +368,15 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        chartA: natalChart,
-        chartB: partnerChart,
-        partnerName: selectedPartner.name,
+        chartA: readingChartA,
+        chartB: readingChartB,
+        partnerName: readingPartnerName,
         aspects: readingAspects,
         locale,
         readingId,
         cacheKey,
-        gender,
-        partnerGender,
+        gender: subjectGender,
+        partnerGender: otherGender,
       }),
       signal: controller.signal,
     }).then(async (res) => {
@@ -395,7 +404,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
           try {
             const parsedData = normalizeSynastryData(JSON.parse(jsonPayload) as SynastryData);
             setSynastryData(parsedData);
-            setCachedPremiumReading(natalHash, cacheKey, parsedData);
+            setCachedPremiumReading(readingSubjectHash, cacheKey, parsedData);
           } catch {
             setSynastryReadingError("Synastry reading JSON could not be parsed.");
             // JSON parse failed — synastryData stays empty until a valid payload arrives
@@ -418,7 +427,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
       controller.abort();
       clearTimeout(timeout);
     };
-  }, [readingAspects, selectedPartner, partnerChart, natalChart, natalHash, partnerHash, locale, readingId, gender]);
+  }, [readingAspects, selectedPartner, partnerChart, readingChartA, readingChartB, readingPartnerName, readingSubjectGender, readingPartnerGender, readingSubjectHash, natalHash, partnerHash, flipped, locale, readingId]);
 
   function savePartner() {
     setError(null);
