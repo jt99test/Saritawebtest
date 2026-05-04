@@ -163,7 +163,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
         });
 
         if (!response.ok || !response.body) {
-          setError(dictionary.loading.errorFallback);
+          setError(response.status === 403 ? dictionary.chart.lockedBody : dictionary.loading.errorFallback);
           setLoading(false);
           return;
         }
@@ -190,7 +190,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
     })();
 
     return () => controller.abort();
-  }, [chart, dictionary.loading.errorFallback, gender, hoverAspect, locale, panelOpen, readingId, selectedPointId]);
+  }, [chart, dictionary.chart.lockedBody, dictionary.loading.errorFallback, gender, hoverAspect, locale, panelOpen, readingId, selectedPointId]);
 
   useEffect(() => {
     if (!panelOpen) {
@@ -287,7 +287,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
               "fixed z-40 overflow-hidden border-black/10 bg-cosmic-950/97 text-ivory backdrop-blur-[12px]",
               isDesktop
                 ? "right-4 top-[104px] h-[calc(100vh-120px)] w-[360px] rounded-[1.4rem] border shadow-[-18px_18px_70px_rgba(0,0,0,0.16)]"
-                : "inset-x-0 bottom-0 h-[min(74svh,calc(100svh-4.5rem))] rounded-t-[1.5rem] border-t shadow-[0_-24px_90px_rgba(0,0,0,0.18)]",
+                : "inset-x-0 bottom-[env(safe-area-inset-bottom)] h-[min(74svh,calc(100svh-4.5rem))] rounded-t-[1.5rem] border-t shadow-[0_-24px_90px_rgba(0,0,0,0.18)]",
             ].join(" ")}
             aria-modal="false"
             role="dialog"

@@ -63,6 +63,21 @@ const RULERS = {
   pisces: "Neptuno",
 } as const;
 
+const RULER_POINT_IDS = {
+  aries: "mars",
+  taurus: "venus",
+  gemini: "mercury",
+  cancer: "moon",
+  leo: "sun",
+  virgo: "mercury",
+  libra: "venus",
+  scorpio: "pluto",
+  sagittarius: "jupiter",
+  capricorn: "saturn",
+  aquarius: "uranus",
+  pisces: "neptune",
+} as const satisfies Record<keyof typeof RULERS, ChartPointId>;
+
 function getSignName(signId: keyof typeof RULERS) {
   const labels = {
     aries: "Aries",
@@ -160,6 +175,19 @@ export function getThemeInstruction(chart: NatalChartData, theme: GeneralReading
   );
   const seventhHouseSign = getHouseSign(chart, 7);
   const thirdHouseSign = getHouseSign(chart, 3);
+  const seventhHouseRulerId = RULER_POINT_IDS[seventhHouseSign];
+  const seventhHouseRuler = points.find((point) => point.id === seventhHouseRulerId);
+  const seventhHouseRulerAspects = chart.aspects
+    .filter((aspect) => aspect.from === seventhHouseRulerId || aspect.to === seventhHouseRulerId)
+    .sort((left, right) => left.orb - right.orb)
+    .slice(0, 3)
+    .map((aspect) => {
+      const otherId = aspect.from === seventhHouseRulerId ? aspect.to : aspect.from;
+      const other = points.find((point) => point.id === otherId);
+      const otherHouse = other ? ` casa ${other.house}` : "";
+      return `${ASPECT_LABELS[aspect.type]} con ${POINT_LABELS[otherId]}${otherHouse} (orbe ${aspect.orb.toFixed(1)} grados)`;
+    })
+    .join(", ");
   const hardAspects = chart.aspects
     .filter((aspect) => aspect.type === "square" || aspect.type === "opposition")
     .slice(0, 5)
@@ -169,7 +197,7 @@ export function getThemeInstruction(chart: NatalChartData, theme: GeneralReading
   const instructions: Record<GeneralReadingTheme, string> = {
     "tu-esencia": `Escribe sobre cómo se manifiesta la esencia de ${chart.event.name} a través de su Sol en ${getSignName(sun?.sign ?? "leo")} en la casa ${sun?.house ?? 5}. Qué vitalidad irradia, qué identidad está aprendiendo a habitar y qué la hace sentirse verdaderamente ella misma.`,
     "como-sientes": `Escribe sobre el mundo emocional de ${chart.event.name} a través de su Luna en ${getSignName(moon?.sign ?? "cancer")} en la casa ${moon?.house ?? 4}. Qué necesita emocionalmente, cómo procesa los sentimientos, qué le da seguridad interna.`,
-    "que-das-valor": `Escribe sobre lo que ${chart.event.name} valora a través de su Venus en ${getSignName(venus?.sign ?? "libra")} en la casa ${venus?.house ?? 7}, y la energía de su casa 7 (regida por ${RULERS[seventhHouseSign]}). Enfoca Venus como deseo, gusto, valor personal, placer, belleza, vínculos y aquello que elige cuidar.`,
+    "que-das-valor": `Escribe sobre lo que ${chart.event.name} valora a través de su Venus en ${getSignName(venus?.sign ?? "libra")} en la casa ${venus?.house ?? 7}, y la energía vincular de su casa 7 en ${getSignName(seventhHouseSign)}, regida por ${RULERS[seventhHouseSign]}. La ubicación natal real del regente de casa 7 es ${RULERS[seventhHouseSign]} en ${getSignName(seventhHouseRuler?.sign ?? seventhHouseSign)} en la casa ${seventhHouseRuler?.house ?? 7}; no digas que ${RULERS[seventhHouseSign]} está en casa 7 salvo que esta ubicación real sea casa 7. Aspectos del regente de casa 7: ${seventhHouseRulerAspects || "sin aspectos principales destacados"}. Enfoca Venus como deseo, gusto, valor personal, placer, belleza, vínculos y aquello que elige cuidar.`,
     "como-piensas": `Escribe sobre cómo piensa y se comunica ${chart.event.name} a través de su Mercurio en ${getSignName(mercury?.sign ?? "gemini")} en la casa ${mercury?.house ?? 3}, y la energía de su casa 3 en ${getSignName(thirdHouseSign)}. Cómo procesa información, cómo se expresa, qué tipo de mente tiene.`,
     "tu-proposito": `Escribe sobre el propósito de vida de ${chart.event.name} a través de su Medio Cielo en ${mcSign}, la casa 10, y su Nodo Norte en ${getSignName(northNode?.sign ?? "aries")} en la casa ${northNode?.house ?? 10}. Hacia dónde se dirige su evolución, qué debe desarrollar, qué legado puede construir.`,
     "lo-que-suelto": `Escribe sobre el Nodo Sur de ${chart.event.name} en ${getSignName(southNode?.sign ?? "libra")} en la casa ${southNode?.house ?? 4}. Interpreta este punto como memoria, zona conocida, talento antiguo, mecanismo automático y patrón que se está aprendiendo a soltar. Conecta siempre con el Nodo Norte: no como rechazo del pasado, sino como integración consciente.`,

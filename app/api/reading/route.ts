@@ -127,6 +127,16 @@ export async function POST(request: Request) {
       });
     }
 
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("plan")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if ((profile?.plan ?? "free") === "free") {
+      return new Response("Plan required", { status: 403 });
+    }
+
     const basePrompt = buildPrompt(chart, pointId, locale);
 
     if (!basePrompt) {
