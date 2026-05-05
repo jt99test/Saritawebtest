@@ -23,7 +23,7 @@ export function AccountButton() {
   const [user, setUser] = useState<User | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuPinned, setMenuPinned] = useState(false);
-  const [menuPosition, setMenuPosition] = useState<{ top: number; right: number } | null>(null);
+  const [menuPosition, setMenuPosition] = useState<{ top: number; left: number; width: number } | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
 
@@ -86,9 +86,17 @@ export function AccountButton() {
     function updateMenuPosition() {
       const rect = buttonRef.current?.getBoundingClientRect();
       if (!rect) return;
+      const viewportPadding = 12;
+      const mobile = window.innerWidth < 640;
+      const menuWidth = mobile ? window.innerWidth - viewportPadding * 2 : Math.min(280, window.innerWidth - viewportPadding * 2);
+      const preferredLeft = mobile ? viewportPadding : rect.right - menuWidth;
       setMenuPosition({
         top: rect.bottom + 12,
-        right: Math.max(12, window.innerWidth - rect.right),
+        left: Math.min(
+          Math.max(viewportPadding, preferredLeft),
+          Math.max(viewportPadding, window.innerWidth - menuWidth - viewportPadding),
+        ),
+        width: menuWidth,
       });
     }
 
@@ -186,8 +194,8 @@ export function AccountButton() {
           ref={menuRef}
           role="menu"
           onPointerDown={(event) => event.stopPropagation()}
-          className="fixed z-[1000] min-w-52 border border-black/12 bg-white px-4 py-3 text-right shadow-[0_18px_48px_rgba(0,0,0,0.16)]"
-          style={{ top: menuPosition.top, right: menuPosition.right }}
+          className="fixed z-[1000] max-w-[calc(100vw-1.5rem)] border border-black/12 bg-white px-4 py-3 text-right shadow-[0_18px_48px_rgba(0,0,0,0.16)]"
+          style={{ top: menuPosition.top, left: menuPosition.left, width: menuPosition.width }}
         >
           <Link
             href="/form"

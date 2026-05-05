@@ -13,7 +13,6 @@ import { ChartCompletePage } from "@/components/chart/chart-complete-page";
 import { ChartGeneralReading } from "@/components/chart/chart-general-reading";
 import { ChartShareActions } from "@/components/chart/chart-share-actions";
 import { ReadingUsageBanner } from "@/components/chart/reading-usage-banner";
-import { ChartSignaturesSection } from "@/components/chart/chart-signatures-section";
 import { useChartStore } from "@/components/chart/chart-store";
 import { ChartLayerRail, NatalChartWheel } from "@/components/chart/natal-chart-wheel";
 import { PlanetDetailPanel } from "@/components/chart/planet-detail-panel";
@@ -311,7 +310,6 @@ export function NatalChartExperience({
           {!panelOpen && !selectedPointId ? (
             <div className="mt-12 space-y-0 lg:mt-16">
               <ChartBalanceSection chart={chart} dictionary={dictionary} />
-              <ChartSignaturesSection chart={chart} dictionary={dictionary} />
               <ChartGeneralReading chart={chart} dictionary={dictionary} readingId={readingId} gender={request?.gender || undefined} />
             </div>
           ) : null}

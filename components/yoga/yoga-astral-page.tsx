@@ -1,34 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { DateTime } from "luxon";
+import { useEffect, useState } from "react";
 
-import type { NatalChartData, Element } from "@/lib/chart";
-import type { LunarReportCacheEntry } from "@/lib/lunar-report";
-
-import { hashNatalChart } from "@/lib/chart-hash";
-import { getAllCachedLunarReports } from "@/lib/lunar-report-cache";
+import type { NatalChartData } from "@/lib/chart";
 import {
-  getDominantElement,
   getPersonalizedYogaRoutine,
-  toRoutineElement,
   type PersonalizedYogaRoutine,
   type RoutineElement,
 } from "@/lib/personalized-yoga";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { illustrations } from "@/data/illustrations";
-import { yogaRoutines } from "@/data/sarita/yoga-routines";
-
-type YogaAstralPageProps = {
-  chart: NatalChartData;
-};
-
-type CachedMonthlyRoutine = {
-  key: string;
-  entry: LunarReportCacheEntry;
-};
 
 const ELEMENT_LABELS: Record<RoutineElement, string> = {
   fuego: "Fuego",
@@ -44,264 +26,39 @@ const ELEMENT_ALT_TEXT: Record<RoutineElement, string> = {
   aire: "Ilustración del elemento Aire",
 };
 
-const ELEMENT_HEADLINES: Record<RoutineElement, string> = {
-  fuego: "Encender el Fuego",
-  tierra: "Aterrizar en la Tierra",
-  aire: "Despejar el Aire",
-  agua: "Soltar en el Agua",
+type YogaAstralPageProps = {
+  chart: NatalChartData;
 };
 
-const ELEMENT_COPY: Record<RoutineElement, string> = {
-  fuego:
-    "Esta luna te pide encender. La rutina del Fuego activa lo cardinal y rompe el estancamiento.",
-  tierra:
-    "Esta luna te pide aterrizar. La rutina de la Tierra ancla el cuerpo y devuelve la presencia.",
-  aire:
-    "Esta luna te pide claridad. La rutina del Aire abre el pecho y mueve la palabra.",
-  agua:
-    "Esta luna te pide soltar. La rutina del Agua disuelve la coraza y devuelve la fluidez.",
-};
+function routineTitle(routine: PersonalizedYogaRoutine | null) {
+  if (!routine) return "Tu rutina astral";
+  if (routine.secondary) {
+    return `${ELEMENT_LABELS[routine.primary]} ${routine.primaryPercent}% + ${ELEMENT_LABELS[routine.secondary]} ${routine.secondaryPercent}%`;
+  }
+  return `Elemento ${ELEMENT_LABELS[routine.primary]}`;
+}
 
-const ASTRO_SOMATIC_COPY: Record<RoutineElement, string> = {
-  fuego: "En el cuerpo, el Fuego se vive como impulso, calor, direccion y centro. Esta rutina organiza esa fuerza para que la accion no salga desde la prisa, sino desde presencia.",
-  tierra: "En el cuerpo, la Tierra se manifiesta como peso, apoyo, estructura y seguridad. Esta rutina baja la energia al suelo para que la estabilidad no se vuelva rigidez.",
-  aire: "En el cuerpo, el Aire aparece en respiracion, pecho, brazos, cuello y palabra. Esta rutina crea espacio para pensar, comunicar y moverte sin quedar atrapada en la cabeza.",
-  agua: "En el cuerpo, el Agua se expresa como memoria emocional, pelvis, tejidos blandos y capacidad de soltar. Esta rutina ayuda a que lo sensible circule sin inundarte.",
-};
-
-const ELEMENT_ESSENCE: Record<RoutineElement, string> = {
-  fuego: "Para encender lo que se apagó.",
-  tierra: "Para aterrizar lo que flota.",
-  aire: "Para despejar lo que pesa.",
-  agua: "Para soltar lo que se aferra.",
-};
-
-const ELEMENT_BADGE_CLASSES: Record<RoutineElement, string> = {
-  fuego: "border-red-700/25 bg-red-50 text-red-800",
-  tierra: "border-emerald-700/25 bg-emerald-50 text-emerald-800",
-  agua: "border-sky-700/25 bg-sky-50 text-sky-800",
-  aire: "border-teal-700/25 bg-teal-50 text-teal-800",
-};
-
-const ANCHOR_REASON: Record<Element, string> = {
-  fire: "Tu fuego se dispersa. Esta postura lo concentra.",
-  earth: "Tu peso se vuelve rigidez. Esta postura lo afloja.",
-  air: "Tu mente se va. Esta postura te trae de vuelta al eje.",
-  water: "Tu sensibilidad te disuelve. Esta postura te contiene.",
-};
-
-const ANCHOR_POSE_BY_ELEMENT: Record<
-  Element,
-  { slug: string; label: string; summary: string }
-> = {
-  fire: {
-    slug: "tadasana",
-    label: "Tadasana Activa",
-    summary:
-      "Tu energía necesita una postura que te ordene, te centre y te recuerde desde dónde nace tu impulso.",
-  },
-  earth: {
-    slug: "malasana",
-    label: "Malasana",
-    summary:
-      "Tu energía se regula mejor cuando bajas al cuerpo, conectas con el suelo y sostienes el peso con presencia.",
-  },
-  water: {
-    slug: "anjaneyasana",
-    label: "Anjaneyasana Profundo",
-    summary:
-      "Tu energía pide apertura sensible, espacio en la pelvis y una práctica que deje circular lo emocional sin forzarlo.",
-  },
-  air: {
-    slug: "anahatasana",
-    label: "Anahatasana",
-    summary:
-      "Tu energía encuentra eje cuando respiras más amplio, abres el pecho y das aire a lo que se ha quedado retenido.",
-  },
-};
-
-const mojibakePattern = /[\u00C3\u00C2\u00E2]/;
-
-function decodeMojibake(value: string) {
-  if (!mojibakePattern.test(value)) {
-    return value;
+function routineDescription(routine: PersonalizedYogaRoutine | null) {
+  if (!routine) {
+    return "Estamos preparando la secuencia que corresponde a tu carta.";
   }
 
-  try {
-    return new TextDecoder("utf-8").decode(
-      Uint8Array.from(value, (character) => character.charCodeAt(0)),
-    );
-  } catch {
-    return value;
-  }
-}
-
-function displayText(value: string) {
-  return decodeMojibake(value).replace(/\s+\u00B7\s+/g, " · ").replace(/Ã‚Â·/g, "·").trim();
-}
-
-function formatElementForMetadata(element: Element) {
-  return ELEMENT_LABELS[toRoutineElement(element)];
-}
-
-function parseCachedLunationKey(
-  key: string,
-): { year: number; month: number; type: "nueva" | "llena" } | null {
-  const match = key.match(/^(\d{4})-(\d{2})-(nueva|llena)$/);
-  if (!match) {
-    return null;
+  if (routine.secondary) {
+    return `Una práctica combinada de ${ELEMENT_LABELS[routine.primary]} y ${ELEMENT_LABELS[routine.secondary]}, elegida desde tu carta para ordenar cuerpo, respiración y foco.`;
   }
 
-  return {
-    year: Number(match[1]),
-    month: Number(match[2]),
-    type: match[3] as "nueva" | "llena",
-  };
-}
-
-function chooseMonthlyRoutine(
-  reports: Record<string, LunarReportCacheEntry>,
-  chart: NatalChartData,
-): CachedMonthlyRoutine | null {
-  const now = DateTime.now().setZone(chart.event.timezoneIdentifier || "UTC");
-  const currentPrefix = now.toFormat("yyyy-LL");
-  const currentMonthEntries = Object.entries(reports).filter(([key]) =>
-    key.startsWith(`${currentPrefix}-`),
-  );
-
-  if (currentMonthEntries.length > 0) {
-    const currentNueva = currentMonthEntries.find(([key]) => key.endsWith("-nueva"));
-    if (currentNueva) {
-      return { key: currentNueva[0], entry: currentNueva[1] };
-    }
-
-    const nearestCurrent = currentMonthEntries
-      .map(([key, entry]) => ({
-        key,
-        entry,
-        distance: Math.abs(
-          DateTime.fromISO(entry.metadata.timestamp)
-            .setZone(chart.event.timezoneIdentifier || "UTC")
-            .diff(now)
-            .as("milliseconds"),
-        ),
-      }))
-      .sort((left, right) => left.distance - right.distance)[0];
-
-    return nearestCurrent
-      ? {
-          key: nearestCurrent.key,
-          entry: nearestCurrent.entry,
-        }
-      : null;
-  }
-
-  const nearestAny = Object.entries(reports)
-    .map(([key, entry]) => {
-      const parsed = parseCachedLunationKey(key);
-      const timestamp = DateTime.fromISO(entry.metadata.timestamp).setZone(
-        chart.event.timezoneIdentifier || "UTC",
-      );
-
-      return {
-        key,
-        entry,
-        parsed,
-        futureBias:
-          timestamp >= now ? timestamp.diff(now).as("milliseconds") : Number.POSITIVE_INFINITY,
-        absoluteDistance: Math.abs(timestamp.diff(now).as("milliseconds")),
-      };
-    })
-    .sort((left, right) => {
-      if (left.futureBias !== right.futureBias) {
-        return left.futureBias - right.futureBias;
-      }
-
-      if (left.absoluteDistance !== right.absoluteDistance) {
-        return left.absoluteDistance - right.absoluteDistance;
-      }
-
-      const leftParsed = left.parsed ? left.parsed.year * 100 + left.parsed.month : 0;
-      const rightParsed = right.parsed ? right.parsed.year * 100 + right.parsed.month : 0;
-      return rightParsed - leftParsed;
-    })[0];
-
-  return nearestAny
-    ? {
-        key: nearestAny.key,
-        entry: nearestAny.entry,
-      }
-    : null;
-}
-
-function getAnchorPose(chart: NatalChartData) {
-  const dominantElement = getDominantElement(chart);
-  const anchor = ANCHOR_POSE_BY_ELEMENT[dominantElement];
-  const routineKey = toRoutineElement(dominantElement);
-  const routine = yogaRoutines[routineKey];
-  const asana = routine.asanas.find((item) => item.slug === anchor.slug);
-
-  return {
-    element: dominantElement,
-    label: formatElementForMetadata(dominantElement),
-    summary: anchor.summary,
-    asana: asana ?? null,
-  };
-}
-
-function getRoutineNames(element: RoutineElement) {
-  return yogaRoutines[element].asanas
-    .slice(0, 3)
-    .map((asana) => displayText(asana.nameSanskrit))
-    .join(" · ");
-}
-
-function getRoutineMeta(element: RoutineElement) {
-  const routine = yogaRoutines[element];
-  return [
-    getRoutineNames(element),
-    `${displayText(routine.chakra.name)} · ${displayText(routine.chakra.mantra)}`,
-    displayText(routine.totalDuration),
-  ].join(" · ");
-}
-
-function getPortalMeta(element: RoutineElement) {
-  const routine = yogaRoutines[element];
-  return [
-    routine.planets.map(displayText).join(", "),
-    routine.signs.map(displayText).join(", "),
-    displayText(routine.chakra.name),
-  ].join(" · ");
+  return `Una práctica de ${ELEMENT_LABELS[routine.primary]} elegida desde tu carta para acompañar tu energía corporal actual.`;
 }
 
 export function YogaAstralPage({ chart }: YogaAstralPageProps) {
-  const [cachedReports, setCachedReports] = useState<Record<string, LunarReportCacheEntry>>({});
-  const [personalizedRoutine, setPersonalizedRoutine] = useState<PersonalizedYogaRoutine | null>(null);
+  const [routine, setRoutine] = useState<PersonalizedYogaRoutine | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
-    async function loadCache() {
-      const chartHash = await hashNatalChart(chart);
-      if (cancelled) {
-        return;
-      }
-
-      setCachedReports(getAllCachedLunarReports(chartHash));
-    }
-
-    void loadCache();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [chart]);
-
-  useEffect(() => {
-    let cancelled = false;
-    void getPersonalizedYogaRoutine(chart).then((routine) => {
+    void getPersonalizedYogaRoutine(chart).then((nextRoutine) => {
       if (!cancelled) {
-        setPersonalizedRoutine(routine);
+        setRoutine(nextRoutine);
       }
     });
 
@@ -310,234 +67,83 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
     };
   }, [chart]);
 
-  const monthlyRoutine = useMemo(
-    () => chooseMonthlyRoutine(cachedReports, chart),
-    [cachedReports, chart],
-  );
-  const anchorPose = useMemo(() => getAnchorPose(chart), [chart]);
-  const fallbackElement = toRoutineElement(anchorPose.element);
-  const monthlyElement = personalizedRoutine?.primary ?? monthlyRoutine?.entry.metadata.assignedRoutine ?? fallbackElement;
-  const blendedRoutine = personalizedRoutine! as PersonalizedYogaRoutine & { secondary: RoutineElement };
-  const secondaryElement = personalizedRoutine?.secondary ?? monthlyElement;
-  const anchorImage = anchorPose.asana?.imagePath ?? illustrations.elements[fallbackElement];
-  const anchorName = anchorPose.asana
-    ? displayText(anchorPose.asana.nameSanskrit)
-    : ANCHOR_POSE_BY_ELEMENT[anchorPose.element].label;
-  const anchorSpanish = anchorPose.asana
-    ? displayText(anchorPose.asana.nameSpanish).toLowerCase()
-    : anchorName.toLowerCase();
-  const anchorDescription = anchorPose.asana
-    ? displayText(anchorPose.asana.description)
-    : anchorPose.summary;
+  const primaryElement = routine?.primary ?? "aire";
+  const previewAsanas = routine?.asanas.slice(0, 4).map((asana) => asana.nameSanskrit).join(" · ");
 
   return (
-    <div className="pb-16 pt-12 sm:pb-24 sm:pt-24">
-      <div className="mx-auto mb-6 max-w-2xl text-center sm:mb-8">
-        <p className="text-[13px] leading-6 text-[#3a3048] sm:text-sm sm:leading-7">
-          El yoga astral conecta los elementos de tu carta natal con rutinas de movimiento y respiración. Según tu elemento dominante, el cuerpo responde mejor a ciertos tipos de práctica. Aquí encuentras la rutina que va con tu energía de este mes.
-        </p>
-      </div>
-
-      <header className="text-center">
+    <div className="pb-16 pt-8 sm:pb-24 sm:pt-16">
+      <header className="mx-auto max-w-3xl text-center">
         <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
           yoga astral
         </p>
-        <h1 className="mt-2 font-serif text-[44px] font-normal leading-none text-ivory sm:text-[64px] lg:text-[88px]">
-          El cuerpo como mapa.
+        <h1 className="mt-2 font-serif text-[42px] font-normal leading-none text-ivory sm:text-[64px] lg:text-[78px]">
+          Tu cuerpo como mapa.
         </h1>
-        <p className="mx-auto mt-4 max-w-[520px] font-serif text-[15px] italic leading-[1.55] text-[#3a3048] sm:mt-6 sm:text-[17px] lg:max-w-[580px] lg:text-[19px]">
-          Cuatro rutinas para los cuatro elementos. Cada luna te asigna una. Cada postura te devuelve algo.
+        <p className="mx-auto mt-5 max-w-[560px] text-sm leading-7 text-[#3a3048] sm:text-base sm:leading-8">
+          Aquí encuentras solo lo importante: tu rutina personalizada según la lectura de tu carta y el protocolo de lavado intestinal corto.
         </p>
       </header>
 
-      <section className="mx-auto mt-12 max-w-[1040px] border-t-[0.5px] border-dusty-gold/12 pt-8 sm:mt-16 sm:pt-10 lg:mt-20 lg:max-w-[1080px]">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
-          tu rutina del mes
-        </p>
-
-        <div className="mt-6 grid gap-9 sm:gap-16 lg:grid-cols-2 lg:items-center lg:gap-24">
-          <div className="flex justify-center">
-            <Image
-              src={illustrations.elements[monthlyElement]}
-              alt={ELEMENT_ALT_TEXT[monthlyElement]}
-              width={440}
-              height={440}
-              priority
-              className="h-auto w-full max-w-[300px] sm:max-w-[440px] lg:max-w-[480px]"
-              sizes="(max-width: 1024px) 80vw, 440px"
-            />
-          </div>
-
-          <div>
-            {monthlyRoutine || personalizedRoutine ? (
-              <>
-                <p className="font-serif text-[13px] italic lowercase text-[#3a3048]">
-                  {personalizedRoutine?.secondary ? "rutina combinada" : "esta luna te pide"}
+      <section className="mx-auto mt-10 grid max-w-[980px] gap-5 sm:mt-14 lg:grid-cols-[1.1fr_0.9fr] lg:gap-6">
+        <article className="overflow-hidden border border-black/10 bg-white shadow-[0_16px_44px_rgba(30,26,46,0.08)]">
+          <div className="grid gap-0 md:grid-cols-[0.82fr_1fr]">
+            <div className="flex items-center justify-center border-b border-black/10 bg-[#f8f4eb]/70 p-6 md:border-b-0 md:border-r">
+              <Image
+                src={illustrations.elements[primaryElement]}
+                alt={ELEMENT_ALT_TEXT[primaryElement]}
+                width={360}
+                height={360}
+                priority
+                className="h-auto w-full max-w-[240px] sm:max-w-[300px]"
+                sizes="(max-width: 768px) 70vw, 300px"
+              />
+            </div>
+            <div className="flex flex-col justify-center p-6 sm:p-8">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-[#8a7a4e]">
+                rutina personalizada
+              </p>
+              <h2 className="mt-3 font-serif text-[34px] leading-tight text-ivory sm:text-[42px]">
+                {routineTitle(routine)}
+              </h2>
+              <p className="mt-4 text-sm leading-7 text-[#3a3048]">
+                {routineDescription(routine)}
+              </p>
+              {previewAsanas ? (
+                <p className="mt-5 font-serif text-sm italic leading-7 text-[#5c4a24]">
+                  {previewAsanas}
                 </p>
-                <h2 className="mt-2 font-serif text-[34px] font-normal leading-tight text-ivory sm:text-[48px] lg:text-[64px]">
-                  {personalizedRoutine?.secondary
-                    ? `${ELEMENT_LABELS[personalizedRoutine.primary]} ${personalizedRoutine.primaryPercent}% + ${ELEMENT_LABELS[personalizedRoutine.secondary]} ${personalizedRoutine.secondaryPercent}%`
-                    : ELEMENT_HEADLINES[monthlyElement]}
-                </h2>
-                <p className="mt-4 font-serif text-[16px] leading-[1.55] text-ivory/80 sm:mt-6 sm:text-lg lg:max-w-[440px] lg:text-[20px] lg:leading-[1.7]">
-                  {personalizedRoutine?.secondary
-                    ? `En tu carta, ${ELEMENT_LABELS[blendedRoutine.primary]} y ${ELEMENT_LABELS[blendedRoutine.secondary]} se responden. Esta práctica cruza sus ritmos para que la mente, el cuerpo y la respiración encuentren un mismo cauce.`
-                    : ELEMENT_COPY[monthlyElement]}
-                </p>
-                <p className="mt-4 max-w-[460px] text-sm leading-7 text-[#3a3048]">
-                  {blendedRoutine
-                    ? `${ASTRO_SOMATIC_COPY[blendedRoutine.primary]} ${ASTRO_SOMATIC_COPY[blendedRoutine.secondary]}`
-                    : ASTRO_SOMATIC_COPY[monthlyElement]}
-                </p>
-                <p className="mt-8 font-serif text-[13px] italic leading-7 text-[#3a3048]">
-                  {blendedRoutine
-                    ? blendedRoutine.asanas.slice(0, 5).map((asana) => displayText(asana.nameSanskrit)).join(" · ")
-                    : getRoutineMeta(monthlyElement)}
-                </p>
-                {blendedRoutine ? (
-                  <div className="mt-6 flex flex-wrap gap-2">
-                    {blendedRoutine.asanas.map((asana) => (
-                      <span
-                        key={`${asana.element}-${asana.slug}`}
-                        className={`border px-3 py-1.5 text-[12px] font-semibold uppercase tracking-[0.16em] ${ELEMENT_BADGE_CLASSES[asana.element]}`}
-                      >
-                        {ELEMENT_LABELS[asana.element]} · {displayText(asana.nameSanskrit)}
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
-                <PrimaryButton
-                  href="/yoga-astral/personalizada"
-                  variant="ghostGold"
-                  className="mt-8 px-6 py-3 text-[12px] uppercase tracking-[0.2em]"
-                >
-                  Entrar en la rutina
-                </PrimaryButton>
-              </>
-            ) : (
-              <>
-                <p className="max-w-[420px] font-serif text-[17px] italic leading-8 text-[#3a3048]">
-                  Visita la Luna del mes para que te asignemos una rutina.
-                </p>
-                <PrimaryButton
-                  href="/luna-del-mes"
-                  variant="ghostGold"
-                  className="mt-8 px-6 py-3 text-[12px] uppercase tracking-[0.2em]"
-                >
-                  Ir a Luna del mes
-                </PrimaryButton>
-              </>
-            )}
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto mt-12 max-w-[960px] border-t-[0.5px] border-dusty-gold/12 pt-8 sm:mt-16 sm:pt-10 lg:mt-20 lg:max-w-[1080px]">
-        <div className="text-center">
-          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
-            las cuatro rutinas
-          </p>
-          <h2 className="mt-2 font-serif text-[36px] font-normal leading-tight text-ivory lg:text-[48px]">
-            Elige tu cauce
-          </h2>
-        </div>
-
-        <div className="mt-10 grid gap-x-16 gap-y-12 sm:mt-16 sm:gap-y-20 md:grid-cols-2 lg:gap-x-20 lg:gap-y-24">
-          {(Object.entries(yogaRoutines) as [RoutineElement, (typeof yogaRoutines)[RoutineElement]][]).map(
-            ([element]) => (
-              <Link
-                href={`/yoga-astral/${element}`}
-                key={element}
-                className="group block cursor-pointer text-center outline-none focus-visible:ring-2 focus-visible:ring-dusty-gold/60"
+              ) : null}
+              <PrimaryButton
+                href="/yoga-astral/personalizada"
+                variant="ghostGold"
+                className="mt-7 self-start px-6 py-3 text-[12px] uppercase tracking-[0.2em]"
               >
-                <Image
-                  src={illustrations.elements[element]}
-                  alt={ELEMENT_ALT_TEXT[element]}
-                  width={260}
-                  height={260}
-                  className="mx-auto h-[150px] w-auto object-contain transition duration-[350ms] group-hover:scale-[1.02] group-hover:brightness-[1.15] sm:h-[200px] lg:h-[260px]"
-                  sizes="260px"
-                />
-                <h3 className="mt-8 font-serif text-[32px] font-normal leading-tight text-ivory transition-colors duration-[250ms] group-hover:text-dusty-gold lg:text-[38px]">
-                  {`Elemento ${ELEMENT_LABELS[element]}`}
-                </h3>
-                <p className="relative mx-auto mt-3 max-w-[280px] font-serif text-sm italic leading-6 text-[#3a3048] lg:max-w-[320px] lg:text-base">
-                  <span>{ELEMENT_ESSENCE[element]}</span>
-                  <span className="mx-auto mt-3 block h-px w-12 origin-center scale-x-0 bg-dusty-gold/55 transition-transform duration-300 group-hover:scale-x-100" />
-                </p>
-                <p className="mx-auto mt-6 max-w-[360px] font-serif text-xs italic leading-6 text-[#3a3048]">
-                  {getPortalMeta(element)}
-                </p>
-              </Link>
-            ),
-          )}
-        </div>
-      </section>
-
-      <section className="mt-12 w-full border-t-[0.5px] border-dusty-gold/12 pt-8 sm:mt-16 sm:pt-10 lg:mt-20">
-        <div className="text-center">
-          <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
-            tu postura ancla
-          </p>
-          <p className="mx-auto mt-3 max-w-[480px] font-serif text-[15px] italic leading-7 text-[#3a3048]">
-            Una postura para cuando todo lo demás se mueve. Tuya, por tu carta.
-          </p>
-        </div>
-
-        <div className="mx-auto mt-10 grid max-w-[880px] gap-9 sm:mt-16 sm:gap-12 lg:max-w-[1040px] lg:grid-cols-2 lg:items-center lg:gap-16">
-          <div className="flex justify-center">
-            <Image
-              src={anchorImage}
-              alt={`Fotografía de ${anchorName}`}
-              width={420}
-              height={420}
-              className="h-auto w-full max-w-[280px] sm:max-w-[360px] lg:max-w-[440px]"
-              sizes="(max-width: 1024px) 80vw, 360px"
-            />
+                Ver mi rutina
+              </PrimaryButton>
+            </div>
           </div>
+        </article>
 
+        <article className="flex flex-col justify-between border border-dusty-gold/18 bg-dusty-gold/[0.055] p-6 shadow-[0_16px_44px_rgba(30,26,46,0.06)] sm:p-8">
           <div>
-            <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#3a3048]">
-              {`para tu ${anchorPose.label.toLowerCase()} dominante`}
-            </p>
-            <h2 className="mt-2 font-serif text-[32px] font-normal leading-tight text-ivory sm:text-[40px] lg:text-[52px]">
-              {anchorName}
-            </h2>
-            <p className="mt-1 font-serif text-sm italic lowercase tracking-[0.1em] text-[#5c4a24]">
-              {anchorSpanish}
-            </p>
-            <p className="mt-5 max-w-[380px] font-serif text-[15px] leading-[1.6] text-ivory/85 sm:mt-8 sm:text-[17px] lg:max-w-[440px] lg:text-[19px]">
-              {anchorDescription}
-            </p>
-            <p className="mt-6 max-w-[380px] font-serif text-sm italic leading-[1.6] text-[#3a3048]">
-              {ANCHOR_REASON[anchorPose.element]}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto mt-16 max-w-[720px] border-t-[0.5px] border-dusty-gold/12 pt-8 sm:mt-24 lg:mt-[120px]">
-        <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-[#8a7a4e]">
               kriya
             </p>
-            <h2 className="mt-1 font-serif text-2xl font-normal leading-tight text-ivory lg:text-[26px]">
+            <h2 className="mt-3 font-serif text-[34px] leading-tight text-ivory sm:text-[42px]">
               Lavado intestinal corto
             </h2>
-            <p className="mt-1 font-serif text-[13px] italic leading-6 text-[#3a3048]">
-              Práctica de limpieza profunda · 3 días
+            <p className="mt-4 text-sm leading-7 text-[#3a3048]">
+              Protocolo de Laghoo Shankhaprakshala: preparación, práctica, precauciones y dieta de apoyo en una guía limpia y directa.
             </p>
           </div>
-
           <PrimaryButton
             href="/yoga-astral/kriyas/lavado-intestinal"
             variant="ghostGold"
-            className="self-start px-5 py-3 text-[12px] uppercase tracking-[0.2em] sm:self-auto"
+            className="mt-7 self-start px-6 py-3 text-[12px] uppercase tracking-[0.2em]"
           >
             Ver protocolo
           </PrimaryButton>
-        </div>
+        </article>
       </section>
     </div>
   );

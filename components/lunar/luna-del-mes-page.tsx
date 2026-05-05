@@ -68,6 +68,10 @@ function formatToggleDate(timestamp: string, timezone: string, locale: string) {
     .toFormat("d 'de' LLLL");
 }
 
+function lunationTime(metadata: LunarReportMetadata, timezone: string) {
+  return DateTime.fromISO(metadata.timestamp, { zone: "utc" }).setZone(timezone).toMillis();
+}
+
 function getClosestType(previews: PreviewMap, timezone: string) {
   const now = DateTime.now().setZone(timezone).toMillis();
   const candidates = REPORT_TYPES.filter((type) => previews[type]).sort((left, right) => {
@@ -350,9 +354,10 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
           ? type.endsWith("-2") ? `${dictionary.lunar.newMoon} 2` : dictionary.lunar.newMoon
           : type.endsWith("-2") ? `${dictionary.lunar.fullMoon} 2` : dictionary.lunar.fullMoon,
         date: formatToggleDate(metadata.timestamp, timezone, locale),
+        timestamp: lunationTime(metadata, timezone),
       },
     ];
-  });
+  }).sort((left, right) => left.timestamp - right.timestamp);
 
   return (
     <div className="mx-auto max-w-[1080px] pb-0 pt-5 sm:pt-8 lg:pt-10">

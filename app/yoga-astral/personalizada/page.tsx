@@ -101,7 +101,7 @@ export default function PersonalizedYogaPage() {
         <Container className="relative">
           <div className="mb-4 flex items-center justify-between gap-4 pt-2 sm:mb-6">
             <Link href="/yoga-astral" className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-ivory sm:text-xs sm:tracking-[0.28em]">
-              {dictionary.form.back} · {dictionary.result.primaryTabs.yoga}
+              {dictionary.form.back} Â· {dictionary.result.primaryTabs.yoga}
             </Link>
           </div>
 
@@ -125,12 +125,12 @@ export default function PersonalizedYogaPage() {
                     : `Elemento ${ELEMENT_LABELS[routine.primary]}`}
                 </h1>
                 <p className="mt-6 max-w-3xl text-sm leading-7 text-[#3a3048]">
-                  Esta secuencia nace de tu carta: toma tu elemento dominante como punto de partida y selecciona las posturas que mejor acompa�an tu energ�a actual. Cada asana est� elegida para ordenar el cuerpo, la respiraci�n y el foco desde tu propia lectura.
+                  Esta secuencia nace de tu carta: toma tu elemento dominante como punto de partida y selecciona las posturas que mejor acompañan tu energía actual. Cada asana está elegida para ordenar el cuerpo, la respiración y el foco desde tu propia lectura.
                 </p>
               </header>
 
               <section className="space-y-5">
-                <SectionHeader>La secuencia · {routine.monthKey}</SectionHeader>
+                <SectionHeader>La secuencia Â· {routine.monthKey}</SectionHeader>
                 <div className="sticky top-0 z-10 -mx-4 mb-6 border-y border-dusty-gold/16 bg-[#f5f0e6]/94 px-4 py-3 shadow-[0_12px_34px_rgba(30,26,46,0.08)] backdrop-blur-md sm:-mx-6 sm:px-6">
                   <div className="flex items-center justify-between text-[12px] uppercase tracking-[0.18em] text-[#3a3048]">
                     <span>{routine.secondary ? "Rutina combinada" : "Rutina personalizada"}</span>
@@ -168,7 +168,7 @@ export default function PersonalizedYogaPage() {
                               <p className="mt-5 text-sm leading-7 text-[#3a3048]">{asana.description}</p>
                               <div className="mt-5 rounded-[1rem] border border-dusty-gold/26 bg-[#f8f4eb] p-4 text-sm leading-7 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]">
                                 <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6f5a2a]">
-                                  Precauci�n
+                                  Precaución
                                 </p>
                                 <p className="mt-2">{asana.warning}</p>
                               </div>
@@ -183,7 +183,7 @@ export default function PersonalizedYogaPage() {
 
               <footer className="flex flex-col items-start justify-between gap-4 border-t border-black/10 pt-6 sm:flex-row sm:items-center">
                 <Link href="/yoga-astral" className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-ivory sm:text-xs sm:tracking-[0.24em]">
-                  {dictionary.form.back} · {dictionary.result.primaryTabs.yoga}
+                  {dictionary.form.back} Â· {dictionary.result.primaryTabs.yoga}
                 </Link>
                 <RoutineCompletionButton storageKey={`sarita:yoga:personalizada:${routine.monthKey}:completed`} />
               </footer>

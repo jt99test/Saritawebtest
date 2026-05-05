@@ -72,7 +72,7 @@ export default async function LavadoIntestinalPage() {
 
             <section className="rounded-[1.2rem] border border-dusty-gold/24 bg-[#f8f4eb] p-5 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)] sm:p-6">
               <p className="text-[12px] font-semibold uppercase tracking-[0.26em] text-[#6f5a2a]">
-                Precauci�n importante
+                Precaución importante
               </p>
               <p className="mt-3 max-w-4xl text-sm leading-7 text-[#3a3048]">
                 {lavadoIntestinal.precautions}
@@ -169,7 +169,7 @@ export default async function LavadoIntestinalPage() {
                             {asana.warning ? (
                               <div className="mt-5 rounded-[1rem] border border-dusty-gold/26 bg-[#f8f4eb] px-4 py-3 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]">
                                 <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#6f5a2a]">
-                                  Precauci�n
+                                  Precaución
                                 </p>
                                 <p className="mt-2 text-sm leading-6 text-[#3a3048]">
                                   {asana.warning}
@@ -205,7 +205,7 @@ export default async function LavadoIntestinalPage() {
             </section>
 
             <section className="rounded-[1.2rem] border border-dusty-gold/20 bg-white/70 p-5 shadow-[0_10px_28px_rgba(30,26,46,0.05)] sm:p-7">
-              <h2 className="font-serif text-3xl text-ivory">Precauci�nes</h2>
+              <h2 className="font-serif text-3xl text-ivory">Precauciones</h2>
               <p className="mt-4 max-w-4xl text-sm leading-7 text-[#3a3048]">
                 {lavadoIntestinal.precautions}
               </p>

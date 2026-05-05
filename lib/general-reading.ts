@@ -1,5 +1,5 @@
 import { getAugmentedChartPoints, zodiacSigns, type ChartPointId, type NatalChartData } from "@/lib/chart";
-import { detectChartPatterns, getChartRuler } from "@/lib/chart-insights";
+import { getChartRuler } from "@/lib/chart-insights";
 
 export const GENERAL_READING_THEMES = [
   "tu-esencia",
@@ -134,10 +134,6 @@ export function getChartSummaryForPrompt(chart: NatalChartData) {
     })
     .join("\n");
   const ruler = getChartRuler(chart);
-  const patternSummary = detectChartPatterns(chart)
-    .map((pattern) => `• ${pattern.title}`)
-    .join("\n");
-
   return [
     `Medio Cielo en ${getSignName(mcSignId)} ${Math.floor(chart.meta.mc % 30)}° ${Math.round((chart.meta.mc % 1) * 60)
       .toString()
@@ -147,8 +143,6 @@ export function getChartSummaryForPrompt(chart: NatalChartData) {
     pointsSummary,
     "Aspectos clave:",
     aspectsSummary || "• Sin aspectos destacados",
-    "Patrones mayores:",
-    patternSummary || "• Sin patrones mayores detectados",
   ].join("\n");
 }
 
