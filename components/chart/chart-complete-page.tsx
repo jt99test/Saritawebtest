@@ -403,7 +403,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
           {transitCopy.description}
         </p>
         <div className="mx-auto mt-8 max-w-3xl border-y border-dusty-gold/24 bg-[#f8f4eb]/42 px-4 py-5 text-left shadow-[0_14px_46px_rgba(30,26,46,0.05)] backdrop-blur-sm sm:px-6 sm:py-6">
-          <div className="grid gap-5 md:grid-cols-[0.82fr_1.18fr] md:items-end">
+          <div className="grid gap-5 md:grid-cols-[0.82fr_1.18fr] md:items-start">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8a7a4e]">
                 Cielo calculado para
@@ -415,12 +415,12 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
                 {result?.ok ? dateLabel(result.generatedAt, locale) : "Ahora"}
               </p>
             </div>
-            <div>
+            <div className="pt-0">
               <label className="block">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
                   Cambiar ubicación actual
                 </span>
-                <div className="mt-3 [&_input]:min-h-[3.65rem] [&_input]:border-dusty-gold/28 [&_input]:bg-[#f5f0e6]/80 [&_input]:shadow-none">
+                <div className="mt-2 [&_input]:min-h-[3.65rem] [&_input]:border-dusty-gold/28 [&_input]:bg-[#f5f0e6]/80 [&_input]:shadow-none">
                   <LocationAutocomplete
                     value={currentLocationInput}
                     selectedLocation={currentLocation}
