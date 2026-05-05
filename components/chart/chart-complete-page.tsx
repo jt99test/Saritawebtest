@@ -402,29 +402,25 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[#3a3048]">
           {transitCopy.description}
         </p>
-        <div className="mx-auto mt-8 max-w-3xl overflow-hidden rounded-[1.6rem] border border-dusty-gold/22 bg-[linear-gradient(135deg,rgba(255,255,255,0.86),rgba(248,244,235,0.62))] text-left shadow-[0_20px_70px_rgba(30,26,46,0.08)] backdrop-blur-md">
-          <div className="grid gap-0 md:grid-cols-[0.9fr_1.1fr]">
-            <div className="relative flex min-h-40 flex-col justify-between overflow-hidden border-b border-dusty-gold/16 bg-[#1e1a2e] p-5 text-[#f7f1df] md:border-b-0 md:border-r md:p-6">
-              <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full border border-dusty-gold/22" />
-              <div className="pointer-events-none absolute bottom-5 right-8 h-2 w-2 rounded-full bg-dusty-gold/70 shadow-[0_0_22px_rgba(181,163,110,0.65)]" />
-              <p className="relative text-[11px] font-semibold uppercase tracking-[0.24em] text-dusty-gold">
-                Cielo de hoy
+        <div className="mx-auto mt-8 max-w-3xl border-y border-dusty-gold/24 bg-[#f8f4eb]/42 px-4 py-5 text-left shadow-[0_14px_46px_rgba(30,26,46,0.05)] backdrop-blur-sm sm:px-6 sm:py-6">
+          <div className="grid gap-5 md:grid-cols-[0.82fr_1.18fr] md:items-end">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8a7a4e]">
+                Cielo calculado para
               </p>
-              <div className="relative mt-8">
-                <p className="font-serif text-[30px] leading-none text-[#f7f1df]">
-                  {result?.ok ? dateLabel(result.generatedAt, locale).split(",")[0] : "Ahora"}
-                </p>
-                <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#f7f1df]/68">
-                  {currentLocation?.displayName ?? request?.location ?? chart.event.locationLabel}
-                </p>
-              </div>
+              <p className="mt-3 font-serif text-[28px] leading-tight text-ivory sm:text-[34px]">
+                {currentLocation?.displayName ?? request?.location ?? chart.event.locationLabel}
+              </p>
+              <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24]">
+                {result?.ok ? dateLabel(result.generatedAt, locale) : "Ahora"}
+              </p>
             </div>
-            <div className="p-5 sm:p-6">
+            <div>
               <label className="block">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
-                  Ubicación actual
+                  Cambiar ubicación actual
                 </span>
-                <div className="mt-3 [&_input]:border-dusty-gold/28 [&_input]:bg-[#f8f4eb]/86 [&_input]:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.7)]">
+                <div className="mt-3 [&_input]:min-h-[3.65rem] [&_input]:border-dusty-gold/28 [&_input]:bg-[#f5f0e6]/80 [&_input]:shadow-none">
                   <LocationAutocomplete
                     value={currentLocationInput}
                     selectedLocation={currentLocation}
@@ -440,8 +436,8 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
                   />
                 </div>
               </label>
-              <p className="mt-4 text-xs leading-5 text-[#3a3048]">
-                La carta natal queda en el centro. El cielo exterior se calcula desde donde estás ahora, para que las casas del momento tengan sentido.
+              <p className="mt-3 text-xs leading-5 text-[#3a3048]">
+                La carta natal permanece igual. Esta ubicación solo ajusta el cielo de hoy y sus casas.
               </p>
             </div>
           </div>
