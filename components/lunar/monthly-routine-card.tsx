@@ -1,38 +1,72 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 import { PrimaryButton } from "@/components/ui/primary-button";
+import type { NatalChartData } from "@/lib/chart";
 import type { LunarReportMetadata } from "@/lib/lunar-report";
 import type { Dictionary } from "@/lib/i18n";
-import { yogaRoutines } from "@/data/sarita/yoga-routines";
+import {
+  getPersonalizedYogaRoutine,
+  type PersonalizedYogaRoutine,
+  type RoutineElement,
+} from "@/lib/personalized-yoga";
+
+const ELEMENT_LABELS: Record<RoutineElement, string> = {
+  fuego: "Fuego",
+  tierra: "Tierra",
+  agua: "Agua",
+  aire: "Aire",
+};
 
 type MonthlyRoutineCardProps = {
+  chart: NatalChartData;
   metadata: LunarReportMetadata;
   dictionary: Dictionary;
 };
 
-const ELEMENT_LABELS = {
-  fire: "Fuego",
-  earth: "Tierra",
-  air: "Aire",
-  water: "Agua",
-} as const;
+function routineTitle(routine: PersonalizedYogaRoutine | null) {
+  if (!routine) return "Tu rutina de yoga";
+  if (routine.secondary) {
+    return `${ELEMENT_LABELS[routine.primary]} ${routine.primaryPercent}% + ${ELEMENT_LABELS[routine.secondary]} ${routine.secondaryPercent}%`;
+  }
 
-const ELEMENT_COPY: Record<LunarReportMetadata["assignedRoutine"], string> = {
-  fuego:
-    "Esta luna te pide encender. La rutina del Fuego activa lo cardinal y rompe el estancamiento.",
-  tierra:
-    "Esta luna te pide aterrizar. La rutina de la Tierra ancla el cuerpo y devuelve la presencia.",
-  aire:
-    "Esta luna te pide claridad. La rutina del Aire abre el pecho y mueve la palabra.",
-  agua:
-    "Esta luna te pide soltar. La rutina del Agua disuelve la coraza y devuelve la fluidez.",
-};
+  return `Elemento ${ELEMENT_LABELS[routine.primary]}`;
+}
 
-export function MonthlyRoutineCard({ metadata, dictionary }: MonthlyRoutineCardProps) {
-  const routine = yogaRoutines[metadata.assignedRoutine];
-  const routineNames = routine.asanas
-    .slice(0, 3)
+function routineDescription(routine: PersonalizedYogaRoutine | null) {
+  if (!routine) {
+    return "Una secuencia elegida desde tu carta para acompasar cuerpo, respiración y foco.";
+  }
+
+  if (routine.secondary) {
+    return `Tu práctica de este mes combina ${ELEMENT_LABELS[routine.primary]} y ${ELEMENT_LABELS[routine.secondary]}: el elemento dominante marca la base y el segundo elemento ajusta el ritmo de la secuencia.`;
+  }
+
+  return `Tu práctica de este mes toma ${ELEMENT_LABELS[routine.primary]} como base para elegir las posturas que mejor acompañan tu lectura.`;
+}
+
+export function MonthlyRoutineCard({ chart, dictionary }: MonthlyRoutineCardProps) {
+  const [routine, setRoutine] = useState<PersonalizedYogaRoutine | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void getPersonalizedYogaRoutine(chart).then((nextRoutine) => {
+      if (!cancelled) {
+        setRoutine(nextRoutine);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [chart]);
+
+  const routineNames = routine?.asanas
+    .slice(0, 4)
     .map((asana) => asana.nameSanskrit)
     .join(" · ");
-  const mantra = `${metadata.routine.chakra.name} · ${metadata.routine.chakra.mantra}`;
 
   return (
     <section className="mx-auto max-w-[720px] text-left">
@@ -40,19 +74,21 @@ export function MonthlyRoutineCard({ metadata, dictionary }: MonthlyRoutineCardP
         {dictionary.lunar.practiceThisMonth}
       </p>
       <h3 className="mt-2 font-serif text-[36px] font-normal leading-tight text-ivory">
-        {dictionary.lunar.elementLabel.replace("{element}", ELEMENT_LABELS[metadata.element])}
+        {routineTitle(routine)}
       </h3>
 
       <p className="mt-7 max-w-[560px] font-serif text-[21px] leading-[1.6] text-ivory/82">
-        {ELEMENT_COPY[metadata.assignedRoutine]}
+        {routineDescription(routine)}
       </p>
 
-      <p className="mt-5 max-w-[620px] font-serif text-sm italic leading-7 text-[#3a3048]">
-        {[routineNames, mantra, metadata.routine.totalDuration].filter(Boolean).join(" · ")}
-      </p>
+      {routineNames ? (
+        <p className="mt-5 max-w-[620px] font-serif text-sm italic leading-7 text-[#3a3048]">
+          {routineNames} · {routine?.asanas.length ?? 0} asanas
+        </p>
+      ) : null}
 
       <PrimaryButton
-        href="/yoga-astral/personalizada"
+        href="/yoga-astral"
         variant="ghostGold"
         className="mt-8 px-6 py-3 text-[12px] uppercase tracking-[0.2em]"
       >

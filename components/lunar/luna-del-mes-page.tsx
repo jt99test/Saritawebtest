@@ -432,7 +432,7 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
           </div>
 
           <div className="mt-12 sm:mt-16 lg:mt-20">
-            <MonthlyRoutineCard metadata={selectedMetadata} dictionary={dictionary} />
+            <MonthlyRoutineCard chart={chart} metadata={selectedMetadata} dictionary={dictionary} />
           </div>
         </div>
       ) : (
