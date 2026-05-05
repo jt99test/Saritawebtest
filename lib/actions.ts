@@ -183,6 +183,7 @@ export async function recalculateHouseSystemAction(
 export async function calculateCurrentTransitsAction(
   natalChart: NatalChartData,
   values: FormValues | null,
+  currentLocation?: PlaceSuggestion | null,
 ) {
   const access = await getReadingAccess();
   if (!access || access.plan !== "avanzado") {
@@ -197,7 +198,7 @@ export async function calculateCurrentTransitsAction(
   const { geocode } = await import("./geocoding");
   const { calculateNatalChart } = await import("./ephemeris.server");
   const { getActiveTransits } = await import("./transits.server");
-  const geo = values.selectedLocation ? values.selectedLocation : await geocode(values.location);
+  const geo = currentLocation ?? (values.selectedLocation ? values.selectedLocation : await geocode(values.location));
   const now = new Date();
   const localNow = DateTime.fromJSDate(now).setZone(geo.timezone);
 

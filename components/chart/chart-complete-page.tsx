@@ -4,11 +4,13 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 
 import { BiWheelChart } from "@/components/chart/bi-wheel-chart";
 import { BiWheelInfoPanel } from "@/components/chart/bi-wheel-info-panel";
+import { LocationAutocomplete } from "@/components/form/location-autocomplete";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { calculateCurrentTransitsAction } from "@/lib/actions";
 import type { ChartPoint, ChartPointId, NatalChartData } from "@/lib/chart";
 import { hashNatalChart } from "@/lib/chart-hash";
 import type { FormValues } from "@/lib/chart-session";
+import type { PlaceSuggestion } from "@/lib/geocoding";
 import type { Dictionary } from "@/lib/i18n";
 import { getCachedPremiumReading, setCachedPremiumReading } from "@/lib/premium-reading-cache";
 import { normalizeReadingText } from "@/lib/reading-text";
@@ -190,22 +192,24 @@ function topTransits(transits: ActiveTransit[]) {
   return [...transits].sort((a, b) => transitWeight(b) - transitWeight(a)).slice(0, 6);
 }
 
-function activatedHouses(chart: NatalChartData, transits: ActiveTransit[]) {
+function activatedHouses(chart: NatalChartData, transits: ActiveTransit[], transitChart?: NatalChartData) {
   const byHouse = new Map<number, { house: number; count: number; points: Set<string>; transits: ActiveTransit[] }>();
 
   topTransits(transits).forEach((transit) => {
     const natalPoint = findPoint(chart, transit.natalPlanet);
-    if (!natalPoint) return;
-    const current = byHouse.get(natalPoint.house) ?? {
-      house: natalPoint.house,
+    const transitingPoint = transitChart ? findPoint(transitChart, transit.transitingPlanet) : null;
+    const house = transitingPoint?.house ?? natalPoint?.house;
+    if (!house) return;
+    const current = byHouse.get(house) ?? {
+      house,
       count: 0,
       points: new Set<string>(),
       transits: [],
     };
     current.count += 1;
-    current.points.add(pointLabel(natalPoint.id));
+    current.points.add(pointLabel(transit.transitingPlanet));
     current.transits.push(transit);
-    byHouse.set(natalPoint.house, current);
+    byHouse.set(house, current);
   });
 
   return [...byHouse.values()].sort((a, b) => b.count - a.count).slice(0, 3);
@@ -225,7 +229,10 @@ function dateLabel(iso?: string, locale?: string) {
 export function ChartCompletePage({ chart, request, dictionary, readingId }: ChartCompletePageProps) {
   const locale = useStoredLocale();
   const transitCopy = dictionary.result.transitPage;
+  const initialTransitLocation = request?.selectedLocation ?? null;
   const [result, setResult] = useState<TransitResult | null>(null);
+  const [currentLocationInput, setCurrentLocationInput] = useState(initialTransitLocation?.displayName ?? request?.location ?? "");
+  const [currentLocation, setCurrentLocation] = useState<PlaceSuggestion | null>(initialTransitLocation);
   const [transitReading, setTransitReading] = useState("");
   const [transitData, setTransitData] = useState<TransitData>({});
   const [transitReadingError, setTransitReadingError] = useState<string | null>(null);
@@ -235,6 +242,9 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
   const [transitWheelMode, setTransitWheelMode] = useState<TransitWheelMode>("all");
   const [chartHash, setChartHash] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const currentLocationKey = currentLocation
+    ? `${currentLocation.id}:${currentLocation.lat}:${currentLocation.lng}:${currentLocation.timezone}`
+    : "birth-location";
 
   useEffect(() => {
     let active = true;
@@ -249,15 +259,16 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
   useEffect(() => {
     if (!chartHash) return;
     let active = true;
-    const cacheKey = `transit-result:${new Date().toISOString().slice(0, 10)}`;
+    const cacheKey = `transit-result:${new Date().toISOString().slice(0, 10)}:${currentLocationKey}`;
     const cachedResult = getCachedPremiumReading<CachedTransitResult>(chartHash, cacheKey);
     if (cachedResult) {
       setResult(cachedResult);
       return;
     }
 
+    setResult(null);
     startTransition(async () => {
-      const next = await calculateCurrentTransitsAction(chart, request);
+      const next = await calculateCurrentTransitsAction(chart, request, currentLocation);
       if (active) {
         setResult(next);
         if (next.ok) {
@@ -268,12 +279,12 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
     return () => {
       active = false;
     };
-  }, [chart, request, chartHash]);
+  }, [chart, request, chartHash, currentLocation, currentLocationKey]);
 
   useEffect(() => {
     if (!result?.ok || result.transits.length === 0 || !chartHash) return;
     let active = true;
-    const cacheKey = `transits:${locale}:${request?.gender || "unspecified"}:${result.generatedAt.slice(0, 10)}`;
+    const cacheKey = `transits:${locale}:${request?.gender || "unspecified"}:${result.generatedAt.slice(0, 10)}:${currentLocationKey}`;
     const cachedData = getCachedPremiumReading<TransitData>(chartHash, cacheKey);
     if (cachedData) {
       setTransitReading("");
@@ -291,6 +302,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
       orb: t.orb,
       strength: t.strength,
       natalHouse: findPoint(chart, t.natalPlanet)?.house,
+      transitingHouse: findPoint(result.chart, t.transitingPlanet)?.house,
       activatedNatalAspects: t.activatedNatalAspects,
     }));
     setTransitReading("");
@@ -349,7 +361,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
       controller.abort();
       clearTimeout(timeout);
     };
-  }, [result, chart, locale, chartHash, readingId, request?.gender]);
+  }, [result, chart, locale, chartHash, readingId, request?.gender, currentLocationKey]);
 
   const activeTransits = useMemo(() => {
     if (!result?.ok) return [];
@@ -358,7 +370,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
   const activeTransitInnerIds = useMemo(() => [...new Set(activeTransits.map((transit) => transit.natalPlanet))], [activeTransits]);
   const activeTransitOuterIds = useMemo(() => [...new Set(activeTransits.map((transit) => transit.transitingPlanet))], [activeTransits]);
 
-  const houses = useMemo(() => activatedHouses(chart, activeTransits), [chart, activeTransits]);
+  const houses = useMemo(() => activatedHouses(chart, activeTransits, result?.ok ? result.chart : undefined), [chart, activeTransits, result]);
   const dominantTransit = activeTransits[0];
   const aiHouses = useMemo(() => transitData.houses ?? [], [transitData.houses]);
   const selectedAiHouse = aiHouses.find((house) => house.house === selectedHouse) ?? aiHouses[0] ?? null;
@@ -390,9 +402,35 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[#3a3048]">
           {transitCopy.description}
         </p>
+        <div className="mx-auto mt-7 max-w-xl border border-black/10 bg-white/70 p-4 text-left shadow-[0_8px_24px_rgba(0,0,0,0.05)] sm:p-5">
+          <label className="block">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+              Ubicación actual
+            </span>
+            <div className="mt-3">
+              <LocationAutocomplete
+                value={currentLocationInput}
+                selectedLocation={currentLocation}
+                onInputChange={(value) => {
+                  setCurrentLocationInput(value);
+                  if (currentLocation?.displayName !== value) setCurrentLocation(null);
+                }}
+                onSelect={(place) => {
+                  setCurrentLocationInput(place.displayName);
+                  setCurrentLocation(place);
+                }}
+                dictionary={dictionary}
+              />
+            </div>
+          </label>
+          <p className="mt-3 text-xs leading-5 text-[#3a3048]">
+            Los tránsitos usan tu carta natal como base, pero el cielo de hoy se calcula para el lugar donde estás ahora. Si no lo cambias, usamos tu lugar de nacimiento.
+          </p>
+        </div>
         {result?.ok ? (
           <p className="mt-4 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24]">
             {transitCopy.calculatedAt} {dateLabel(result.generatedAt, locale)}
+            {currentLocation ? ` · ${currentLocation.displayName}` : ""}
           </p>
         ) : null}
       </div>

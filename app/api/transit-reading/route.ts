@@ -22,6 +22,7 @@ type TransitInput = {
   orb: number;
   strength: string;
   natalHouse?: number;
+  transitingHouse?: number;
   activatedNatalAspects?: Array<{
     pointA: ChartPointId;
     pointB: ChartPointId;
@@ -132,8 +133,11 @@ export async function POST(request: Request) {
   const natalMoon = chart.points.find((point) => point.id === "moon");
 
   const transitLines = transits.slice(0, 6).map((transit) => {
-    const houseDesc = transit.natalHouse
-      ? ` - ${HOUSE_AREAS[transit.natalHouse] ?? `casa ${transit.natalHouse}`}`
+    const natalHouseDesc = transit.natalHouse
+      ? ` Punto natal en casa ${transit.natalHouse}: ${HOUSE_AREAS[transit.natalHouse] ?? `casa ${transit.natalHouse}`}.`
+      : "";
+    const transitHouseDesc = transit.transitingHouse
+      ? ` Planeta en transito cae en casa ${transit.transitingHouse} del lugar actual: ${HOUSE_AREAS[transit.transitingHouse] ?? `casa ${transit.transitingHouse}`}.`
       : "";
     const tightness = transit.strength === "tight"
       ? "muy exacto"
@@ -149,10 +153,10 @@ export async function POST(request: Request) {
       ? ` Reactiva memoria natal: ${natalPatterns}.`
       : " No se detecto un aspecto natal directo asociado a este punto.";
 
-    return `- ${POINT_LABELS[transit.transitingPlanet] ?? transit.transitingPlanet} en ${ASPECT_LABELS[transit.aspectType] ?? transit.aspectType} con ${POINT_LABELS[transit.natalPlanet] ?? transit.natalPlanet} natal${houseDesc}. Orbe ${transit.orb} grados, ${tightness}.${patternDesc}`;
+    return `- ${POINT_LABELS[transit.transitingPlanet] ?? transit.transitingPlanet} en ${ASPECT_LABELS[transit.aspectType] ?? transit.aspectType} con ${POINT_LABELS[transit.natalPlanet] ?? transit.natalPlanet} natal. Orbe ${transit.orb} grados, ${tightness}.${natalHouseDesc}${transitHouseDesc}${patternDesc}`;
   }).join("\n");
   const houseNumbers = [...new Set(transits.slice(0, 6)
-    .map((transit) => transit.natalHouse)
+    .map((transit) => transit.transitingHouse ?? transit.natalHouse)
     .filter((house): house is number => typeof house === "number"))]
     .slice(0, 3);
   const houseHint = houseNumbers.length ? houseNumbers.join(", ") : "1";
@@ -170,6 +174,7 @@ Logica de lectura:
 - La carta natal muestra el que: patrones, memoria profunda y aprendizajes de base.
 - Los transitos muestran el cuando: el momento en que esos patrones se activan en la experiencia.
 - No leas el transito aislado. Si un transito toca un planeta natal que participa en un aspecto natal, interpreta ese aspecto como una memoria interna que se despierta.
+- Usa la casa del planeta en transito como el area actual donde se esta moviendo la experiencia. Usa la casa natal como la memoria interna que recibe esa activacion.
 - Evita hablar de castigo o destino fijo. Presenta la activacion como oportunidad de conciencia, integracion y respuesta mas libre.
 - Si hay "Reactiva memoria natal", usa esa informacion en dominantBody y en reading.
 
