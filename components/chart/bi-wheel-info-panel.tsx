@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 
 import type { ChartPoint, ChartPointId, NatalChartData } from "@/lib/chart";
 import { formatSignPosition, getAugmentedChartPoints, getSignMeta, zodiacSigns } from "@/lib/chart";
-import { ASPECT_LABELS, HOUSE_AREAS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
+import { getAspectLabel, getHouseArea, getPointLabel, getSignLabel } from "@/lib/chart-labels";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { dictionaries } from "@/lib/i18n";
 import type { SynastryAspect } from "@/lib/synastry";
@@ -334,8 +334,8 @@ function biWheelReading({
   outerName?: string;
   locale: string;
 }) {
-  const planet = POINT_LABELS[point.id] ?? point.id;
-  const sign = SIGN_LABELS[point.sign] ?? point.sign;
+  const planet = getPointLabel(point.id, locale);
+  const sign = getSignLabel(point.sign, locale);
   const area = houseAction(point.house, locale);
   const role = pointRole(point.id, locale);
   const owner = ring === "inner" ? (innerName ?? copy.you) : (outerName ?? copy.partner);
@@ -398,11 +398,13 @@ function TransitRows({
   ring,
   selectedId,
   copy,
+  locale,
   activeTransits = [],
 }: {
   ring: "inner" | "outer";
   selectedId: ChartPointId;
   copy: ReturnType<typeof panelCopy>;
+  locale: string;
   activeTransits?: ActiveTransit[];
 }) {
   const rows = activeTransits
@@ -421,8 +423,8 @@ function TransitRows({
     <div>
       {rows.map((transit) => {
         const rowLabel = ring === "inner"
-          ? `${POINT_LABELS[transit.transitingPlanet]} ${ASPECT_LABELS[transit.aspectType].toLowerCase()}`
-          : `${ASPECT_LABELS[transit.aspectType]} ${POINT_LABELS[transit.natalPlanet]} natal`;
+          ? `${getPointLabel(transit.transitingPlanet, locale)} ${getAspectLabel(transit.aspectType, locale).toLowerCase()}`
+          : `${getAspectLabel(transit.aspectType, locale)} ${getPointLabel(transit.natalPlanet, locale)} natal`;
 
         return (
           <div
@@ -440,11 +442,11 @@ function TransitRows({
   );
 }
 
-function SolarReturnNote({ point, copy }: { point: ChartPoint; copy: ReturnType<typeof panelCopy> }) {
+function SolarReturnNote({ point, copy, locale }: { point: ChartPoint; copy: ReturnType<typeof panelCopy>; locale: string }) {
   const angular = point.house === 1 || point.house === 4 || point.house === 7 || point.house === 10;
   return (
     <p className={angular ? "text-[13px] italic text-[#5c4a24]" : "text-[13px] italic text-[#3a3048]"}>
-      {angular ? copy.angularHouse : HOUSE_AREAS[point.house]}
+      {angular ? copy.angularHouse : getHouseArea(point.house, locale)}
     </p>
   );
 }
@@ -502,7 +504,7 @@ function SynastryRows({
             className="flex items-center justify-between gap-4 border-b border-black/[0.06] py-2.5 last:border-b-0"
           >
             <p className="text-[13px] text-ivory">
-              {ASPECT_LABELS[aspect.type]} {POINT_LABELS[otherPoint]} · {aspect.orb.toFixed(1)}°
+              {getAspectLabel(aspect.type, locale)} {getPointLabel(otherPoint, locale)} · {aspect.orb.toFixed(1)}°
             </p>
             <span className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${badge.className}`}>
               {badge.label}
@@ -609,7 +611,7 @@ export function BiWheelInfoPanel({
                       {dictionary.result.points[selectedId]}
                     </h3>
                     <p className="mt-1.5 text-[13px] leading-6 text-[#3a3048]">
-                      {SIGN_LABELS[point.sign]} · Casa {point.house} · {HOUSE_AREAS[point.house]}
+                      {getSignLabel(point.sign, locale)} · {dictionary.result.transitPage.housePrefix} {point.house} · {getHouseArea(point.house, locale)}
                     </p>
                   </div>
                 </div>
@@ -638,7 +640,7 @@ export function BiWheelInfoPanel({
                   <ul className="mt-3 space-y-2 text-sm leading-7 text-[#3a3048]">
                     <li className="flex gap-2">
                       <span className="mt-3 h-1.5 w-1.5 rounded-full bg-ivory/35" />
-                      <span>{SIGN_LABELS[point.sign]}{" \u00b7 "}{dictionary.result.elements[signMeta.element]}</span>
+                      <span>{getSignLabel(point.sign, locale)}{" \u00b7 "}{dictionary.result.elements[signMeta.element]}</span>
                     </li>
                     <li className="flex gap-2">
                       <span className="mt-3 h-1.5 w-1.5 rounded-full bg-ivory/35" />
@@ -646,7 +648,7 @@ export function BiWheelInfoPanel({
                     </li>
                     <li className="flex gap-2">
                       <span className="mt-3 h-1.5 w-1.5 rounded-full bg-ivory/35" />
-                      <span>Casa {point.house}{" \u00b7 "}{HOUSE_AREAS[point.house]}</span>
+                      <span>{dictionary.result.transitPage.housePrefix} {point.house}{" \u00b7 "}{getHouseArea(point.house, locale)}</span>
                     </li>
                   </ul>
                 ) : null}
@@ -662,7 +664,7 @@ export function BiWheelInfoPanel({
                       value={`${position.degreeInSign}\u00b0 ${String(position.minutesInSign).padStart(2, "0")}\u2032 ${signGlyph}`}
                     />
                     <InfoRow label={dictionary.result.fields.eclipticLongitude} value={formatAbsoluteLongitude(point)} />
-                    <InfoRow label={dictionary.result.fields.sign} value={SIGN_LABELS[point.sign]} />
+                    <InfoRow label={dictionary.result.fields.sign} value={getSignLabel(point.sign, locale)} />
                     <InfoRow label={dictionary.result.fields.house} value={String(point.house)} />
                     <InfoRow label={dictionary.result.fields.element} value={dictionary.result.elements[signMeta.element]} />
                     <InfoRow label={dictionary.result.fields.modality} value={dictionary.result.modalities[signMeta.modality]} />
@@ -675,9 +677,9 @@ export function BiWheelInfoPanel({
                 <SectionLabel>{sectionCopy.connections}</SectionLabel>
                 <div className="mt-3">
               {variant === "transits" ? (
-                <TransitRows ring={ring} selectedId={selectedId} copy={copy} activeTransits={activeTransits} />
+                <TransitRows ring={ring} selectedId={selectedId} copy={copy} locale={locale} activeTransits={activeTransits} />
               ) : null}
-              {variant === "solar-return" ? <SolarReturnNote point={point} copy={copy} /> : null}
+              {variant === "solar-return" ? <SolarReturnNote point={point} copy={copy} locale={locale} /> : null}
               {variant === "synastry" ? (
                 <SynastryRows ring={ring} selectedId={selectedId} copy={copy} locale={locale} synastryAspects={synastryAspects} />
               ) : null}

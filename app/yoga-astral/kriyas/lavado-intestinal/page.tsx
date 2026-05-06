@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { cookies } from "next/headers";
 
-import { lavadoIntestinal } from "@/data/sarita/lavado-intestinal";
+import { getLavadoIntestinal } from "@/data/sarita/lavado-intestinal";
 import { LavadoBuyButton } from "@/components/paywall/lavado-buy-button";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
@@ -28,6 +28,7 @@ export default async function LavadoIntestinalPage() {
   const locale = cookieLocale && isLocale(cookieLocale) ? cookieLocale : defaultLocale;
   const dictionary = dictionaries[locale];
   const lavadoCopy = dictionary.lavadoPage;
+  const lavadoIntestinal = getLavadoIntestinal(locale);
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },

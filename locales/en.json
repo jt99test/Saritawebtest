@@ -216,7 +216,11 @@
     "chakra": "Chakra",
     "pranayamaAfter": "Pranayama ? after the sequence",
     "savasana": "Savasana",
-    "bijaMantra": "Bija mantra"
+    "bijaMantra": "Bija mantra",
+    "asanaFallbackBody": "Practice this posture slowly and keep the breath steady. Stay within a range that feels clear, stable, and available today.",
+    "asanaFallbackWarning": "Move gently, avoid forcing, and stop if pain, dizziness, or unusual discomfort appears.",
+    "elementContextFallback": "This part of the sequence translates the element into body practice: posture, breath, attention, and rhythm.",
+    "asanaDurationFallback": "Guided pace"
   },
   "lunar": {
     "eyebrow": "moon of the month",
@@ -953,6 +957,18 @@
     "avoid": "avoid this",
     "ask": "ask yourself",
     "empty": "Generate your reading above and the three concrete practices for this moon will appear here."
+  },
+  "helpPage": {
+    "faqs": [
+      { "question": "How do I calculate my natal chart?", "answer": "Open the form, enter your birth date, exact time, and birth city, and SARITA will calculate your chart." },
+      { "question": "Do I need my exact birth time?", "answer": "Yes. The closer the time is, the better the Ascendant and houses will be, because they move quickly." },
+      { "question": "What is included in the free plan?", "answer": "The free plan includes the full natal chart and 1 reading per month. Pro includes 5 monthly readings. Advanced includes 20 and unlocks Transits, Solar Return, Synastry, and Astrocartography." },
+      { "question": "How do I cancel my subscription?", "answer": "Go to your account and use the billing management button." },
+      { "question": "What is a Solar Return?", "answer": "It is the chart for the moment the Sun returns to its natal position. It highlights the main themes of your year." },
+      { "question": "What is the Intestinal Cleanse?", "answer": "It is a digital guide to Laghoo Shankhaprakshala, a short intestinal cleansing practice." },
+      { "question": "Is my data safe?", "answer": "We use Supabase to protect accounts and data, and Stripe for payments. You can request deletion at any time." },
+      { "question": "How do I contact support?", "answer": "Write to us at contacto@saritaastrology.com." }
+    ]
   },
   "lavadoPage": {
     "eyebrow": "Kriyas and cleansing",

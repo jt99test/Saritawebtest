@@ -13,6 +13,7 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import { ANTHROPIC_STANDARD_READING_MODEL } from "@/lib/anthropic-models";
+import { nativeToneInstruction, promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -29,15 +30,51 @@ function extractTextContent(message: Message) {
     .trim();
 }
 
-function langInstruction(locale?: string): string {
-  if (locale === "en") return "Write entirely in English.";
-  if (locale === "it") return "Write entirely in Italian.";
-  return "Write in Spanish from Spain. Use the 'tú' form.";
-}
-
 function buildPrompt(chart: NatalChartData, theme: GeneralReadingTheme, locale?: string, gender?: ReadingGender) {
-  const chartSummary = getChartSummaryForPrompt(chart);
-  const themeInstruction = getThemeInstruction(chart, theme);
+  const chartSummary = getChartSummaryForPrompt(chart, locale);
+  const themeInstruction = getThemeInstruction(chart, theme, locale);
+
+  if (locale === "en") {
+    return `You are ${chart.event.name}'s astrologer friend, explaining their natal chart over coffee. You know astrology well, but you are not performing as a formal professional; you are the friend who understands the chart and translates it into useful, concrete language. The reading should feel close, direct, and practical, with examples from everyday life.
+
+You are writing one thematic section of ${chart.event.name}'s general natal reading. Birth date: ${chart.event.dateLabel}. Birthplace: ${chart.event.locationLabel}.
+
+Full astrological context:
+${chartSummary}
+
+${themeInstruction}
+
+${genderPromptInstruction(gender, locale)}
+${grammarPromptInstruction(locale)}
+
+Write ONE paragraph of 60-80 words about this specific chart theme. Identify how it appears in daily life with one real, concrete example. End with something ${chart.event.name} can do or keep in mind. Vary the opening; do not begin with a fixed filler phrase. No headings, no multiple paragraphs.
+
+No markdown. No headings. Do not start with "#". Respect the limit strictly: 60-80 words.
+
+${nativeToneInstruction(locale)}
+${promptLanguageInstruction(locale)}`;
+  }
+
+  if (locale === "it") {
+    return `Sei l'astrologa amica di ${chart.event.name} e stai spiegando la sua carta natale davanti a un caffe. Conosci bene l'astrologia, ma non sei in modalita professionista distante: sei l'amica che capisce la carta e la traduce in parole utili, concrete e vicine. La lettura deve sentirsi diretta, pratica e quotidiana.
+
+Stai scrivendo una sezione tematica della lettura generale della carta natale di ${chart.event.name}. Data di nascita: ${chart.event.dateLabel}. Luogo di nascita: ${chart.event.locationLabel}.
+
+Contesto astrologico completo:
+${chartSummary}
+
+${themeInstruction}
+
+${genderPromptInstruction(gender, locale)}
+${grammarPromptInstruction(locale)}
+
+Scrivi UN paragrafo di 60-80 parole su questo tema specifico della carta. Mostra come si manifesta nella vita quotidiana con un esempio reale e concreto. Chiudi con qualcosa che ${chart.event.name} possa fare o tenere presente. Varia l'inizio; non aprire con una frase riempitiva fissa. Niente titoli, niente paragrafi multipli.
+
+Niente markdown. Niente intestazioni. Non iniziare con "#". Rispetta il limite in modo stretto: 60-80 parole.
+
+${nativeToneInstruction(locale)}
+${promptLanguageInstruction(locale)}`;
+  }
 
   return `Eres una astróloga amiga de ${chart.event.name} que le está explicando su carta natal por encima de un café. Conoces bien la astrología, pero ahora mismo no estás en modo "astróloga profesional" — estás en modo "amiga que se la sabe y se la está traduciendo a alguien que confía en ti". Tu lectura tiene que sentirse así: cercana, directa, útil, con ejemplos concretos de cómo esto aparece en su día a día.
 
@@ -58,7 +95,8 @@ subtítulos, sin párrafos múltiples.
 
 No uses markdown. No uses encabezados. No empieces con "#". Respeta estrictamente el lÃ­mite: 60-80 palabras.
 
-${langInstruction(locale)}`;
+${nativeToneInstruction(locale)}
+${promptLanguageInstruction(locale)}`;
 }
 
 export async function POST(request: Request) {

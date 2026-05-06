@@ -9,9 +9,9 @@ import type {
 } from "@/lib/lunar-report";
 import { getMonthlyLunarData } from "@/lib/lunar.server";
 import { getActiveTransits } from "@/lib/transits.server";
-import { houseMessages } from "@/data/sarita/house-messages";
+import { getHouseMessages } from "@/data/sarita/house-messages";
 import { elementRoutines } from "@/data/sarita/element-routines";
-import { transitDescriptions } from "@/data/sarita/transit-descriptions";
+import { getTransitDescriptions } from "@/data/sarita/transit-descriptions";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ANTHROPIC_FAST_MODEL, ANTHROPIC_STANDARD_READING_MODEL } from "@/lib/anthropic-models";
 import {
@@ -19,7 +19,8 @@ import {
   setCachedAiReading,
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
-import { ASPECT_LABELS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
+import { getAspectLabel, getPointLabel, getSignLabel } from "@/lib/chart-labels";
+import { noRelevantTransits, promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 
 type LunarReportRequest = {
@@ -42,23 +43,23 @@ type CachedLunarContent = {
 const ACTIONS_MARKER = "__SARITA_ACTIONS__";
 
 function langInstruction(locale?: string): string {
-  if (locale === "en") return "Write entirely in English.";
-  if (locale === "it") return "Write entirely in Italian.";
-  return "Write in Spanish from Spain. Use the 'tú' form.";
+  if (locale === "en") return "Write entirely in English. Do not output Spanish words unless they are proper names.";
+  if (locale === "it") return "Write entirely in Italian. Do not output Spanish words unless they are proper names.";
+  return promptLanguageInstruction(locale);
 }
 
 function monthLabel(year: number, month: number, locale?: string) {
   return DateTime.utc(year, month, 1).setLocale(locale ?? "es").toFormat("LLLL yyyy");
 }
 
-function buildChartSummary(chart: NatalChartData) {
+function buildChartSummary(chart: NatalChartData, locale?: string) {
   const pointLines = chart.points.map((point) => {
-    const signName = SIGN_LABELS[point.sign];
-    return `- ${POINT_LABELS[point.id]} en ${signName} ${point.degreeInSign}°${String(point.minutesInSign).padStart(2, "0")}', casa ${point.house}${point.retrograde ? " (Rx)" : ""}`;
+    const signName = getSignLabel(point.sign, locale);
+    return `- ${getPointLabel(point.id, locale)} in ${signName} ${point.degreeInSign}°${String(point.minutesInSign).padStart(2, "0")}', house ${point.house}${point.retrograde ? " (Rx)" : ""}`;
   });
 
   const aspectLines = chart.aspects.map((aspect) => {
-    return `- ${POINT_LABELS[aspect.from]} ${ASPECT_LABELS[aspect.type]} ${POINT_LABELS[aspect.to]} (orbe ${aspect.orb}°, ${aspect.applying ? "aplicativo" : "separativo"})`;
+    return `- ${getPointLabel(aspect.from, locale)} ${getAspectLabel(aspect.type, locale)} ${getPointLabel(aspect.to, locale)} (orb ${aspect.orb}°, ${aspect.applying ? "applying" : "separating"})`;
   });
 
   return [
@@ -69,23 +70,25 @@ function buildChartSummary(chart: NatalChartData) {
   ].join("\n");
 }
 
-async function buildTransitList(chart: NatalChartData, lunationTimestamp: string) {
+async function buildTransitList(chart: NatalChartData, lunationTimestamp: string, locale?: string) {
   const transits = (await getActiveTransits(chart, new Date(lunationTimestamp))).slice(0, 5);
+  const descriptions = getTransitDescriptions(locale);
 
   if (transits.length === 0) {
     return {
-      lines: "Ninguno especialmente relevante según los filtros del método.",
+      lines: noRelevantTransits(locale),
       structured: [],
     };
   }
 
   const structured = transits.map((transit) => {
-    const description = transitDescriptions[POINT_LABELS[transit.transitingPlanet]];
+    const transitingPlanetLabel = getPointLabel(transit.transitingPlanet, locale);
+    const description = descriptions[transitingPlanetLabel] ?? getTransitDescriptions("es")[getPointLabel(transit.transitingPlanet, "es")];
     return {
       ...transit,
-      transitingPlanetLabel: POINT_LABELS[transit.transitingPlanet],
-      natalPlanetLabel: POINT_LABELS[transit.natalPlanet],
-      aspectLabel: ASPECT_LABELS[transit.aspectType],
+      transitingPlanetLabel,
+      natalPlanetLabel: getPointLabel(transit.natalPlanet, locale),
+      aspectLabel: getAspectLabel(transit.aspectType, locale),
       description: description?.description ?? "",
       relevance: description?.relevance ?? "",
     };
@@ -220,7 +223,7 @@ Tránsitos activos relevantes este mes:
 ${transitLines}
 
 Contexto astrológico completo de la persona:
-${buildChartSummary(chart)}
+${buildChartSummary(chart, locale)}
 
 TU TAREA:
 Escribe UN párrafo de 80-100 palabras. Empieza con qué Luna es y qué casa
@@ -275,13 +278,13 @@ export async function POST(request: Request) {
       return new Response("No lunation found for the requested month", { status: 404 });
     }
 
-    const houseMessage = houseMessages[lunation.activatedHouse - 1];
+    const houseMessage = getHouseMessages(locale)[lunation.activatedHouse - 1];
     if (!houseMessage) {
       return new Response("House message not found", { status: 500 });
     }
 
     const routine = elementRoutines[lunation.assignedRoutine];
-    const transitData = await buildTransitList(chart, lunation.timestamp);
+    const transitData = await buildTransitList(chart, lunation.timestamp, locale);
     const client = process.env.ANTHROPIC_API_KEY
       ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
       : null;
@@ -383,7 +386,7 @@ export async function POST(request: Request) {
       month,
       lunationType,
       metadata: {
-        signLabel: SIGN_LABELS[lunation.position.sign],
+        signLabel: getSignLabel(lunation.position.sign, locale),
         degree: lunation.position.degree,
         minutes: lunation.position.minutes,
         house: lunation.activatedHouse,

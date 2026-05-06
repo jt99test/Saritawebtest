@@ -113,14 +113,20 @@ function sortSuggestions(results: NominatimResult[], query: string) {
   });
 }
 
-async function fetchNominatim(query: string, limit: number) {
+function acceptLanguage(locale?: string) {
+  if (locale === "en") return "en,es";
+  if (locale === "it") return "it,es";
+  return "es,en";
+}
+
+async function fetchNominatim(query: string, limit: number, locale?: string) {
   const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=${limit}&addressdetails=1`;
   const userAgent = process.env.NOMINATIM_USER_AGENT ?? "SARITA-Astrology/1.0";
 
   const response = await fetch(url, {
     headers: {
       "User-Agent": userAgent,
-      "Accept-Language": "es,en",
+      "Accept-Language": acceptLanguage(locale),
     },
     cache: "no-store",
   });
@@ -132,13 +138,13 @@ async function fetchNominatim(query: string, limit: number) {
   return (await response.json()) as NominatimResult[];
 }
 
-export async function suggestPlaces(query: string): Promise<PlaceSuggestion[]> {
+export async function suggestPlaces(query: string, locale?: string): Promise<PlaceSuggestion[]> {
   const trimmedQuery = query.trim();
   if (trimmedQuery.length < 2) {
     return [];
   }
 
-  const rawResults = await fetchNominatim(trimmedQuery, 8);
+  const rawResults = await fetchNominatim(trimmedQuery, 8, locale);
   const sortedResults = sortSuggestions(rawResults, trimmedQuery).slice(0, 6);
   const suggestions = await Promise.all(
     sortedResults.map(async (result) => {
@@ -153,8 +159,8 @@ export async function suggestPlaces(query: string): Promise<PlaceSuggestion[]> {
   return suggestions;
 }
 
-export async function geocode(query: string): Promise<GeoResult> {
-  const suggestions = await suggestPlaces(query);
+export async function geocode(query: string, locale?: string): Promise<GeoResult> {
+  const suggestions = await suggestPlaces(query, locale);
   const selected = suggestions[0];
 
   if (!selected) {

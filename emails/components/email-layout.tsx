@@ -18,9 +18,10 @@ import type { ReactNode } from "react";
 type EmailLayoutProps = {
   children: ReactNode;
   previewText: string;
+  locale?: string;
 };
 
-export function EmailLayout({ children, previewText }: EmailLayoutProps) {
+export function EmailLayout({ children, previewText, locale }: EmailLayoutProps) {
   void Button;
   void Column;
   void Img;
@@ -28,6 +29,20 @@ export function EmailLayout({ children, previewText }: EmailLayoutProps) {
   void Row;
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://saritaastrology.com";
+  const footer = locale === "en"
+    ? {
+        product: "Western Astrology",
+        account: `To manage your account or cancel your subscription, visit ${siteUrl}`,
+      }
+    : locale === "it"
+      ? {
+          product: "Astrologia occidentale",
+          account: `Per gestire il tuo account o annullare l'abbonamento, entra su ${siteUrl}`,
+        }
+      : {
+          product: "Astrologia Occidental",
+          account: `Para gestionar tu cuenta o cancelar tu suscripcion, entra en ${siteUrl}`,
+        };
 
   return (
     <Html>
@@ -43,10 +58,8 @@ export function EmailLayout({ children, previewText }: EmailLayoutProps) {
           <Section style={contentStyle}>{children}</Section>
 
           <Section style={footerStyle}>
-            <Text style={footerTextStyle}>© 2026 SARITA · Astrología Occidental</Text>
-            <Text style={footerTextStyle}>
-              Para gestionar tu cuenta o cancelar tu suscripción, entra en {siteUrl}
-            </Text>
+            <Text style={footerTextStyle}>© 2026 SARITA · {footer.product}</Text>
+            <Text style={footerTextStyle}>{footer.account}</Text>
           </Section>
         </Container>
       </Body>

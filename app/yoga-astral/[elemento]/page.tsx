@@ -12,6 +12,7 @@ import { PremiumCard } from "@/components/ui/premium-card";
 import { AsanaVisual } from "@/components/yoga/asana-visual";
 import { RoutineCompletionButton } from "@/components/yoga/routine-completion-button";
 import { dictionaries, defaultLocale, isLocale, LOCALE_STORAGE_KEY } from "@/lib/i18n";
+import { getYogaElementMeta, localizeRoutine } from "@/data/sarita/yoga-routine-localization";
 
 type Elemento = keyof typeof yogaRoutines;
 
@@ -38,6 +39,13 @@ const SIGN_GLYPHS: Record<string, string> = {
   Capricornio: "♑",
   Acuario: "♒",
   Piscis: "♓",
+};
+
+const ELEMENT_SIGN_GLYPHS: Record<Elemento, string[]> = {
+  fuego: ["\u2648", "\u264c", "\u2650"],
+  tierra: ["\u2649", "\u264d", "\u2651"],
+  agua: ["\u264b", "\u264f", "\u2653"],
+  aire: ["\u264a", "\u264e", "\u2652"],
 };
 
 const ELEMENT_META: Record<Elemento, { emotional: string; badgeClass: string }> = {
@@ -89,12 +97,12 @@ export default async function YogaAstralElementPage({
   const locale = cookieLocale && isLocale(cookieLocale) ? cookieLocale : defaultLocale;
   const dictionary = dictionaries[locale];
   const yogaCopy = dictionary.yogaAstral;
-
   if (!isElemento(elemento)) {
     notFound();
   }
 
-  const routine = yogaRoutines[elemento];
+  const routine = localizeRoutine(yogaRoutines[elemento], locale);
+  const localizedMeta = getYogaElementMeta(elemento, locale);
   const chakraName = routine.chakra.name.split(" ")[0];
 
   return (
@@ -130,14 +138,14 @@ export default async function YogaAstralElementPage({
                       {yogaCopy.title}
                     </p>
                     <h1 className="mt-3 font-serif text-[38px] leading-tight text-ivory sm:mt-4 sm:text-6xl">
-                      {routine.title}
+                      {yogaCopy.elementTitle.replace("{element}", yogaCopy.elementLabels[elemento])}
                     </h1>
                     <div className="mt-4 flex flex-wrap gap-2">
                       <span className="border border-black/10 bg-white px-3 py-1.5 text-xs leading-5 text-[#3a3048]">
                         {routine.bodyZone}
                       </span>
                       <span className="border border-dusty-gold/18 bg-dusty-gold/[0.055] px-3 py-1.5 font-serif text-xs italic leading-5 text-[#5c4a24]">
-                        {ELEMENT_META[elemento].emotional}
+                        {localizedMeta?.emotional ?? ELEMENT_META[elemento].emotional}
                       </span>
                     </div>
                   </div>
@@ -149,7 +157,7 @@ export default async function YogaAstralElementPage({
                     [
                       yogaCopy.signs,
                       routine.signs
-                        .map((sign) => `${SIGN_GLYPHS[sign] ?? "✦"} ${sign}`)
+                        .map((sign, index) => `${SIGN_GLYPHS[sign] ?? ELEMENT_SIGN_GLYPHS[elemento][index] ?? "✦"} ${sign}`)
                         .join(" · "),
                     ],
                     [yogaCopy.houses, routine.houses.join(" · ")],
@@ -176,7 +184,7 @@ export default async function YogaAstralElementPage({
             <section className="space-y-5">
               <SectionHeader>{yogaCopy.chartElement}</SectionHeader>
               <div className="grid gap-4 lg:grid-cols-3">
-                {routine.signsAndHouses.map((entry) => (
+                {routine.signsAndHouses.map((entry, index) => (
                   <PremiumCard
                     key={entry.sign}
                     className="border-black/10 bg-white/85 p-5 shadow-[0_14px_38px_rgba(30,26,46,0.08)] sm:p-6"
@@ -185,7 +193,7 @@ export default async function YogaAstralElementPage({
                       {dictionary.result.transitPage.housePrefix} {entry.houseNumber}
                     </p>
                     <h3 className="mt-3 font-serif text-2xl text-ivory sm:text-3xl">
-                      {SIGN_GLYPHS[entry.sign] ?? "✦"} {entry.sign}
+                      {SIGN_GLYPHS[entry.sign] ?? ELEMENT_SIGN_GLYPHS[elemento][index] ?? "✦"} {entry.sign}
                     </h3>
                     <p className="mt-4 text-sm leading-7 text-[#3a3048]">
                       {entry.description}
@@ -199,7 +207,7 @@ export default async function YogaAstralElementPage({
               <SectionHeader>{yogaCopy.sequence} · {routine.totalDuration}</SectionHeader>
               <div className="sticky top-0 z-10 -mx-4 mb-6 border-y border-dusty-gold/16 bg-[#f5f0e6]/94 px-4 py-3 shadow-[0_12px_34px_rgba(30,26,46,0.08)] backdrop-blur-md sm:-mx-6 sm:px-6">
                 <div className="flex items-center justify-between text-[12px] uppercase tracking-[0.18em] text-[#3a3048]">
-                  <span>{routine.title}</span>
+                  <span>{yogaCopy.elementTitle.replace("{element}", yogaCopy.elementLabels[elemento])}</span>
                   <span>{routine.asanas.length} {yogaCopy.asanas}</span>
                 </div>
                 <div className="mt-2 h-0.5 w-full bg-black/8">

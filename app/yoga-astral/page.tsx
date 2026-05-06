@@ -80,7 +80,7 @@ export default function YogaAstralRoutePage() {
           </div>
 
           {result?.chart ? (
-            <YogaAstralPage chart={result.chart} dictionary={dictionary} />
+            <YogaAstralPage chart={result.chart} dictionary={dictionary} locale={locale} />
           ) : (
             <div className="flex flex-1 items-center justify-center">
               <div className="max-w-3xl text-center">

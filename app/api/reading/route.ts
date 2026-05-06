@@ -8,17 +8,12 @@ import {
   setCachedAiReading,
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
-import { ASPECT_LABELS, HOUSE_AREAS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
+import { getAspectLabel, getHouseArea, getPointLabel, getSignLabel } from "@/lib/chart-labels";
+import { aspectPhrase, housePhrase, nativeToneInstruction, noMajorAspects, placementPhrase, promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
-function langInstruction(locale?: string): string {
-  if (locale === "en") return "Write entirely in English.";
-  if (locale === "it") return "Write entirely in Italian.";
-  return "Write in Spanish from Spain. Use the 'tú' form.";
-}
 
 function buildPrompt(chart: NatalChartData, pointId: ChartPointId, locale?: string): string {
   const point = chart.points.find((entry) => entry.id === pointId);
@@ -28,14 +23,21 @@ function buildPrompt(chart: NatalChartData, pointId: ChartPointId, locale?: stri
   }
 
   const sign = zodiacSigns.find((entry) => entry.id === point.sign);
-  const signName = SIGN_LABELS[point.sign];
+  const signName = getSignLabel(point.sign, locale);
   const element = sign?.element ?? "";
   const modality = sign?.modality ?? "";
 
   const allPoints = chart.points
     .map((entry) => {
-      const signLabel = SIGN_LABELS[entry.sign];
-      return `• ${POINT_LABELS[entry.id]} en ${signLabel} ${entry.degreeInSign}°, casa ${entry.house}${entry.retrograde ? " (Rx)" : ""}`;
+      const signLabel = getSignLabel(entry.sign, locale);
+      return `- ${placementPhrase({
+        point: getPointLabel(entry.id, locale),
+        sign: signLabel,
+        degree: entry.degreeInSign,
+        house: entry.house,
+        retrograde: entry.retrograde,
+        locale,
+      })}`;
     })
     .join("\n");
 
@@ -44,23 +46,75 @@ function buildPrompt(chart: NatalChartData, pointId: ChartPointId, locale?: stri
     .map((aspect) => {
       const otherId = aspect.from === pointId ? aspect.to : aspect.from;
       const other = chart.points.find((entry) => entry.id === otherId);
-      const otherSign = other ? SIGN_LABELS[other.sign] : "";
-      const aspectName = ASPECT_LABELS[aspect.type];
+      const otherSign = other ? getSignLabel(other.sign, locale) : "";
+      const aspectName = getAspectLabel(aspect.type, locale);
 
-      return `  - ${aspectName} con ${POINT_LABELS[otherId]} en ${otherSign} (orbe ${aspect.orb}°)`;
+      return `  - ${aspectPhrase({
+        from: getPointLabel(pointId, locale),
+        aspect: aspectName,
+        to: `${getPointLabel(otherId, locale)} ${locale === "en" || locale === "it" ? "in" : "en"} ${otherSign}`,
+        orb: aspect.orb,
+        locale,
+      })}`;
     })
     .join("\n");
+
+  if (locale === "en") {
+    return `You are SARITA, ${chart.event.name}'s astrologer friend. Write directly, without filler and without poetic mist. Your aim is for ${chart.event.name} to read this and think, "yes, that is me."
+
+You are reading ${chart.event.name}'s ${getPointLabel(pointId, locale)}:
+${signName} ${point.degreeInSign}°, ${housePhrase(point.house, locale)} (${getHouseArea(point.house, locale)}).
+${point.retrograde ? "It is retrograde." : ""}
+
+Active aspects:
+${pointAspects || noMajorAspects(locale)}
+
+Full natal chart:
+${allPoints}
+
+Write ONE paragraph of 60-80 words. Start with a direct observation about how this planet shows up in ${chart.event.name}'s daily life. Give one concrete example from work, home, relationships, or a typical reaction. End with something useful they can do with this information. No headings, no multiple paragraphs, no poetic metaphors.
+
+Internal technical data if useful: ${element} / ${modality}.
+
+Vary the openings. Do not start with a fixed filler phrase.
+
+${nativeToneInstruction(locale)}
+${promptLanguageInstruction(locale)}`;
+  }
+
+  if (locale === "it") {
+    return `Sei SARITA, l'astrologa amica di ${chart.event.name}. Scrivi in modo diretto, senza giri inutili e senza poesia nebulosa. L'obiettivo e che ${chart.event.name} legga e pensi: "si, sono proprio io."
+
+Stai leggendo ${getPointLabel(pointId, locale)} di ${chart.event.name}:
+${signName} ${point.degreeInSign}°, ${housePhrase(point.house, locale)} (${getHouseArea(point.house, locale)}).
+${point.retrograde ? "E retrogrado." : ""}
+
+Aspetti attivi:
+${pointAspects || noMajorAspects(locale)}
+
+Carta natale completa:
+${allPoints}
+
+Scrivi UN paragrafo di 60-80 parole. Inizia con un'osservazione diretta su come questo pianeta si nota nella vita quotidiana di ${chart.event.name}. Fai un esempio concreto dal lavoro, dalla casa, dalle relazioni o da una reazione tipica. Chiudi con qualcosa di utile da farne. Niente titoli, niente paragrafi multipli, niente metafore poetiche.
+
+Dati tecnici interni se aiutano: ${element} / ${modality}.
+
+Varia gli inizi. Non aprire con una frase riempitiva fissa.
+
+${nativeToneInstruction(locale)}
+${promptLanguageInstruction(locale)}`;
+  }
 
   return `Eres SARITA, astróloga amiga de ${chart.event.name}. Escribes
 de forma directa, sin rodeos y sin poesía. Tu objetivo es que
 ${chart.event.name} lea esto y piense "claro, eso soy yo."
 
-Estás leyendo el ${POINT_LABELS[pointId]} de ${chart.event.name}:
-${signName} ${point.degreeInSign}°, Casa ${point.house} (${HOUSE_AREAS[point.house]}).
+Estás leyendo el ${getPointLabel(pointId, locale)} de ${chart.event.name}:
+${signName} ${point.degreeInSign}°, ${housePhrase(point.house, locale)} (${getHouseArea(point.house, locale)}).
 ${point.retrograde ? "Está retrógrado." : ""}
 
 Aspectos activos:
-${pointAspects || "Sin aspectos principales"}
+${pointAspects || noMajorAspects(locale)}
 
 Carta natal completa:
 ${allPoints}
@@ -75,7 +129,8 @@ Datos técnicos internos si ayudan: ${element} / ${modality}.
 
 Varia los inicios: no empieces con "Mira", "La verdad es que", "Lo que pasa es que" ni con una muletilla fija.
 
-${langInstruction(locale)}`;
+${nativeToneInstruction(locale)}
+${promptLanguageInstruction(locale)}`;
 }
 
 export async function POST(request: Request) {

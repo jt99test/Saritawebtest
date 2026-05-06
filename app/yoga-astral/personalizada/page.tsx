@@ -12,6 +12,7 @@ import { Container } from "@/components/ui/container";
 import { PremiumCard } from "@/components/ui/premium-card";
 import { CHART_RESULT_KEY, type ChartCalculationResult } from "@/lib/chart-session";
 import { dictionaries } from "@/lib/i18n";
+import { localizeAsana } from "@/data/sarita/yoga-routine-localization";
 import { getPersonalizedYogaRoutine, type PersonalizedYogaRoutine, type RoutineElement } from "@/lib/personalized-yoga";
 
 const ELEMENT_META: Record<RoutineElement, { badgeClass: string }> = {
@@ -139,7 +140,8 @@ export default function PersonalizedYogaPage() {
                 </div>
 
                 <ol className="space-y-6">
-                  {routine.asanas.map((asana, index) => {
+                  {routine.asanas.map((sourceAsana, index) => {
+                    const asana = localizeAsana(sourceAsana, locale);
                     const reverse = index % 2 === 1;
                     return (
                       <li key={`${asana.element}-${asana.slug}-${index}`}>
@@ -161,8 +163,12 @@ export default function PersonalizedYogaPage() {
                                 </span>
                               </div>
                               <h3 className="mt-5 font-serif text-2xl leading-tight text-ivory sm:text-3xl">{asana.nameSanskrit}</h3>
-                              <p className="mt-1 text-sm uppercase tracking-[0.2em] text-[#3a3048]">{asana.nameSpanish}</p>
-                              <p className="mt-5 text-sm leading-7 text-[#3a3048]">{asana.description}</p>
+                              <p className="mt-1 text-sm uppercase tracking-[0.2em] text-[#3a3048]">
+                                {asana.nameSpanish}
+                              </p>
+                              <p className="mt-5 text-sm leading-7 text-[#3a3048]">
+                                {asana.description}
+                              </p>
                               <div className="mt-5 rounded-[1rem] border border-dusty-gold/26 bg-[#f8f4eb] p-4 text-sm leading-7 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]">
                                 <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6f5a2a]">
                                   {dictionary.yogaAstral.precaution}

@@ -216,7 +216,11 @@
     "chakra": "Chakra",
     "pranayamaAfter": "Pranayama · después de la secuencia",
     "savasana": "Savasana",
-    "bijaMantra": "Mantra bija"
+    "bijaMantra": "Mantra bija",
+    "asanaFallbackBody": "",
+    "asanaFallbackWarning": "",
+    "elementContextFallback": "",
+    "asanaDurationFallback": ""
   },
   "lunar": {
     "eyebrow": "luna del mes",
@@ -953,6 +957,18 @@
     "avoid": "evita esto",
     "ask": "pregúntate",
     "empty": "Genera tu lectura arriba y aquí aparecerán las tres prácticas concretas para esta luna."
+  },
+  "helpPage": {
+    "faqs": [
+      { "question": "Â¿CÃ³mo calculo mi carta natal?", "answer": "Entra en el formulario, aÃ±ade tu fecha, hora y ciudad de nacimiento, y SARITA calcularÃ¡ tu carta." },
+      { "question": "Â¿Necesito saber la hora exacta de nacimiento?", "answer": "SÃ­, cuanto mÃ¡s exacta sea la hora, mejor. El Ascendente y las casas cambian rÃ¡pido." },
+      { "question": "Â¿QuÃ© incluye el plan gratuito?", "answer": "Incluye la carta natal completa y 1 lectura al mes. Pro incluye 5 lecturas al mes; Avanzado incluye 20 y suma TrÃ¡nsitos, RevoluciÃ³n Solar, SinastrÃ­a y AstrocartografÃ­a." },
+      { "question": "Â¿CÃ³mo cancelo mi suscripciÃ³n?", "answer": "Desde tu cuenta, usando el botÃ³n de gestiÃ³n de facturaciÃ³n." },
+      { "question": "Â¿QuÃ© es la RevoluciÃ³n Solar?", "answer": "Es la carta del momento en que el Sol vuelve a su posiciÃ³n natal. Muestra temas del aÃ±o." },
+      { "question": "Â¿QuÃ© es el Lavado Intestinal?", "answer": "Es una guÃ­a digital de Laghoo Shankhaprakshala, una prÃ¡ctica corta de limpieza intestinal." },
+      { "question": "Â¿Mis datos estÃ¡n seguros?", "answer": "Usamos Supabase para proteger cuentas y datos, y Stripe para pagos. Puedes pedir eliminaciÃ³n cuando quieras." },
+      { "question": "Â¿CÃ³mo contacto con soporte?", "answer": "EscrÃ­benos a contacto@saritaastrology.com." }
+    ]
   },
   "lavadoPage": {
     "eyebrow": "Kriyas y limpieza",

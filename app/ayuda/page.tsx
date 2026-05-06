@@ -57,7 +57,7 @@ export default async function HelpPage() {
               {dictionary.nav.help}
             </h1>
             <div className="mt-8 border-t border-black/10 sm:mt-10">
-              {FAQ[locale].map((item) => (
+              {dictionary.helpPage.faqs.map((item) => (
                 <details key={item.question} className="border-b border-black/10 py-5">
                   <summary className="cursor-pointer list-none font-serif text-lg leading-snug text-ivory sm:text-xl">{item.question}</summary>
                   <p className="mt-3 text-sm leading-7 text-[#3a3048]">{item.answer}</p>

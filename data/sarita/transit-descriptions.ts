@@ -49,3 +49,99 @@ export const transitDescriptions: Record<string, TransitDescription> = {
     description: "Algo en vínculos, dinero o placer pide una elección sencilla: acercarte, pedir mejor trato o dejar de pagar un precio emocional que ya conoces. Lo notarás en conversaciones pequeñas, planes sociales o ganas de estar con alguien concreto.",
   },
 };
+
+const transitDescriptionsEn: Record<string, TransitDescription> = {
+  Saturn: {
+    planet: "Saturn",
+    relevance: "Saturn does not punish; it asks for maturity in this area. If something depends on a serious conversation, boundary, or practical decision, it is better not to keep postponing it.",
+    significantAngles: ["conjunction", "opposition", "square", "trine"],
+    description: "It is time to bring order to something concrete: a commitment, debt, routine, or boundary that has not been set yet.",
+  },
+  Jupiter: {
+    planet: "Jupiter",
+    relevance: "Jupiter moves quickly; do not use it as an excuse to wait for everything to arrange itself. If a door opens, move.",
+    significantAngles: ["conjunction", "trine", "sextile"],
+    description: "There is more room than you think in this area. Something closed can open if you make a call, propose something, or leave the automatic answer.",
+  },
+  Uranus: {
+    planet: "Uranus",
+    relevance: "With Uranus there is not much to control. An open mind works better than a rigid agenda.",
+    significantAngles: ["conjunction", "opposition", "square"],
+    description: "Something may change without being planned. It can feel abrupt or relieving, but it pulls you out of an old way of operating.",
+  },
+  Neptune: {
+    planet: "Neptune",
+    relevance: "Neptune matters because it can reveal a true intuition and also justify what you do not want to see. Check the facts before promising or believing too much.",
+    significantAngles: ["conjunction", "opposition", "square"],
+    description: "There may be confusion, fatigue, or a sense of not knowing exactly what you want. There may also be a real need for rest, silence, or distance.",
+  },
+  Pluto: {
+    planet: "Pluto",
+    relevance: "Pluto moves slowly; this is not just about one month. It is part of the background of the year.",
+    significantAngles: ["conjunction", "opposition", "square"],
+    description: "Something you have ignored for a while becomes harder to ignore. It may be a relationship, habit, or truth you have not said aloud.",
+  },
+  Mars: {
+    planet: "Mars",
+    relevance: "Mars does not last long, but it is noticeable. Use it to act, not to explode at the first person in front of you.",
+    significantAngles: ["conjunction", "opposition"],
+    description: "Urgency rises: you want to solve, answer, decide, or cut something quickly. If you have been swallowing irritation, it can come out suddenly.",
+  },
+  Venus: {
+    planet: "Venus",
+    relevance: "Venus marks small choices that reveal a lot: who you see, what you accept, what you buy, and what you stop negotiating with yourself.",
+    significantAngles: ["conjunction", "opposition"],
+    description: "Something in bonds, money, or pleasure asks for a simple choice: come closer, ask for better treatment, or stop paying an emotional price you already know.",
+  },
+};
+
+const transitDescriptionsIt: Record<string, TransitDescription> = {
+  Saturno: {
+    planet: "Saturno",
+    relevance: "Saturno non punisce; chiede maturita in quell'area. Se qualcosa dipende da una conversazione seria, un limite o una decisione pratica, non conviene rimandare.",
+    significantAngles: ["conjunction", "opposition", "square", "trine"],
+    description: "E il momento di mettere ordine in qualcosa di concreto: un impegno, un debito, una routine o un limite non ancora posto.",
+  },
+  Giove: {
+    planet: "Giove",
+    relevance: "Giove passa in fretta: non usarlo come scusa per aspettare che tutto si sistemi da solo. Se si apre una porta, muoviti.",
+    significantAngles: ["conjunction", "trine", "sextile"],
+    description: "C'e piu margine di quanto pensi in questa area. Qualcosa che sembrava chiuso puo aprirsi se fai una proposta o esci dalla risposta automatica.",
+  },
+  Urano: {
+    planet: "Urano",
+    relevance: "Con Urano c'e poco da controllare. Meglio una mente aperta che un'agenda rigida.",
+    significantAngles: ["conjunction", "opposition", "square"],
+    description: "Qualcosa puo cambiare senza che tu lo abbia pianificato. Puo sembrare brusco o liberatorio, ma ti porta fuori da un vecchio funzionamento.",
+  },
+  Nettuno: {
+    planet: "Nettuno",
+    relevance: "Nettuno puo farti intuire qualcosa di vero e, allo stesso tempo, giustificare cio che non vuoi guardare. Controlla i fatti.",
+    significantAngles: ["conjunction", "opposition", "square"],
+    description: "Puo esserci confusione, stanchezza o la sensazione di non sapere esattamente cosa vuoi. Puo anche emergere un bisogno reale di riposo o distanza.",
+  },
+  Plutone: {
+    planet: "Plutone",
+    relevance: "Plutone si muove lentamente: non e solo un tema del mese. Fa parte dello sfondo dell'anno.",
+    significantAngles: ["conjunction", "opposition", "square"],
+    description: "Qualcosa che hai ignorato a lungo diventa difficile da ignorare: una relazione, un'abitudine o una verita non detta.",
+  },
+  Marte: {
+    planet: "Marte",
+    relevance: "Marte dura poco, ma si sente. Usalo per agire, non per esplodere contro la prima persona davanti a te.",
+    significantAngles: ["conjunction", "opposition"],
+    description: "Sale l'urgenza: vuoi risolvere, rispondere, decidere o tagliare qualcosa rapidamente.",
+  },
+  Venere: {
+    planet: "Venere",
+    relevance: "Venere segna piccole decisioni che rivelano molto: chi incontri, cosa accetti, cosa compri e cosa smetti di negoziare con te.",
+    significantAngles: ["conjunction", "opposition"],
+    description: "Qualcosa nei legami, nel denaro o nel piacere chiede una scelta semplice: avvicinarti, chiedere un trattamento migliore o non pagare piu un prezzo emotivo noto.",
+  },
+};
+
+export function getTransitDescriptions(locale?: string) {
+  if (locale === "en") return transitDescriptionsEn;
+  if (locale === "it") return transitDescriptionsIt;
+  return transitDescriptions;
+}

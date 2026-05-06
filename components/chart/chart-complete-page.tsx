@@ -15,6 +15,7 @@ import type { Dictionary } from "@/lib/i18n";
 import { getCachedPremiumReading, setCachedPremiumReading } from "@/lib/premium-reading-cache";
 import { normalizeReadingText } from "@/lib/reading-text";
 import type { ActiveTransit } from "@/lib/transits.server";
+import { getAspectLabel, getHouseArea, getPointLabel } from "@/lib/chart-labels";
 
 type ChartCompletePageProps = {
   chart: NatalChartData;
@@ -91,8 +92,8 @@ function ReadingSkeleton() {
   );
 }
 
-function pointLabel(id: ChartPointId) {
-  return POINT_LABELS[id] ?? id;
+function pointLabel(id: ChartPointId, locale?: string) {
+  return getPointLabel(id, locale);
 }
 
 function cleanJsonPayload(rawPayload: string) {
@@ -601,7 +602,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
                 {transitCopy.housePrefix} {selectedAiHouse.house} ·{" "}
                 {dictionary.result.houseMeanings[String(selectedAiHouse.house) as keyof typeof dictionary.result.houseMeanings] ??
-                  HOUSE_AREAS[selectedAiHouse.house]}
+                  getHouseArea(selectedAiHouse.house, locale)}
               </p>
               <h3 className="mt-2 break-words font-serif text-[22px] leading-snug text-ivory sm:text-[24px]">
                 {selectedAiHouse.title}
@@ -624,7 +625,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
                 className="flex items-center justify-between gap-4 border border-black/12 bg-white px-4 py-3"
               >
                 <p className="text-sm text-[#5c4a24]">
-                  {pointLabel(transit.transitingPlanet)} {ASPECT_LABELS[transit.aspectType].toLowerCase()} {pointLabel(transit.natalPlanet)}
+                  {pointLabel(transit.transitingPlanet, locale)} {getAspectLabel(transit.aspectType, locale).toLowerCase()} {pointLabel(transit.natalPlanet, locale)}
                 </p>
                 <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#8a7a4e]">
                   {transit.orb.toFixed(1)}°

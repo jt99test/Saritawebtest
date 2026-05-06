@@ -20,7 +20,7 @@ export type LavadoIntestinalProtocol = {
     days: {
       day: number;
       meals: {
-        type: "desayuno" | "almuerzo" | "cena";
+        type: string;
         primary: string;
         alternative: string;
       }[];
@@ -179,3 +179,159 @@ export const lavadoIntestinal: LavadoIntestinalProtocol = {
     ],
   },
 };
+
+const lavadoIntestinalEn: LavadoIntestinalProtocol = {
+  ...lavadoIntestinal,
+  title: "Short intestinal cleanse",
+  subtitle: "Laghoo Shankhaprakshala · Companion guide for the video tutorial",
+  preparation:
+    "Prepare 2 liters of warm water with 20 ml of salt, about 4 teaspoons. The water should be close to body temperature and the salt fully dissolved. This solution acts as a natural conductor that stimulates intestinal movement.",
+  protocol: [
+    "Drink two glasses of warm salted water quickly.",
+    "Practice the 5 Shankhaprakshala asanas 8 times each.",
+    "Drink two more glasses and repeat the asanas, 8 times each.",
+    "Repeat the process a third and final time.",
+    "Go to the bathroom without forcing. Bowel movement may happen immediately or later.",
+  ],
+  asanas: lavadoIntestinal.asanas.map((asana) => {
+    const copy: Record<string, Partial<typeof asana>> = {
+      tadasana: {
+        nameSpanish: "Mountain pose",
+        duration: "8 repetitions",
+        warning: "Avoid locking the knees and slow down if the salted water makes you dizzy.",
+      },
+      "tiryaka-tadasana": {
+        nameSpanish: "Side bend",
+        duration: "8 repetitions",
+        warning: "Keep the abdomen soft. Avoid deep bending if you have low-back, rib, or vertigo symptoms.",
+      },
+      "kati-chakrasana": {
+        nameSpanish: "Waist twist",
+        duration: "8 repetitions",
+        warning: "Twist from the waist without forcing the neck or knees. Avoid strong twists during pregnancy or with a disc hernia.",
+      },
+      "tiryaka-bhujangasana": {
+        nameSpanish: "Twisting cobra",
+        duration: "8 repetitions",
+        warning: "Avoid with acute low-back pain, advanced pregnancy, or neck injury. Keep the elbows soft.",
+      },
+      udarakarshanasana: {
+        nameSpanish: "Abdominal compression",
+        duration: "8 repetitions",
+        warning: "Do not compress the abdomen with intense digestive pain, pregnancy, recent surgery, or knee discomfort.",
+      },
+    };
+    return { ...asana, ...copy[asana.slug] };
+  }),
+  timing: {
+    momento: "In the morning on a completely empty stomach, before any food or drink.",
+    duracion: "Set aside about 1 hour for the full practice.",
+    descanso: "After finishing, rest for 30 minutes before taking any food or drink.",
+    alimentacion: "No special dietary restrictions are required before or after this short practice.",
+  },
+  precautions:
+    "This practice belongs to digestive cleansing, not to a regular asana sequence. It can affect hydration and salt balance if forced or repeated without care. Do not practice during pregnancy, menstruation, hernias, ulcers, inflammatory bowel disease, heart or kidney disease, uncontrolled hypertension, post-surgical recovery, acute abdominal pain, or any digestive medical condition. Stop if dizziness, weakness, intense nausea, palpitations, or pain appear. Never force bowel movement and consult a health professional if you have any doubt.",
+  benefits:
+    "Unlike the complete method, which empties the whole digestive system, this short cleanse stimulates normal bowel function. It is a simple, gentle method that can be incorporated as a digestive hygiene practice.\n\nOptional additional practices: Kunjal Kriya and Jala Neti may be done immediately after completing the technique.",
+  threeDayDiet: {
+    description:
+      "Drink at least 1.5-2 liters of water per day to support the action of fiber. These suggestions are orientative: use them as inspiration and adapt the foods to your taste and needs.",
+    days: [
+      {
+        day: 1,
+        meals: [
+          { type: "breakfast", primary: "Oat porridge with fresh apple or pear and chia seeds.", alternative: "Natural yogurt with whole-grain muesli and berries." },
+          { type: "lunch", primary: "Quinoa salad with chickpeas, cherry tomatoes, cucumber, and spinach.", alternative: "Brown rice with black beans and grilled vegetables." },
+          { type: "dinner", primary: "Lentil salad with avocado, tomatoes, and onion.", alternative: "Beet salad with eggplant hummus." },
+        ],
+      },
+      {
+        day: 2,
+        meals: [
+          { type: "breakfast", primary: "Whole-grain toast with avocado and sesame seeds.", alternative: "Fruit smoothie with oats and flax seeds." },
+          { type: "lunch", primary: "Farro with zucchini, peppers, and kale.", alternative: "Whole-grain couscous with steamed vegetables and chickpeas." },
+          { type: "dinner", primary: "Grilled eggplant and zucchini with hummus.", alternative: "Sauteed vegetables with white beans." },
+        ],
+      },
+      {
+        day: 3,
+        meals: [
+          { type: "breakfast", primary: "Whole-grain pancakes with banana and cinnamon.", alternative: "Plant-based yogurt with oat flakes and nuts." },
+          { type: "lunch", primary: "Spinach salad with lentils, carrots, and pumpkin seeds.", alternative: "Whole-grain pasta with broccoli and chickpeas." },
+          { type: "dinner", primary: "Seasonal vegetable soup with legumes.", alternative: "Pumpkin cream with seeds and rye bread." },
+        ],
+      },
+    ],
+  },
+};
+
+const lavadoIntestinalIt: LavadoIntestinalProtocol = {
+  ...lavadoIntestinalEn,
+  title: "Lavaggio intestinale breve",
+  subtitle: "Laghoo Shankhaprakshala · Guida di accompagnamento al video tutorial",
+  preparation:
+    "Prepara 2 litri di acqua tiepida con 20 ml di sale, circa 4 cucchiaini. L'acqua dovrebbe essere vicina alla temperatura corporea e il sale ben sciolto. Questa soluzione agisce come conduttore naturale che stimola il movimento intestinale.",
+  protocol: [
+    "Bevi rapidamente due bicchieri di acqua tiepida salata.",
+    "Esegui le 5 asana di Shankhaprakshala 8 volte ciascuna.",
+    "Bevi altri due bicchieri e ripeti le asana, 8 volte ciascuna.",
+    "Ripeti il processo una terza e ultima volta.",
+    "Vai in bagno senza forzare. Il movimento intestinale puo arrivare subito o piu tardi.",
+  ],
+  asanas: lavadoIntestinal.asanas.map((asana) => {
+    const copy: Record<string, Partial<typeof asana>> = {
+      tadasana: { nameSpanish: "Posizione della montagna", duration: "8 ripetizioni", warning: "Evita di bloccare le ginocchia e rallenta se l'acqua salata provoca capogiro." },
+      "tiryaka-tadasana": { nameSpanish: "Flessione laterale", duration: "8 ripetizioni", warning: "Mantieni l'addome morbido. Evita inclinazioni profonde con dolore lombare, costale o vertigini." },
+      "kati-chakrasana": { nameSpanish: "Torsione della vita", duration: "8 ripetizioni", warning: "Ruota dalla vita senza forzare collo o ginocchia. Evita torsioni forti in gravidanza o con ernia discale." },
+      "tiryaka-bhujangasana": { nameSpanish: "Cobra con torsione", duration: "8 ripetizioni", warning: "Evita con dolore lombare acuto, gravidanza avanzata o lesione cervicale. Mantieni i gomiti morbidi." },
+      udarakarshanasana: { nameSpanish: "Compressione addominale", duration: "8 ripetizioni", warning: "Non comprimere l'addome con dolore digestivo intenso, gravidanza, chirurgia recente o fastidio alle ginocchia." },
+    };
+    return { ...asana, ...copy[asana.slug] };
+  }),
+  timing: {
+    momento: "Al mattino a stomaco completamente vuoto, prima di qualsiasi cibo o bevanda.",
+    duracion: "Riserva circa 1 ora per tutta la pratica.",
+    descanso: "Alla fine, riposa 30 minuti prima di assumere cibo o bevande.",
+    alimentacion: "Non sono richieste restrizioni alimentari speciali prima o dopo questa pratica breve.",
+  },
+  precautions:
+    "Questa pratica appartiene alla pulizia digestiva, non a una normale sequenza di asana. Puo alterare idratazione ed equilibrio dei sali se forzata o ripetuta senza criterio. Non praticare in gravidanza, durante le mestruazioni, con ernie, ulcere, malattia intestinale infiammatoria, malattia cardiaca o renale, ipertensione non controllata, recupero postchirurgico, dolore addominale acuto o qualsiasi condizione medica digestiva. Fermati se compaiono capogiro, debolezza, nausea intensa, palpitazioni o dolore. Non forzare mai il movimento intestinale e consulta un professionista sanitario in caso di dubbi.",
+  benefits:
+    "A differenza del metodo completo, che svuota tutto il sistema digestivo, il lavaggio breve stimola il normale funzionamento intestinale. E un metodo semplice e delicato che puo essere integrato come pratica di igiene digestiva.\n\nPratiche opzionali aggiuntive: Kunjal Kriya e Jala Neti possono essere eseguite subito dopo la tecnica.",
+  threeDayDiet: {
+    description:
+      "Bevi almeno 1,5-2 litri di acqua al giorno per sostenere l'azione delle fibre. Queste proposte sono orientative: usale come ispirazione e adatta gli alimenti ai tuoi gusti e bisogni.",
+    days: [
+      {
+        day: 1,
+        meals: [
+          { type: "colazione", primary: "Porridge d'avena con mela o pera fresca e semi di chia.", alternative: "Yogurt naturale con muesli integrale e frutti di bosco." },
+          { type: "pranzo", primary: "Insalata di quinoa con ceci, pomodorini, cetriolo e spinaci.", alternative: "Riso integrale con fagioli neri e verdure grigliate." },
+          { type: "cena", primary: "Insalata di lenticchie con avocado, pomodori e cipolla.", alternative: "Insalata di barbabietola con hummus di melanzane." },
+        ],
+      },
+      {
+        day: 2,
+        meals: [
+          { type: "colazione", primary: "Toast integrale con avocado e semi di sesamo.", alternative: "Frullato di frutta con avena e semi di lino." },
+          { type: "pranzo", primary: "Farro con zucchine, peperoni e cavolo riccio.", alternative: "Couscous integrale con verdure al vapore e ceci." },
+          { type: "cena", primary: "Melanzana e zucchina alla piastra con hummus.", alternative: "Verdure saltate con fagioli bianchi." },
+        ],
+      },
+      {
+        day: 3,
+        meals: [
+          { type: "colazione", primary: "Pancake integrali con banana e cannella.", alternative: "Yogurt vegetale con fiocchi d'avena e frutta secca." },
+          { type: "pranzo", primary: "Insalata di spinaci, lenticchie, carote e semi di zucca.", alternative: "Pasta integrale con broccoli e ceci." },
+          { type: "cena", primary: "Zuppa di verdure di stagione con legumi.", alternative: "Crema di zucca con semi e pane di segale." },
+        ],
+      },
+    ],
+  },
+};
+
+export function getLavadoIntestinal(locale?: string): LavadoIntestinalProtocol {
+  if (locale === "en") return lavadoIntestinalEn;
+  if (locale === "it") return lavadoIntestinalIt;
+  return lavadoIntestinal;
+}

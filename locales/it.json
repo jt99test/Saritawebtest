@@ -216,7 +216,11 @@
     "chakra": "Chakra",
     "pranayamaAfter": "Pranayama ? dopo la sequenza",
     "savasana": "Savasana",
-    "bijaMantra": "Mantra bija"
+    "bijaMantra": "Mantra bija",
+    "asanaFallbackBody": "Pratica questa posizione lentamente e mantieni il respiro stabile. Resta in un range chiaro, stabile e disponibile oggi.",
+    "asanaFallbackWarning": "Muoviti con delicatezza, evita di forzare e fermati se compaiono dolore, capogiro o fastidio insolito.",
+    "elementContextFallback": "Questa parte della sequenza traduce l'elemento in pratica corporea: postura, respiro, attenzione e ritmo.",
+    "asanaDurationFallback": "Ritmo guidato"
   },
   "lunar": {
     "eyebrow": "luna del mese",
@@ -953,6 +957,18 @@
     "avoid": "evita questo",
     "ask": "chiediti",
     "empty": "Genera la lettura sopra e qui appariranno le tre pratiche concrete per questa luna."
+  },
+  "helpPage": {
+    "faqs": [
+      { "question": "Come calcolo la mia carta natale?", "answer": "Apri il modulo, inserisci data, ora esatta e citta di nascita, e SARITA calcolera la tua carta." },
+      { "question": "Mi serve l'ora esatta di nascita?", "answer": "Si. Piu l'orario e preciso, migliore sara la lettura di Ascendente e case, perche cambiano rapidamente." },
+      { "question": "Cosa include il piano gratuito?", "answer": "Il piano gratuito include la carta natale completa e 1 lettura al mese. Pro include 5 letture mensili. Avanzato ne include 20 e sblocca Transiti, Rivoluzione Solare, Sinastria e Astrocartografia." },
+      { "question": "Come cancello il mio abbonamento?", "answer": "Entra nel tuo account e usa il pulsante per la gestione della fatturazione." },
+      { "question": "Che cos'e la Rivoluzione Solare?", "answer": "E la carta del momento in cui il Sole torna alla posizione natale. Evidenzia i temi principali dell'anno." },
+      { "question": "Che cos'e il Lavaggio Intestinale?", "answer": "E una guida digitale a Laghoo Shankhaprakshala, una pratica breve di pulizia intestinale." },
+      { "question": "I miei dati sono al sicuro?", "answer": "Usiamo Supabase per proteggere account e dati, e Stripe per i pagamenti. Puoi chiedere l'eliminazione quando vuoi." },
+      { "question": "Come contatto il supporto?", "answer": "Scrivici a contacto@saritaastrology.com." }
+    ]
   },
   "lavadoPage": {
     "eyebrow": "Kriya e pulizia",

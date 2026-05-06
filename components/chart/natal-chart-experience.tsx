@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary, Locale } from "@/lib/i18n";
 import type { NatalChartData } from "@/lib/chart";
 import type { FormValues } from "@/lib/chart-session";
 
@@ -27,6 +27,7 @@ import type { PaidPlan } from "@/lib/stripe";
 type NatalChartExperienceProps = {
   chart: NatalChartData;
   dictionary: Dictionary;
+  locale: Locale;
   isMock?: boolean;
   request?: FormValues | null;
   readingId?: string;
@@ -90,6 +91,7 @@ function formatHeaderDate(dateLabel: string) {
 export function NatalChartExperience({
   chart,
   dictionary,
+  locale,
   isMock = false,
   request = null,
   readingId,
@@ -321,7 +323,7 @@ export function NatalChartExperience({
 
       {pageTab === "moon" && !activeTabLocked ? <LunaDelMesPage chart={chart} dictionary={dictionary} readingId={readingId} gender={request?.gender || undefined} /> : null}
 
-      {pageTab === "yoga" && !activeTabLocked ? <YogaAstralPage chart={chart} dictionary={dictionary} /> : null}
+      {pageTab === "yoga" && !activeTabLocked ? <YogaAstralPage chart={chart} dictionary={dictionary} locale={locale} /> : null}
 
       {pageTab === "complete" && !activeTabLocked ? (
         <ChartCompletePage chart={chart} request={request} dictionary={dictionary} readingId={readingId} />

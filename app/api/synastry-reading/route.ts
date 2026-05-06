@@ -8,7 +8,8 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData, SignId } from "@/lib/chart";
-import { ASPECT_LABELS, POINT_LABELS, SIGN_LABELS } from "@/lib/chart-labels";
+import { getAspectLabel, getPointLabel, getSignLabel } from "@/lib/chart-labels";
+import { promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { genderPromptInstruction, genderPromptInstructionForSubject, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import type { SynastryAspect } from "@/lib/synastry";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -62,17 +63,17 @@ const SYNASTRY_READING_TOOL: Tool = {
 };
 
 function langInstruction(locale?: string): string {
-  if (locale === "en") return "Write entirely in English.";
-  if (locale === "it") return "Write entirely in Italian.";
-  return "Write in Spanish from Spain. Use the 'tú' form.";
+  if (locale === "en") return "Write entirely in English. Do not output Spanish words unless they are proper names.";
+  if (locale === "it") return "Write entirely in Italian. Do not output Spanish words unless they are proper names.";
+  return promptLanguageInstruction(locale);
 }
 
-function pl(id: ChartPointId) {
-  return POINT_LABELS[id] ?? id;
+function pl(id: ChartPointId, locale?: string) {
+  return getPointLabel(id, locale);
 }
 
-function sl(sign: SignId) {
-  return SIGN_LABELS[sign] ?? sign;
+function sl(sign: SignId, locale?: string) {
+  return getSignLabel(sign, locale);
 }
 
 function extractTextContent(message: Message) {
@@ -173,7 +174,7 @@ function isSynastryPayload(value: unknown): value is SynastryPayload {
   );
 }
 
-function keyPoints(chart: NatalChartData) {
+function keyPoints(chart: NatalChartData, locale?: string) {
   const get = (id: ChartPointId) => chart.points.find((point) => point.id === id);
   const sun = get("sun");
   const moon = get("moon");
@@ -181,25 +182,25 @@ function keyPoints(chart: NatalChartData) {
   const mars = get("mars");
 
   return [
-    sun ? `Sol ${sl(sun.sign)} casa ${sun.house}` : null,
-    moon ? `Luna ${sl(moon.sign)} casa ${moon.house}` : null,
-    venus ? `Venus ${sl(venus.sign)}` : null,
-    mars ? `Marte ${sl(mars.sign)}` : null,
+    sun ? `${pl("sun", locale)} ${sl(sun.sign, locale)} house ${sun.house}` : null,
+    moon ? `${pl("moon", locale)} ${sl(moon.sign, locale)} house ${moon.house}` : null,
+    venus ? `${pl("venus", locale)} ${sl(venus.sign, locale)}` : null,
+    mars ? `${pl("mars", locale)} ${sl(mars.sign, locale)}` : null,
   ].filter(Boolean).join(" · ");
 }
 
-function buildContext(chartA: NatalChartData, chartB: NatalChartData, partnerName: string, aspects: SynastryAspect[]) {
+function buildContext(chartA: NatalChartData, chartB: NatalChartData, partnerName: string, aspects: SynastryAspect[], locale?: string) {
   const topAspects = [...aspects]
     .sort((a, b) => a.orb - b.orb)
     .slice(0, 10)
     .map((aspect) => {
-      const quality = aspect.quality === "harmonious" ? "armónico" : aspect.quality === "tense" ? "tenso" : "neutro";
-      return `- ${pl(aspect.pointA)} (${chartA.event.name}) en ${ASPECT_LABELS[aspect.type] ?? aspect.type} con ${pl(aspect.pointB)} (${partnerName}) - orbe ${aspect.orb}°, ${quality}`;
+      const quality = aspect.quality === "harmonious" ? "harmonious" : aspect.quality === "tense" ? "tense" : "neutral";
+      return `- ${pl(aspect.pointA, locale)} (${chartA.event.name}) ${getAspectLabel(aspect.type, locale)} ${pl(aspect.pointB, locale)} (${partnerName}) - orb ${aspect.orb}°, ${quality}`;
     });
 
   return [
-    `${chartA.event.name}: ${keyPoints(chartA)}`,
-    `${partnerName}: ${keyPoints(chartB)}`,
+    `${chartA.event.name}: ${keyPoints(chartA, locale)}`,
+    `${partnerName}: ${keyPoints(chartB, locale)}`,
     "",
     "Aspectos más fuertes:",
     ...topAspects,
@@ -252,7 +253,7 @@ export async function POST(request: Request) {
   if (profile?.plan !== "avanzado") return new Response("Advanced plan required", { status: 403 });
 
   const name = chartA.event.name;
-  const context = buildContext(chartA, chartB, partnerName, aspects);
+  const context = buildContext(chartA, chartB, partnerName, aspects, locale);
 
   const prompt = `Eres Sarita, una astróloga que habla con ${name} sobre su relación con ${partnerName}. Directa, concreta, honesta y práctica.
 
@@ -302,7 +303,13 @@ ${langInstruction(locale)}`;
         tool_choice: { type: "tool", name: SYNASTRY_READING_TOOL.name },
         messages: [{
           role: "user",
-          content: `Convierte esta respuesta en una llamada valida a la herramienta synastry_reading. No traduzcas las claves.
+          content: locale === "en" ? `Convert this response into a valid synastry_reading tool call. Do not translate the keys.
+
+Response to repair:
+${firstText}` : locale === "it" ? `Converti questa risposta in una chiamata valida allo strumento synastry_reading. Non tradurre le chiavi.
+
+Risposta da riparare:
+${firstText}` : `Convierte esta respuesta en una llamada valida a la herramienta synastry_reading. No traduzcas las claves.
 
 Respuesta a reparar:
 ${firstText}`,

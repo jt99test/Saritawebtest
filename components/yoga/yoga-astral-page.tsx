@@ -8,7 +8,8 @@ import { RoutineCompletionButton } from "@/components/yoga/routine-completion-bu
 import { PremiumCard } from "@/components/ui/premium-card";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import type { NatalChartData } from "@/lib/chart";
-import type { Dictionary } from "@/lib/i18n";
+import type { Dictionary, Locale } from "@/lib/i18n";
+import { localizeAsana } from "@/data/sarita/yoga-routine-localization";
 import {
   getPersonalizedYogaRoutine,
   type PersonalizedYogaRoutine,
@@ -25,6 +26,7 @@ const ELEMENT_META: Record<RoutineElement, { badgeClass: string }> = {
 type YogaAstralPageProps = {
   chart: NatalChartData;
   dictionary: Dictionary;
+  locale: Locale;
 };
 
 function SectionHeader({ children }: { children: ReactNode }) {
@@ -51,7 +53,7 @@ function routineTitle(routine: PersonalizedYogaRoutine, copy: Dictionary["yogaAs
   return formatTemplate(copy.elementTitle, { element: elementLabels[routine.primary] });
 }
 
-export function YogaAstralPage({ chart, dictionary }: YogaAstralPageProps) {
+export function YogaAstralPage({ chart, dictionary, locale }: YogaAstralPageProps) {
   const [routine, setRoutine] = useState<PersonalizedYogaRoutine | null>(null);
   const copy = dictionary.yogaAstral;
 
@@ -110,7 +112,8 @@ export function YogaAstralPage({ chart, dictionary }: YogaAstralPageProps) {
         </div>
 
         <ol className="space-y-6">
-          {routine.asanas.map((asana, index) => {
+          {routine.asanas.map((sourceAsana, index) => {
+            const asana = localizeAsana(sourceAsana, locale);
             const reverse = index % 2 === 1;
             return (
               <li key={`${asana.element}-${asana.slug}-${index}`}>
@@ -132,8 +135,12 @@ export function YogaAstralPage({ chart, dictionary }: YogaAstralPageProps) {
                         </span>
                       </div>
                       <h3 className="mt-5 font-serif text-2xl leading-tight text-ivory sm:text-3xl">{asana.nameSanskrit}</h3>
-                      <p className="mt-1 text-sm uppercase tracking-[0.2em] text-[#3a3048]">{asana.nameSpanish}</p>
-                      <p className="mt-5 text-sm leading-7 text-[#3a3048]">{asana.description}</p>
+                      <p className="mt-1 text-sm uppercase tracking-[0.2em] text-[#3a3048]">
+                        {asana.nameSpanish}
+                      </p>
+                      <p className="mt-5 text-sm leading-7 text-[#3a3048]">
+                        {asana.description}
+                      </p>
                       <div className="mt-5 rounded-[1rem] border border-dusty-gold/26 bg-[#f8f4eb] p-4 text-sm leading-7 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6f5a2a]">
                           {copy.precaution}

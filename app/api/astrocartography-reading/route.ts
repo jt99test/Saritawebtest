@@ -9,6 +9,7 @@ import {
 } from "@/lib/ai-reading-generations";
 import type { NatalChartData } from "@/lib/chart";
 import type { AstrocartographyNearbyLine } from "@/lib/astrocartography";
+import { jsonOnlyInstruction, nativeToneInstruction, promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -21,12 +22,6 @@ type AstrocartographyReadingPayload = {
   cautions: string[];
   practicalFocus: string;
 };
-
-function langInstruction(locale?: string): string {
-  if (locale === "en") return "Write entirely in English.";
-  if (locale === "it") return "Write entirely in Italian.";
-  return "Write in Spanish from Spain. Use the 'tu' form.";
-}
 
 function extractTextContent(message: Message) {
   return message.content
@@ -115,7 +110,69 @@ export async function POST(request: Request) {
 
   const sun = chart.points.find((point) => point.id === "sun");
   const moon = chart.points.find((point) => point.id === "moon");
-  const prompt = `You are Sarita, a practical astrologer reading astrocartography for ${chart.event.name}.
+  const prompt = locale === "it" ? `Sei Sarita, un'astrologa pratica che legge l'astrocartografia di ${chart.event.name}.
+
+Carta natale:
+- Nome: ${chart.event.name}
+- Luogo di nascita: ${chart.event.locationLabel}
+- Sole: ${sun ? `${sun.sign}, casa ${sun.house}` : "-"}
+- Luna: ${moon ? `${moon.sign}, casa ${moon.house}` : "-"}
+
+Luogo selezionato:
+- ${location.displayName}
+- Latitudine ${location.lat}, longitudine ${location.lng}
+
+Linee astrocartografiche piu vicine:
+${lineContext(nearbyLines)}
+
+${genderPromptInstruction(readingGender, locale)}
+${grammarPromptInstruction(locale)}
+
+${jsonOnlyInstruction(locale)}
+
+Forma esatta:
+{"summaryTitle":"[Titolo breve evocativo, max 8 parole]","summaryBody":"[Un paragrafo pratico, 75-105 parole. Spiega il tono emotivo e di vita di abitare/viaggiare qui a partire dalle linee piu vicine. Includi opportunita e attrito.]","pros":["[Beneficio concreto 1]","[Beneficio concreto 2]","[Beneficio concreto 3]"],"cautions":["[Cautela concreta 1]","[Cautela concreta 2]"],"practicalFocus":"[Una raccomandazione radicata su come ${chart.event.name} puo usare bene questo luogo.]"}
+
+Regole:
+- Usa le linee piu vicine per distanza; non inventare pianeti non elencati.
+- Spiega pro e contro con chiarezza.
+- Tono SARITA: diretto, caldo, utile, non fatalista.
+- Niente misticismo vago.
+- Il primo carattere di ogni campo testuale deve essere maiuscolo.
+
+${nativeToneInstruction(locale)}
+${promptLanguageInstruction(locale)}` : locale === "es" || !locale ? `Eres Sarita, una astrologa practica leyendo la astrocartografia de ${chart.event.name}.
+
+Carta natal:
+- Nombre: ${chart.event.name}
+- Lugar de nacimiento: ${chart.event.locationLabel}
+- Sol: ${sun ? `${sun.sign}, casa ${sun.house}` : "-"}
+- Luna: ${moon ? `${moon.sign}, casa ${moon.house}` : "-"}
+
+Lugar seleccionado:
+- ${location.displayName}
+- Latitud ${location.lat}, longitud ${location.lng}
+
+Lineas de astrocartografia mas cercanas:
+${lineContext(nearbyLines)}
+
+${genderPromptInstruction(readingGender, locale)}
+${grammarPromptInstruction(locale)}
+
+${jsonOnlyInstruction(locale)}
+
+Forma exacta:
+{"summaryTitle":"[Titulo breve y evocador, max 8 palabras]","summaryBody":"[Un parrafo practico, 75-105 palabras. Explica el tono emocional y vital de vivir/viajar aqui desde las lineas mas cercanas. Incluye oportunidad y friccion.]","pros":["[Beneficio concreto 1]","[Beneficio concreto 2]","[Beneficio concreto 3]"],"cautions":["[Cuidado concreto 1]","[Cuidado concreto 2]"],"practicalFocus":"[Una recomendacion aterrizada para que ${chart.event.name} use bien este lugar.]"}
+
+Reglas:
+- Usa las lineas mas cercanas por distancia; no inventes planetas no listados.
+- Explica pros y contras con claridad.
+- Tono SARITA: directo, calido, util, no fatalista.
+- Nada de misticismo vago.
+- El primer caracter de cada campo de texto debe ser mayuscula.
+
+${nativeToneInstruction(locale)}
+${promptLanguageInstruction(locale)}` : `You are Sarita, a practical astrologer reading astrocartography for ${chart.event.name}.
 
 Birth chart:
 - Name: ${chart.event.name}
@@ -133,7 +190,7 @@ ${lineContext(nearbyLines)}
 ${genderPromptInstruction(readingGender, locale)}
 ${grammarPromptInstruction(locale)}
 
-Return ONLY valid JSON. No markdown. No code fences.
+${jsonOnlyInstruction(locale)}
 
 Exact shape:
 {"summaryTitle":"[Short evocative title, max 8 words]","summaryBody":"[One practical paragraph, 75-105 words. Explain the emotional and life tone of living/travelling here from the closest lines. Include both opportunity and friction.]","pros":["[Concrete benefit 1]","[Concrete benefit 2]","[Concrete benefit 3]"],"cautions":["[Concrete caution 1]","[Concrete caution 2]"],"practicalFocus":"[One grounded recommendation for how ${chart.event.name} can use this place well.]"}
@@ -145,7 +202,8 @@ Rules:
 - No vague mysticism.
 - First character of every text field must be uppercase.
 
-${langInstruction(locale)}`;
+${nativeToneInstruction(locale)}
+${promptLanguageInstruction(locale)}`;
 
   let parsed: unknown;
 

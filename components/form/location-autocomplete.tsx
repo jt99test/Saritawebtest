@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 
 import type { PlaceSuggestion } from "@/lib/geocoding";
 import type { Dictionary } from "@/lib/i18n";
+import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 
 type LocationAutocompleteProps = {
   value: string;
@@ -32,6 +33,7 @@ export function LocationAutocomplete({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const requestIdRef = useRef(0);
+  const locale = useStoredLocale();
   const blurTimeoutRef = useRef<number | null>(null);
   const listId = useId();
   const hasSearchTerm = value.trim().length >= 2;
@@ -53,7 +55,7 @@ export function LocationAutocomplete({
       setError(null);
 
       try {
-        const response = await fetch(`/api/places?q=${encodeURIComponent(trimmedValue)}`);
+        const response = await fetch(`/api/places?q=${encodeURIComponent(trimmedValue)}&locale=${encodeURIComponent(locale)}`);
         const data = (await response.json()) as PlacesResponse;
 
         if (requestIdRef.current !== currentRequestId) {
@@ -81,7 +83,7 @@ export function LocationAutocomplete({
     return () => {
       window.clearTimeout(timer);
     };
-  }, [dictionary.form.locationStatus.error, selectedLocation, value]);
+  }, [dictionary.form.locationStatus.error, locale, selectedLocation, value]);
 
   useEffect(() => {
     return () => {

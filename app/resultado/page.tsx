@@ -131,6 +131,7 @@ function ResultPageContent() {
             <NatalChartExperience
               chart={result.chart}
               dictionary={dictionary}
+              locale={locale}
               isMock={result.isMock}
               request={result.request}
               readingId={result.readingId}

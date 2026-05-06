@@ -8,7 +8,8 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData } from "@/lib/chart";
-import { ASPECT_LABELS, HOUSE_AREAS, POINT_LABELS } from "@/lib/chart-labels";
+import { getAspectLabel, getHouseArea, getPointLabel } from "@/lib/chart-labels";
+import { jsonOnlyInstruction, nativeToneInstruction, promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -38,12 +39,6 @@ type TransitReadingPayload = {
   planetLanguage: string;
   houses: Array<{ house: number; title: string; body: string }>;
 };
-
-function langInstruction(locale?: string): string {
-  if (locale === "en") return "Write entirely in English.";
-  if (locale === "it") return "Write entirely in Italian.";
-  return "Write in Spanish from Spain. Use the 'tu' form.";
-}
 
 function extractTextContent(message: Message) {
   return message.content
@@ -134,26 +129,34 @@ export async function POST(request: Request) {
 
   const transitLines = transits.slice(0, 6).map((transit) => {
     const natalHouseDesc = transit.natalHouse
-      ? ` Punto natal en casa ${transit.natalHouse}: ${HOUSE_AREAS[transit.natalHouse] ?? `casa ${transit.natalHouse}`}.`
+      ? locale === "it"
+        ? ` Punto natale in casa ${transit.natalHouse}: ${getHouseArea(transit.natalHouse, locale) || `casa ${transit.natalHouse}`}.`
+        : locale === "en"
+          ? ` Natal point in house ${transit.natalHouse}: ${getHouseArea(transit.natalHouse, locale) || `house ${transit.natalHouse}`}.`
+          : ` Punto natal en casa ${transit.natalHouse}: ${getHouseArea(transit.natalHouse, locale) || `casa ${transit.natalHouse}`}.`
       : "";
     const transitHouseDesc = transit.transitingHouse
-      ? ` Planeta en transito cae en casa ${transit.transitingHouse} del lugar actual: ${HOUSE_AREAS[transit.transitingHouse] ?? `casa ${transit.transitingHouse}`}.`
+      ? locale === "it"
+        ? ` Il pianeta in transito cade in casa ${transit.transitingHouse} per il luogo attuale: ${getHouseArea(transit.transitingHouse, locale) || `casa ${transit.transitingHouse}`}.`
+        : locale === "en"
+          ? ` Transiting planet falls in house ${transit.transitingHouse} for the current location: ${getHouseArea(transit.transitingHouse, locale) || `house ${transit.transitingHouse}`}.`
+          : ` El planeta en transito cae en casa ${transit.transitingHouse} para la ubicacion actual: ${getHouseArea(transit.transitingHouse, locale) || `casa ${transit.transitingHouse}`}.`
       : "";
     const tightness = transit.strength === "tight"
-      ? "muy exacto"
+      ? locale === "en" ? "very exact" : locale === "it" ? "molto esatto" : "muy exacto"
       : transit.strength === "moderate"
-        ? "activo"
-        : "de fondo";
+        ? locale === "en" ? "active" : locale === "it" ? "attivo" : "activo"
+        : locale === "en" ? "background" : locale === "it" ? "di sfondo" : "de fondo";
 
     const natalPatterns = (transit.activatedNatalAspects ?? [])
       .slice(0, 3)
-      .map((aspect) => `${POINT_LABELS[aspect.pointA] ?? aspect.pointA} ${ASPECT_LABELS[aspect.aspectType] ?? aspect.aspectType} ${POINT_LABELS[aspect.pointB] ?? aspect.pointB} natal (orbe ${aspect.orb} grados)`)
+      .map((aspect) => `${getPointLabel(aspect.pointA, locale)} ${getAspectLabel(aspect.aspectType, locale)} ${getPointLabel(aspect.pointB, locale)} natal (orb ${aspect.orb} degrees)`)
       .join("; ");
     const patternDesc = natalPatterns
-      ? ` Reactiva memoria natal: ${natalPatterns}.`
-      : " No se detecto un aspecto natal directo asociado a este punto.";
+      ? locale === "it" ? ` Riattiva memoria natale: ${natalPatterns}.` : locale === "en" ? ` Reactivates natal memory: ${natalPatterns}.` : ` Reactiva memoria natal: ${natalPatterns}.`
+      : locale === "it" ? " Non e stato rilevato un aspetto natale diretto associato a questo punto." : locale === "en" ? " No direct natal aspect associated with this point was detected." : " No se detecto un aspecto natal directo asociado a este punto.";
 
-    return `- ${POINT_LABELS[transit.transitingPlanet] ?? transit.transitingPlanet} en ${ASPECT_LABELS[transit.aspectType] ?? transit.aspectType} con ${POINT_LABELS[transit.natalPlanet] ?? transit.natalPlanet} natal. Orbe ${transit.orb} grados, ${tightness}.${natalHouseDesc}${transitHouseDesc}${patternDesc}`;
+    return `- ${getPointLabel(transit.transitingPlanet, locale)} ${getAspectLabel(transit.aspectType, locale)} ${getPointLabel(transit.natalPlanet, locale)} natal. Orb ${transit.orb} degrees, ${tightness}.${natalHouseDesc}${transitHouseDesc}${patternDesc}`;
   }).join("\n");
   const houseNumbers = [...new Set(transits.slice(0, 6)
     .map((transit) => transit.transitingHouse ?? transit.natalHouse)
@@ -161,7 +164,83 @@ export async function POST(request: Request) {
     .slice(0, 3);
   const houseHint = houseNumbers.length ? houseNumbers.join(", ") : "1";
 
-  const prompt = `Eres Sarita, una astrologa que habla con ${name} sobre lo que esta pasando en su cielo ahora mismo. Directa, concreta, util.
+  const prompt = locale === "en" ? `You are Sarita, an astrologer speaking with ${name} about what is happening in their sky right now. Be direct, concrete, and useful.
+
+${nativeToneInstruction(locale)}
+
+${name}'s natal chart:
+- Natal Sun: ${natalSun ? `${natalSun.sign} house ${natalSun.house}` : "-"}
+- Natal Moon: ${natalMoon ? `${natalMoon.sign} house ${natalMoon.house}` : "-"}
+
+Active transits now:
+${transitLines}
+
+Reading logic:
+- The natal chart shows the what: patterns, deep memory, and baseline learning.
+- Transits show the when: the moment those patterns become active in lived experience.
+- Do not read the transit in isolation. If a transit touches a natal planet that participates in a natal aspect, interpret that aspect as an inner memory waking up.
+- Use the transiting planet's house as the current area where the experience is moving. Use the natal house as the inner memory receiving the activation.
+- Avoid punishment or fixed fate. Present the activation as a chance for awareness, integration, and a freer response.
+- If there is "Reactivates natal memory", use that information in dominantBody and reading.
+
+${genderPromptInstruction(readingGender, locale)}
+${grammarPromptInstruction(locale)}
+
+${jsonOnlyInstruction(locale)}
+
+Important: dominantBody, planetLanguage, and each houses[].body must be fuller: 3-5 concrete sentences, around 55-85 words each, so they fill roughly 3-5 lines in the card.
+
+Exact shape:
+{"reading":"[ONE paragraph of 80-110 words. Name the strongest transit, say which area of ${name}'s life it will affect, and give a real example of how it may appear in the next few days. End with one concrete recommendation.]","dominantTitle":"[Transiting planet name + verb, max 10 words]","dominantBody":"[3-5 sentences about this transit. What it activates. How it shows up. What helps. No mysticism.]","planetLanguage":"[3-4 sentences about the character of this transiting planet. What it asks for. How it works. How it feels in practice.]","houses":[{"house":[house number],"title":"[Evocative title for this house now, max 8 words]","body":"[3-5 sentences about what this area asks of ${name} now. Concrete, everyday, based on the given transits.]"}]}
+
+The "house" values in the array must be these numbers: ${houseHint}.
+
+Rules:
+- SARITA tone: direct, practical, like a friend who knows astrology. No solemnity.
+- The first character of every text field is uppercase.
+- "reading" must be a single paragraph, with no lists or subtitles.
+- No vague phrases or mysticism.
+- Valid JSON: double quotes, no trailing commas.
+
+${promptLanguageInstruction(locale)}` : locale === "it" ? `Sei Sarita, un'astrologa che parla con ${name} di cio che sta accadendo nel suo cielo in questo momento. Diretta, concreta, utile.
+
+${nativeToneInstruction(locale)}
+
+Carta natale di ${name}:
+- Sole natale: ${natalSun ? `${natalSun.sign} casa ${natalSun.house}` : "-"}
+- Luna natale: ${natalMoon ? `${natalMoon.sign} casa ${natalMoon.house}` : "-"}
+
+Transiti attivi ora:
+${transitLines}
+
+Logica di lettura:
+- La carta natale mostra il cosa: schemi, memoria profonda e apprendimenti di base.
+- I transiti mostrano il quando: il momento in cui quegli schemi si attivano nell'esperienza.
+- Non leggere il transito isolato. Se un transito tocca un pianeta natale coinvolto in un aspetto natale, interpreta quell'aspetto come memoria interna che si risveglia.
+- Usa la casa del pianeta in transito come area attuale dell'esperienza. Usa la casa natale come memoria interna che riceve l'attivazione.
+- Evita punizione o destino fisso. Presenta l'attivazione come occasione di consapevolezza, integrazione e risposta piu libera.
+- Se c'e "Riattiva memoria natale", usa quell'informazione in dominantBody e in reading.
+
+${genderPromptInstruction(readingGender, locale)}
+${grammarPromptInstruction(locale)}
+
+${jsonOnlyInstruction(locale)}
+
+Importante: dominantBody, planetLanguage e ogni houses[].body devono essere piu sviluppati: 3-5 frasi concrete, circa 55-85 parole ciascuno, per occupare circa 3-5 righe nella card.
+
+Forma esatta:
+{"reading":"[UN paragrafo di 80-110 parole. Nomina il transito piu forte, di quale area della vita di ${name} si sentira e fai un esempio reale di come puo apparire nei prossimi giorni. Chiudi con una raccomandazione concreta.]","dominantTitle":"[Nome del pianeta in transito + verbo, max 10 parole]","dominantBody":"[3-5 frasi su questo transito concreto. Cosa attiva. Come si nota. Cosa conviene fare. Niente misticismo.]","planetLanguage":"[3-4 frasi sul carattere del pianeta in transito. Cosa chiede. Come lavora. Come si sente nella pratica.]","houses":[{"house":[numero di casa],"title":"[Titolo evocativo per questa casa ora, max 8 parole]","body":"[3-5 frasi su cosa chiede ora quest'area a ${name}. Concreto, quotidiano e basato sui transiti dati.]"}]}
+
+I valori "house" nell'array devono essere questi numeri: ${houseHint}.
+
+Regole:
+- Tono SARITA: diretto, pratico, come un'amica che conosce l'astrologia. Senza solennita.
+- Il primo carattere di ogni campo testuale e sempre maiuscolo.
+- "reading" e un solo paragrafo, senza liste ne sottotitoli.
+- Niente frasi vaghe ne misticismo.
+- JSON valido: virgolette doppie, nessuna trailing comma.
+
+${promptLanguageInstruction(locale)}` : `Eres Sarita, una astrologa que habla con ${name} sobre lo que esta pasando en su cielo ahora mismo. Directa, concreta, util.
 
 Carta natal de ${name}:
 - Sol natal: ${natalSun ? `${natalSun.sign} casa ${natalSun.house}` : "-"}
@@ -197,7 +276,7 @@ Reglas:
 - Sin frases vagas ni misticismos.
 - JSON valido: comillas dobles, sin trailing commas.
 
-${langInstruction(locale)}`;
+${promptLanguageInstruction(locale)}`;
 
   let parsed: unknown;
 

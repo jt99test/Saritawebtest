@@ -8,7 +8,8 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData, SignId } from "@/lib/chart";
-import { HOUSE_AREAS, SIGN_LABELS } from "@/lib/chart-labels";
+import { getHouseArea, getSignLabel } from "@/lib/chart-labels";
+import { promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -22,13 +23,13 @@ type SolarReturnPayload = {
 };
 
 function langInstruction(locale?: string): string {
-  if (locale === "en") return "Write entirely in English.";
-  if (locale === "it") return "Write entirely in Italian.";
-  return "Write in Spanish from Spain. Use the 'tú' form.";
+  if (locale === "en") return "Write entirely in English. Do not output Spanish words unless they are proper names.";
+  if (locale === "it") return "Write entirely in Italian. Do not output Spanish words unless they are proper names.";
+  return promptLanguageInstruction(locale);
 }
 
-function signLabel(sign: SignId) {
-  return SIGN_LABELS[sign] ?? sign;
+function signLabel(sign: SignId, locale?: string) {
+  return getSignLabel(sign, locale);
 }
 
 function ascendantSign(deg: number): SignId {
@@ -95,8 +96,8 @@ function isSolarReturnPayload(value: unknown): value is SolarReturnPayload {
   );
 }
 
-function buildContext(natal: NatalChartData, rs: NatalChartData) {
-  const rsAsc = signLabel(ascendantSign(rs.meta.ascendant));
+function buildContext(natal: NatalChartData, rs: NatalChartData, locale?: string) {
+  const rsAsc = signLabel(ascendantSign(rs.meta.ascendant), locale);
   const rsSun = getPoint(rs, "sun");
   const rsMoon = getPoint(rs, "moon");
   const rsSaturn = getPoint(rs, "saturn");
@@ -108,24 +109,24 @@ function buildContext(natal: NatalChartData, rs: NatalChartData) {
 
   const angulars = rs.points
     .filter((point) => [1, 4, 7, 10].includes(point.house) && ["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn"].includes(point.id))
-    .map((point) => `${SIGN_LABELS[point.sign] ?? point.sign} en casa ${point.house}`);
+    .map((point) => `${getSignLabel(point.sign, locale)} in house ${point.house}`);
 
   return [
     `Persona: ${natal.event.name}`,
     "",
     "REVOLUCION SOLAR:",
     `Ascendente RS: ${rsAsc} - tono de entrada al año`,
-    rsSun ? `Sol RS: ${signLabel(rsSun.sign)}, casa ${rsSun.house} (${HOUSE_AREAS[rsSun.house] ?? "-"}) - foco principal del año` : null,
-    rsMoon ? `Luna RS: ${signLabel(rsMoon.sign)}, casa ${rsMoon.house} (${HOUSE_AREAS[rsMoon.house] ?? "-"}) - tono emocional del año` : null,
-    rsJupiter ? `Jupiter RS: ${signLabel(rsJupiter.sign)}, casa ${rsJupiter.house}` : null,
-    rsSaturn ? `Saturno RS: ${signLabel(rsSaturn.sign)}, casa ${rsSaturn.house}` : null,
-    rsMars ? `Marte RS: ${signLabel(rsMars.sign)}, casa ${rsMars.house}` : null,
-    rsVenus ? `Venus RS: ${signLabel(rsVenus.sign)}, casa ${rsVenus.house}` : null,
+    rsSun ? `Solar Return Sun: ${signLabel(rsSun.sign, locale)}, house ${rsSun.house} (${getHouseArea(rsSun.house, locale) || "-"}) - main yearly focus` : null,
+    rsMoon ? `Solar Return Moon: ${signLabel(rsMoon.sign, locale)}, house ${rsMoon.house} (${getHouseArea(rsMoon.house, locale) || "-"}) - emotional tone of the year` : null,
+    rsJupiter ? `Solar Return Jupiter: ${signLabel(rsJupiter.sign, locale)}, house ${rsJupiter.house}` : null,
+    rsSaturn ? `Solar Return Saturn: ${signLabel(rsSaturn.sign, locale)}, house ${rsSaturn.house}` : null,
+    rsMars ? `Solar Return Mars: ${signLabel(rsMars.sign, locale)}, house ${rsMars.house}` : null,
+    rsVenus ? `Solar Return Venus: ${signLabel(rsVenus.sign, locale)}, house ${rsVenus.house}` : null,
     angulars.length ? `Angulares RS: ${angulars.join(", ")}` : null,
     "",
     "CARTA NATAL:",
-    natalSun ? `Sol natal: ${signLabel(natalSun.sign)}, casa ${natalSun.house}` : null,
-    natalMoon ? `Luna natal: ${signLabel(natalMoon.sign)}, casa ${natalMoon.house}` : null,
+    natalSun ? `Natal Sun: ${signLabel(natalSun.sign, locale)}, house ${natalSun.house}` : null,
+    natalMoon ? `Natal Moon: ${signLabel(natalMoon.sign, locale)}, house ${natalMoon.house}` : null,
   ].filter(Boolean).join("\n");
 }
 
@@ -171,7 +172,7 @@ export async function POST(request: Request) {
   if (profile?.plan !== "avanzado") return new Response("Advanced plan required", { status: 403 });
 
   const name = natalChartData.event.name;
-  const context = buildContext(natalChartData, solarReturnData);
+  const context = buildContext(natalChartData, solarReturnData, locale);
 
   const prompt = `Eres Sarita, una astróloga que habla con ${name} como una amiga muy bien informada. Directa, clara, práctica. Sin frases vagas ni misticismos.
 

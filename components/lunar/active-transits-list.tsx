@@ -12,18 +12,16 @@ type ActiveTransitsListProps = {
   dictionary: Dictionary;
 };
 
-const SLOW_PLANETS = new Set(["Saturno", "Jupiter", "Júpiter", "Urano", "Neptuno", "Pluton", "Plutón"]);
+const SLOW_PLANETS = new Set(["saturn", "jupiter", "uranus", "neptune", "pluto"]);
 
 const PLANET_GLYPHS: Record<string, string> = {
-  Saturno: "♄",
-  Jupiter: "♃",
-  Júpiter: "♃",
-  Urano: "⛢",
-  Neptuno: "♆",
-  Pluton: "♇",
-  Plutón: "♇",
-  Marte: "♂",
-  Venus: "♀",
+  saturn: "♄",
+  jupiter: "♃",
+  uranus: "⛢",
+  neptune: "♆",
+  pluto: "♇",
+  mars: "♂",
+  venus: "♀",
 };
 
 function localeFromDictionary(dictionary: Dictionary) {
@@ -89,7 +87,7 @@ export function ActiveTransitsList({ transits, timezone, dictionary }: ActiveTra
                       : "border-black/10 bg-white text-[#3a3048] hover:bg-black/[0.02]",
                   ].join(" ")}
                 >
-                  {`${PLANET_GLYPHS[transit.transitingPlanetLabel] ?? "•"} ${transit.transitingPlanetLabel}`}
+                  {`${PLANET_GLYPHS[transit.transitingPlanet] ?? "•"} ${transit.transitingPlanetLabel}`}
                 </button>
               );
             })}
@@ -105,7 +103,7 @@ export function ActiveTransitsList({ transits, timezone, dictionary }: ActiveTra
                   {`${transit.transitingPlanetLabel} ${transit.aspectLabel.toLowerCase()} ${transit.natalPlanetLabel}`}
                 </p>
                 <p className="mt-1 font-serif text-[13px] italic text-[#3a3048]">
-                  {getTransitWindowLabel(transit.exactnessDate, transit.transitingPlanetLabel, timezone, locale)}
+                {getTransitWindowLabel(transit.exactnessDate, transit.transitingPlanet, timezone, locale)}
                 </p>
                 {body ? (
                   <div className="mt-4 border-t border-black/10 pt-4">
