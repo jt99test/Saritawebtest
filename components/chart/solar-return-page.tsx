@@ -94,17 +94,19 @@ function WheelModeToggle({
   mode,
   onChange,
   focusCount,
+  copy,
 }: {
   mode: SolarWheelMode;
   onChange: (mode: SolarWheelMode) => void;
   focusCount: number;
+  copy: Dictionary["result"]["solarReturnPage"];
 }) {
   return (
     <div className="mx-auto mb-5 max-w-3xl text-center">
       <div className="inline-flex max-w-full rounded-full border border-black/10 bg-white/80 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
         {[
-          { id: "all" as const, label: "Todos" },
-          { id: "focus" as const, label: "En foco" },
+          { id: "all" as const, label: copy.wheelAll },
+          { id: "focus" as const, label: copy.wheelFocus },
         ].map((option) => (
           <button
             key={option.id}
@@ -121,8 +123,8 @@ function WheelModeToggle({
       </div>
       <p className="mx-auto mt-3 max-w-xl text-xs leading-5 text-[#3a3048]">
         {mode === "focus"
-          ? `Mostrando ${focusCount} puntos de la Revolución Solar: Sol, Luna y planetas en casas angulares.`
-          : "Mostrando la Revolución Solar completa para leer el año entero."}
+          ? copy.wheelFocusDescription.replace("{count}", String(focusCount))
+          : copy.wheelAllDescription}
       </p>
     </div>
   );
@@ -326,6 +328,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
           mode={solarWheelMode}
           onChange={setSolarWheelMode}
           focusCount={solarFocusIds.length}
+          copy={solarCopy}
         />
         <BiWheelChart
           innerChart={natalChart}
@@ -462,7 +465,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
       </p>
       <div className="mt-8 grid gap-5">
         <label className="block">
-          <span className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#3a3048]">Año</span>
+          <span className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#3a3048]">{solarCopy.yearLabel}</span>
           <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-6">
             {yearOptions.map((year) => (
               <button

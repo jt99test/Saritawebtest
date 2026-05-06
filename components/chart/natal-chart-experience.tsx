@@ -321,7 +321,7 @@ export function NatalChartExperience({
 
       {pageTab === "moon" && !activeTabLocked ? <LunaDelMesPage chart={chart} dictionary={dictionary} readingId={readingId} gender={request?.gender || undefined} /> : null}
 
-      {pageTab === "yoga" && !activeTabLocked ? <YogaAstralPage chart={chart} /> : null}
+      {pageTab === "yoga" && !activeTabLocked ? <YogaAstralPage chart={chart} dictionary={dictionary} /> : null}
 
       {pageTab === "complete" && !activeTabLocked ? (
         <ChartCompletePage chart={chart} request={request} dictionary={dictionary} readingId={readingId} />

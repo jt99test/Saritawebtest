@@ -14,13 +14,6 @@ import { CHART_RESULT_KEY, type ChartCalculationResult } from "@/lib/chart-sessi
 import { dictionaries } from "@/lib/i18n";
 import { getPersonalizedYogaRoutine, type PersonalizedYogaRoutine, type RoutineElement } from "@/lib/personalized-yoga";
 
-const ELEMENT_LABELS: Record<RoutineElement, string> = {
-  fuego: "Fuego",
-  tierra: "Tierra",
-  agua: "Agua",
-  aire: "Aire",
-};
-
 const ELEMENT_META: Record<RoutineElement, { badgeClass: string }> = {
   fuego: { badgeClass: "border-[#b66a4c]/30 bg-[#b66a4c]/10 text-[#793b2a]" },
   tierra: { badgeClass: "border-[#6f7f59]/30 bg-[#6f7f59]/10 text-[#435032]" },
@@ -70,6 +63,10 @@ function SectionHeader({ children }: { children: ReactNode }) {
   );
 }
 
+function formatTemplate(template: string, values: Record<string, string | number>) {
+  return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ""));
+}
+
 export default function PersonalizedYogaPage() {
   const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
@@ -108,7 +105,7 @@ export default function PersonalizedYogaPage() {
           {!result?.chart ? (
             <div className="flex min-h-[70vh] items-center justify-center text-center">
               <div>
-                <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#5c4a24]">yoga astral</p>
+                <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#5c4a24]">{dictionary.yogaAstral.title}</p>
                 <h1 className="mt-2 font-serif text-[38px] leading-tight text-ivory sm:text-[48px]">{dictionary.standalonePages.needChartTitle}</h1>
                 <p className="mx-auto mt-4 max-w-2xl font-serif text-[15px] italic leading-7 text-[#3a3048] sm:text-[17px] sm:leading-8">
                   {dictionary.standalonePages.needChartBody}
@@ -118,22 +115,22 @@ export default function PersonalizedYogaPage() {
           ) : routine ? (
             <div className="space-y-8 pb-10 sm:space-y-10">
               <header className="border-t border-[rgba(181,163,110,0.15)] pt-6 sm:pt-8">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#3a3048]">Yoga astral</p>
+                <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#3a3048]">{dictionary.yogaAstral.title}</p>
                 <h1 className="mt-3 font-serif text-[38px] leading-tight text-ivory sm:mt-4 sm:text-6xl">
                   {routine.secondary
-                    ? `${ELEMENT_LABELS[routine.primary]} ${routine.primaryPercent}% + ${ELEMENT_LABELS[routine.secondary]} ${routine.secondaryPercent}%`
-                    : `Elemento ${ELEMENT_LABELS[routine.primary]}`}
+                    ? `${dictionary.yogaAstral.elementLabels[routine.primary]} ${routine.primaryPercent}% + ${dictionary.yogaAstral.elementLabels[routine.secondary]} ${routine.secondaryPercent}%`
+                    : formatTemplate(dictionary.yogaAstral.elementTitle, { element: dictionary.yogaAstral.elementLabels[routine.primary] })}
                 </h1>
                 <p className="mt-6 max-w-3xl text-sm leading-7 text-[#3a3048]">
-                  Esta secuencia nace de tu carta: toma tu elemento dominante como punto de partida y selecciona las posturas que mejor acompañan tu energía actual. Cada asana está elegida para ordenar el cuerpo, la respiración y el foco desde tu propia lectura.
+                  {dictionary.yogaAstral.intro}
                 </p>
               </header>
 
               <section className="space-y-5">
-                <SectionHeader>La secuencia · {routine.monthKey}</SectionHeader>
+                <SectionHeader>{dictionary.yogaAstral.sequence} · {routine.monthKey}</SectionHeader>
                 <div className="sticky top-0 z-10 -mx-4 mb-6 border-y border-dusty-gold/16 bg-[#f5f0e6]/94 px-4 py-3 shadow-[0_12px_34px_rgba(30,26,46,0.08)] backdrop-blur-md sm:-mx-6 sm:px-6">
                   <div className="flex items-center justify-between text-[12px] uppercase tracking-[0.18em] text-[#3a3048]">
-                    <span>{routine.secondary ? "Rutina combinada" : "Rutina personalizada"}</span>
+                    <span>{routine.secondary ? dictionary.yogaAstral.combinedRoutine : dictionary.yogaAstral.personalizedRoutine}</span>
                     <span>{routine.asanas.length} {dictionary.yogaAstral?.asanas ?? "asanas"}</span>
                   </div>
                   <div className="mt-2 h-0.5 w-full bg-black/8">
@@ -157,7 +154,7 @@ export default function PersonalizedYogaPage() {
                                   {index + 1}
                                 </span>
                                 <span className={`rounded-full border px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] ${ELEMENT_META[asana.element].badgeClass}`}>
-                                  {ELEMENT_LABELS[asana.element]}
+                                  {dictionary.yogaAstral.elementLabels[asana.element]}
                                 </span>
                                 <span className="rounded-full border border-dusty-gold/25 bg-dusty-gold/12 px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24]">
                                   {asana.duration}
@@ -168,7 +165,7 @@ export default function PersonalizedYogaPage() {
                               <p className="mt-5 text-sm leading-7 text-[#3a3048]">{asana.description}</p>
                               <div className="mt-5 rounded-[1rem] border border-dusty-gold/26 bg-[#f8f4eb] p-4 text-sm leading-7 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]">
                                 <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6f5a2a]">
-                                  Precaución
+                                  {dictionary.yogaAstral.precaution}
                                 </p>
                                 <p className="mt-2">{asana.warning}</p>
                               </div>

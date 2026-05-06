@@ -10,7 +10,7 @@ import { defaultLocale, isLocale, LOCALE_STORAGE_KEY } from "@/lib/i18n";
 import "./globals.css";
 
 const siteDescription =
-  "Una experiencia astrológica cinematográfica para descubrir la carta natal, la lectura planetaria y un universo visual premium.";
+  "SARITA astrology readings, natal charts, lunar guidance, transits, and astral yoga.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://saritaastrology.com"),

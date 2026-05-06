@@ -6,18 +6,7 @@ import { PrimaryButton } from "@/components/ui/primary-button";
 import type { NatalChartData } from "@/lib/chart";
 import type { LunarReportMetadata } from "@/lib/lunar-report";
 import type { Dictionary } from "@/lib/i18n";
-import {
-  getPersonalizedYogaRoutine,
-  type PersonalizedYogaRoutine,
-  type RoutineElement,
-} from "@/lib/personalized-yoga";
-
-const ELEMENT_LABELS: Record<RoutineElement, string> = {
-  fuego: "Fuego",
-  tierra: "Tierra",
-  agua: "Agua",
-  aire: "Aire",
-};
+import { getPersonalizedYogaRoutine, type PersonalizedYogaRoutine } from "@/lib/personalized-yoga";
 
 type MonthlyRoutineCardProps = {
   chart: NatalChartData;
@@ -25,29 +14,39 @@ type MonthlyRoutineCardProps = {
   dictionary: Dictionary;
 };
 
-function routineTitle(routine: PersonalizedYogaRoutine | null) {
-  if (!routine) return "Tu rutina de yoga";
-  if (routine.secondary) {
-    return `${ELEMENT_LABELS[routine.primary]} ${routine.primaryPercent}% + ${ELEMENT_LABELS[routine.secondary]} ${routine.secondaryPercent}%`;
-  }
-
-  return `Elemento ${ELEMENT_LABELS[routine.primary]}`;
+function formatTemplate(template: string, values: Record<string, string | number>) {
+  return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ""));
 }
 
-function routineDescription(routine: PersonalizedYogaRoutine | null) {
+function routineTitle(routine: PersonalizedYogaRoutine | null, copy: Dictionary["yogaAstral"]) {
+  const elementLabels = copy.elementLabels;
+  if (!routine) return copy.monthlyFallbackTitle;
+  if (routine.secondary) {
+    return `${elementLabels[routine.primary]} ${routine.primaryPercent}% + ${elementLabels[routine.secondary]} ${routine.secondaryPercent}%`;
+  }
+
+  return formatTemplate(copy.elementTitle, { element: elementLabels[routine.primary] });
+}
+
+function routineDescription(routine: PersonalizedYogaRoutine | null, copy: Dictionary["yogaAstral"]) {
+  const elementLabels = copy.elementLabels;
   if (!routine) {
-    return "Una secuencia elegida desde tu carta para acompasar cuerpo, respiración y foco.";
+    return copy.monthlyFallbackBody;
   }
 
   if (routine.secondary) {
-    return `Tu práctica de este mes combina ${ELEMENT_LABELS[routine.primary]} y ${ELEMENT_LABELS[routine.secondary]}: el elemento dominante marca la base y el segundo elemento ajusta el ritmo de la secuencia.`;
+    return formatTemplate(copy.monthlyCombinedBody, {
+      primary: elementLabels[routine.primary],
+      secondary: elementLabels[routine.secondary],
+    });
   }
 
-  return `Tu práctica de este mes toma ${ELEMENT_LABELS[routine.primary]} como base para elegir las posturas que mejor acompañan tu lectura.`;
+  return formatTemplate(copy.monthlySingleBody, { element: elementLabels[routine.primary] });
 }
 
 export function MonthlyRoutineCard({ chart, dictionary }: MonthlyRoutineCardProps) {
   const [routine, setRoutine] = useState<PersonalizedYogaRoutine | null>(null);
+  const yogaCopy = dictionary.yogaAstral;
 
   useEffect(() => {
     let cancelled = false;
@@ -74,16 +73,16 @@ export function MonthlyRoutineCard({ chart, dictionary }: MonthlyRoutineCardProp
         {dictionary.lunar.practiceThisMonth}
       </p>
       <h3 className="mt-2 font-serif text-[36px] font-normal leading-tight text-ivory">
-        {routineTitle(routine)}
+        {routineTitle(routine, yogaCopy)}
       </h3>
 
       <p className="mt-7 max-w-[560px] font-serif text-[21px] leading-[1.6] text-ivory/82">
-        {routineDescription(routine)}
+        {routineDescription(routine, yogaCopy)}
       </p>
 
       {routineNames ? (
         <p className="mt-5 max-w-[620px] font-serif text-sm italic leading-7 text-[#3a3048]">
-          {routineNames} · {routine?.asanas.length ?? 0} asanas
+          {routineNames} · {routine?.asanas.length ?? 0} {yogaCopy.asanas}
         </p>
       ) : null}
 

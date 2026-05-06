@@ -88,6 +88,7 @@ export default async function YogaAstralElementPage({
   const cookieLocale = cookieStore.get(LOCALE_STORAGE_KEY)?.value;
   const locale = cookieLocale && isLocale(cookieLocale) ? cookieLocale : defaultLocale;
   const dictionary = dictionaries[locale];
+  const yogaCopy = dictionary.yogaAstral;
 
   if (!isElemento(elemento)) {
     notFound();
@@ -126,7 +127,7 @@ export default async function YogaAstralElementPage({
                   />
                   <div>
                     <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#3a3048]">
-                      Yoga astral
+                      {yogaCopy.title}
                     </p>
                     <h1 className="mt-3 font-serif text-[38px] leading-tight text-ivory sm:mt-4 sm:text-6xl">
                       {routine.title}
@@ -144,15 +145,15 @@ export default async function YogaAstralElementPage({
 
                 <div className="mt-7 grid gap-3 border-y border-dusty-gold/16 py-5 sm:grid-cols-2 lg:grid-cols-4">
                   {[
-                    ["Planetas", routine.planets.join(" · ")],
+                    [yogaCopy.planets, routine.planets.join(" · ")],
                     [
-                      "Signos",
+                      yogaCopy.signs,
                       routine.signs
                         .map((sign) => `${SIGN_GLYPHS[sign] ?? "✦"} ${sign}`)
                         .join(" · "),
                     ],
-                    ["Casas", routine.houses.join(" · ")],
-                    ["Chakra", `${chakraName} · Mantra ${routine.chakra.mantra}`],
+                    [yogaCopy.houses, routine.houses.join(" · ")],
+                    [yogaCopy.chakra, `${chakraName} · ${yogaCopy.bijaMantra} ${routine.chakra.mantra}`],
                   ].map(([label, value]) => (
                     <div
                       key={label}
@@ -173,7 +174,7 @@ export default async function YogaAstralElementPage({
             </header>
 
             <section className="space-y-5">
-              <SectionHeader>Tu carta y este elemento</SectionHeader>
+              <SectionHeader>{yogaCopy.chartElement}</SectionHeader>
               <div className="grid gap-4 lg:grid-cols-3">
                 {routine.signsAndHouses.map((entry) => (
                   <PremiumCard
@@ -181,7 +182,7 @@ export default async function YogaAstralElementPage({
                     className="border-black/10 bg-white/85 p-5 shadow-[0_14px_38px_rgba(30,26,46,0.08)] sm:p-6"
                   >
                     <p className="text-[12px] font-semibold uppercase tracking-[0.26em] text-[#3a3048]">
-                      Casa {entry.houseNumber}
+                      {dictionary.result.transitPage.housePrefix} {entry.houseNumber}
                     </p>
                     <h3 className="mt-3 font-serif text-2xl text-ivory sm:text-3xl">
                       {SIGN_GLYPHS[entry.sign] ?? "✦"} {entry.sign}
@@ -195,11 +196,11 @@ export default async function YogaAstralElementPage({
             </section>
 
             <section className="space-y-5">
-              <SectionHeader>La secuencia · {routine.totalDuration}</SectionHeader>
+              <SectionHeader>{yogaCopy.sequence} · {routine.totalDuration}</SectionHeader>
               <div className="sticky top-0 z-10 -mx-4 mb-6 border-y border-dusty-gold/16 bg-[#f5f0e6]/94 px-4 py-3 shadow-[0_12px_34px_rgba(30,26,46,0.08)] backdrop-blur-md sm:-mx-6 sm:px-6">
                 <div className="flex items-center justify-between text-[12px] uppercase tracking-[0.18em] text-[#3a3048]">
                   <span>{routine.title}</span>
-                  <span>{routine.asanas.length} {dictionary.yogaAstral?.asanas ?? "asanas"}</span>
+                  <span>{routine.asanas.length} {yogaCopy.asanas}</span>
                 </div>
                 <div className="mt-2 h-0.5 w-full bg-black/8">
                   <div className="h-full bg-dusty-gold/60" style={{ width: "100%" }} />
@@ -228,7 +229,7 @@ export default async function YogaAstralElementPage({
                               <span
                                 className={`rounded-full border px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] ${ELEMENT_META[asana.element].badgeClass}`}
                               >
-                                {asana.element}
+                                {yogaCopy.elementLabels[asana.element]}
                               </span>
                               <span className="rounded-full border border-dusty-gold/25 bg-dusty-gold/12 px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24]">
                                 {asana.duration}
@@ -245,7 +246,7 @@ export default async function YogaAstralElementPage({
                             </p>
                             <div className="mt-5 rounded-[1rem] border border-dusty-gold/26 bg-[#f8f4eb] p-4 text-sm leading-7 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]">
                               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6f5a2a]">
-                                Precaución
+                                {yogaCopy.precaution}
                               </p>
                               <p className="mt-2">{asana.warning}</p>
                             </div>
@@ -259,7 +260,7 @@ export default async function YogaAstralElementPage({
             </section>
 
             <section className="space-y-5">
-              <SectionHeader>Pranayama · después de la secuencia</SectionHeader>
+              <SectionHeader>{yogaCopy.pranayamaAfter}</SectionHeader>
               <div className="grid gap-5 md:grid-cols-2">
                 {routine.pranayama.map((item) => (
                   <PremiumCard
@@ -272,7 +273,7 @@ export default async function YogaAstralElementPage({
                     </p>
                     {item.contraindications ? (
                       <div className="mt-5 rounded-[1rem] border border-dusty-gold/26 bg-[#f8f4eb] p-4 text-sm leading-7 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6f5a2a]">Precaución</p>
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6f5a2a]">{yogaCopy.precaution}</p>
                         <p className="mt-2">{item.contraindications}</p>
                       </div>
                     ) : null}
@@ -282,13 +283,13 @@ export default async function YogaAstralElementPage({
             </section>
 
             <section className="space-y-5">
-              <SectionHeader>Savasana · {routine.savasana.duration}</SectionHeader>
+              <SectionHeader>{yogaCopy.savasana} · {routine.savasana.duration}</SectionHeader>
               <PremiumCard className="mx-auto max-w-4xl border-black/10 bg-white/88 px-6 py-9 text-center shadow-[0_14px_38px_rgba(30,26,46,0.08)] sm:px-10">
                 <p className="text-base leading-8 text-[#3a3048]">
                   {routine.savasana.visualization}
                 </p>
                 <p className="mt-7 font-serif text-2xl text-[#5c4a24] sm:mt-8 sm:text-3xl">
-                  Mantra bija: {routine.chakra.mantra} · {chakraName}
+                  {yogaCopy.bijaMantra}: {routine.chakra.mantra} · {chakraName}
                 </p>
               </PremiumCard>
             </section>

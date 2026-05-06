@@ -183,7 +183,40 @@
     "asanas": "asanas",
     "markComplete": "Marcar como completada",
     "completed": "Rutina completada",
-    "completedNote": "Práctica registrada. Puedes volver a desmarcarla si la repites otro día."
+    "completedNote": "Práctica registrada. Puedes volver a desmarcarla si la repites otro día.",
+    "elementLabels": {
+      "fuego": "Fuego",
+      "tierra": "Tierra",
+      "agua": "Agua",
+      "aire": "Aire"
+    },
+    "title": "Yoga astral",
+    "loadingTitle": "Preparando tu rutina",
+    "loadingBody": "Estamos eligiendo las posturas que mejor acompañan la lectura de tu carta.",
+    "elementTitle": "Elemento {element}",
+    "intro": "Esta secuencia nace de tu carta: toma tu elemento dominante como punto de partida y selecciona las posturas que mejor acompañan tu energía actual. Cada asana está elegida para ordenar el cuerpo, la respiración y el foco desde tu propia lectura.",
+    "sequence": "La secuencia",
+    "combinedRoutine": "Rutina combinada",
+    "personalizedRoutine": "Rutina personalizada",
+    "precaution": "Precaución",
+    "ready": "Rutina lista para practicar",
+    "extra": "extra",
+    "kriya": "kriya",
+    "lavadoTitle": "Lavado intestinal corto",
+    "lavadoDescription": "Un protocolo aparte de Laghoo Shankhaprakshala con preparación, práctica, precauciones y dieta de apoyo.",
+    "viewExtra": "Ver extra",
+    "monthlyFallbackTitle": "Tu rutina de yoga",
+    "monthlyFallbackBody": "Una secuencia elegida desde tu carta para acompasar cuerpo, respiración y foco.",
+    "monthlyCombinedBody": "Tu práctica de este mes combina {primary} y {secondary}: el elemento dominante marca la base y el segundo elemento ajusta el ritmo de la secuencia.",
+    "monthlySingleBody": "Tu práctica de este mes toma {element} como base para elegir las posturas que mejor acompañan tu lectura.",
+    "chartElement": "Tu carta y este elemento",
+    "planets": "Planetas",
+    "signs": "Signos",
+    "houses": "Casas",
+    "chakra": "Chakra",
+    "pranayamaAfter": "Pranayama · después de la secuencia",
+    "savasana": "Savasana",
+    "bijaMantra": "Mantra bija"
   },
   "lunar": {
     "eyebrow": "luna del mes",
@@ -257,7 +290,12 @@
       "toneCard": "El tono emocional",
       "priorityTitle": "Áreas que conviene priorizar",
       "yogaTitle": "Yoga según el momento del año",
-      "errorMessage": "No se pudo calcular la Revolución Solar."
+      "errorMessage": "No se pudo calcular la Revolución Solar.",
+      "wheelAll": "Todos",
+      "wheelFocus": "En foco",
+      "wheelAllDescription": "Mostrando la Revolución Solar completa para leer el año entero.",
+      "wheelFocusDescription": "Mostrando {count} puntos de la Revolución Solar: Sol, Luna y planetas en casas angulares.",
+      "yearLabel": "Año"
     },
     "synastryPage": {
       "eyebrow": "sinastría",
@@ -300,7 +338,12 @@
         "mental": "La conexión mental no domina la carta comparada. Puede haber conversación, pero el vínculo se activa más por otras vías.",
         "profesional": "No se ve una dinámica profesional especialmente fuerte en los aspectos principales. Si trabajan juntos, habría que cuidar estructura y expectativas fuera de la carta.",
         "evolutivo": "No hay una firma evolutiva dominante por aspectos cerrados. El vínculo puede enseñar, pero no parece empujar desde una presión importante."
-      }
+      },
+      "wheelAll": "Todos",
+      "wheelAspected": "Aspectos",
+      "wheelAllDescription": "Mostrando ambas cartas completas para leer el contexto del vínculo.",
+      "wheelAspectedDescription": "Mostrando solo los {count} planetas que forman aspectos entre las dos cartas.",
+      "bondEyebrow": "Vínculo"
     },
     "transitPage": {
       "eyebrow": "lo que está pasando en tu cielo ahora",
@@ -324,7 +367,17 @@
       "strengthLoose": "activación de fondo",
       "silentSkyHeading": "Un cielo más silencioso.",
       "silentSkyBody": "No hay tránsitos mayores exactos sobre los planetas natales principales en este momento. Esto indica que el énfasis está menos concentrado y puede sentirse como integración más que como giro visible.",
-      "orbLabel": "Orbe"
+      "orbLabel": "Orbe",
+      "wheelAll": "Todos",
+      "wheelActive": "Activos",
+      "wheelAllDescription": "Mostrando todos los puntos para ver el contexto completo del cielo.",
+      "wheelActiveDescription": "Mostrando solo los {count} puntos que participan en los tránsitos activos.",
+      "currentSkyFor": "Cielo calculado para",
+      "changeCurrentLocation": "Cambiar ubicación actual",
+      "selectedPlace": "Lugar seleccionado: {place}",
+      "currentLocationNote": "La carta natal permanece igual. Esta ubicación solo ajusta el cielo de hoy y sus casas.",
+      "housePrefix": "Casa",
+      "nowLabel": "Ahora"
     },
     "astrocartographyPage": {
       "eyebrow": "mapa astrocartográfico",
@@ -892,5 +945,34 @@
     "pricing": "Precios",
     "help": "Ayuda",
     "account": "Cuenta"
+  },
+  "lunarActions": {
+    "eyebrow": "bájalo a tierra",
+    "title": "Tres cosas para esta luna",
+    "do": "haz esto",
+    "avoid": "evita esto",
+    "ask": "pregúntate",
+    "empty": "Genera tu lectura arriba y aquí aparecerán las tres prácticas concretas para esta luna."
+  },
+  "lavadoPage": {
+    "eyebrow": "Kriyas y limpieza",
+    "subtitle": "Laghoo Shankhaprakshala · Una práctica suave de limpieza intestinal",
+    "importantPrecaution": "Precaución importante",
+    "preparation": "Preparación",
+    "protocol": "Protocolo paso a paso",
+    "asanasTitle": "Las 5 asanas · 8 repeticiones cada una",
+    "precaution": "Precaución",
+    "timing": {
+      "momento": "Momento",
+      "duracion": "Duración",
+      "descanso": "Descanso",
+      "alimentacion": "Alimentación"
+    },
+    "precautions": "Precauciones",
+    "benefits": "Beneficios",
+    "dietTitle": "Dieta rica en fibra · 3 días de apoyo",
+    "day": "Día {day}",
+    "alternative": "Alternativa: {text}",
+    "footer": "Método S.A.R.I.T.A.® · Sarita Shakti"
   }
 }

@@ -80,12 +80,12 @@ export default function YogaAstralRoutePage() {
           </div>
 
           {result?.chart ? (
-            <YogaAstralPage chart={result.chart} />
+            <YogaAstralPage chart={result.chart} dictionary={dictionary} />
           ) : (
             <div className="flex flex-1 items-center justify-center">
               <div className="max-w-3xl text-center">
                 <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
-                  yoga astral
+                  {dictionary.yogaAstral.title}
                 </p>
                 <h1 className="mt-2 font-serif text-[38px] font-normal leading-tight text-ivory sm:text-[48px]">
                   {dictionary.standalonePages.needChartTitle}

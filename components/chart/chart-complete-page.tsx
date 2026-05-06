@@ -114,17 +114,19 @@ function WheelModeToggle({
   mode,
   onChange,
   activeCount,
+  copy,
 }: {
   mode: TransitWheelMode;
   onChange: (mode: TransitWheelMode) => void;
   activeCount: number;
+  copy: Dictionary["result"]["transitPage"];
 }) {
   return (
     <div className="mx-auto mb-5 max-w-3xl text-center">
       <div className="inline-flex max-w-full rounded-full border border-black/10 bg-white/80 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
         {[
-          { id: "all" as const, label: "Todos" },
-          { id: "active" as const, label: "Activos" },
+          { id: "all" as const, label: copy.wheelAll },
+          { id: "active" as const, label: copy.wheelActive },
         ].map((option) => (
           <button
             key={option.id}
@@ -141,8 +143,8 @@ function WheelModeToggle({
       </div>
       <p className="mx-auto mt-3 max-w-xl text-xs leading-5 text-[#3a3048]">
         {mode === "active"
-          ? `Mostrando solo los ${activeCount} puntos que participan en los tránsitos activos.`
-          : "Mostrando todos los puntos para ver el contexto completo del cielo."}
+          ? copy.wheelActiveDescription.replace("{count}", String(activeCount))
+          : copy.wheelAllDescription}
       </p>
     </div>
   );
@@ -406,19 +408,19 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
           <div className="grid gap-5 md:grid-cols-[0.82fr_1.18fr] md:items-start">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8a7a4e]">
-                Cielo calculado para
+                {transitCopy.currentSkyFor}
               </p>
               <p className="mt-3 font-serif text-[28px] leading-tight text-ivory sm:text-[34px]">
                 {currentLocation?.displayName ?? request?.location ?? chart.event.locationLabel}
               </p>
               <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24]">
-                {result?.ok ? dateLabel(result.generatedAt, locale) : "Ahora"}
+                {result?.ok ? dateLabel(result.generatedAt, locale) : transitCopy.nowLabel ?? "Now"}
               </p>
             </div>
             <div className="pt-0">
               <label className="block">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
-                  Cambiar ubicación actual
+                  {transitCopy.changeCurrentLocation}
                 </span>
                 <div className="mt-2 [&_input]:min-h-[3.65rem] [&_input]:border-dusty-gold/28 [&_input]:bg-[#f5f0e6]/80 [&_input]:shadow-none">
                   <LocationAutocomplete
@@ -437,7 +439,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
                 </div>
               </label>
               <p className="mt-3 text-xs leading-5 text-[#3a3048]">
-                La carta natal permanece igual. Esta ubicación solo ajusta el cielo de hoy y sus casas.
+                {transitCopy.currentLocationNote}
               </p>
             </div>
           </div>
@@ -457,6 +459,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
               mode={transitWheelMode}
               onChange={setTransitWheelMode}
               activeCount={activeTransitInnerIds.length + activeTransitOuterIds.length}
+              copy={transitCopy}
             />
             <BiWheelChart
               innerChart={chart}
@@ -579,7 +582,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
                           : "border-black/10 bg-white text-[#3a3048] hover:bg-black/[0.02]",
                       ].join(" ")}
                     >
-                      CASA {house.house}
+                      {transitCopy.housePrefix} {house.house}
                     </button>
                   );
                 })}
@@ -596,7 +599,9 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
           ) : selectedAiHouse ? (
             <article className="mt-4 min-h-[160px] border border-black/10 bg-white p-6">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
-                CASA {selectedAiHouse.house} · {HOUSE_AREAS[selectedAiHouse.house]}
+                {transitCopy.housePrefix} {selectedAiHouse.house} ·{" "}
+                {dictionary.result.houseMeanings[String(selectedAiHouse.house) as keyof typeof dictionary.result.houseMeanings] ??
+                  HOUSE_AREAS[selectedAiHouse.house]}
               </p>
               <h3 className="mt-2 break-words font-serif text-[22px] leading-snug text-ivory sm:text-[24px]">
                 {selectedAiHouse.title}

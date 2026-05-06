@@ -8,18 +8,12 @@ import { RoutineCompletionButton } from "@/components/yoga/routine-completion-bu
 import { PremiumCard } from "@/components/ui/premium-card";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import type { NatalChartData } from "@/lib/chart";
+import type { Dictionary } from "@/lib/i18n";
 import {
   getPersonalizedYogaRoutine,
   type PersonalizedYogaRoutine,
   type RoutineElement,
 } from "@/lib/personalized-yoga";
-
-const ELEMENT_LABELS: Record<RoutineElement, string> = {
-  fuego: "Fuego",
-  tierra: "Tierra",
-  agua: "Agua",
-  aire: "Aire",
-};
 
 const ELEMENT_META: Record<RoutineElement, { badgeClass: string }> = {
   fuego: { badgeClass: "border-[#b66a4c]/30 bg-[#b66a4c]/10 text-[#793b2a]" },
@@ -30,6 +24,7 @@ const ELEMENT_META: Record<RoutineElement, { badgeClass: string }> = {
 
 type YogaAstralPageProps = {
   chart: NatalChartData;
+  dictionary: Dictionary;
 };
 
 function SectionHeader({ children }: { children: ReactNode }) {
@@ -43,16 +38,22 @@ function SectionHeader({ children }: { children: ReactNode }) {
   );
 }
 
-function routineTitle(routine: PersonalizedYogaRoutine) {
-  if (routine.secondary) {
-    return `${ELEMENT_LABELS[routine.primary]} ${routine.primaryPercent}% + ${ELEMENT_LABELS[routine.secondary]} ${routine.secondaryPercent}%`;
-  }
-
-  return `Elemento ${ELEMENT_LABELS[routine.primary]}`;
+function formatTemplate(template: string, values: Record<string, string | number>) {
+  return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ""));
 }
 
-export function YogaAstralPage({ chart }: YogaAstralPageProps) {
+function routineTitle(routine: PersonalizedYogaRoutine, copy: Dictionary["yogaAstral"]) {
+  const elementLabels = copy.elementLabels;
+  if (routine.secondary) {
+    return `${elementLabels[routine.primary]} ${routine.primaryPercent}% + ${elementLabels[routine.secondary]} ${routine.secondaryPercent}%`;
+  }
+
+  return formatTemplate(copy.elementTitle, { element: elementLabels[routine.primary] });
+}
+
+export function YogaAstralPage({ chart, dictionary }: YogaAstralPageProps) {
   const [routine, setRoutine] = useState<PersonalizedYogaRoutine | null>(null);
+  const copy = dictionary.yogaAstral;
 
   useEffect(() => {
     let cancelled = false;
@@ -72,12 +73,12 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
     return (
       <div className="flex min-h-[52vh] items-center justify-center pb-16 pt-8 text-center sm:pb-24 sm:pt-16">
         <div>
-          <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#3a3048]">Yoga astral</p>
+          <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#3a3048]">{copy.title}</p>
           <h1 className="mt-3 font-serif text-[38px] leading-tight text-ivory sm:text-6xl">
-            Preparando tu rutina
+            {copy.loadingTitle}
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-[#3a3048]">
-            Estamos eligiendo las posturas que mejor acompañan la lectura de tu carta.
+            {copy.loadingBody}
           </p>
         </div>
       </div>
@@ -87,21 +88,21 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
   return (
     <div className="space-y-8 pb-14 pt-6 sm:space-y-10 sm:pb-20 sm:pt-10">
       <header className="border-t border-[rgba(181,163,110,0.15)] pt-6 sm:pt-8">
-        <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#3a3048]">Yoga astral</p>
+        <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#3a3048]">{copy.title}</p>
         <h1 className="mt-3 font-serif text-[38px] leading-tight text-ivory sm:mt-4 sm:text-6xl">
-          {routineTitle(routine)}
+          {routineTitle(routine, copy)}
         </h1>
         <p className="mt-6 max-w-3xl text-sm leading-7 text-[#3a3048]">
-          Esta secuencia nace de tu carta: toma tu elemento dominante como punto de partida y selecciona las posturas que mejor acompañan tu energía actual. Cada asana está elegida para ordenar el cuerpo, la respiración y el foco desde tu propia lectura.
+          {copy.intro}
         </p>
       </header>
 
       <section className="space-y-5">
-        <SectionHeader>La secuencia · {routine.monthKey}</SectionHeader>
+        <SectionHeader>{copy.sequence} · {routine.monthKey}</SectionHeader>
         <div className="sticky top-0 z-10 -mx-4 mb-6 border-y border-dusty-gold/16 bg-[#f5f0e6]/94 px-4 py-3 shadow-[0_12px_34px_rgba(30,26,46,0.08)] backdrop-blur-md sm:-mx-6 sm:px-6">
           <div className="flex items-center justify-between text-[12px] uppercase tracking-[0.18em] text-[#3a3048]">
-            <span>{routine.secondary ? "Rutina combinada" : "Rutina personalizada"}</span>
-            <span>{routine.asanas.length} asanas</span>
+            <span>{routine.secondary ? copy.combinedRoutine : copy.personalizedRoutine}</span>
+            <span>{routine.asanas.length} {copy.asanas}</span>
           </div>
           <div className="mt-2 h-0.5 w-full bg-black/8">
             <div className="h-full bg-dusty-gold/60" style={{ width: "100%" }} />
@@ -124,7 +125,7 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
                           {index + 1}
                         </span>
                         <span className={`rounded-full border px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] ${ELEMENT_META[asana.element].badgeClass}`}>
-                          {ELEMENT_LABELS[asana.element]}
+                          {copy.elementLabels[asana.element]}
                         </span>
                         <span className="rounded-full border border-dusty-gold/25 bg-dusty-gold/12 px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24]">
                           {asana.duration}
@@ -135,7 +136,7 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
                       <p className="mt-5 text-sm leading-7 text-[#3a3048]">{asana.description}</p>
                       <div className="mt-5 rounded-[1rem] border border-dusty-gold/26 bg-[#f8f4eb] p-4 text-sm leading-7 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6f5a2a]">
-                          Precaución
+                          {copy.precaution}
                         </p>
                         <p className="mt-2">{asana.warning}</p>
                       </div>
@@ -149,22 +150,22 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
       </section>
 
       <footer className="flex flex-col items-start justify-between gap-4 border-t border-black/10 pt-6 sm:flex-row sm:items-center">
-        <p className="text-xs uppercase tracking-[0.22em] text-[#3a3048]">Rutina lista para practicar</p>
+        <p className="text-xs uppercase tracking-[0.22em] text-[#3a3048]">{copy.ready}</p>
         <RoutineCompletionButton storageKey={`sarita:yoga:personalizada:${routine.monthKey}:completed`} />
       </footer>
 
       <section className="border-t border-dusty-gold/16 pt-8 sm:pt-10">
         <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
-          extra
+          {copy.extra}
         </p>
         <div className="mt-4 flex flex-col justify-between gap-6 border border-dusty-gold/18 bg-dusty-gold/[0.055] p-6 shadow-[0_16px_44px_rgba(30,26,46,0.06)] sm:flex-row sm:items-end sm:p-8">
           <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-[#8a7a4e]">kriya</p>
+            <p className="text-[12px] font-semibold uppercase tracking-[0.28em] text-[#8a7a4e]">{copy.kriya}</p>
             <h2 className="mt-3 font-serif text-[34px] leading-tight text-ivory sm:text-[42px]">
-              Lavado intestinal corto
+              {copy.lavadoTitle}
             </h2>
             <p className="mt-4 max-w-2xl text-sm leading-7 text-[#3a3048]">
-              Un protocolo aparte de Laghoo Shankhaprakshala con preparación, práctica, precauciones y dieta de apoyo.
+              {copy.lavadoDescription}
             </p>
           </div>
           <PrimaryButton
@@ -172,7 +173,7 @@ export function YogaAstralPage({ chart }: YogaAstralPageProps) {
             variant="ghostGold"
             className="self-start px-6 py-3 text-[12px] uppercase tracking-[0.2em] sm:self-auto"
           >
-            Ver extra
+            {copy.viewExtra}
           </PrimaryButton>
         </div>
       </section>

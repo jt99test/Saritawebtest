@@ -27,6 +27,7 @@ export default async function LavadoIntestinalPage() {
   const cookieLocale = cookieStore.get(LOCALE_STORAGE_KEY)?.value;
   const locale = cookieLocale && isLocale(cookieLocale) ? cookieLocale : defaultLocale;
   const dictionary = dictionaries[locale];
+  const lavadoCopy = dictionary.lavadoPage;
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
@@ -59,20 +60,20 @@ export default async function LavadoIntestinalPage() {
             <PremiumCard className="overflow-hidden border-black/10 bg-white/88 p-5 shadow-[0_18px_48px_rgba(30,26,46,0.08)] sm:p-7">
               <div className="px-2 py-5 sm:px-8 sm:py-10">
                 <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#3a3048]">
-                  Kriyas y limpieza
+                  {lavadoCopy.eyebrow}
                 </p>
                 <h1 className="mt-3 font-serif text-[38px] leading-tight text-ivory sm:mt-4 sm:text-6xl">
                   {lavadoIntestinal.title}
                 </h1>
                 <p className="mt-4 max-w-3xl text-sm leading-7 text-[#3a3048] sm:text-base sm:leading-8">
-                  Laghoo Shankhaprakshala · Una práctica suave de limpieza intestinal
+                  {lavadoCopy.subtitle}
                 </p>
               </div>
             </PremiumCard>
 
             <section className="rounded-[1.2rem] border border-dusty-gold/24 bg-[#f8f4eb] p-5 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)] sm:p-6">
               <p className="text-[12px] font-semibold uppercase tracking-[0.26em] text-[#6f5a2a]">
-                Precaución importante
+                {lavadoCopy.importantPrecaution}
               </p>
               <p className="mt-3 max-w-4xl text-sm leading-7 text-[#3a3048]">
                 {lavadoIntestinal.precautions}
@@ -105,14 +106,14 @@ export default async function LavadoIntestinalPage() {
             {hasAccess ? (
               <>
             <PremiumCard className="border-black/10 bg-white/70 px-5 py-8 shadow-[0_12px_34px_rgba(30,26,46,0.06)] sm:px-7 sm:py-10">
-              <h2 className="font-serif text-3xl text-ivory">Preparación</h2>
+              <h2 className="font-serif text-3xl text-ivory">{lavadoCopy.preparation}</h2>
               <p className="mt-4 max-w-4xl text-sm leading-7 text-[#3a3048]">
                 {lavadoIntestinal.preparation}
               </p>
             </PremiumCard>
 
             <section className="space-y-5">
-              <SectionHeader>Protocolo paso a paso</SectionHeader>
+              <SectionHeader>{lavadoCopy.protocol}</SectionHeader>
               <ol className="grid gap-4">
                 {lavadoIntestinal.protocol.map((step, index) => (
                   <li key={step}>
@@ -130,7 +131,7 @@ export default async function LavadoIntestinalPage() {
             </section>
 
             <section className="space-y-5">
-              <SectionHeader>Las 5 asanas · 8 repeticiones cada una</SectionHeader>
+              <SectionHeader>{lavadoCopy.asanasTitle}</SectionHeader>
               <ol className="space-y-6">
                 {lavadoIntestinal.asanas.map((asana, index) => {
                   const reverse = index % 2 === 1;
@@ -169,7 +170,7 @@ export default async function LavadoIntestinalPage() {
                             {asana.warning ? (
                               <div className="mt-5 rounded-[1rem] border border-dusty-gold/26 bg-[#f8f4eb] px-4 py-3 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]">
                                 <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#6f5a2a]">
-                                  Precaución
+                                  {lavadoCopy.precaution}
                                 </p>
                                 <p className="mt-2 text-sm leading-6 text-[#3a3048]">
                                   {asana.warning}
@@ -187,10 +188,10 @@ export default async function LavadoIntestinalPage() {
 
             <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {[
-                ["Momento", lavadoIntestinal.timing.momento],
-                ["Duración", lavadoIntestinal.timing.duracion],
-                ["Descanso", lavadoIntestinal.timing.descanso],
-                ["Alimentación", lavadoIntestinal.timing.alimentacion],
+                [lavadoCopy.timing.momento, lavadoIntestinal.timing.momento],
+                [lavadoCopy.timing.duracion, lavadoIntestinal.timing.duracion],
+                [lavadoCopy.timing.descanso, lavadoIntestinal.timing.descanso],
+                [lavadoCopy.timing.alimentacion, lavadoIntestinal.timing.alimentacion],
               ].map(([label, value]) => (
                 <div
                   key={label}
@@ -205,14 +206,14 @@ export default async function LavadoIntestinalPage() {
             </section>
 
             <section className="rounded-[1.2rem] border border-dusty-gold/20 bg-white/70 p-5 shadow-[0_10px_28px_rgba(30,26,46,0.05)] sm:p-7">
-              <h2 className="font-serif text-3xl text-ivory">Precauciones</h2>
+              <h2 className="font-serif text-3xl text-ivory">{lavadoCopy.precautions}</h2>
               <p className="mt-4 max-w-4xl text-sm leading-7 text-[#3a3048]">
                 {lavadoIntestinal.precautions}
               </p>
             </section>
 
             <section className="rounded-[1.2rem] border border-dusty-gold/20 bg-white/70 p-5 shadow-[0_10px_28px_rgba(30,26,46,0.05)] sm:p-7">
-              <h2 className="font-serif text-3xl text-ivory">Beneficios</h2>
+              <h2 className="font-serif text-3xl text-ivory">{lavadoCopy.benefits}</h2>
               <div className="mt-4 max-w-4xl space-y-4 text-sm leading-7 text-[#3a3048]">
                 {lavadoIntestinal.benefits.split("\n\n").map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
@@ -221,7 +222,7 @@ export default async function LavadoIntestinalPage() {
             </section>
 
             <section className="space-y-5">
-              <SectionHeader>Dieta rica en fibra · 3 días de apoyo</SectionHeader>
+              <SectionHeader>{lavadoCopy.dietTitle}</SectionHeader>
               <p className="max-w-4xl text-sm leading-7 text-[#3a3048]">
                 {lavadoIntestinal.threeDayDiet.description}
               </p>
@@ -231,7 +232,9 @@ export default async function LavadoIntestinalPage() {
                     key={day.day}
                     className="border-black/10 bg-white/88 p-6 shadow-[0_14px_38px_rgba(30,26,46,0.07)]"
                   >
-                    <h3 className="font-serif text-3xl font-semibold text-ivory">Día {day.day}</h3>
+                    <h3 className="font-serif text-3xl font-semibold text-ivory">
+                      {lavadoCopy.day.replace("{day}", String(day.day))}
+                    </h3>
                     <div className="mt-5 space-y-5">
                       {day.meals.map((meal) => (
                         <div key={meal.type} className="border-t border-black/10 pt-4">
@@ -242,7 +245,7 @@ export default async function LavadoIntestinalPage() {
                             {meal.primary}
                           </p>
                           <p className="mt-2 text-sm leading-7 text-[#3a3048]">
-                            Alternativa: {meal.alternative}
+                            {lavadoCopy.alternative.replace("{text}", meal.alternative)}
                           </p>
                         </div>
                       ))}
@@ -253,7 +256,7 @@ export default async function LavadoIntestinalPage() {
             </section>
 
             <footer className="border-t border-black/10 pt-6 text-center text-xs font-medium uppercase tracking-[0.24em] text-[#3a3048]">
-              Método S.A.R.I.T.A.® · Sarita Shakti
+              {lavadoCopy.footer}
             </footer>
               </>
             ) : null}

@@ -103,17 +103,19 @@ function WheelModeToggle({
   mode,
   onChange,
   activeCount,
+  copy,
 }: {
   mode: SynastryWheelMode;
   onChange: (mode: SynastryWheelMode) => void;
   activeCount: number;
+  copy: Dictionary["result"]["synastryPage"];
 }) {
   return (
     <div className="mx-auto mb-5 max-w-3xl text-center">
       <div className="inline-flex max-w-full rounded-full border border-black/10 bg-white/80 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
         {[
-          { id: "all" as const, label: "Todos" },
-          { id: "aspected" as const, label: "Aspectos" },
+          { id: "all" as const, label: copy.wheelAll },
+          { id: "aspected" as const, label: copy.wheelAspected },
         ].map((option) => (
           <button
             key={option.id}
@@ -130,8 +132,8 @@ function WheelModeToggle({
       </div>
       <p className="mx-auto mt-3 max-w-xl text-xs leading-5 text-[#3a3048]">
         {mode === "aspected"
-          ? `Mostrando solo los ${activeCount} planetas que forman aspectos entre las dos cartas.`
-          : "Mostrando ambas cartas completas para leer el contexto del vínculo."}
+          ? copy.wheelAspectedDescription.replace("{count}", String(activeCount))
+          : copy.wheelAllDescription}
       </p>
     </div>
   );
@@ -474,6 +476,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
             mode={synastryWheelMode}
             onChange={setSynastryWheelMode}
             activeCount={aspectedInnerIds.length + aspectedOuterIds.length}
+            copy={synastryCopy}
           />
           <BiWheelChart
             innerChart={innerChart}
@@ -525,7 +528,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
         <div className="mx-auto mt-10 max-w-5xl">
           <article className="border border-black/10 bg-white p-5 shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
-              VÍNCULO
+              {synastryCopy.bondEyebrow}
             </p>
             {isLoadingReading && !hasAiCompatibility ? (
               <div className="mt-3 animate-pulse space-y-2">

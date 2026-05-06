@@ -428,7 +428,7 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
           </div>
 
           <div className="mt-10 lg:mt-12">
-            <PracticalActions actions={actions} loading={activeStream.loading} />
+            <PracticalActions actions={actions} dictionary={dictionary} loading={activeStream.loading} />
           </div>
 
           <div className="mt-12 sm:mt-16 lg:mt-20">

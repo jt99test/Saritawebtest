@@ -38,7 +38,7 @@ export function AspectDetailPanel({ chart }: Props) {
               type="button"
               onClick={() => selectAspect(null)}
               className="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full text-[18px] leading-none text-[#3a3048] transition hover:text-ivory/80"
-              aria-label="Cerrar"
+              aria-label={dictionary.common.close}
             >
               ×
             </button>
@@ -52,7 +52,7 @@ export function AspectDetailPanel({ chart }: Props) {
                   {dictionary.result.points[fromPoint.id]}
                 </span>
                 <span className="mt-1 text-[12px] text-[#3a3048]">
-                  {dictionary.result.signs[fromPoint.sign]} · casa {fromPoint.house}
+                  {dictionary.result.signs[fromPoint.sign]} · {dictionary.result.transitPage.housePrefix.toLowerCase()} {fromPoint.house}
                 </span>
               </div>
 
@@ -76,7 +76,7 @@ export function AspectDetailPanel({ chart }: Props) {
                   {dictionary.result.points[toPoint.id]}
                 </span>
                 <span className="mt-1 text-[12px] text-[#3a3048]">
-                  {dictionary.result.signs[toPoint.sign]} · casa {toPoint.house}
+                  {dictionary.result.signs[toPoint.sign]} · {dictionary.result.transitPage.housePrefix.toLowerCase()} {toPoint.house}
                 </span>
               </div>
             </div>
