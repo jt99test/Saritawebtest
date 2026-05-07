@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { DateTime } from "luxon";
 
 import type { NatalChartData } from "@/lib/chart";
@@ -193,6 +194,9 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
   }, [chart, locale, month, timezone, year]);
 
   const selectedMetadata = previews[selectedType] ?? null;
+  const selectedRoutineHref = selectedMetadata
+    ? `/luna-del-mes/rutina/${selectedMetadata.lunationType}?year=${selectedMetadata.year}&month=${selectedMetadata.month}`
+    : "";
   const selectedReportKey = reportKeyFor(year, month, selectedType, locale, gender);
   const cachedEntry = chartHash ? cachedReports[selectedReportKey] ?? null : null;
   const activeStream = streamState[selectedType];
@@ -388,6 +392,17 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
             />
           ) : null}
         </div>
+
+        {selectedMetadata ? (
+          <div className="mt-6 flex justify-center">
+            <Link
+              href={selectedRoutineHref}
+              className="inline-flex border border-dusty-gold/38 bg-dusty-gold/[0.075] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/62 hover:bg-dusty-gold/[0.12]"
+            >
+              {dictionary.lunar.openLunarRoutine}
+            </Link>
+          </div>
+        ) : null}
       </header>
 
       {previewLoading ? (

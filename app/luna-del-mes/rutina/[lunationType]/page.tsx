@@ -158,6 +158,9 @@ export default function LunarYogaRoutinePage() {
         .setLocale(locale)
         .toLocaleString({ day: "numeric", month: "long", year: "numeric" })
     : "";
+  const sequenceLabel = metadata
+    ? `${getLunationLabel(lunationType, dictionary)} · ${DateTime.utc(metadata.year, metadata.month, 1).setLocale(locale).toFormat("LLLL yyyy")}`
+    : "";
 
   return (
     <main className="relative isolate min-h-screen overflow-hidden bg-cosmic-950">
@@ -201,7 +204,7 @@ export default function LunarYogaRoutinePage() {
               <section className="space-y-5">
                 <div>
                   <h2 className="font-serif text-[2rem] leading-tight text-ivory sm:text-[2.35rem]">
-                    {yogaCopy.sequence} · {routine.monthKey}
+                    {yogaCopy.sequence} · {sequenceLabel}
                   </h2>
                   <div className="mt-3 h-0.5 w-10 rounded-full bg-dusty-gold/70" />
                 </div>
