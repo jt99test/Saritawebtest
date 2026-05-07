@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Link from "next/link";
 
 import { sendPasswordResetAction, deleteAccountAction } from "@/app/cuenta/actions";
+import { useStoredLocale } from "@/components/i18n/use-stored-locale";
+import { showNotice } from "@/components/ui/notice-provider";
 import type { Dictionary } from "@/lib/i18n";
 
 type AccountSettingsProps = {
@@ -13,16 +14,22 @@ type AccountSettingsProps = {
 };
 
 export function AccountSettings({ dictionary, email, confirmWord }: AccountSettingsProps) {
+  const locale = useStoredLocale();
   const [passwordSent, setPasswordSent] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteExpanded, setDeleteExpanded] = useState(false);
   const [confirmValue, setConfirmValue] = useState("");
   const [pending, startTransition] = useTransition();
 
   function sendPasswordReset() {
     startTransition(async () => {
-      const result = await sendPasswordResetAction();
+      showNotice({ message: dictionary.auth.sendingResetLink, tone: "info" });
+      const result = await sendPasswordResetAction(locale);
       if (result.ok) {
         setPasswordSent(true);
+        showNotice({ message: dictionary.account.passwordSent, tone: "success" });
+      } else {
+        showNotice({ message: dictionary.auth.resetPasswordError, tone: "error" });
       }
     });
   }
@@ -51,15 +58,36 @@ export function AccountSettings({ dictionary, email, confirmWord }: AccountSetti
         ) : null}
       </section>
 
-      <section className="border border-amber-300/24 bg-amber-300/[0.06] p-6">
-        <h2 className="font-serif text-3xl text-ivory">{dictionary.account.dangerZone}</h2>
-        <button
-          type="button"
-          onClick={() => setDeleteOpen(true)}
-          className="mt-5 border border-amber-300/30 px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-amber-100 transition hover:bg-amber-300/10"
-        >
-          {dictionary.account.deleteAccount}
-        </button>
+      <section className="border-t border-black/10 py-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 className="font-serif text-2xl text-ivory">{dictionary.account.accountDeletion}</h2>
+            <p className="mt-2 max-w-xl text-sm leading-6 text-[#3a3048]">
+              {dictionary.account.accountDeletionBody}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setDeleteExpanded((current) => !current)}
+            className="self-start border border-black/10 px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#3a3048] transition hover:border-black/18 hover:text-ivory"
+            aria-expanded={deleteExpanded}
+          >
+            {dictionary.account.deleteAccount} {deleteExpanded ? "-" : "+"}
+          </button>
+        </div>
+
+        {deleteExpanded ? (
+          <div className="mt-5 border border-rose-300/24 bg-rose-50/35 p-5">
+            <p className="text-sm leading-6 text-[#3a3048]">{dictionary.account.deleteWarning}</p>
+            <button
+              type="button"
+              onClick={() => setDeleteOpen(true)}
+              className="mt-4 border border-rose-300/45 px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-rose-950 transition hover:bg-rose-100/60"
+            >
+              {dictionary.account.deleteAccount}
+            </button>
+          </div>
+        ) : null}
       </section>
 
       {deleteOpen ? (

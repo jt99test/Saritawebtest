@@ -6,10 +6,10 @@ import { createElement } from "react";
 import AccountDeletionEmail, { subject as accountDeletionSubject } from "@/emails/account-deletion";
 import PasswordResetEmail, { passwordResetSubject } from "@/emails/password-reset";
 import { sendEmail } from "@/lib/email";
-import { defaultLocale, isLocale } from "@/lib/i18n";
+import { defaultLocale, isLocale, type Locale } from "@/lib/i18n";
 import { createServerSupabaseClient, createServiceSupabaseClient } from "@/lib/supabase/server";
 
-export async function sendPasswordResetAction() {
+export async function sendPasswordResetAction(requestedLocale?: Locale) {
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
@@ -25,7 +25,7 @@ export async function sendPasswordResetAction() {
     .select("locale")
     .eq("id", user.id)
     .maybeSingle<{ locale: string | null }>();
-  const locale = profile?.locale && isLocale(profile.locale) ? profile.locale : defaultLocale;
+  const locale = requestedLocale ?? (profile?.locale && isLocale(profile.locale) ? profile.locale : defaultLocale);
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://saritaastrology.com";
   const { data, error } = await service.auth.admin.generateLink({
     type: "recovery",
