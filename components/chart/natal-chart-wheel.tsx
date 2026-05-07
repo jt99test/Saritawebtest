@@ -12,7 +12,7 @@ import {
   type NatalChartData,
 } from "@/lib/chart";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
-import { dictionaries } from "@/lib/i18n";
+import { dictionaries, type Dictionary } from "@/lib/i18n";
 import { useChartStore } from "@/components/chart/chart-store";
 
 type Props = {
@@ -25,8 +25,6 @@ type TooltipState = {
   yPercent: number;
   content: string;
 };
-
-const dictionary = dictionaries.es;
 
 const SIZE = 860;
 const CX = 430;
@@ -470,6 +468,7 @@ function AxisLines({ chart, ascendant }: { chart: NatalChartData; ascendant: num
 function SymbolicAspects({
   aspects,
   pointsById,
+  dictionary,
   ascendant,
   activePointId,
   hoveredPointId,
@@ -481,6 +480,7 @@ function SymbolicAspects({
 }: {
   aspects: Aspect[];
   pointsById: Map<ChartPointId, ChartPoint>;
+  dictionary: Dictionary;
   ascendant: number;
   activePointId: ChartPointId | null;
   hoveredPointId: ChartPointId | null;
@@ -614,6 +614,7 @@ function SymbolicAspects({
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function _PlanetLayer({
   points,
+  dictionary,
   ascendant,
   selectedPointId,
   hoveredPointId,
@@ -624,6 +625,7 @@ function _PlanetLayer({
   onHover,
 }: {
   points: ChartPoint[];
+  dictionary: Dictionary;
   ascendant: number;
   selectedPointId: ChartPointId | null;
   hoveredPointId: ChartPointId | null;
@@ -778,6 +780,7 @@ function _PlanetLayer({
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function _AstroSeekPlanetLayer({
   points,
+  dictionary,
   ascendant,
   selectedPointId,
   hoveredPointId,
@@ -788,6 +791,7 @@ function _AstroSeekPlanetLayer({
   onHover,
 }: {
   points: ChartPoint[];
+  dictionary: Dictionary;
   ascendant: number;
   selectedPointId: ChartPointId | null;
   hoveredPointId: ChartPointId | null;
@@ -1013,6 +1017,7 @@ function _AstroSeekPlanetLayer({
 
 function ClearPlanetLayer({
   points,
+  dictionary,
   ascendant,
   selectedPointId,
   hoveredPointId,
@@ -1023,6 +1028,7 @@ function ClearPlanetLayer({
   onHover,
 }: {
   points: ChartPoint[];
+  dictionary: Dictionary;
   ascendant: number;
   selectedPointId: ChartPointId | null;
   hoveredPointId: ChartPointId | null;
@@ -1283,6 +1289,8 @@ function ClearPlanetLayer({
 }
 
 export function ChartLayerRail() {
+  const locale = useStoredLocale();
+  const dictionary = dictionaries[locale];
   const {
     showAspects,
     showMinorAspects,
@@ -1485,6 +1493,7 @@ export function NatalChartWheel({ chart }: Props) {
             <SymbolicAspects
               aspects={displayAspects}
               pointsById={pointsById}
+              dictionary={dictionary}
               ascendant={ascendant}
               activePointId={selectedPointId}
               hoveredPointId={hoveredPointId}
@@ -1499,6 +1508,7 @@ export function NatalChartWheel({ chart }: Props) {
 
             <ClearPlanetLayer
               points={displayPoints}
+              dictionary={dictionary}
               ascendant={ascendant}
               selectedPointId={selectedPointId}
               hoveredPointId={hoveredPointId}

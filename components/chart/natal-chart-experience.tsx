@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { DateTime } from "luxon";
 
 import type { Dictionary, Locale } from "@/lib/i18n";
 import type { NatalChartData } from "@/lib/chart";
@@ -88,6 +89,80 @@ function formatHeaderDate(dateLabel: string) {
     : { date: normalized, time: "" };
 }
 
+const SPANISH_MONTHS: Record<string, number> = {
+  enero: 1,
+  febrero: 2,
+  marzo: 3,
+  abril: 4,
+  mayo: 5,
+  junio: 6,
+  julio: 7,
+  agosto: 8,
+  septiembre: 9,
+  setiembre: 9,
+  octubre: 10,
+  noviembre: 11,
+  diciembre: 12,
+};
+
+function normalizeMonthKey(value: string) {
+  return value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function parseLegacyChartDate(dateLabel: string, timezone: string) {
+  const normalized = dateLabel.replace(/\s+/g, " ").trim();
+  const match = normalized.match(/(\d{1,2})\s+de\s+([A-Za-zÁÉÍÓÚáéíóú]+)\s+de\s+(\d{4})(?:,\s*|\s+a\s+las\s+)(\d{1,2}:\d{2})?/);
+
+  if (!match) {
+    return null;
+  }
+
+  const day = Number(match[1]);
+  const month = SPANISH_MONTHS[normalizeMonthKey(match[2] ?? "")];
+  const year = Number(match[3]);
+  const [hourText, minuteText] = (match[4] ?? "00:00").split(":");
+
+  if (!month || Number.isNaN(day) || Number.isNaN(year)) {
+    return null;
+  }
+
+  return DateTime.fromObject(
+    {
+      year,
+      month,
+      day,
+      hour: Number(hourText ?? "0"),
+      minute: Number(minuteText ?? "0"),
+    },
+    { zone: timezone || "UTC" },
+  );
+}
+
+function buildDisplayDateParts(chart: NatalChartData, request: FormValues | null, locale: Locale) {
+  const timezone = chart.event.timezoneIdentifier || request?.selectedLocation?.timezone || "UTC";
+  const fromRequest = request?.birthDate && request?.birthTime && !request.birthTimeUnknown
+    ? DateTime.fromISO(`${request.birthDate}T${request.birthTime}`, { zone: timezone })
+    : null;
+  const dateTime = fromRequest?.isValid ? fromRequest : parseLegacyChartDate(chart.event.dateLabel, timezone);
+
+  if (!dateTime || !dateTime.isValid) {
+    return formatHeaderDate(chart.event.dateLabel);
+  }
+
+  const localized = dateTime.setLocale(locale);
+  return {
+    date: localized.toLocaleString({
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }),
+    time: localized.toLocaleString({
+      hour: "numeric",
+      minute: "2-digit",
+    }),
+  };
+}
+
 export function NatalChartExperience({
   chart,
   dictionary,
@@ -103,7 +178,7 @@ export function NatalChartExperience({
   const [pricingRequiredPlan, setPricingRequiredPlan] = useState<PaidPlan>("pro");
   const tabListRef = useRef<HTMLElement | null>(null);
   const tabRefs = useRef<Partial<Record<PageTabId, HTMLButtonElement | null>>>({});
-  const headerDate = formatHeaderDate(chart.event.dateLabel);
+  const headerDate = buildDisplayDateParts(chart, request, locale);
   const headerSubtitle = [
     headerDate.date,
     headerDate.time,
