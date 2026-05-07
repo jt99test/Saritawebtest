@@ -97,12 +97,12 @@ const POINT_SYMBOLS: Record<ChartPointId, string> = {
 };
 
 const DISPLAY_ASPECTS: Array<{ type: AspectId; angle: number; orb: number; major: boolean }> = [
-  { type: "conjunction", angle: 0, orb: 8, major: true },
-  { type: "sextile", angle: 60, orb: 5, major: true },
+  { type: "conjunction", angle: 0, orb: 7, major: true },
+  { type: "sextile", angle: 60, orb: 7, major: true },
   { type: "square", angle: 90, orb: 7, major: true },
   { type: "trine", angle: 120, orb: 7, major: true },
   { type: "quincunx", angle: 150, orb: 3, major: false },
-  { type: "opposition", angle: 180, orb: 8, major: true },
+  { type: "opposition", angle: 180, orb: 7, major: true },
 ];
 
 function pointAtRadius(radius: number, longitude: number, ascendant: number): [number, number] {
@@ -125,44 +125,6 @@ function circularDistance(first: number, second: number) {
 
 function pointScaleTransform(x: number, y: number, scale: number) {
   return `translate(${round(x)} ${round(y)}) scale(${scale}) translate(${-round(x)} ${-round(y)})`;
-}
-
-function displayAspectOrb(definition: (typeof DISPLAY_ASPECTS)[number], first: ChartPoint, second: ChartPoint) {
-  const hasLuminary = first.id === "sun" || first.id === "moon" || second.id === "sun" || second.id === "moon";
-  if (!hasLuminary) return definition.orb;
-  if (definition.type === "conjunction" || definition.type === "opposition") return 10;
-  if (definition.type === "square" || definition.type === "trine") return 9;
-  if (definition.type === "sextile") return 6;
-  return definition.orb;
-}
-
-function detectDisplayAspects(points: ChartPoint[]) {
-  const aspects: Aspect[] = [];
-
-  for (let index = 0; index < points.length; index += 1) {
-    for (let innerIndex = index + 1; innerIndex < points.length; innerIndex += 1) {
-      const first = points[index]!;
-      const second = points[innerIndex]!;
-      const angle = circularDistance(first.longitude, second.longitude);
-
-      for (const definition of DISPLAY_ASPECTS) {
-        const orb = Math.abs(angle - definition.angle);
-
-        if (orb <= displayAspectOrb(definition, first, second)) {
-          aspects.push({
-            id: `${first.id}-${second.id}-${definition.type}`,
-            type: definition.type,
-            from: first.id,
-            to: second.id,
-            orb: Math.round(orb * 10) / 10,
-          });
-          break;
-        }
-      }
-    }
-  }
-
-  return aspects;
 }
 
 function describeRingSegment(
@@ -1416,11 +1378,15 @@ export function NatalChartWheel({ chart }: Props) {
 
   const displayAspects = useMemo(
     () =>
-      detectDisplayAspects(displayPoints).filter((aspect) => {
+      chart.aspects.filter((aspect) => {
+        if (!pointsById.has(aspect.from) || !pointsById.has(aspect.to)) {
+          return false;
+        }
+
         const definition = getAspectDefinition(aspect.type);
         return definition.major ? showAspects : showMinorAspects;
       }),
-    [displayPoints, showAspects, showMinorAspects],
+    [chart.aspects, pointsById, showAspects, showMinorAspects],
   );
 
   function handleSelect(pointId: ChartPointId) {
