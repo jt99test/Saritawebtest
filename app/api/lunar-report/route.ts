@@ -2,13 +2,13 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { Message } from "@anthropic-ai/sdk/resources/messages";
 import { DateTime } from "luxon";
 
-import type { NatalChartData } from "@/lib/chart";
+import { getSignFromLongitude, getSignMeta, type NatalChartData } from "@/lib/chart";
 import type {
   LunarReportActionSet,
   LunationType,
 } from "@/lib/lunar-report";
 import { getMonthlyLunarData } from "@/lib/lunar.server";
-import { getActiveTransits } from "@/lib/transits.server";
+import { getActiveTransits, getTransitingPositions } from "@/lib/transits.server";
 import { getHouseMessages } from "@/data/sarita/house-messages";
 import { elementRoutines } from "@/data/sarita/element-routines";
 import { getTransitDescriptions } from "@/data/sarita/transit-descriptions";
@@ -72,6 +72,10 @@ function buildChartSummary(chart: NatalChartData, locale?: string) {
 
 async function buildTransitList(chart: NatalChartData, lunationTimestamp: string, locale?: string) {
   const transits = (await getActiveTransits(chart, new Date(lunationTimestamp))).slice(0, 5);
+  const transitingPositions = await getTransitingPositions(new Date(lunationTimestamp));
+  const transitingElements = new Map(
+    transitingPositions.map((point) => [point.id, getSignMeta(getSignFromLongitude(point.longitude)).element] as const),
+  );
   const descriptions = getTransitDescriptions(locale);
 
   if (transits.length === 0) {
@@ -83,12 +87,15 @@ async function buildTransitList(chart: NatalChartData, lunationTimestamp: string
 
   const structured = transits.map((transit) => {
     const transitingPlanetLabel = getPointLabel(transit.transitingPlanet, locale);
+    const natalPoint = chart.points.find((point) => point.id === transit.natalPlanet);
     const description = descriptions[transitingPlanetLabel] ?? getTransitDescriptions("es")[getPointLabel(transit.transitingPlanet, "es")];
     return {
       ...transit,
       transitingPlanetLabel,
       natalPlanetLabel: getPointLabel(transit.natalPlanet, locale),
       aspectLabel: getAspectLabel(transit.aspectType, locale),
+      transitingElement: transitingElements.get(transit.transitingPlanet),
+      natalElement: natalPoint ? getSignMeta(natalPoint.sign).element : undefined,
       description: description?.description ?? "",
       relevance: description?.relevance ?? "",
     };

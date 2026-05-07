@@ -36,8 +36,8 @@
         "href": "/luna-del-mes"
       },
       {
-        "title": "Yoga astrale",
-        "description": "Pratiche corporee allineate al tuo elemento.",
+        "title": "Routine della carta natale",
+        "description": "Una pratica corporea modellata dalla miscela elementale della tua carta.",
         "href": "/yoga-astral"
       },
       {
@@ -151,11 +151,11 @@
     "lockedTabCta": "Vedi i piani",
     "proName": "Pro",
     "avanzadoName": "Avanzato",
-    "proTagline": "Luna, yoga e la tua carta completa",
+    "proTagline": "Luna, routine natale e la tua carta completa",
     "avanzadoTagline": "Tutto. Transiti, rivoluzione solare, sinastria e astrocartografia.",
     "proFeatures": [
       "Luna del mese personalizzata",
-      "Yoga astrale secondo la tua carta",
+      "Routine della carta natale",
       "Lavaggio intestinale gratis con piano annuale"
     ],
     "avanzadoFeatures": [
@@ -190,11 +190,11 @@
       "agua": "Acqua",
       "aire": "Aria"
     },
-    "title": "Yoga astrale",
+    "title": "La routine della tua carta natale",
     "loadingTitle": "Preparazione della tua routine",
     "loadingBody": "Stiamo scegliendo le posture che accompagnano meglio la lettura della tua carta.",
     "elementTitle": "Elemento {element}",
-    "intro": "Questa sequenza nasce dalla tua carta: prende il tuo elemento dominante come punto di partenza e seleziona le posture che accompagnano meglio la tua energia attuale. Ogni asana è scelta per ordinare corpo, respiro e focus dalla tua lettura.",
+    "intro": "Questa sequenza nasce dalla tua carta natale: usa la miscela degli elementi della tua mappa come punto di partenza e seleziona le posture che sostengono quella struttura interiore. Ogni asana è scelta per ordinare corpo, respiro e attenzione a partire dalla tua lettura.",
     "sequence": "La sequenza",
     "combinedRoutine": "Routine combinata",
     "personalizedRoutine": "Routine personalizzata",
@@ -239,6 +239,12 @@
     "practiceThisMonth": "la tua pratica questo mese",
     "elementLabel": "Elemento {element}",
     "seeRoutine": "Vedi routine",
+    "lunarRoutineEyebrow": "pratica lunare",
+    "lunarRoutineTitle": "Routine lunare di questa luna",
+    "lunarRoutineBody": "Una sequenza breve per questa luna, calcolata dai transiti e dagli aspetti più attivi del momento.",
+    "openLunarRoutine": "Apri routine lunare",
+    "lunarRoutineIntro": "Questa pratica non nasce dal tuo elemento natale dominante: viene calcolata dai transiti e dagli aspetti più forti di questa luna specifica. Per questo ogni Luna Nuova o Luna Piena può aprire una sequenza diversa.",
+    "lunarRoutineBasedOnTransits": "Basata sui transiti lunari",
     "moonIllustrationAlt": "Illustrazione di {moon}",
     "activeTransitsEyebrow": "ciò che si muove ancora",
     "activeTransitsTitle": "Transiti attivi questo mese",
@@ -256,7 +262,7 @@
     "primaryTabs": {
       "natal": "La tua carta",
       "moon": "Luna del mese",
-      "yoga": "Yoga astrale",
+      "yoga": "Routine natale",
       "complete": "Transiti",
       "solarReturn": "Rivoluzione Solare",
       "synastry": "Sinastria",
@@ -810,7 +816,7 @@
     "termsSections": [
       {
         "title": "Descrizione del servizio",
-        "body": "SARITA offre calcolo della carta natale, letture astrologiche, Luna del mese, Yoga astrale, transiti, Rivoluzione Solare, sinastria, astrocartografia e contenuti digitali collegati."
+        "body": "SARITA offre calcolo della carta natale, letture astrologiche, Luna del mese, routine della carta natale, transiti, Rivoluzione Solare, sinastria, astrocartografia e contenuti digitali collegati."
       },
       {
         "title": "Abbonamenti",
@@ -855,7 +861,7 @@
       "Carta natale completa",
       "Letture dei pianeti",
       "Luna del mese",
-      "Yoga astrale",
+      "Routine natale",
       "Transiti in tempo reale",
       "Rivoluzione Solare",
       "Sinastria",
@@ -877,7 +883,7 @@
       },
       {
         "question": "Qual è la differenza tra Pro e Avanzato?",
-        "answer": "Pro include Luna del mese, Yoga astrale e 5 letture al mese. Avanzato aggiunge 20 letture al mese, Transiti, Rivoluzione Solare, Sinastria e Astrocartografia."
+        "answer": "Pro include Luna del mese, routine della carta natale e 5 letture al mese. Avanzato aggiunge 20 letture al mese, Transiti, Rivoluzione Solare, Sinastria e Astrocartografia."
       },
       {
         "question": "Offrite rimborsi?",

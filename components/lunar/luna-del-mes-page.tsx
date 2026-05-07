@@ -24,7 +24,7 @@ import { LunationToggle } from "@/components/lunar/lunation-toggle";
 import { LunationHeaderCard } from "@/components/lunar/lunation-header-card";
 import { LunationReadingCard } from "@/components/lunar/lunation-reading-card";
 import { ActiveTransitsList } from "@/components/lunar/active-transits-list";
-import { MonthlyRoutineCard } from "@/components/lunar/monthly-routine-card";
+import { LunarRoutineCta } from "@/components/lunar/lunar-routine-cta";
 import { PracticalActions } from "@/components/lunar/practical-actions";
 
 type LunaDelMesPageProps = {
@@ -431,8 +431,8 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
             <PracticalActions actions={actions} dictionary={dictionary} loading={activeStream.loading} />
           </div>
 
-          <div className="mt-12 sm:mt-16 lg:mt-20">
-            <MonthlyRoutineCard chart={chart} metadata={selectedMetadata} dictionary={dictionary} />
+          <div className="mt-10 lg:mt-12">
+            <LunarRoutineCta metadata={selectedMetadata} dictionary={dictionary} />
           </div>
         </div>
       ) : (

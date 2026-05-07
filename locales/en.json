@@ -36,8 +36,8 @@
         "href": "/luna-del-mes"
       },
       {
-        "title": "Astral yoga",
-        "description": "Body practices aligned with your element.",
+        "title": "Natal chart routine",
+        "description": "A body practice shaped by the elemental mix in your chart.",
         "href": "/yoga-astral"
       },
       {
@@ -151,11 +151,11 @@
     "lockedTabCta": "View plans",
     "proName": "Pro",
     "avanzadoName": "Advanced",
-    "proTagline": "Moon, yoga and your full chart",
+    "proTagline": "Moon, natal routine and your full chart",
     "avanzadoTagline": "Everything. Transits, solar return, synastry and astrocartography.",
     "proFeatures": [
       "Personalised moon of the month",
-      "Astral yoga based on your chart",
+      "Natal chart routine",
       "Intestinal cleanse free with yearly plan"
     ],
     "avanzadoFeatures": [
@@ -190,11 +190,11 @@
       "agua": "Water",
       "aire": "Air"
     },
-    "title": "Astral yoga",
+    "title": "Your natal chart routine",
     "loadingTitle": "Preparing your routine",
     "loadingBody": "We are choosing the postures that best support your chart reading.",
     "elementTitle": "{element} element",
-    "intro": "This sequence comes from your chart: it takes your dominant element as the starting point and selects the postures that best support your current energy. Each asana is chosen to organize the body, breath, and focus through your own reading.",
+    "intro": "This sequence comes from your natal chart: it uses the elemental mix in your map as the starting point and selects postures that support that inner architecture. Each asana is chosen to organize body, breath, and focus through your own reading.",
     "sequence": "The sequence",
     "combinedRoutine": "Combined routine",
     "personalizedRoutine": "Personalized routine",
@@ -239,6 +239,12 @@
     "practiceThisMonth": "your practice this month",
     "elementLabel": "{element} element",
     "seeRoutine": "See full routine",
+    "lunarRoutineEyebrow": "lunar practice",
+    "lunarRoutineTitle": "This moon's lunar routine",
+    "lunarRoutineBody": "A short sequence for this moon, calculated from the most active transits and aspects around this lunation.",
+    "openLunarRoutine": "Open lunar routine",
+    "lunarRoutineIntro": "This practice does not come from your natal dominant element: it is calculated from the strongest transits and aspects around this specific moon. That is why each New Moon or Full Moon can open a different sequence.",
+    "lunarRoutineBasedOnTransits": "Based on lunar transits",
     "moonIllustrationAlt": "Illustration of {moon}",
     "activeTransitsEyebrow": "what is also moving",
     "activeTransitsTitle": "Active transits this month",
@@ -256,7 +262,7 @@
     "primaryTabs": {
       "natal": "Your chart",
       "moon": "Moon of the month",
-      "yoga": "Astral yoga",
+      "yoga": "Natal routine",
       "complete": "Transits",
       "solarReturn": "Solar Return",
       "synastry": "Synastry",
@@ -855,7 +861,7 @@
       "Full natal chart",
       "Planet readings",
       "Moon of the month",
-      "Astral yoga",
+      "Natal routine",
       "Real-time transits",
       "Solar Return",
       "Synastry",
@@ -877,7 +883,7 @@
       },
       {
         "question": "What is the difference between Pro and Avanzado?",
-        "answer": "Pro gives you Moon of the Month, Astral Yoga and 5 readings per month. Avanzado adds 20 readings per month, Transits, Solar Return, Synastry and Astrocartography."
+        "answer": "Pro gives you Moon of the Month, the natal chart routine and 5 readings per month. Avanzado adds 20 readings per month, Transits, Solar Return, Synastry and Astrocartography."
       },
       {
         "question": "Do you offer refunds?",

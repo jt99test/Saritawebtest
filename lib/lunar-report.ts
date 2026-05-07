@@ -42,9 +42,17 @@ export type LunarReportMetadata = {
     orb: number;
     exactnessDate: string;
     strength: "tight" | "moderate" | "wide";
+    activatedNatalAspects: Array<{
+      pointA: string;
+      pointB: string;
+      aspectType: string;
+      orb: number;
+    }>;
     transitingPlanetLabel: string;
     natalPlanetLabel: string;
     aspectLabel: string;
+    transitingElement?: "fire" | "earth" | "air" | "water";
+    natalElement?: "fire" | "earth" | "air" | "water";
     description: string;
     relevance: string;
     practicalSummary?: string;

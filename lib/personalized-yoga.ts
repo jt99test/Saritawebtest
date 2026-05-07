@@ -16,6 +16,11 @@ export type PersonalizedYogaRoutine = {
   asanas: Asana[];
 };
 
+export type RoutineElementScore = {
+  element: Element;
+  score: number;
+};
+
 const TRADITIONAL_POINT_IDS = new Set<ChartPointId>([
   "sun",
   "moon",
@@ -184,6 +189,59 @@ function getWeightedElementScores(chart: NatalChartData, seed: string) {
     });
 }
 
+export function buildYogaRoutineFromElementScores({
+  scores,
+  seed,
+  monthKey,
+}: {
+  scores: RoutineElementScore[];
+  seed: string;
+  monthKey: string;
+}): PersonalizedYogaRoutine {
+  const scoredElements = scores
+    .filter((entry) => entry.score > 0)
+    .map((entry) => ({
+      ...entry,
+      tieBreaker: seededNumber(`${seed}:element-order:${entry.element}`),
+    }))
+    .sort((left, right) => {
+      const byScore = right.score - left.score;
+      return Math.abs(byScore) > 0.0001 ? byScore : right.tieBreaker - left.tieBreaker;
+    });
+  const selectedElements = scoredElements.slice(0, Math.min(3, scoredElements.length));
+  const [first, second, third] = selectedElements;
+  const primary = toRoutineElement(first?.element ?? "fire");
+  const secondary = second ? toRoutineElement(second.element) : null;
+  const accent = third ? toRoutineElement(third.element) : null;
+  const [primaryPercent = 100, secondaryPercent = 0, accentPercent = 0] = normalizePercents(selectedElements);
+  const targetCount = 7;
+  const [primaryCount = targetCount, secondaryCount = 0, accentCount = 0] = allocatePoseCounts(
+    [primaryPercent, secondaryPercent, accentPercent].filter((value) => value > 0),
+    seed,
+    targetCount,
+  );
+  const usedSlugs = new Set<string>();
+  const primaryAsanas = pickAsanas(primary, primaryCount, `${seed}:primary`, usedSlugs);
+  primaryAsanas.forEach((asana) => usedSlugs.add(asana.slug));
+  const secondaryAsanas = secondary && secondaryCount > 0 ? pickAsanas(secondary, secondaryCount, `${seed}:secondary`, usedSlugs) : [];
+  secondaryAsanas.forEach((asana) => usedSlugs.add(asana.slug));
+  const accentAsanas = accent && accentCount > 0 ? pickAsanas(accent, accentCount, `${seed}:accent`, usedSlugs) : [];
+  const asanas = weaveAsanas([primaryAsanas, secondaryAsanas, accentAsanas].filter((group) => group.length > 0), seed);
+  const id = hashString(`${seed}:${asanas.map((asana) => `${asana.element}:${asana.slug}`).join("|")}`).toString(36);
+
+  return {
+    id,
+    primary,
+    secondary: secondaryCount > 0 ? secondary : null,
+    accent: accentCount > 0 ? accent : null,
+    primaryPercent,
+    secondaryPercent,
+    accentPercent,
+    monthKey,
+    asanas,
+  };
+}
+
 function normalizePercents(scores: Array<{ score: number }>) {
   const total = scores.reduce((sum, item) => sum + item.score, 0);
   if (total <= 0) {
@@ -288,37 +346,9 @@ export async function getPersonalizedYogaRoutine(chart: NatalChartData, date = n
   const rotationKey = getRotationKey(date);
   const variationKey = getChartVariationKey(chart);
   const seed = `${chartHash}:${variationKey}:${rotationKey}`;
-  const scoredElements = getWeightedElementScores(chart, seed).filter((entry) => entry.score > 0);
-  const selectedElements = scoredElements.slice(0, Math.min(3, scoredElements.length));
-  const [first, second, third] = selectedElements;
-  const primary = toRoutineElement(first?.element ?? "fire");
-  const secondary = second ? toRoutineElement(second.element) : null;
-  const accent = third ? toRoutineElement(third.element) : null;
-  const [primaryPercent = 100, secondaryPercent = 0, accentPercent = 0] = normalizePercents(selectedElements);
-  const targetCount = 7;
-  const [primaryCount = targetCount, secondaryCount = 0, accentCount = 0] = allocatePoseCounts(
-    [primaryPercent, secondaryPercent, accentPercent].filter((value) => value > 0),
+  return buildYogaRoutineFromElementScores({
+    scores: getWeightedElementScores(chart, seed),
     seed,
-    targetCount,
-  );
-  const usedSlugs = new Set<string>();
-  const primaryAsanas = pickAsanas(primary, primaryCount, `${seed}:primary`, usedSlugs);
-  primaryAsanas.forEach((asana) => usedSlugs.add(asana.slug));
-  const secondaryAsanas = secondary && secondaryCount > 0 ? pickAsanas(secondary, secondaryCount, `${seed}:secondary`, usedSlugs) : [];
-  secondaryAsanas.forEach((asana) => usedSlugs.add(asana.slug));
-  const accentAsanas = accent && accentCount > 0 ? pickAsanas(accent, accentCount, `${seed}:accent`, usedSlugs) : [];
-  const asanas = weaveAsanas([primaryAsanas, secondaryAsanas, accentAsanas].filter((group) => group.length > 0), seed);
-  const id = hashString(`${seed}:${asanas.map((asana) => `${asana.element}:${asana.slug}`).join("|")}`).toString(36);
-
-  return {
-    id,
-    primary,
-    secondary: secondaryCount > 0 ? secondary : null,
-    accent: accentCount > 0 ? accent : null,
-    primaryPercent,
-    secondaryPercent,
-    accentPercent,
     monthKey,
-    asanas,
-  };
+  });
 }

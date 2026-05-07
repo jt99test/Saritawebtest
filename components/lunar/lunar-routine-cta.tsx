@@ -1,0 +1,44 @@
+"use client";
+
+import Link from "next/link";
+
+import type { Dictionary } from "@/lib/i18n";
+import type { LunarReportMetadata } from "@/lib/lunar-report";
+
+type LunarRoutineCtaProps = {
+  metadata: LunarReportMetadata;
+  dictionary: Dictionary;
+};
+
+function formatTemplate(template: string, values: Record<string, string | number>) {
+  return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ""));
+}
+
+export function LunarRoutineCta({ metadata, dictionary }: LunarRoutineCtaProps) {
+  const copy = dictionary.lunar;
+  const href = `/luna-del-mes/rutina/${metadata.lunationType}?year=${metadata.year}&month=${metadata.month}`;
+
+  return (
+    <section className="mx-auto max-w-[720px] border-y border-dusty-gold/16 py-6 text-left">
+      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
+        {copy.lunarRoutineEyebrow}
+      </p>
+      <div className="mt-3 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+        <div>
+          <h3 className="font-serif text-[30px] font-normal leading-tight text-ivory sm:text-[36px]">
+            {formatTemplate(copy.lunarRoutineTitle, { element: "" }).trim()}
+          </h3>
+          <p className="mt-3 max-w-[520px] text-sm leading-7 text-[#3a3048]">
+            {copy.lunarRoutineBody}
+          </p>
+        </div>
+        <Link
+          href={href}
+          className="inline-flex shrink-0 items-center justify-center border border-dusty-gold/38 bg-dusty-gold/[0.075] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/62 hover:bg-dusty-gold/[0.12]"
+        >
+          {copy.openLunarRoutine}
+        </Link>
+      </div>
+    </section>
+  );
+}

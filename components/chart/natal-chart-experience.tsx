@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { DateTime } from "luxon";
 
 import type { Dictionary, Locale } from "@/lib/i18n";
@@ -382,6 +383,23 @@ export function NatalChartExperience({
               </p>
             ) : null}
             <ChartShareActions chart={chart} dictionary={dictionary} plan={plan} />
+
+            {!panelOpen && !selectedPointId ? (
+              <div className="mx-auto mt-8 max-w-3xl border-y border-dusty-gold/16 py-6 text-center">
+                <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
+                  {dictionary.yogaAstral.title}
+                </p>
+                <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-[#3a3048]">
+                  {dictionary.yogaAstral.intro}
+                </p>
+                <Link
+                  href="/yoga-astral"
+                  className="mt-5 inline-flex border border-dusty-gold/38 bg-dusty-gold/[0.075] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/62 hover:bg-dusty-gold/[0.12]"
+                >
+                  {dictionary.yogaAstral.title}
+                </Link>
+              </div>
+            ) : null}
           </section>
 
           {!panelOpen && !selectedPointId ? (
