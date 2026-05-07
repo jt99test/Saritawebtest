@@ -79,7 +79,12 @@
       "error": "Al momento non è possibile caricare i suggerimenti.",
       "selected": "Luogo selezionato"
     },
-    "submit": "Vedi la mia carta natale"
+    "submit": "Vedi la mia carta natale",
+    "confirmEyebrow": "prima di generare",
+    "confirmTitle": "Controlla i tuoi dati",
+    "confirmBody": "Una volta generata questa carta, i dati non potranno essere modificati nella stessa lettura. Se qualcosa Ã¨ sbagliato, dovrai creare una nuova lettura e conterÃ  nel tuo limite mensile.",
+    "confirmEdit": "Correggi dati",
+    "confirmContinue": "Genera carta"
   },
   "standalonePages": {
     "savedReading": "Lettura salvata",

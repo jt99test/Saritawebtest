@@ -79,7 +79,12 @@
       "error": "No ha sido posible cargar sugerencias ahora mismo.",
       "selected": "Lugar seleccionado"
     },
-    "submit": "Ver mi carta natal"
+    "submit": "Ver mi carta natal",
+    "confirmEyebrow": "antes de generar",
+    "confirmTitle": "Revisa tus datos",
+    "confirmBody": "Cuando generes esta carta, los datos no se podrÃ¡n editar dentro de la misma lectura. Si hay un error, tendrÃ¡s que crear una lectura nueva y contarÃ¡ para tu lÃ­mite mensual.",
+    "confirmEdit": "Corregir datos",
+    "confirmContinue": "Generar carta"
   },
   "standalonePages": {
     "savedReading": "Lectura guardada",

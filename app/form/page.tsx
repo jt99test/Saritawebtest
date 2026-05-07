@@ -20,6 +20,7 @@ export default function FormPage() {
   const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
   const [submitting, setSubmitting] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [values, setValues] = useState<FormValues>({
     name: "",
     birthDate: "",
@@ -34,12 +35,16 @@ export default function FormPage() {
     setValues((current) => ({ ...current, [key]: value }));
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function submitChart() {
     setSubmitting(true);
     sessionStorage.setItem(CHART_DRAFT_KEY, JSON.stringify(values));
     sessionStorage.removeItem(CHART_RESULT_KEY);
     router.push("/loading");
+  }
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setConfirmOpen(true);
   }
 
   const inputClass =
@@ -187,6 +192,60 @@ export default function FormPage() {
           </Reveal>
         </Container>
       </section>
+
+      {confirmOpen ? (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/32 px-4 backdrop-blur-sm">
+          <div className="w-full max-w-lg border border-dusty-gold/24 bg-[#fffaf0] p-6 text-[#1e1a2e] shadow-[0_24px_80px_rgba(30,26,46,0.22)] sm:p-7">
+            <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
+              {dictionary.form.confirmEyebrow}
+            </p>
+            <h2 className="mt-2 font-serif text-[30px] leading-tight text-ivory">
+              {dictionary.form.confirmTitle}
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-[#3a3048]">
+              {dictionary.form.confirmBody}
+            </p>
+            <dl className="mt-5 grid gap-3 border-y border-black/10 py-4 text-sm">
+              <div className="grid grid-cols-[0.8fr_1.2fr] gap-3">
+                <dt className="text-[#5c4a24]">{dictionary.form.fields.name}</dt>
+                <dd className="text-right text-[#1e1a2e]">{values.name}</dd>
+              </div>
+              <div className="grid grid-cols-[0.8fr_1.2fr] gap-3">
+                <dt className="text-[#5c4a24]">{dictionary.form.fields.birthdate}</dt>
+                <dd className="text-right text-[#1e1a2e]">{values.birthDate}</dd>
+              </div>
+              <div className="grid grid-cols-[0.8fr_1.2fr] gap-3">
+                <dt className="text-[#5c4a24]">{dictionary.form.fields.birthtime}</dt>
+                <dd className="text-right text-[#1e1a2e]">
+                  {values.birthTimeUnknown ? dictionary.form.birthTimeUnknown.label : values.birthTime}
+                </dd>
+              </div>
+              <div className="grid grid-cols-[0.8fr_1.2fr] gap-3">
+                <dt className="text-[#5c4a24]">{dictionary.form.fields.location}</dt>
+                <dd className="text-right text-[#1e1a2e]">{values.selectedLocation?.displayName ?? values.location}</dd>
+              </div>
+            </dl>
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setConfirmOpen(false)}
+                disabled={submitting}
+                className="border border-black/15 px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#3a3048] transition hover:border-black/25 hover:bg-black/[0.03] disabled:opacity-50"
+              >
+                {dictionary.form.confirmEdit}
+              </button>
+              <button
+                type="button"
+                onClick={submitChart}
+                disabled={submitting}
+                className="border border-dusty-gold/38 bg-dusty-gold/[0.12] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/62 hover:bg-dusty-gold/[0.18] disabled:opacity-50"
+              >
+                {submitting ? dictionary.loading.steps[2] : dictionary.form.confirmContinue}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }

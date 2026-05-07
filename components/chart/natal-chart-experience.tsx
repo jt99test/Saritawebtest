@@ -69,8 +69,8 @@ function getCity(locationLabel: string) {
 }
 
 function nameSizeClass(name: string) {
-  if (name.length >= 14) return "text-[30px] sm:text-[40px] lg:text-[44px]";
-  if (name.length >= 10) return "text-[34px] sm:text-[44px] lg:text-[50px]";
+  if (name.length >= 14) return "text-[24px] sm:text-[34px] lg:text-[42px]";
+  if (name.length >= 10) return "text-[30px] sm:text-[40px] lg:text-[48px]";
   if (name.length >= 6) return "text-[40px] sm:text-[50px] lg:text-[56px]";
   return "text-[44px] sm:text-[52px] lg:text-[72px]";
 }
@@ -346,7 +346,7 @@ export function NatalChartExperience({
               <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-dusty-gold">
                 {dictionary.result.chartHeader.eyebrow}
               </p>
-              <h1 className={`mx-auto -mt-1 max-w-full break-words font-serif font-normal leading-none text-ivory [overflow-wrap:break-word] ${titleNameClass}`}>
+              <h1 className={`mx-auto -mt-1 max-w-full whitespace-nowrap font-serif font-normal leading-none text-ivory [overflow-wrap:normal] [word-break:normal] ${titleNameClass}`}>
                 {firstName}
               </h1>
               <p className="mt-4 font-serif text-[14px] italic text-[#3a3048]">
@@ -360,7 +360,7 @@ export function NatalChartExperience({
                   <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-dusty-gold">
                     {dictionary.result.chartHeader.eyebrow}
                   </p>
-                  <h1 className={`-mt-1 ml-auto max-w-[360px] break-words font-serif font-normal leading-none text-ivory [overflow-wrap:break-word] ${titleNameClass}`}>
+                  <h1 className={`-mt-1 ml-auto max-w-[360px] whitespace-nowrap font-serif font-normal leading-none text-ivory [overflow-wrap:normal] [word-break:normal] ${titleNameClass}`}>
                     {firstName}
                   </h1>
                   <p className="ml-auto mt-4 max-w-[260px] font-serif text-[15px] italic leading-6 text-[#3a3048]">

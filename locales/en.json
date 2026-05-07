@@ -79,7 +79,12 @@
       "error": "Suggestions could not be loaded right now.",
       "selected": "Selected place"
     },
-    "submit": "See my natal chart"
+    "submit": "See my natal chart",
+    "confirmEyebrow": "before generating",
+    "confirmTitle": "Check your details",
+    "confirmBody": "Once this chart is generated, these details cannot be edited inside the same reading. If something is wrong, you will need to create a new reading and it will count toward your monthly limit.",
+    "confirmEdit": "Edit details",
+    "confirmContinue": "Generate chart"
   },
   "standalonePages": {
     "savedReading": "Reading saved",

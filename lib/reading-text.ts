@@ -1,10 +1,18 @@
 export function normalizeReadingText(text: string): string {
-  return text
+  const cleaned = text
     .replace(/^```(?:\w+)?\s*/i, "")
     .replace(/\s*```\s*$/i, "")
     .replace(/^\s{0,3}#{1,6}\s+/gm, "")
     .replace(/^\s*[-*]\s+/gm, "")
     .replace(/\s+/g, " ")
+    .trim();
+
+  return cleaned
+    .replace(/^SARITA\s+/i, "")
+    .replace(
+      /^(?:Sun|Moon|Mercury|Venus|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Sole|Luna|Mercurio|Venere|Marte|Giove|Saturno|Urano|Nettuno|Plutone|Sol|Luna|Mercurio|Venus|Marte|J[uú]piter|Saturno|Urano|Neptuno|Plut[oó]n)\s+(?:in|en)\s+[^,.]{2,36},?\s+(?:house|casa)\s+\d{1,2}\s+/i,
+      "",
+    )
     .trim();
 }
 

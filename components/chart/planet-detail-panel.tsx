@@ -109,6 +109,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
     setDetailTab,
   } = useChartStore();
   const [reading, setReading] = useState("");
+  const [readingsByPoint, setReadingsByPoint] = useState<Record<string, string>>({});
   const [readingExpanded, setReadingExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -117,6 +118,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
   const panelRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const isDesktop = useDesktopBreakpoint();
+  const readingCacheKey = `${locale}:${gender || "unspecified"}:${selectedPointId ?? "none"}`;
 
   const augmentedPoints = useMemo(() => getAugmentedChartPoints(chart), [chart]);
   const point = augmentedPoints.find((entry) => entry.id === selectedPointId) ?? null;
@@ -145,6 +147,15 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
     abortRef.current?.abort();
     hoverAspect(null);
 
+    const cachedPointReading = readingsByPoint[readingCacheKey];
+    if (cachedPointReading) {
+      setReading(cachedPointReading);
+      setError(null);
+      setLoading(false);
+      setReadingExpanded(false);
+      return;
+    }
+
     const controller = new AbortController();
     abortRef.current = controller;
 
@@ -171,6 +182,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
         setLoading(false);
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
+        let streamedContent = "";
 
         while (true) {
           const { done, value } = await reader.read();
@@ -179,7 +191,12 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
             break;
           }
 
-          setReading((current) => normalizeReadingText(current + decoder.decode(value, { stream: true })));
+          streamedContent = normalizeReadingText(streamedContent + decoder.decode(value, { stream: true }));
+          setReading(streamedContent);
+        }
+
+        if (streamedContent.trim()) {
+          setReadingsByPoint((stored) => ({ ...stored, [readingCacheKey]: streamedContent }));
         }
       } catch (issue: unknown) {
         if ((issue as Error).name !== "AbortError") {
@@ -190,7 +207,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
     })();
 
     return () => controller.abort();
-  }, [chart, dictionary.chart.lockedBody, dictionary.loading.errorFallback, gender, hoverAspect, locale, panelOpen, readingId, selectedPointId]);
+  }, [chart, dictionary.chart.lockedBody, dictionary.loading.errorFallback, gender, hoverAspect, locale, panelOpen, readingCacheKey, readingId, readingsByPoint, selectedPointId]);
 
   useEffect(() => {
     if (!panelOpen) {

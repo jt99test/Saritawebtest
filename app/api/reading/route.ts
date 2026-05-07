@@ -10,6 +10,7 @@ import {
 } from "@/lib/ai-reading-generations";
 import { getAspectLabel, getHouseArea, getPointLabel, getSignLabel } from "@/lib/chart-labels";
 import { aspectPhrase, housePhrase, nativeToneInstruction, noMajorAspects, placementPhrase, promptLanguageInstruction } from "@/lib/prompt-i18n";
+import { normalizeReadingText } from "@/lib/reading-text";
 import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -60,7 +61,7 @@ function buildPrompt(chart: NatalChartData, pointId: ChartPointId, locale?: stri
     .join("\n");
 
   if (locale === "en") {
-    return `You are SARITA, ${chart.event.name}'s astrologer friend. Write directly, without filler and without poetic mist. Your aim is for ${chart.event.name} to read this and think, "yes, that is me."
+    return `You are ${chart.event.name}'s astrologer friend. Write directly, without filler and without poetic mist. Your aim is for ${chart.event.name} to read this and think, "yes, that is me."
 
 You are reading ${chart.event.name}'s ${getPointLabel(pointId, locale)}:
 ${signName} ${point.degreeInSign}°, ${housePhrase(point.house, locale)} (${getHouseArea(point.house, locale)}).
@@ -73,6 +74,7 @@ Full natal chart:
 ${allPoints}
 
 Write ONE paragraph of 60-80 words. Start with a direct observation about how this planet shows up in ${chart.event.name}'s daily life. Give one concrete example from work, home, relationships, or a typical reaction. End with something useful they can do with this information. No headings, no multiple paragraphs, no poetic metaphors.
+Do not start with "SARITA", with your own name, or with a technical formula like "${getPointLabel(pointId, locale)} in ${signName}, house ${point.house}". Make the first sentence sound like a friend speaking naturally.
 
 Internal technical data if useful: ${element} / ${modality}.
 
@@ -83,7 +85,7 @@ ${promptLanguageInstruction(locale)}`;
   }
 
   if (locale === "it") {
-    return `Sei SARITA, l'astrologa amica di ${chart.event.name}. Scrivi in modo diretto, senza giri inutili e senza poesia nebulosa. L'obiettivo e che ${chart.event.name} legga e pensi: "si, sono proprio io."
+    return `Sei l'astrologa amica di ${chart.event.name}. Scrivi in modo diretto, senza giri inutili e senza poesia nebulosa. L'obiettivo e che ${chart.event.name} legga e pensi: "si, sono proprio io."
 
 Stai leggendo ${getPointLabel(pointId, locale)} di ${chart.event.name}:
 ${signName} ${point.degreeInSign}°, ${housePhrase(point.house, locale)} (${getHouseArea(point.house, locale)}).
@@ -96,6 +98,7 @@ Carta natale completa:
 ${allPoints}
 
 Scrivi UN paragrafo di 60-80 parole. Inizia con un'osservazione diretta su come questo pianeta si nota nella vita quotidiana di ${chart.event.name}. Fai un esempio concreto dal lavoro, dalla casa, dalle relazioni o da una reazione tipica. Chiudi con qualcosa di utile da farne. Niente titoli, niente paragrafi multipli, niente metafore poetiche.
+Non iniziare con "SARITA", con il tuo nome o con una formula tecnica tipo "${getPointLabel(pointId, locale)} in ${signName}, casa ${point.house}". La prima frase deve sembrare detta da un'amica, non da una scheda astrologica.
 
 Dati tecnici interni se aiutano: ${element} / ${modality}.
 
@@ -105,7 +108,7 @@ ${nativeToneInstruction(locale)}
 ${promptLanguageInstruction(locale)}`;
   }
 
-  return `Eres SARITA, astróloga amiga de ${chart.event.name}. Escribes
+  return `Eres la astróloga amiga de ${chart.event.name}. Escribes
 de forma directa, sin rodeos y sin poesía. Tu objetivo es que
 ${chart.event.name} lea esto y piense "claro, eso soy yo."
 
@@ -124,6 +127,7 @@ sobre cómo se nota este planeta en el día a día de ${chart.event.name}. Da un
 concreto — una situación en el trabajo, en casa, en sus relaciones o en cómo
 reacciona ante algo. Termina con algo que le ayude a entender qué hacer con
 esto. Sin subtítulos. Sin párrafos múltiples. Sin metáforas poéticas.
+No empieces con "SARITA", con tu propio nombre ni con una fórmula técnica como "${getPointLabel(pointId, locale)} en ${signName}, casa ${point.house}". La primera frase debe sonar como una amiga hablando, no como una ficha astrológica.
 
 Datos técnicos internos si ayudan: ${element} / ${modality}.
 
@@ -228,7 +232,7 @@ export async function POST(request: Request) {
         });
         stream.finalMessage()
           .then(async () => {
-            const finalContent = content.trim();
+            const finalContent = normalizeReadingText(content);
             if (finalContent) {
               await setCachedAiReading({
                 supabase,
