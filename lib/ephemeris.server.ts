@@ -79,12 +79,12 @@ const PLANET_CONFIG: Array<{
 ];
 
 const ASPECT_DEFS: Array<{ type: AspectId; angle: number; orb: number }> = [
-  { type: "conjunction", angle: 0,   orb: 8 },
-  { type: "sextile",     angle: 60,  orb: 5 },
+  { type: "conjunction", angle: 0,   orb: 7 },
+  { type: "sextile",     angle: 60,  orb: 7 },
   { type: "square",      angle: 90,  orb: 7 },
   { type: "trine",       angle: 120, orb: 7 },
   { type: "quincunx",    angle: 150, orb: 3 },
-  { type: "opposition",  angle: 180, orb: 8 },
+  { type: "opposition",  angle: 180, orb: 7 },
 ];
 
 type ChartInput = {
@@ -264,15 +264,6 @@ function buildDerivedPoint(
   };
 }
 
-function aspectOrb(def: (typeof ASPECT_DEFS)[number], first: ChartPoint, second: ChartPoint) {
-  const hasLuminary = first.id === "sun" || first.id === "moon" || second.id === "sun" || second.id === "moon";
-  if (!hasLuminary) return def.orb;
-  if (def.type === "conjunction" || def.type === "opposition") return 10;
-  if (def.type === "square" || def.type === "trine") return 9;
-  if (def.type === "sextile") return 6;
-  return def.orb;
-}
-
 function aspectDelta(firstLongitude: number, secondLongitude: number, targetAngle: number) {
   return Math.abs(circularDistance(firstLongitude, secondLongitude) - targetAngle);
 }
@@ -300,7 +291,7 @@ function detectAspects(points: ChartPoint[]): Aspect[] {
       const angle = circularDistance(first.longitude, second.longitude);
       for (const def of ASPECT_DEFS) {
         const orb = Math.abs(angle - def.angle);
-        if (orb <= aspectOrb(def, first, second)) {
+        if (orb <= def.orb) {
           aspects.push({
             id: `${first.id}-${second.id}-${def.type}`,
             type: def.type,

@@ -9,11 +9,11 @@ export type SynastryAspect = {
 };
 
 const ASPECTS: Array<{ type: AspectId; angle: number; orb: number }> = [
-  { type: "conjunction", angle: 0, orb: 8 },
-  { type: "opposition", angle: 180, orb: 8 },
-  { type: "trine", angle: 120, orb: 6 },
+  { type: "conjunction", angle: 0, orb: 7 },
+  { type: "opposition", angle: 180, orb: 7 },
+  { type: "trine", angle: 120, orb: 7 },
   { type: "square", angle: 90, orb: 7 },
-  { type: "sextile", angle: 60, orb: 5 },
+  { type: "sextile", angle: 60, orb: 7 },
   { type: "quincunx", angle: 150, orb: 3 },
 ];
 
