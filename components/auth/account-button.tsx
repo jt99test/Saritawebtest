@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
+import { showNotice } from "@/components/ui/notice-provider";
 import { clearChartSession } from "@/lib/chart-session";
 import { dictionaries } from "@/lib/i18n";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
@@ -115,17 +116,20 @@ export function AccountButton() {
 
   async function signOut() {
     setSigningOut(true);
+    showNotice({ message: dictionary.auth.signingOut, tone: "info" });
     const { error } = await supabase.auth.signOut({ scope: "global" });
     setSigningOut(false);
 
     if (error) {
       console.error("Sign out failed:", error.message);
+      showNotice({ message: error.message, tone: "error" });
       return;
     }
 
     clearChartSession();
     closeMenu();
     setUser(null);
+    showNotice({ message: dictionary.auth.signedOut, tone: "success" });
     router.replace("/");
     router.refresh();
   }
@@ -161,7 +165,7 @@ export function AccountButton() {
         onClick={openAuthModal}
         className="max-w-[6.8rem] truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[#1e1a2e] transition hover:text-[#5c4a24] min-[430px]:text-xs min-[430px]:tracking-[0.2em]"
       >
-        {dictionary.common.account}
+        {dictionary.auth.signIn}
       </button>
     );
   }

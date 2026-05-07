@@ -68,6 +68,20 @@ function formatTemplate(template: string, values: Record<string, string | number
   return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ""));
 }
 
+function routineTitle(routine: PersonalizedYogaRoutine, elementLabels: Record<RoutineElement, string>, elementTitle: string) {
+  const parts = [
+    `${elementLabels[routine.primary]} ${routine.primaryPercent}%`,
+    routine.secondary ? `${elementLabels[routine.secondary]} ${routine.secondaryPercent}%` : null,
+    routine.accent ? `${elementLabels[routine.accent]} ${routine.accentPercent}%` : null,
+  ].filter(Boolean);
+
+  if (parts.length > 1) {
+    return parts.join(" + ");
+  }
+
+  return formatTemplate(elementTitle, { element: elementLabels[routine.primary] });
+}
+
 export default function PersonalizedYogaPage() {
   const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
@@ -118,9 +132,7 @@ export default function PersonalizedYogaPage() {
               <header className="border-t border-[rgba(181,163,110,0.15)] pt-6 sm:pt-8">
                 <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#3a3048]">{dictionary.yogaAstral.title}</p>
                 <h1 className="mt-3 font-serif text-[38px] leading-tight text-ivory sm:mt-4 sm:text-6xl">
-                  {routine.secondary
-                    ? `${dictionary.yogaAstral.elementLabels[routine.primary]} ${routine.primaryPercent}% + ${dictionary.yogaAstral.elementLabels[routine.secondary]} ${routine.secondaryPercent}%`
-                    : formatTemplate(dictionary.yogaAstral.elementTitle, { element: dictionary.yogaAstral.elementLabels[routine.primary] })}
+                  {routineTitle(routine, dictionary.yogaAstral.elementLabels, dictionary.yogaAstral.elementTitle)}
                 </h1>
                 <p className="mt-6 max-w-3xl text-sm leading-7 text-[#3a3048]">
                   {dictionary.yogaAstral.intro}
@@ -131,7 +143,7 @@ export default function PersonalizedYogaPage() {
                 <SectionHeader>{dictionary.yogaAstral.sequence} · {routine.monthKey}</SectionHeader>
                 <div className="sticky top-0 z-10 -mx-4 mb-6 border-y border-dusty-gold/16 bg-[#f5f0e6]/94 px-4 py-3 shadow-[0_12px_34px_rgba(30,26,46,0.08)] backdrop-blur-md sm:-mx-6 sm:px-6">
                   <div className="flex items-center justify-between text-[12px] uppercase tracking-[0.18em] text-[#3a3048]">
-                    <span>{routine.secondary ? dictionary.yogaAstral.combinedRoutine : dictionary.yogaAstral.personalizedRoutine}</span>
+                    <span>{routine.secondary || routine.accent ? dictionary.yogaAstral.combinedRoutine : dictionary.yogaAstral.personalizedRoutine}</span>
                     <span>{routine.asanas.length} {dictionary.yogaAstral?.asanas ?? "asanas"}</span>
                   </div>
                   <div className="mt-2 h-0.5 w-full bg-black/8">
@@ -188,7 +200,7 @@ export default function PersonalizedYogaPage() {
                 <Link href="/yoga-astral" className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-ivory sm:text-xs sm:tracking-[0.24em]">
                   {dictionary.form.back} · {dictionary.result.primaryTabs.yoga}
                 </Link>
-                <RoutineCompletionButton storageKey={`sarita:yoga:personalizada:${routine.monthKey}:completed`} />
+                <RoutineCompletionButton storageKey={`sarita:yoga:personalizada:${routine.monthKey}:${routine.id}:completed`} />
               </footer>
             </div>
           ) : null}

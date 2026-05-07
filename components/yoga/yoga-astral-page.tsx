@@ -46,6 +46,16 @@ function formatTemplate(template: string, values: Record<string, string | number
 
 function routineTitle(routine: PersonalizedYogaRoutine, copy: Dictionary["yogaAstral"]) {
   const elementLabels = copy.elementLabels;
+  const parts = [
+    `${elementLabels[routine.primary]} ${routine.primaryPercent}%`,
+    routine.secondary ? `${elementLabels[routine.secondary]} ${routine.secondaryPercent}%` : null,
+    routine.accent ? `${elementLabels[routine.accent]} ${routine.accentPercent}%` : null,
+  ].filter(Boolean);
+
+  if (parts.length > 1) {
+    return parts.join(" + ");
+  }
+
   if (routine.secondary) {
     return `${elementLabels[routine.primary]} ${routine.primaryPercent}% + ${elementLabels[routine.secondary]} ${routine.secondaryPercent}%`;
   }
@@ -103,7 +113,7 @@ export function YogaAstralPage({ chart, dictionary, locale }: YogaAstralPageProp
         <SectionHeader>{copy.sequence} · {routine.monthKey}</SectionHeader>
         <div className="sticky top-0 z-10 -mx-4 mb-6 border-y border-dusty-gold/16 bg-[#f5f0e6]/94 px-4 py-3 shadow-[0_12px_34px_rgba(30,26,46,0.08)] backdrop-blur-md sm:-mx-6 sm:px-6">
           <div className="flex items-center justify-between text-[12px] uppercase tracking-[0.18em] text-[#3a3048]">
-            <span>{routine.secondary ? copy.combinedRoutine : copy.personalizedRoutine}</span>
+            <span>{routine.secondary || routine.accent ? copy.combinedRoutine : copy.personalizedRoutine}</span>
             <span>{routine.asanas.length} {copy.asanas}</span>
           </div>
           <div className="mt-2 h-0.5 w-full bg-black/8">
@@ -158,7 +168,7 @@ export function YogaAstralPage({ chart, dictionary, locale }: YogaAstralPageProp
 
       <footer className="flex flex-col items-start justify-between gap-4 border-t border-black/10 pt-6 sm:flex-row sm:items-center">
         <p className="text-xs uppercase tracking-[0.22em] text-[#3a3048]">{copy.ready}</p>
-        <RoutineCompletionButton storageKey={`sarita:yoga:personalizada:${routine.monthKey}:completed`} />
+        <RoutineCompletionButton storageKey={`sarita:yoga:personalizada:${routine.monthKey}:${routine.id}:completed`} />
       </footer>
 
       <section className="border-t border-dusty-gold/16 pt-8 sm:pt-10">

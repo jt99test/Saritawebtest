@@ -4,7 +4,9 @@ import { redirect } from "next/navigation";
 import { createElement } from "react";
 
 import AccountDeletionEmail, { subject as accountDeletionSubject } from "@/emails/account-deletion";
+import PasswordResetEmail, { passwordResetSubject } from "@/emails/password-reset";
 import { sendEmail } from "@/lib/email";
+import { defaultLocale, isLocale } from "@/lib/i18n";
 import { createServerSupabaseClient, createServiceSupabaseClient } from "@/lib/supabase/server";
 
 export async function sendPasswordResetAction() {
@@ -17,9 +19,30 @@ export async function sendPasswordResetAction() {
     return { ok: false };
   }
 
-  const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://saritaastrology.com"}/auth/callback`,
+  const service = createServiceSupabaseClient();
+  const { data: profile } = await service
+    .from("profiles")
+    .select("locale")
+    .eq("id", user.id)
+    .maybeSingle<{ locale: string | null }>();
+  const locale = profile?.locale && isLocale(profile.locale) ? profile.locale : defaultLocale;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://saritaastrology.com";
+  const { data, error } = await service.auth.admin.generateLink({
+    type: "recovery",
+    email: user.email,
+    options: { redirectTo: `${siteUrl}/auth/callback?next=/cuenta/password` },
   });
+
+  if (!error && data.properties?.action_link) {
+    await sendEmail({
+      to: user.email,
+      subject: passwordResetSubject(locale),
+      react: createElement(PasswordResetEmail, {
+        resetUrl: data.properties.action_link,
+        locale,
+      }),
+    });
+  }
 
   return { ok: !error };
 }

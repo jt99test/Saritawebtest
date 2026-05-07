@@ -21,8 +21,14 @@ function formatTemplate(template: string, values: Record<string, string | number
 function routineTitle(routine: PersonalizedYogaRoutine | null, copy: Dictionary["yogaAstral"]) {
   const elementLabels = copy.elementLabels;
   if (!routine) return copy.monthlyFallbackTitle;
-  if (routine.secondary) {
-    return `${elementLabels[routine.primary]} ${routine.primaryPercent}% + ${elementLabels[routine.secondary]} ${routine.secondaryPercent}%`;
+  const parts = [
+    `${elementLabels[routine.primary]} ${routine.primaryPercent}%`,
+    routine.secondary ? `${elementLabels[routine.secondary]} ${routine.secondaryPercent}%` : null,
+    routine.accent ? `${elementLabels[routine.accent]} ${routine.accentPercent}%` : null,
+  ].filter(Boolean);
+
+  if (parts.length > 1) {
+    return parts.join(" + ");
   }
 
   return formatTemplate(copy.elementTitle, { element: elementLabels[routine.primary] });

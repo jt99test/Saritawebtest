@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
+import { showNotice } from "@/components/ui/notice-provider";
 import { clearChartSession } from "@/lib/chart-session";
 import { dictionaries } from "@/lib/i18n";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
@@ -51,6 +52,10 @@ export function AuthModal() {
     event.preventDefault();
     setPending(true);
     setMessage(null);
+    showNotice({
+      message: mode === "sign-up" ? dictionary.auth.creatingAccount : dictionary.auth.signingIn,
+      tone: "info",
+    });
 
     const response =
       mode === "sign-up"
@@ -67,11 +72,13 @@ export function AuthModal() {
 
     if (response.error) {
       setMessage(response.error.message);
+      showNotice({ message: response.error.message, tone: "error" });
       return;
     }
 
     if (mode === "sign-up" && !response.data.session) {
       setMessage(dictionary.auth.checkEmail);
+      showNotice({ message: dictionary.auth.checkEmail, tone: "success" });
       return;
     }
 
@@ -85,12 +92,14 @@ export function AuthModal() {
 
     clearChartSession();
     closeModal();
+    showNotice({ message: dictionary.auth.signedIn, tone: "success" });
     router.refresh();
   }
 
   async function handleGoogleAuth() {
     setPending(true);
     setMessage(null);
+    showNotice({ message: dictionary.auth.signingIn, tone: "info" });
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -102,7 +111,37 @@ export function AuthModal() {
     if (error) {
       setPending(false);
       setMessage(error.message);
+      showNotice({ message: error.message, tone: "error" });
     }
+  }
+
+  async function handlePasswordReset() {
+    const trimmedEmail = email.trim();
+    setMessage(null);
+
+    if (!trimmedEmail) {
+      setMessage(dictionary.auth.enterEmailForReset);
+      showNotice({ message: dictionary.auth.enterEmailForReset, tone: "error" });
+      return;
+    }
+
+    setPending(true);
+    showNotice({ message: dictionary.auth.sendingResetLink, tone: "info" });
+    const response = await fetch("/api/auth/password-reset", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: trimmedEmail, locale }),
+    }).catch(() => null);
+    setPending(false);
+
+    if (!response?.ok) {
+      setMessage(dictionary.auth.resetPasswordError);
+      showNotice({ message: dictionary.auth.resetPasswordError, tone: "error" });
+      return;
+    }
+
+    setMessage(dictionary.auth.resetPasswordSent);
+    showNotice({ message: dictionary.auth.resetPasswordSent, tone: "success" });
   }
 
   if (!open && !authRequired) {
@@ -187,6 +226,17 @@ export function AuthModal() {
               placeholder={dictionary.auth.emailPlaceholder}
             />
           </label>
+
+          {mode === "sign-in" ? (
+            <button
+              type="button"
+              onClick={() => void handlePasswordReset()}
+              disabled={pending}
+              className="-mt-1 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:text-dusty-gold disabled:cursor-wait disabled:opacity-50"
+            >
+              {dictionary.auth.forgotPassword}
+            </button>
+          ) : null}
 
           <label className="block">
             <span className="mb-2 block text-[12px] font-semibold uppercase tracking-[0.22em] text-[#3a3048]">
