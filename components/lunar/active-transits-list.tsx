@@ -51,6 +51,23 @@ function getThemeLabel(transit: LunarReportMetadata["activeTransits"][number]) {
   return transit.practicalSummary?.trim() ?? "";
 }
 
+function lifecycleTransitLabel(
+  transit: Pick<LunarReportMetadata["activeTransits"][number], "lifecycleEvent">,
+  locale: string,
+) {
+  if (!transit.lifecycleEvent) return "";
+  const labels: Record<NonNullable<LunarReportMetadata["activeTransits"][number]["lifecycleEvent"]>, Record<"es" | "en" | "it", string>> = {
+    "jupiter-return": { es: "Retorno de Júpiter", en: "Jupiter return", it: "Ritorno di Giove" },
+    "jupiter-opposition": { es: "Oposición de Júpiter", en: "Jupiter opposition", it: "Opposizione di Giove" },
+    "saturn-return": { es: "Retorno de Saturno", en: "Saturn return", it: "Ritorno di Saturno" },
+    "saturn-opposition": { es: "Oposición de Saturno", en: "Saturn opposition", it: "Opposizione di Saturno" },
+    "uranus-return": { es: "Retorno de Urano", en: "Uranus return", it: "Ritorno di Urano" },
+    "uranus-opposition": { es: "Oposición de Urano", en: "Uranus opposition", it: "Opposizione di Urano" },
+  };
+  const language = locale === "en" || locale === "it" ? locale : "es";
+  return labels[transit.lifecycleEvent][language];
+}
+
 export function ActiveTransitsList({ transits, timezone, dictionary }: ActiveTransitsListProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const locale = localeFromDictionary(dictionary);
@@ -100,7 +117,8 @@ export function ActiveTransitsList({ transits, timezone, dictionary }: ActiveTra
             return (
               <article className="mt-4 border border-black/10 bg-white p-6">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
-                  {`${transit.transitingPlanetLabel} ${transit.aspectLabel.toLowerCase()} ${transit.natalPlanetLabel}`}
+                  {lifecycleTransitLabel(transit, locale) ||
+                    `${transit.transitingPlanetLabel} ${transit.aspectLabel.toLowerCase()} ${transit.natalPlanetLabel}`}
                 </p>
                 <p className="mt-1 font-serif text-[13px] italic text-[#3a3048]">
                 {getTransitWindowLabel(transit.exactnessDate, transit.transitingPlanet, timezone, locale)}

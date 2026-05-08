@@ -422,9 +422,10 @@ function TransitRows({
   return (
     <div>
       {rows.map((transit) => {
-        const rowLabel = ring === "inner"
+        const lifecycleLabel = lifecycleTransitLabel(transit, locale);
+        const rowLabel = lifecycleLabel || (ring === "inner"
           ? `${getPointLabel(transit.transitingPlanet, locale)} ${getAspectLabel(transit.aspectType, locale).toLowerCase()}`
-          : `${getAspectLabel(transit.aspectType, locale)} ${getPointLabel(transit.natalPlanet, locale)} natal`;
+          : `${getAspectLabel(transit.aspectType, locale)} ${getPointLabel(transit.natalPlanet, locale)} natal`);
 
         return (
           <div
@@ -469,6 +470,20 @@ function qualityLabel(quality: SynastryAspect["quality"], locale: string) {
   }
 
   return { label: locale === "en" ? "Neutral" : "Neutro", className: "text-[#8a7a4e]" };
+}
+
+function lifecycleTransitLabel(transit: Pick<ActiveTransit, "lifecycleEvent">, locale: string) {
+  if (!transit.lifecycleEvent) return "";
+  const labels: Record<NonNullable<ActiveTransit["lifecycleEvent"]>, Record<"es" | "en" | "it", string>> = {
+    "jupiter-return": { es: "Retorno de Júpiter", en: "Jupiter return", it: "Ritorno di Giove" },
+    "jupiter-opposition": { es: "Oposición de Júpiter", en: "Jupiter opposition", it: "Opposizione di Giove" },
+    "saturn-return": { es: "Retorno de Saturno", en: "Saturn return", it: "Ritorno di Saturno" },
+    "saturn-opposition": { es: "Oposición de Saturno", en: "Saturn opposition", it: "Opposizione di Saturno" },
+    "uranus-return": { es: "Retorno de Urano", en: "Uranus return", it: "Ritorno di Urano" },
+    "uranus-opposition": { es: "Oposición de Urano", en: "Uranus opposition", it: "Opposizione di Urano" },
+  };
+  const language = locale === "en" || locale === "it" ? locale : "es";
+  return labels[transit.lifecycleEvent][language];
 }
 
 function SynastryRows({

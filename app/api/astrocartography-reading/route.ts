@@ -3,7 +3,11 @@ import type { Message } from "@anthropic-ai/sdk/resources/messages";
 
 import { ANTHROPIC_PREMIUM_READING_MODEL } from "@/lib/anthropic-models";
 import {
+  aiGenerationStatusResponse,
+  getAiGenerationStatus,
   getCachedAiReading,
+  markAiReadingGenerationFailed,
+  reserveAiReadingGeneration,
   setCachedAiReading,
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
@@ -101,12 +105,30 @@ export async function POST(request: Request) {
     locale,
   });
 
+  const cachedStatus = getAiGenerationStatus(cachedContent);
+  if (cachedStatus) return aiGenerationStatusResponse(cachedStatus);
+
   if (cachedContent) {
     return Response.json(cachedContent, { headers: { "Cache-Control": "no-cache" } });
   }
 
   const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).maybeSingle();
   if (profile?.plan !== "avanzado") return new Response("Advanced plan required", { status: 403 });
+
+  const reservation = await reserveAiReadingGeneration({
+    supabase,
+    user,
+    readingId,
+    scope: "astrocartography",
+    itemKey,
+    locale,
+  });
+
+  if (!reservation.ok) return reservation.response;
+
+  if (!reservation.reserved) {
+    return Response.json(reservation.content, { headers: { "Cache-Control": "no-cache" } });
+  }
 
   const sun = chart.points.find((point) => point.id === "sun");
   const moon = chart.points.find((point) => point.id === "moon");
@@ -216,11 +238,27 @@ ${promptLanguageInstruction(locale)}`;
     parsed = JSON.parse(cleanJsonPayload(extractTextContent(message)));
   } catch (error) {
     console.error("Astrocartography reading JSON generation failed", error);
+    await markAiReadingGenerationFailed({
+      supabase,
+      user,
+      readingId,
+      scope: "astrocartography",
+      itemKey,
+      locale,
+    });
     return new Response("Astrocartography reading JSON could not be parsed", { status: 502 });
   }
 
   if (!isAstrocartographyReadingPayload(parsed)) {
     console.error("Astrocartography reading JSON shape invalid", parsed);
+    await markAiReadingGenerationFailed({
+      supabase,
+      user,
+      readingId,
+      scope: "astrocartography",
+      itemKey,
+      locale,
+    });
     return new Response("Astrocartography reading JSON shape invalid", { status: 502 });
   }
 

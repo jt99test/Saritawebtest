@@ -260,6 +260,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
   const [transitWheelMode, setTransitWheelMode] = useState<TransitWheelMode>("all");
   const [chartHash, setChartHash] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const aiCacheHash = chartHash ? (readingId ? `reading:${readingId}:${chartHash}` : chartHash) : null;
   const currentLocationKey = currentLocation
     ? `${currentLocation.id}:${currentLocation.lat}:${currentLocation.lng}:${currentLocation.timezone}`
     : "birth-location";
@@ -300,10 +301,10 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
   }, [chart, request, chartHash, currentLocation, currentLocationKey]);
 
   useEffect(() => {
-    if (!result?.ok || result.transits.length === 0 || !chartHash) return;
+    if (!result?.ok || result.transits.length === 0 || !chartHash || !aiCacheHash) return;
     let active = true;
     const cacheKey = `transits:${locale}:${request?.gender || "unspecified"}:${result.generatedAt.slice(0, 10)}:${currentLocationKey}`;
-    const cachedData = getCachedPremiumReading<TransitData>(chartHash, cacheKey);
+    const cachedData = getCachedPremiumReading<TransitData>(aiCacheHash, cacheKey);
     if (cachedData) {
       setTransitReading("");
       setTransitData(normalizeTransitData(cachedData));
@@ -358,7 +359,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
           try {
             const parsedData = normalizeTransitData(JSON.parse(jsonPayload) as TransitData);
             setTransitData(parsedData);
-            setCachedPremiumReading(chartHash, cacheKey, parsedData);
+            setCachedPremiumReading(aiCacheHash, cacheKey, parsedData);
           } catch {
             setTransitReadingError("Transit reading JSON could not be parsed.");
           }
@@ -380,7 +381,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
       controller.abort();
       clearTimeout(timeout);
     };
-  }, [result, chart, locale, chartHash, readingId, request?.gender, currentLocationKey]);
+  }, [result, chart, locale, chartHash, aiCacheHash, readingId, request?.gender, currentLocationKey]);
 
   const activeTransits = useMemo(() => {
     if (!result?.ok) return [];

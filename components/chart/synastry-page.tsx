@@ -277,7 +277,10 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
   const readingPartnerName = outerName;
   const readingSubjectGender = flipped ? selectedPartner?.gender : gender;
   const readingPartnerGender = flipped ? gender : selectedPartner?.gender;
-  const readingSubjectHash = flipped ? partnerHash : natalHash;
+  const rawReadingSubjectHash = flipped ? partnerHash : natalHash;
+  const readingSubjectHash = rawReadingSubjectHash
+    ? (readingId ? `reading:${readingId}:${rawReadingSubjectHash}` : rawReadingSubjectHash)
+    : null;
   const readingAspects = useMemo(
     () => readingChartB ? calculateSynastryAspects(readingChartA, readingChartB) : [],
     [readingChartA, readingChartB],

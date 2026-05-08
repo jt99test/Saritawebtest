@@ -148,6 +148,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
   const [solarWheelMode, setSolarWheelMode] = useState<SolarWheelMode>("all");
   const [chartHash, setChartHash] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const aiCacheHash = chartHash ? (readingId ? `reading:${readingId}:${chartHash}` : chartHash) : null;
   const yearOptions = useMemo(
     () => Array.from({ length: 11 }, (_, index) => defaultYear - 5 + index),
     [defaultYear],
@@ -210,8 +211,8 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
   }, [natalChart]);
 
   useEffect(() => {
-    if (!chartHash || solarChart) return;
-    const cachedReading = getCachedPremiumReading<CachedSolarReturnReading>(chartHash, solarCacheKey);
+    if (!aiCacheHash || solarChart) return;
+    const cachedReading = getCachedPremiumReading<CachedSolarReturnReading>(aiCacheHash, solarCacheKey);
     if (!cachedReading) return;
 
     setSolarChart(cachedReading.chart);
@@ -220,12 +221,12 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
     setReadingError(null);
     setSelectedCardKey("theme");
     setIsLoadingReading(false);
-  }, [chartHash, solarCacheKey, solarChart]);
+  }, [aiCacheHash, solarCacheKey, solarChart]);
 
   function calculate() {
     setError(null);
-    if (chartHash) {
-      const cachedReading = getCachedPremiumReading<CachedSolarReturnReading>(chartHash, solarCacheKey);
+    if (aiCacheHash) {
+      const cachedReading = getCachedPremiumReading<CachedSolarReturnReading>(aiCacheHash, solarCacheKey);
       if (cachedReading) {
         window.localStorage.setItem(SOLAR_RETURN_SELECTION_KEY, JSON.stringify({ targetYear, city, selectedLocation }));
         setSolarChart(cachedReading.chart);
@@ -294,8 +295,8 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
             try {
               const parsedData = normalizeSolarData(JSON.parse(jsonPayload) as SolarData);
               setSolarData(parsedData);
-              if (chartHash) {
-                setCachedPremiumReading<CachedSolarReturnReading>(chartHash, solarCacheKey, {
+              if (aiCacheHash) {
+                setCachedPremiumReading<CachedSolarReturnReading>(aiCacheHash, solarCacheKey, {
                   chart: result.chart,
                   data: parsedData,
                 });

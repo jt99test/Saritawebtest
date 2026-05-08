@@ -8,7 +8,11 @@ import {
   type GeneralReadingTheme,
 } from "@/lib/general-reading";
 import {
+  aiGenerationStatusResponse,
+  getAiGenerationStatus,
   getCachedAiReading,
+  markAiReadingGenerationFailed,
+  reserveAiReadingGeneration,
   setCachedAiReading,
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
@@ -118,7 +122,7 @@ export async function POST(request: Request) {
       gender?: ReadingGender;
     };
     const readingGender = normalizeReadingGender(gender);
-    const itemKey = `v2:${theme}:${readingGender || "unspecified"}`;
+    const itemKey = `v3:${theme}:${readingGender || "unspecified"}`;
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
@@ -142,6 +146,11 @@ export async function POST(request: Request) {
       locale,
     });
 
+    const cachedStatus = getAiGenerationStatus(cachedContent);
+    if (cachedStatus) {
+      return aiGenerationStatusResponse(cachedStatus);
+    }
+
     if (typeof cachedContent === "string" && cachedContent.trim()) {
       return new Response(cachedContent, {
         headers: {
@@ -162,15 +171,66 @@ export async function POST(request: Request) {
       return new Response("Plan required", { status: 403 });
     }
 
-    const prompt = buildPrompt(chart, theme, locale, readingGender);
-    const message = await client.messages.create({
-      model: ANTHROPIC_STANDARD_READING_MODEL,
-      max_tokens: 260,
-      messages: [{ role: "user", content: prompt }],
+    const reservation = await reserveAiReadingGeneration({
+      supabase,
+      user,
+      readingId,
+      scope: "general",
+      itemKey,
+      locale,
     });
-    const content = extractTextContent(message);
+
+    if (!reservation.ok) {
+      return reservation.response;
+    }
+
+    if (!reservation.reserved) {
+      const content = reservation.content;
+      if (typeof content === "string" && content.trim()) {
+        return new Response(content, {
+          headers: {
+            "Content-Type": "text/plain; charset=utf-8",
+            "Cache-Control": "no-cache",
+            "X-Content-Type-Options": "nosniff",
+          },
+        });
+      }
+
+      return new Response("Cached reading shape invalid", { status: 500 });
+    }
+
+    const prompt = buildPrompt(chart, theme, locale, readingGender);
+    let content = "";
+
+    try {
+      const message = await client.messages.create({
+        model: ANTHROPIC_STANDARD_READING_MODEL,
+        max_tokens: 260,
+        messages: [{ role: "user", content: prompt }],
+      });
+      content = extractTextContent(message);
+    } catch (error) {
+      console.error("General reading generation failed", error);
+      await markAiReadingGenerationFailed({
+        supabase,
+        user,
+        readingId,
+        scope: "general",
+        itemKey,
+        locale,
+      });
+      return new Response("General reading generation failed", { status: 502 });
+    }
 
     if (!content) {
+      await markAiReadingGenerationFailed({
+        supabase,
+        user,
+        readingId,
+        scope: "general",
+        itemKey,
+        locale,
+      });
       return new Response("Empty model response", { status: 502 });
     }
 

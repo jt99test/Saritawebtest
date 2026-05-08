@@ -3,7 +3,11 @@ import type { Message } from "@anthropic-ai/sdk/resources/messages";
 
 import { ANTHROPIC_PREMIUM_READING_MODEL } from "@/lib/anthropic-models";
 import {
+  aiGenerationStatusResponse,
+  getAiGenerationStatus,
   getCachedAiReading,
+  markAiReadingGenerationFailed,
+  reserveAiReadingGeneration,
   setCachedAiReading,
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
@@ -153,6 +157,9 @@ export async function POST(request: Request) {
     locale,
   });
 
+  const cachedStatus = getAiGenerationStatus(cachedContent);
+  if (cachedStatus) return aiGenerationStatusResponse(cachedStatus);
+
   if (cachedContent) {
     return new Response(`${SARITA_DATA_MARKER}${JSON.stringify(cachedContent)}`, {
       headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-cache" },
@@ -161,6 +168,23 @@ export async function POST(request: Request) {
 
   const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).maybeSingle();
   if (profile?.plan !== "avanzado") return new Response("Advanced plan required", { status: 403 });
+
+  const reservation = await reserveAiReadingGeneration({
+    supabase,
+    user,
+    readingId,
+    scope: "transit",
+    itemKey,
+    locale,
+  });
+
+  if (!reservation.ok) return reservation.response;
+
+  if (!reservation.reserved) {
+    return new Response(`${SARITA_DATA_MARKER}${JSON.stringify(reservation.content)}`, {
+      headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-cache" },
+    });
+  }
 
   const name = chart.event.name;
   const natalSun = chart.points.find((point) => point.id === "sun");
@@ -332,11 +356,27 @@ ${promptLanguageInstruction(locale)}`;
     parsed = JSON.parse(cleanJsonPayload(extractTextContent(message)));
   } catch (error) {
     console.error("Transit reading JSON generation failed", error);
+    await markAiReadingGenerationFailed({
+      supabase,
+      user,
+      readingId,
+      scope: "transit",
+      itemKey,
+      locale,
+    });
     return new Response("Transit reading JSON could not be parsed", { status: 502 });
   }
 
   if (!isTransitReadingPayload(parsed)) {
     console.error("Transit reading JSON shape invalid", parsed);
+    await markAiReadingGenerationFailed({
+      supabase,
+      user,
+      readingId,
+      scope: "transit",
+      itemKey,
+      locale,
+    });
     return new Response("Transit reading JSON shape invalid", { status: 502 });
   }
 

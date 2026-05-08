@@ -1,10 +1,15 @@
 import Anthropic from "@anthropic-ai/sdk";
+import type { Message } from "@anthropic-ai/sdk/resources/messages";
 
 import type { ChartPointId, NatalChartData } from "@/lib/chart";
 import { zodiacSigns } from "@/lib/chart";
 import { ANTHROPIC_STANDARD_READING_MODEL } from "@/lib/anthropic-models";
 import {
+  aiGenerationStatusResponse,
+  getAiGenerationStatus,
   getCachedAiReading,
+  markAiReadingGenerationFailed,
+  reserveAiReadingGeneration,
   setCachedAiReading,
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
@@ -15,6 +20,16 @@ import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGend
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+function extractTextContent(message: Message) {
+  return message.content
+    .map((block) => block.type === "text" ? block.text : "")
+    .join("")
+    .replace(/^```(?:\w+)?\s*/i, "")
+    .replace(/\s*```\s*$/i, "")
+    .replace(/^\s{0,3}#{1,6}\s+/gm, "")
+    .trim();
+}
 
 function buildPrompt(chart: NatalChartData, pointId: ChartPointId, locale?: string): string {
   const point = chart.points.find((entry) => entry.id === pointId);
@@ -176,6 +191,11 @@ export async function POST(request: Request) {
       locale,
     });
 
+    const cachedStatus = getAiGenerationStatus(cachedContent);
+    if (cachedStatus) {
+      return aiGenerationStatusResponse(cachedStatus);
+    }
+
     if (typeof cachedContent === "string" && cachedContent.trim()) {
       return new Response(cachedContent, {
         headers: {
@@ -196,64 +216,95 @@ export async function POST(request: Request) {
       return new Response("Plan required", { status: 403 });
     }
 
+    const reservation = await reserveAiReadingGeneration({
+      supabase,
+      user,
+      readingId,
+      scope: "planet",
+      itemKey,
+      locale,
+    });
+
+    if (!reservation.ok) {
+      return reservation.response;
+    }
+
+    if (!reservation.reserved) {
+      const content = reservation.content;
+      if (typeof content === "string" && content.trim()) {
+        return new Response(content, {
+          headers: {
+            "Content-Type": "text/plain; charset=utf-8",
+            "Cache-Control": "no-cache",
+            "X-Content-Type-Options": "nosniff",
+          },
+        });
+      }
+
+      return new Response("Cached reading shape invalid", { status: 500 });
+    }
+
     const basePrompt = buildPrompt(chart, pointId, locale);
 
     if (!basePrompt) {
+      await markAiReadingGenerationFailed({
+        supabase,
+        user,
+        readingId,
+        scope: "planet",
+        itemKey,
+        locale,
+      });
       return new Response("Unknown point", { status: 400 });
     }
 
     const prompt = `${basePrompt}\n\n${genderPromptInstruction(readingGender, locale)}\n${grammarPromptInstruction(locale)}`;
 
-    const stream = client.messages.stream({
-      model: ANTHROPIC_STANDARD_READING_MODEL,
-      max_tokens: 350,
-      messages: [{ role: "user", content: prompt }],
+    let content = "";
+
+    try {
+      const message = await client.messages.create({
+        model: ANTHROPIC_STANDARD_READING_MODEL,
+        max_tokens: 350,
+        messages: [{ role: "user", content: prompt }],
+      });
+      content = normalizeReadingText(extractTextContent(message));
+    } catch (error) {
+      console.error("Planet reading generation failed", error);
+      await markAiReadingGenerationFailed({
+        supabase,
+        user,
+        readingId,
+        scope: "planet",
+        itemKey,
+        locale,
+      });
+      return new Response("Planet reading generation failed", { status: 502 });
+    }
+
+    if (!content) {
+      await markAiReadingGenerationFailed({
+        supabase,
+        user,
+        readingId,
+        scope: "planet",
+        itemKey,
+        locale,
+      });
+      return new Response("Empty model response", { status: 502 });
+    }
+
+    await setCachedAiReading({
+      supabase,
+      user,
+      readingId,
+      scope: "planet",
+      itemKey,
+      locale,
+      content,
     });
 
-    const encoder = new TextEncoder();
-    const readable = new ReadableStream({
-      start(controller) {
-        let closed = false;
-        let content = "";
-        const closeSafely = () => {
-          if (closed) {
-            return;
-          }
-
-          closed = true;
-          controller.close();
-        };
-
-        stream.on("text", (text) => {
-          if (!closed) {
-            content += text;
-            controller.enqueue(encoder.encode(text));
-          }
-        });
-        stream.finalMessage()
-          .then(async () => {
-            const finalContent = normalizeReadingText(content);
-            if (finalContent) {
-              await setCachedAiReading({
-                supabase,
-                user,
-                readingId,
-                scope: "planet",
-                itemKey,
-                locale,
-                content: finalContent,
-              });
-            }
-            closeSafely();
-          })
-          .catch(closeSafely);
-      },
-      cancel() {
-        stream.abort();
-      },
-    });
-
-    return new Response(readable, {
+    return new Response(content, {
       headers: {
         "Content-Type": "text/plain; charset=utf-8",
         "Cache-Control": "no-cache",

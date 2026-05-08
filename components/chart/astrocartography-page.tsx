@@ -180,6 +180,7 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
   const [reading, setReading] = useState<AstrocartographyReading | null>(null);
   const [readingError, setReadingError] = useState<string | null>(null);
   const [isLoadingReading, setIsLoadingReading] = useState(false);
+  const aiCacheHash = chartHash ? (readingId ? `reading:${readingId}:${chartHash}` : chartHash) : null;
 
   useEffect(() => {
     let active = true;
@@ -220,9 +221,9 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
   }, [copy, lines, selectedLocation]);
 
   useEffect(() => {
-    if (!selectedLocation || !chartHash || nearbyLines.length === 0) return;
+    if (!selectedLocation || !aiCacheHash || nearbyLines.length === 0) return;
     const cacheKey = `astrocartography:${selectedLocation.lat.toFixed(3)}:${selectedLocation.lng.toFixed(3)}:${locale}:${gender || "unspecified"}:${nearbyLines.map((line) => line.lineId).join("|")}`;
-    const cached = getCachedPremiumReading<AstrocartographyReading>(chartHash, cacheKey);
+    const cached = getCachedPremiumReading<AstrocartographyReading>(aiCacheHash, cacheKey);
     if (cached) {
       setReading(normalizeReading(cached));
       setReadingError(null);
@@ -261,7 +262,7 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
       }
       const payload = normalizeReading(await response.json() as AstrocartographyReading);
       setReading(payload);
-      setCachedPremiumReading(chartHash, cacheKey, payload);
+      setCachedPremiumReading(aiCacheHash, cacheKey, payload);
     }).catch(() => {
       setReadingError(copy.readingError);
     }).finally(() => {
@@ -273,7 +274,7 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
       controller.abort();
       window.clearTimeout(timeout);
     };
-  }, [chart, chartHash, copy, gender, locale, nearbyLines, readingId, selectedLocation]);
+  }, [chart, aiCacheHash, copy, gender, locale, nearbyLines, readingId, selectedLocation]);
 
   function togglePlanet(planet: AstrocartographyPlanetId) {
     setVisiblePlanets((current) => {

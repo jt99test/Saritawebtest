@@ -15,7 +15,11 @@ import { getTransitDescriptions } from "@/data/sarita/transit-descriptions";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ANTHROPIC_FAST_MODEL, ANTHROPIC_STANDARD_READING_MODEL } from "@/lib/anthropic-models";
 import {
+  aiGenerationStatusResponse,
+  getAiGenerationStatus,
   getCachedAiReading,
+  markAiReadingGenerationFailed,
+  reserveAiReadingGeneration,
   setCachedAiReading,
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
@@ -171,7 +175,10 @@ Cada texto:
 - Tono: amiga directa que sabe astrología, claro y útil.
 
 Tránsitos:
-${visibleTransits.map((transit, index) => `${index + 1}. ${transit.transitingPlanetLabel} ${transit.aspectLabel} ${transit.natalPlanetLabel}. Tema: ${transit.relevance || transit.description}`).join("\n")}
+${visibleTransits.map((transit, index) => {
+  const lifecycleLabel = lifecycleTransitLabel(transit.lifecycleEvent, locale);
+  return `${index + 1}. ${lifecycleLabel ? `${lifecycleLabel}: ` : ""}${transit.transitingPlanetLabel} ${transit.aspectLabel} ${transit.natalPlanetLabel}. Tema: ${transit.relevance || transit.description}`;
+}).join("\n")}
 
 Devuelve solo JSON válido en una línea:
 {"summaries":["...", "...", "..."]}
@@ -318,15 +325,6 @@ export async function POST(request: Request) {
     const client = process.env.ANTHROPIC_API_KEY
       ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
       : null;
-    const activeTransits = client
-      ? await enrichTransitSummaries({
-          client,
-          chart,
-          transits: transitData.structured,
-          locale,
-          gender: readingGender,
-        })
-      : transitData.structured;
     const isNewMoon = lunationType.startsWith("nueva");
     const baseMessage =
       isNewMoon
@@ -356,7 +354,7 @@ export async function POST(request: Request) {
         intention: routine.intention,
         totalDuration: routine.totalDuration,
       },
-      activeTransits,
+      activeTransits: transitData.structured,
     };
 
     if (metadataOnly) {
@@ -377,6 +375,11 @@ export async function POST(request: Request) {
       itemKey,
       locale,
     });
+
+    const cachedStatus = getAiGenerationStatus(cachedContent);
+    if (cachedStatus) {
+      return aiGenerationStatusResponse(cachedStatus);
+    }
 
     if (
       cachedContent &&
@@ -409,6 +412,52 @@ export async function POST(request: Request) {
     if (!client) {
       return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
     }
+
+    const reservation = await reserveAiReadingGeneration({
+      supabase,
+      user,
+      readingId,
+      scope: "lunar",
+      itemKey,
+      locale,
+    });
+
+    if (!reservation.ok) {
+      return reservation.response;
+    }
+
+    if (
+      !reservation.reserved &&
+      reservation.content &&
+      typeof reservation.content === "object" &&
+      typeof (reservation.content as CachedLunarContent).prose === "string"
+    ) {
+      const cached = reservation.content as CachedLunarContent;
+      return new Response([
+        `${JSON.stringify({ type: "metadata", data: metadata })}`,
+        `${JSON.stringify({ type: "text", data: cached.prose })}`,
+        cached.actions ? `${JSON.stringify({ type: "actions", data: cached.actions })}` : "",
+        `${JSON.stringify({ type: "done" })}`,
+      ].filter(Boolean).join("\n"), {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Cache-Control": "no-cache",
+          "X-Content-Type-Options": "nosniff",
+        },
+      });
+    }
+
+    const activeTransits = await enrichTransitSummaries({
+      client,
+      chart,
+      transits: transitData.structured,
+      locale,
+      gender: readingGender,
+    });
+    const generationMetadata = {
+      ...metadata,
+      activeTransits,
+    };
 
     const prompt = buildPrompt({
       chart,
@@ -443,131 +492,71 @@ Reglas para esa línea final:
 - ${langInstruction(locale)}
 - La lectura principal debe ir primero, y la línea ${ACTIONS_MARKER} al final.`;
 
-    const stream = client.messages.stream({
-      model: ANTHROPIC_STANDARD_READING_MODEL,
-      max_tokens: 600,
-      messages: [{ role: "user", content: streamingPrompt }],
-    });
+    let rawContent = "";
 
-    const encoder = new TextEncoder();
-    const readable = new ReadableStream({
-      start(controller) {
-        let closed = false;
-        let textBuffer = "";
-        let actionsBuffer = "";
-        let emittedText = "";
-        let finalActions: LunarReportActionSet | null = null;
-        let markerDetected = false;
+    try {
+      const message = await client.messages.create({
+        model: ANTHROPIC_STANDARD_READING_MODEL,
+        max_tokens: 600,
+        messages: [{ role: "user", content: streamingPrompt }],
+      });
+      rawContent = extractTextContent(message);
+    } catch (error) {
+      console.error("Lunar report generation failed:", error);
+      await markAiReadingGenerationFailed({
+        supabase,
+        user,
+        readingId,
+        scope: "lunar",
+        itemKey,
+        locale,
+      });
+      return new Response("Lunar report generation failed", { status: 502 });
+    }
 
-        const emitEvent = (event: unknown) => {
-          if (!closed) {
-            controller.enqueue(encoder.encode(`${JSON.stringify(event)}\n`));
-          }
-        };
+    const markerIndex = rawContent.indexOf(ACTIONS_MARKER);
+    const prose = (markerIndex >= 0 ? rawContent.slice(0, markerIndex) : rawContent).trim();
+    let finalActions: LunarReportActionSet | null = null;
 
-        const closeSafely = () => {
-          if (closed) {
-            return;
-          }
+    if (markerIndex >= 0) {
+      try {
+        finalActions = JSON.parse(rawContent.slice(markerIndex + ACTIONS_MARKER.length).trim()) as LunarReportActionSet;
+      } catch (error) {
+        console.error("Could not parse lunar actions:", error);
+      }
+    }
 
-          closed = true;
-          controller.close();
-        };
+    if (!prose) {
+      await markAiReadingGenerationFailed({
+        supabase,
+        user,
+        readingId,
+        scope: "lunar",
+        itemKey,
+        locale,
+      });
+      return new Response("Empty model response", { status: 502 });
+    }
 
-        const flushText = (chunk: string) => {
-          if (!chunk) {
-            return;
-          }
-
-          emittedText += chunk;
-          emitEvent({ type: "text", data: chunk });
-        };
-
-        const processChunk = (chunk: string) => {
-          if (!chunk) {
-            return;
-          }
-
-          if (markerDetected) {
-            actionsBuffer += chunk;
-            return;
-          }
-
-          textBuffer += chunk;
-          const markerIndex = textBuffer.indexOf(ACTIONS_MARKER);
-
-          if (markerIndex >= 0) {
-            flushText(textBuffer.slice(0, markerIndex));
-            actionsBuffer += textBuffer.slice(markerIndex + ACTIONS_MARKER.length);
-            textBuffer = "";
-            markerDetected = true;
-            return;
-          }
-
-          if (textBuffer.length > ACTIONS_MARKER.length - 1) {
-            const safeLength = textBuffer.length - (ACTIONS_MARKER.length - 1);
-            flushText(textBuffer.slice(0, safeLength));
-            textBuffer = textBuffer.slice(safeLength);
-          }
-        };
-
-        const finalizeActions = () => {
-          if (!markerDetected) {
-            flushText(textBuffer);
-            textBuffer = "";
-            return;
-          }
-
-          const raw = actionsBuffer.trim();
-          if (!raw) {
-            return;
-          }
-
-          try {
-            const parsed = JSON.parse(raw) as LunarReportActionSet;
-            finalActions = parsed;
-            emitEvent({ type: "actions", data: parsed });
-          } catch (error) {
-            console.error("Could not parse lunar actions:", error);
-          }
-        };
-
-        emitEvent({ type: "metadata", data: metadata });
-
-        stream.on("text", (text) => {
-          processChunk(text);
-        });
-
-        stream
-          .finalMessage()
-          .then(() => {
-            finalizeActions();
-            void setCachedAiReading({
-              supabase,
-              user,
-              readingId,
-              scope: "lunar",
-              itemKey,
-              locale,
-              content: {
-                prose: emittedText.trim(),
-                actions: finalActions,
-              },
-            });
-            emitEvent({ type: "done" });
-            closeSafely();
-          })
-          .catch(() => {
-            finalizeActions();
-            closeSafely();
-          });
-      },
-      cancel() {
-        stream.abort();
+    await setCachedAiReading({
+      supabase,
+      user,
+      readingId,
+      scope: "lunar",
+      itemKey,
+      locale,
+      content: {
+        prose,
+        actions: finalActions,
       },
     });
 
-    return new Response(readable, {
+    return new Response([
+      `${JSON.stringify({ type: "metadata", data: generationMetadata })}`,
+      `${JSON.stringify({ type: "text", data: prose })}`,
+      finalActions ? `${JSON.stringify({ type: "actions", data: finalActions })}` : "",
+      `${JSON.stringify({ type: "done" })}`,
+    ].filter(Boolean).join("\n"), {
       headers: {
         "Content-Type": "text/plain; charset=utf-8",
         "Cache-Control": "no-cache",

@@ -188,11 +188,12 @@ export function ChartGeneralReading({ chart, dictionary, readingId, gender }: Ch
         return;
       }
 
-      const cached = getAllCachedReadings(nextHash, locale, gender);
+      const readingCacheHash = readingId ? `reading:${readingId}:${nextHash}` : nextHash;
+      const cached = getAllCachedReadings(readingCacheHash, locale, gender);
       const missingThemes = GENERAL_READING_THEMES
         .filter((theme) => !cached[theme]);
 
-      setChartHash(nextHash);
+      setChartHash(readingCacheHash);
       setReadings(cached);
       setErrors({});
       setLoading(

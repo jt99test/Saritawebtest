@@ -651,6 +651,243 @@ const yogaCopy: Record<Exclude<Locale, "es">, Record<RoutineElement, LocalizedRo
   },
 };
 
+const asanaLocalizationAliases: Record<string, string> = {
+  "adho-mukha-svanasana-sobre-rodillas": "balasana",
+  "anjaneyasana-con-manos-en-la-rodilla": "anjaneyasana",
+  "anjaneyasana-con-torsion-simple": "anjaneyasana",
+  "apertura-de-brazos-tumbada-boca-arriba": "balasana-con-brazos-abiertos",
+  "apertura-de-pecho-con-manos-en-lumbares": "ustrasana",
+  "apertura-de-pecho-con-manos-entrelazadas-atras": "gomukhasana-brazos",
+  "ardha-navasana-fire-variant": "ardha-navasana",
+  "baddha-konasana-con-balanceo": "baddha-konasana",
+  "baddha-konasana-tierra-variant": "baddha-konasana",
+  "balasana-con-brazos-extendidos-al-frente": "balasana",
+  "balasana-extendida": "balasana",
+  "balasana-tierra-variant": "balasana",
+  "bhujangasana": "bhujangasana-bajo",
+  "bhujangasana-baja": "bhujangasana-bajo",
+  "brazos-al-cielo-en-tadasana": "tadasana",
+  "circulos-de-cadera-de-pie": "flujo-pelvico-libre",
+  "dhanurasana-fire-variant": "dhanurasana",
+  "garudasana-brazos": "garudasana",
+  "malasana-tierra-variant": "malasana",
+  "malasana-tierra-variant-2": "malasana",
+  "marjaryasana-bitilasana-tierra-variant": "marjaryasana-bitilasana",
+  "matsyasana-apoyado": "matsyasana",
+  "movimiento-ondulante-de-pelvis-supina": "flujo-pelvico-libre",
+  "navasana-fire-variant": "navasana",
+  "paschimottanasana-tierra-variant": "paschimottanasana",
+  "prasarita-padottanasana-tierra-variant": "prasarita-padottanasana",
+  "salabhasana-fire-variant": "salabhasana",
+  "setu-bandhasana-con-apertura-costal": "setu-bandhasana",
+  "setu-bandhasana-dinamico": "setu-bandhasana",
+  "setu-bandhasana-tierra-variant": "setu-bandhasana",
+  "sukhasana-tierra-variant": "mula-bandha",
+  "supta-baddha-konasana-tierra-variant": "supta-baddha-konasana",
+  "tadasana-con-peso": "tadasana",
+  "tadasana-en-puntillas": "tadasana",
+  "tadasana-fire-variant": "tadasana",
+  "upavista-konasana-con-torsion-torso": "upavista-konasana",
+  "upavista-konasana-simple": "upavista-konasana",
+  "ustrasana-fire-variant": "ustrasana",
+  "virabhadrasana-i-tierra-variant": "virabhadrasana-i",
+  "vrksasana-tierra-variant": "virabhadrasana-i",
+};
+
+const localizedAsanaNames: Record<Exclude<Locale, "es">, Record<string, string>> = {
+  en: {
+    "abdominales-con-piernas-en-mesa-supina": "Supine tabletop core curls",
+    "adho-mukha-svanasana": "Downward-Facing Dog",
+    "adho-mukha-svanasana-sobre-rodillas": "Kneeling Downward Dog",
+    "ananda-balasana": "Happy Baby",
+    "anjaneyasana-con-manos-en-la-rodilla": "Low lunge with hands on knee",
+    "anjaneyasana-con-torsion-simple": "Low lunge with simple twist",
+    "apanasana": "Knees to chest",
+    "apertura-de-brazos-en-cruz-de-pie": "Standing T-arm chest opening",
+    "apertura-de-brazos-tumbada-boca-arriba": "Reclined cactus arms",
+    "apertura-de-pecho-con-manos-en-lumbares": "Chest opening with hands on low back",
+    "apertura-de-pecho-con-manos-entrelazadas-atras": "Chest opening with hands clasped behind",
+    "ardha-dhanurasana": "Half Bow",
+    "ardha-navasana-fire-variant": "Half Boat",
+    "ardha-salabhasana": "Half Locust",
+    "ardha-ustrasana": "Half Camel",
+    "ardha-uttanasana": "Half standing forward fold",
+    "baddha-konasana-con-balanceo": "Butterfly with rocking",
+    "baddha-konasana-tierra-variant": "Seated Butterfly",
+    "balasana-con-brazos-extendidos-al-frente": "Extended Child's pose",
+    "balasana-extendida": "Extended Child's pose",
+    "balasana-tierra-variant": "Child's pose",
+    "bharadvajasana": "Bharadvaja's twist",
+    "bharmanasana-opuestos": "Tabletop opposite arm and leg",
+    "bhujangasana": "Cobra",
+    "bhujangasana-baja": "Sphinx",
+    "bicicleta-lenta-supina": "Slow supine bicycle",
+    "brazos-al-cielo-en-tadasana": "Mountain with arms overhead",
+    "chaturanga-sobre-rodillas": "Kneeling Chaturanga",
+    "circulos-de-brazos-amplios": "Wide arm circles",
+    "circulos-de-cadera-de-pie": "Standing hip circles",
+    "circulos-de-hombros-sentada": "Seated shoulder circles",
+    "circulos-de-rodillas-supina": "Supine knee circles",
+    "cobra-con-manos-elevadas": "Cobra with hands lifted",
+    "dandasana": "Staff pose",
+    "dhanurasana-fire-variant": "Bow pose",
+    "eka-pada-rajakapotasana-preparatoria": "Preparatory Pigeon",
+    "elevacion-de-piernas-supina": "Supine single-leg lifts",
+    "estiramiento-lateral-de-pie": "Standing side stretch",
+    "garudasana-brazos": "Eagle arms",
+    "gomukhasana-piernas": "Cow Face legs",
+    "janu-sirsasana": "Head-to-knee pose",
+    "jathara-parivartanasana": "Supine twist with bent knees",
+    "limpiaparabrisas-supino": "Supine windshield wipers",
+    "malasana-tierra-variant": "Garland squat",
+    "malasana-tierra-variant-2": "Garland squat variation",
+    "mandukasana": "Gentle Frog",
+    "marjaryasana-bitilasana-tierra-variant": "Cat-Cow",
+    "matsyasana-apoyado": "Supported Fish",
+    "movimiento-ondulante-de-pelvis-supina": "Supine pelvic wave",
+    "navasana-fire-variant": "Boat pose",
+    "padangusthasana": "Big toe forward fold",
+    "parighasana": "Gate pose",
+    "parivrtta-sukhasana": "Simple seated twist",
+    "parivrtta-utkatasana": "Revolved Chair",
+    "parsva-balasana": "Thread the Needle",
+    "parsva-balasana-invertida": "Thread the Needle with lifted arm",
+    "phalakasana": "Plank pose",
+    "plancha-sobre-antebrazos": "Forearm plank",
+    "posicion-fetal-lateral": "Side fetal rest",
+    "postura-de-la-mariposa-con-brazos-abiertos": "Butterfly with open arms",
+    "savasana-con-brazos-abiertos-en-cruz": "Savasana with arms open",
+    "savasana-con-piernas-dobladas": "Savasana with bent knees",
+    "setu-bandhasana-con-apertura-costal": "Bridge with rib opening",
+    "setu-bandhasana-dinamico": "Dynamic Bridge",
+    "skandasana": "Side lunge",
+    "sukhasana-con-brazos-al-cielo": "Easy pose with arms overhead",
+    "sukhasana-con-manos-en-el-corazon": "Easy pose with hands at heart",
+    "sukhasana-con-torsion": "Easy pose with twist",
+    "supta-padangusthasana": "Reclined hand-to-big-toe pose",
+    "supta-padangusthasana-lateral": "Reclined hand-to-big-toe, side variation",
+    "utkatasana": "Chair pose",
+    "uttanasana": "Standing forward fold",
+    "vasisthasana-sobre-rodilla": "Kneeling side plank",
+    "virabhadrasana-ii": "Warrior II",
+    "virabhadrasana-iii-sobre-silla": "Warrior III with chair support",
+    "vrksasana-baja": "Low Tree pose",
+    "vyaghrasana": "Tiger pose",
+  },
+  it: {
+    "abdominales-con-piernas-en-mesa-supina": "Addominali supini con gambe a tavolino",
+    "adho-mukha-svanasana": "Cane a testa in giù",
+    "adho-mukha-svanasana-sobre-rodillas": "Cane a testa in giù sulle ginocchia",
+    "ananda-balasana": "Bambino felice",
+    "anjaneyasana-con-manos-en-la-rodilla": "Affondo basso con mani sul ginocchio",
+    "anjaneyasana-con-torsion-simple": "Affondo basso con torsione semplice",
+    "apanasana": "Ginocchia al petto",
+    "apertura-de-brazos-en-cruz-de-pie": "Apertura in piedi con braccia a croce",
+    "apertura-de-brazos-tumbada-boca-arriba": "Braccia a cactus supine",
+    "apertura-de-pecho-con-manos-en-lumbares": "Apertura del petto con mani sui lombari",
+    "apertura-de-pecho-con-manos-entrelazadas-atras": "Apertura del petto con mani intrecciate dietro",
+    "ardha-dhanurasana": "Mezzo Arco",
+    "ardha-navasana-fire-variant": "Mezza Barca",
+    "ardha-salabhasana": "Mezza Locusta",
+    "ardha-ustrasana": "Mezzo Cammello",
+    "ardha-uttanasana": "Mezzo piegamento in avanti in piedi",
+    "baddha-konasana-con-balanceo": "Farfalla con oscillazione",
+    "baddha-konasana-tierra-variant": "Farfalla seduta",
+    "balasana-con-brazos-extendidos-al-frente": "Posizione del Bambino estesa",
+    "balasana-extendida": "Posizione del Bambino estesa",
+    "balasana-tierra-variant": "Posizione del Bambino",
+    "bharadvajasana": "Torsione di Bharadvaja",
+    "bharmanasana-opuestos": "Quadrupedia con braccio e gamba opposti",
+    "bhujangasana": "Cobra",
+    "bhujangasana-baja": "Sfinge",
+    "bicicleta-lenta-supina": "Bicicletta lenta supina",
+    "brazos-al-cielo-en-tadasana": "Montagna con braccia al cielo",
+    "chaturanga-sobre-rodillas": "Chaturanga sulle ginocchia",
+    "circulos-de-brazos-amplios": "Cerchi ampi con le braccia",
+    "circulos-de-cadera-de-pie": "Cerchi delle anche in piedi",
+    "circulos-de-hombros-sentada": "Cerchi delle spalle seduta",
+    "circulos-de-rodillas-supina": "Cerchi delle ginocchia supine",
+    "cobra-con-manos-elevadas": "Cobra con mani sollevate",
+    "dandasana": "Bastone",
+    "dhanurasana-fire-variant": "Arco",
+    "eka-pada-rajakapotasana-preparatoria": "Piccione preparatorio",
+    "elevacion-de-piernas-supina": "Sollevamenti supini di una gamba",
+    "estiramiento-lateral-de-pie": "Allungamento laterale in piedi",
+    "garudasana-brazos": "Braccia dell'Aquila",
+    "gomukhasana-piernas": "Gambe di Gomukhasana",
+    "janu-sirsasana": "Testa al ginocchio",
+    "jathara-parivartanasana": "Torsione supina con ginocchia piegate",
+    "limpiaparabrisas-supino": "Tergicristalli supini",
+    "malasana-tierra-variant": "La Ghirlanda",
+    "malasana-tierra-variant-2": "Variante della Ghirlanda",
+    "mandukasana": "Rana dolce",
+    "marjaryasana-bitilasana-tierra-variant": "Gatto-Mucca",
+    "matsyasana-apoyado": "Pesce supportato",
+    "movimiento-ondulante-de-pelvis-supina": "Onda del bacino supina",
+    "navasana-fire-variant": "Barca",
+    "padangusthasana": "Piegamento prendendo l'alluce",
+    "parighasana": "Posizione del Cancello",
+    "parivrtta-sukhasana": "Torsione semplice seduta",
+    "parivrtta-utkatasana": "Sedia ruotata",
+    "parsva-balasana": "Infilare l'ago",
+    "parsva-balasana-invertida": "Infilare l'ago con braccio sollevato",
+    "phalakasana": "Plank",
+    "plancha-sobre-antebrazos": "Plank sugli avambracci",
+    "posicion-fetal-lateral": "Riposo fetale laterale",
+    "postura-de-la-mariposa-con-brazos-abiertos": "Farfalla con braccia aperte",
+    "savasana-con-brazos-abiertos-en-cruz": "Savasana con braccia aperte",
+    "savasana-con-piernas-dobladas": "Savasana con ginocchia piegate",
+    "setu-bandhasana-con-apertura-costal": "Ponte con apertura delle costole",
+    "setu-bandhasana-dinamico": "Ponte dinamico",
+    "skandasana": "Affondo laterale",
+    "sukhasana-con-brazos-al-cielo": "Posizione facile con braccia al cielo",
+    "sukhasana-con-manos-en-el-corazon": "Posizione facile con mani al cuore",
+    "sukhasana-con-torsion": "Posizione facile con torsione",
+    "supta-padangusthasana": "Mano-all'alluce supina",
+    "supta-padangusthasana-lateral": "Mano-all'alluce supina laterale",
+    "utkatasana": "Sedia",
+    "uttanasana": "Piegamento in avanti in piedi",
+    "vasisthasana-sobre-rodilla": "Plank laterale sul ginocchio",
+    "virabhadrasana-ii": "Guerriero II",
+    "virabhadrasana-iii-sobre-silla": "Guerriero III con sedia",
+    "vrksasana-baja": "Albero basso",
+    "vyaghrasana": "Tigre",
+  },
+};
+
+function translatedFallbackAsana(asana: Asana, locale: Exclude<Locale, "es">): LocalizedAsana {
+  const nameSpanish = localizedAsanaNames[locale][asana.slug] ?? (locale === "en" ? "Guided pose" : "Posizione guidata");
+  const description = locale === "en"
+    ? "Practise this shape slowly, using the breath as the guide. Keep the movement within a comfortable range and let the body find steadiness before adding intensity."
+    : "Pratica questa forma lentamente, usando il respiro come guida. Mantieni il movimento in un range comodo e lascia che il corpo trovi stabilità prima di aggiungere intensità.";
+  const warning = locale === "en"
+    ? "Move gently and stop with pain, dizziness, numbness, or shortness of breath. Use support whenever the body asks for it."
+    : "Muoviti con dolcezza e fermati con dolore, capogiro, formicolio o fiato corto. Usa supporti ogni volta che il corpo lo chiede.";
+  const duration = locale === "en" ? "Follow the guided count" : "Segui il conteggio guidato";
+
+  return { nameSpanish, description, duration, warning };
+}
+
+function findLocalizedAsana(
+  slug: string,
+  element: RoutineElement,
+  locale: Exclude<Locale, "es">,
+): LocalizedAsana | undefined {
+  const direct = yogaCopy[locale][element].asanas[slug];
+  if (direct) {
+    return direct;
+  }
+
+  for (const routine of Object.values(yogaCopy[locale])) {
+    const localized = routine.asanas[slug];
+    if (localized) {
+      return localized;
+    }
+  }
+
+  return undefined;
+}
+
 export function getYogaElementMeta(element: RoutineElement, locale: Locale) {
   if (locale === "es") {
     return null;
@@ -671,8 +908,23 @@ export function localizeAsana(asana: Asana, locale: Locale): Asana {
     return asana;
   }
 
-  const localized = yogaCopy[locale][asana.element].asanas[asana.slug];
-  return localized ? { ...asana, ...localized } : asana;
+  const localized = findLocalizedAsana(asana.slug, asana.element, locale);
+  if (localized) {
+    return { ...asana, ...localized };
+  }
+
+  const aliasedSlug = asanaLocalizationAliases[asana.slug];
+  const aliased = aliasedSlug ? findLocalizedAsana(aliasedSlug, asana.element, locale) : null;
+  const translatedName = localizedAsanaNames[locale][asana.slug];
+  if (aliased) {
+    return {
+      ...asana,
+      ...aliased,
+      ...(translatedName ? { nameSpanish: translatedName } : {}),
+    };
+  }
+
+  return { ...asana, ...translatedFallbackAsana(asana, locale) };
 }
 
 export function localizePranayama(
