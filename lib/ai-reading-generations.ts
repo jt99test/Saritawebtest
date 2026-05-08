@@ -1,5 +1,7 @@
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 
+import { createServiceSupabaseClient } from "@/lib/supabase/server";
+
 export type AiReadingScope =
   | "planet"
   | "general"
@@ -37,6 +39,10 @@ export type AiReadingReservation =
 
 function normalizedLocale(locale?: string) {
   return locale === "en" || locale === "it" ? locale : "es";
+}
+
+function aiReadingStoreClient(fallback: SupabaseClient) {
+  return process.env.SUPABASE_SERVICE_ROLE_KEY ? createServiceSupabaseClient() : fallback;
 }
 
 export function getAiGenerationStatus(content: unknown): "generating" | "failed" | null {
@@ -96,7 +102,8 @@ export async function getCachedAiReading({
 }: AiReadingCacheInput) {
   if (!readingId) return null;
 
-  const { data, error } = await supabase
+  const store = aiReadingStoreClient(supabase);
+  const { data, error } = await store
     .from("ai_reading_generations")
     .select("content")
     .eq("user_id", user.id)
@@ -127,7 +134,8 @@ export async function reserveAiReadingGeneration({
   }
 
   const normalized = normalizedLocale(locale);
-  const { error } = await supabase
+  const store = aiReadingStoreClient(supabase);
+  const { error } = await store
     .from("ai_reading_generations")
     .insert({
       user_id: user.id,
@@ -157,8 +165,26 @@ export async function reserveAiReadingGeneration({
   });
 
   const status = getAiGenerationStatus(content);
-  if (status) {
+  if (status === "generating") {
     return { ok: false, response: aiGenerationStatusResponse(status) };
+  }
+
+  if (status === "failed") {
+    const { error: retryError } = await store
+      .from("ai_reading_generations")
+      .update({ content: GENERATING_CONTENT })
+      .eq("user_id", user.id)
+      .eq("reading_id", readingId)
+      .eq("scope", scope)
+      .eq("item_key", itemKey)
+      .eq("locale", normalized);
+
+    if (retryError) {
+      console.error("AI reading reservation retry failed:", retryError.message);
+      return { ok: false, response: new Response("AI reading reservation failed", { status: 500 }) };
+    }
+
+    return { ok: true, reserved: true };
   }
 
   return { ok: true, reserved: false, content };
@@ -175,7 +201,8 @@ export async function setCachedAiReading({
 }: SetAiReadingCacheInput) {
   if (!readingId) return;
 
-  const { error } = await supabase
+  const store = aiReadingStoreClient(supabase);
+  const { error } = await store
     .from("ai_reading_generations")
     .update(
       {
