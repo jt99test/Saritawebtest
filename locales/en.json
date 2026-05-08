@@ -248,6 +248,7 @@
     "lunarRoutineTitle": "This moon's lunar routine",
     "lunarRoutineBody": "A short sequence for this moon, calculated from the most active transits and aspects around this lunation.",
     "openLunarRoutine": "Open lunar routine",
+    "openLunarRoutineFor": "Open {moon} routine",
     "lunarRoutineIntro": "This practice does not come from your natal dominant element: it is calculated from the strongest transits and aspects around this specific moon. That is why each New Moon or Full Moon can open a different sequence.",
     "lunarRoutineBasedOnTransits": "Based on lunar transits",
     "moonIllustrationAlt": "Illustration of {moon}",
@@ -392,7 +393,8 @@
       "selectedPlace": "Selected place: {place}",
       "currentLocationNote": "Your natal chart stays the same. This location only adjusts today's sky and houses.",
       "housePrefix": "House",
-      "nowLabel": "Now"
+      "nowLabel": "Now",
+      "readingGeneratedOnNote": "This interpretation was generated on {date}. The transit chart above updates daily; to get a new interpretation, create a new reading."
     },
     "astrocartographyPage": {
       "eyebrow": "astrocartography map",

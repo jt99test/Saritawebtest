@@ -49,7 +49,7 @@ export function LunationToggle({
                 ? "group flex w-[min(28vw,116px)] flex-col items-center p-2 text-center outline-none transition duration-[400ms] ease-out focus-visible:ring-2 focus-visible:ring-dusty-gold/70 focus-visible:ring-offset-4 focus-visible:ring-offset-cosmic-950 sm:w-[126px] lg:w-[150px]"
                 : "group flex w-[min(40vw,140px)] flex-col items-center p-3 text-center outline-none transition duration-[400ms] ease-out focus-visible:ring-2 focus-visible:ring-dusty-gold/70 focus-visible:ring-offset-4 focus-visible:ring-offset-cosmic-950 lg:w-[180px]",
               active
-                ? "scale-100 cursor-pointer bg-dusty-gold/22 text-dusty-gold opacity-100 shadow-[0_2px_12px_rgba(181,163,110,0.18)]"
+                ? "scale-100 cursor-pointer border border-dusty-gold/48 bg-dusty-gold/22 text-dusty-gold opacity-100 shadow-[0_8px_22px_rgba(181,163,110,0.22)]"
                 : "scale-90 cursor-pointer text-[#3a3048] opacity-70 grayscale saturate-0 hover:scale-95 hover:text-ivory/80 hover:opacity-80 hover:grayscale-0 hover:saturate-100",
             ].join(" ")}
           >

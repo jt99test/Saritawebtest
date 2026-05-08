@@ -31,6 +31,7 @@ type TransitData = {
   dominantBody?: string;
   planetLanguage?: string;
   houses?: Array<{ house: number; title: string; body: string }>;
+  readingGeneratedAt?: string;
 };
 
 type TransitWheelMode = "all" | "active";
@@ -175,6 +176,7 @@ function normalizeTransitData(data: TransitData): TransitData {
       title: normalizeReadingText(house.title),
       body: normalizeReadingText(house.body),
     })),
+    readingGeneratedAt: data.readingGeneratedAt,
   };
 }
 
@@ -244,6 +246,17 @@ function dateLabel(iso?: string, locale?: string) {
   }).format(new Date(iso));
 }
 
+function dayKey(iso?: string) {
+  if (!iso) return "";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toISOString().slice(0, 10);
+}
+
+function formatTemplate(template: string, values: Record<string, string | number>) {
+  return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ""));
+}
+
 export function ChartCompletePage({ chart, request, dictionary, readingId }: ChartCompletePageProps) {
   const locale = useStoredLocale();
   const transitCopy = dictionary.result.transitPage;
@@ -303,7 +316,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
   useEffect(() => {
     if (!result?.ok || result.transits.length === 0 || !chartHash || !aiCacheHash) return;
     let active = true;
-    const cacheKey = `transits:${locale}:${request?.gender || "unspecified"}:${result.generatedAt.slice(0, 10)}:${currentLocationKey}`;
+    const cacheKey = `transits:v2:${locale}:${request?.gender || "unspecified"}:${currentLocationKey}`;
     const cachedData = getCachedPremiumReading<TransitData>(aiCacheHash, cacheKey);
     if (cachedData) {
       setTransitReading("");
@@ -357,7 +370,10 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
         if (markerIdx !== -1) {
           const jsonPayload = cleanJsonPayload(accumulated.slice(markerIdx + SARITA_DATA_MARKER.length).trim());
           try {
-            const parsedData = normalizeTransitData(JSON.parse(jsonPayload) as TransitData);
+            const parsedData = normalizeTransitData({
+              ...(JSON.parse(jsonPayload) as TransitData),
+              readingGeneratedAt: result.generatedAt,
+            });
             setTransitData(parsedData);
             setCachedPremiumReading(aiCacheHash, cacheKey, parsedData);
           } catch {
@@ -394,6 +410,12 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
   const dominantTransit = activeTransits[0];
   const aiHouses = useMemo(() => transitData.houses ?? [], [transitData.houses]);
   const selectedAiHouse = aiHouses.find((house) => house.house === selectedHouse) ?? aiHouses[0] ?? null;
+  const readingGeneratedAt = transitData.readingGeneratedAt;
+  const showReadingDateNote = Boolean(
+    result?.ok &&
+    readingGeneratedAt &&
+    dayKey(readingGeneratedAt) !== dayKey(result.generatedAt),
+  );
 
   useEffect(() => {
     if (!aiHouses.length) {
@@ -466,6 +488,13 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
           <p className="mt-4 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24]">
             {transitCopy.calculatedAt} {dateLabel(result.generatedAt, locale)}
             {currentLocation ? ` · ${currentLocation.displayName}` : ""}
+          </p>
+        ) : null}
+        {showReadingDateNote ? (
+          <p className="mx-auto mt-3 max-w-2xl text-xs leading-6 text-[#3a3048]">
+            {formatTemplate(transitCopy.readingGeneratedOnNote, {
+              date: dateLabel(readingGeneratedAt, locale),
+            })}
           </p>
         ) : null}
       </div>

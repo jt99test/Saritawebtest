@@ -14,9 +14,20 @@ function formatTemplate(template: string, values: Record<string, string | number
   return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ""));
 }
 
+function lunationLabel(metadata: LunarReportMetadata, dictionary: Dictionary) {
+  const baseLabel = metadata.lunationType.startsWith("nueva")
+    ? dictionary.lunar.newMoon
+    : dictionary.lunar.fullMoon;
+
+  return metadata.lunationType.endsWith("-2") ? `${baseLabel} 2` : baseLabel;
+}
+
 export function LunarRoutineCta({ metadata, dictionary }: LunarRoutineCtaProps) {
   const copy = dictionary.lunar;
   const href = `/luna-del-mes/rutina/${metadata.lunationType}?year=${metadata.year}&month=${metadata.month}`;
+  const ctaLabel = formatTemplate(copy.openLunarRoutineFor, {
+    moon: lunationLabel(metadata, dictionary),
+  });
 
   return (
     <section className="mx-auto max-w-[720px] border-y border-dusty-gold/16 py-6 text-left">
@@ -36,7 +47,7 @@ export function LunarRoutineCta({ metadata, dictionary }: LunarRoutineCtaProps) 
           href={href}
           className="inline-flex shrink-0 items-center justify-center border border-dusty-gold/38 bg-dusty-gold/[0.075] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/62 hover:bg-dusty-gold/[0.12]"
         >
-          {copy.openLunarRoutine}
+          {ctaLabel}
         </Link>
       </div>
     </section>

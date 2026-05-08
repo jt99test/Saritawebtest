@@ -73,6 +73,18 @@ function lunationTime(metadata: LunarReportMetadata, timezone: string) {
   return DateTime.fromISO(metadata.timestamp, { zone: "utc" }).setZone(timezone).toMillis();
 }
 
+function formatTemplate(template: string, values: Record<string, string | number>) {
+  return template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ""));
+}
+
+function lunationLabel(type: LunationType, dictionary: Dictionary) {
+  const baseLabel = type.startsWith("nueva")
+    ? dictionary.lunar.newMoon
+    : dictionary.lunar.fullMoon;
+
+  return type.endsWith("-2") ? `${baseLabel} 2` : baseLabel;
+}
+
 function getClosestType(previews: PreviewMap, timezone: string) {
   const now = DateTime.now().setZone(timezone).toMillis();
   const candidates = REPORT_TYPES.filter((type) => previews[type]).sort((left, right) => {
@@ -197,6 +209,11 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
   const selectedRoutineHref = selectedMetadata
     ? `/luna-del-mes/rutina/${selectedMetadata.lunationType}?year=${selectedMetadata.year}&month=${selectedMetadata.month}`
     : "";
+  const selectedRoutineLabel = selectedMetadata
+    ? formatTemplate(dictionary.lunar.openLunarRoutineFor, {
+        moon: lunationLabel(selectedMetadata.lunationType, dictionary),
+      })
+    : dictionary.lunar.openLunarRoutine;
   const selectedReportKey = reportKeyFor(year, month, selectedType, locale, gender);
   const cachedEntry = chartHash ? cachedReports[selectedReportKey] ?? null : null;
   const activeStream = streamState[selectedType];
@@ -354,9 +371,7 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
     return [
       {
         id: type,
-        label: type.startsWith("nueva")
-          ? type.endsWith("-2") ? `${dictionary.lunar.newMoon} 2` : dictionary.lunar.newMoon
-          : type.endsWith("-2") ? `${dictionary.lunar.fullMoon} 2` : dictionary.lunar.fullMoon,
+        label: lunationLabel(type, dictionary),
         date: formatToggleDate(metadata.timestamp, timezone, locale),
         timestamp: lunationTime(metadata, timezone),
       },
@@ -399,7 +414,7 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
               href={selectedRoutineHref}
               className="inline-flex border border-dusty-gold/38 bg-dusty-gold/[0.075] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/62 hover:bg-dusty-gold/[0.12]"
             >
-              {dictionary.lunar.openLunarRoutine}
+              {selectedRoutineLabel}
             </Link>
           </div>
         ) : null}

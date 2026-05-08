@@ -248,6 +248,7 @@
     "lunarRoutineTitle": "Routine lunare di questa luna",
     "lunarRoutineBody": "Una sequenza breve per questa luna, calcolata dai transiti e dagli aspetti più attivi del momento.",
     "openLunarRoutine": "Apri routine lunare",
+    "openLunarRoutineFor": "Apri routine {moon}",
     "lunarRoutineIntro": "Questa pratica non nasce dal tuo elemento natale dominante: viene calcolata dai transiti e dagli aspetti più forti di questa luna specifica. Per questo ogni Luna Nuova o Luna Piena può aprire una sequenza diversa.",
     "lunarRoutineBasedOnTransits": "Basata sui transiti lunari",
     "moonIllustrationAlt": "Illustrazione di {moon}",
@@ -392,7 +393,8 @@
       "selectedPlace": "Luogo selezionato: {place}",
       "currentLocationNote": "La carta natale rimane uguale. Questa posizione regola solo il cielo di oggi e le sue case.",
       "housePrefix": "Casa",
-      "nowLabel": "Adesso"
+      "nowLabel": "Adesso",
+      "readingGeneratedOnNote": "Questa interpretazione è stata generata il {date}. La carta dei transiti sopra si aggiorna ogni giorno; per ottenere una nuova interpretazione, crea una nuova lettura."
     },
     "astrocartographyPage": {
       "eyebrow": "mappa astrocartografica",

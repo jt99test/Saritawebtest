@@ -81,6 +81,7 @@ type TransitReadingPayload = {
   dominantBody: string;
   planetLanguage: string;
   houses: Array<{ house: number; title: string; body: string }>;
+  readingGeneratedAt?: string;
 };
 
 function extractTextContent(message: Message) {
@@ -380,6 +381,8 @@ ${promptLanguageInstruction(locale)}`;
     return new Response("Transit reading JSON shape invalid", { status: 502 });
   }
 
+  const readingGeneratedAt = new Date().toISOString();
+
   await setCachedAiReading({
     supabase,
     user,
@@ -387,7 +390,10 @@ ${promptLanguageInstruction(locale)}`;
     scope: "transit",
     itemKey,
     locale,
-    content: parsed,
+    content: {
+      ...parsed,
+      readingGeneratedAt,
+    },
   });
 
   const data = {
@@ -395,6 +401,7 @@ ${promptLanguageInstruction(locale)}`;
     dominantBody: parsed.dominantBody,
     planetLanguage: parsed.planetLanguage,
     houses: parsed.houses,
+    readingGeneratedAt,
   };
 
   return new Response(`${parsed.reading}\n\n${SARITA_DATA_MARKER}\n${JSON.stringify(data)}`, {
