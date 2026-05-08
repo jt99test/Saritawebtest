@@ -1,4 +1,5 @@
 export type Asana = {
+  slug?: string;
   nameSanskrit: string;
   nameSpanish: string;
   description: string;
@@ -58,11 +59,27 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
     ],
     asanas: [
       {
+        slug: "tadasana-fire-variant",
+        nameSanskrit: "Tadasana",
+        nameSpanish: "Montaña",
+        description:
+          "De pie con los pies juntos o separados al ancho de las caderas. Lleva la coronilla hacia arriba y deja que los brazos descansen a los lados del cuerpo. Reparte el peso entre talones y metatarsos, suaviza las rodillas y siente el abdomen bajo despierto. Esta versión es simple y estable: una llama quieta antes de moverse.",
+        duration: "8 respiraciones profundas",
+      },
+      {
         nameSanskrit: "Tadasana",
         nameSpanish: "Tadasana Activa",
         description:
           "De pie con los pies juntos o ligeramente separados. Distribuye el peso uniformemente en toda la planta del pie. Contrae suavemente el core llevando el ombligo hacia la columna vertebral sin retener la respiración — solo una activación ligera. Hombros relajados lejos de las orejas, mentón paralelo al suelo. Respira lentamente y observa el calor que se genera en el centro del cuerpo.",
         duration: "10 respiraciones profundas",
+      },
+      {
+        slug: "navasana-fire-variant",
+        nameSanskrit: "Navasana",
+        nameSpanish: "Barco completo",
+        description:
+          "Siéntate sobre los isquiones, eleva ambas piernas y extiéndelas si la espalda puede mantenerse larga. Los brazos se proyectan hacia adelante, paralelos al suelo. El pecho queda abierto y el abdomen sostiene el equilibrio. Mantén la mirada serena aunque el centro trabaje con intensidad.",
+        duration: "3 series de 4 respiraciones",
       },
       {
         nameSanskrit: "Navasana",
@@ -72,11 +89,27 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
         duration: "3 series de 5 respiraciones · 3 respiraciones de pausa entre series",
       },
       {
+        slug: "ardha-navasana-fire-variant",
+        nameSanskrit: "Ardha Navasana",
+        nameSpanish: "Medio barco",
+        description:
+          "Desde una posición sentada, inclina el torso hacia atrás y extiende las piernas más bajas que en el barco completo, sin dejar que la espalda se hunda. Los brazos miran hacia adelante y el abdomen mantiene la forma. Quédate solo donde la respiración siga siendo estable.",
+        duration: "3 series de 4 respiraciones",
+      },
+      {
         nameSanskrit: "Ardha Navasana",
         nameSpanish: "Medio Barco",
         description:
           "Desde Navasana baja lentamente las piernas hacia el suelo sin llegar a tocarlo. Las piernas permanecen a unos 30 cm del suelo. Las manos pueden entrelazar los dedos detrás de la nuca o quedarse extendidas hacia adelante. El fuego en el core es intenso — respira dentro de la sensación sin huir.",
         duration: "3 series de 4 respiraciones",
+      },
+      {
+        slug: "salabhasana-fire-variant",
+        nameSanskrit: "Salabhasana",
+        nameSpanish: "Langosta",
+        description:
+          "Boca abajo, extiende las piernas y lleva los brazos atrás junto al cuerpo. Con la inspiración eleva pecho, brazos y piernas en una línea larga. Mantén el cuello amplio y el pubis pesado hacia el suelo. La fuerza nace en toda la cadena posterior.",
+        duration: "3 series de 5 respiraciones",
       },
       {
         nameSanskrit: "Salabhasana",
@@ -86,11 +119,167 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
         duration: "3 series de 5 respiraciones",
       },
       {
+        slug: "dhanurasana-fire-variant",
+        nameSanskrit: "Dhanurasana",
+        nameSpanish: "Arco",
+        description:
+          "Boca abajo, flexiona las rodillas y toma los tobillos. Empuja los pies hacia atrás y arriba para que el pecho se abra y los muslos se despeguen del suelo. La postura se sostiene por la acción de las piernas tanto como por los brazos, como un arco bien tensado.",
+        duration: "3 series de 4 respiraciones",
+      },
+      {
         nameSanskrit: "Dhanurasana",
         nameSpanish: "El Arco",
         description:
           "Túmbate boca abajo. Dobla las rodillas y lleva los talones hacia los glúteos. Extiende los brazos hacia atrás y agarra los tobillos por fuera — no los pies. Con la inspiración empuja los pies hacia arriba y hacia el techo mientras tiras con las manos: esto crea la tensión que eleva pecho y muslos del suelo. El cuerpo oscila como un arco. Mantén la respiración fluida.",
         duration: "3 series de 4 respiraciones",
+      },
+      {
+        nameSanskrit: "Ustrasana",
+        nameSpanish: "El Camello",
+        description:
+          "Arrodíllate con las rodillas separadas como los caderas. Lleva las manos a los lumbares con los dedos hacia abajo. Con la inspiración abre el pecho hacia el techo y empieza a inclinarte hacia atrás. Si estás lista lleva las manos a los talones — si no queda con las manos en los lumbares. El cuello es largo. Esta apertura del pecho después de trabajar el core crea confianza en el propio fuego interior.",
+        duration: "5 respiraciones",
+      },
+      {
+        slug: "ustrasana-fire-variant",
+        nameSanskrit: "Ustrasana",
+        nameSpanish: "Camello",
+        description:
+          "Arrodíllate con la pelvis sobre las rodillas y abre el pecho hacia arriba antes de ir hacia atrás. Lleva las manos a los talones solo si el abdomen puede sostener la zona lumbar. La cabeza acompaña con suavidad. Siente el fuego del corazón expandirse sin perder raíz.",
+        duration: "5 respiraciones",
+      },
+      {
+        nameSanskrit: "Ardha Salabhasana",
+        nameSpanish: "Media langosta",
+        description:
+          "Túmbate boca abajo con los brazos junto al cuerpo y la frente o el mentón suave hacia el suelo. Activa el abdomen bajo y, con la inspiración, eleva una pierna larga sin girar la pelvis. Mantén la cadera pesada y la pierna extendida desde el talón. Baja con control y cambia de lado. Es una activación precisa del fuego posterior sin exigir toda la espalda a la vez.",
+        duration: "5 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Ardha Dhanurasana",
+        nameSpanish: "Medio arco",
+        description:
+          "Boca abajo, dobla una rodilla y toma el tobillo del mismo lado. El otro antebrazo puede quedar apoyado delante del pecho para estabilizar. Empuja el pie hacia la mano y deja que el pecho se abra sin retorcer la pelvis. Respira hacia el abdomen y cambia de lado con calma.",
+        duration: "4 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Ardha Ustrasana",
+        nameSpanish: "Medio camello",
+        description:
+          "Arrodíllate con las rodillas al ancho de las caderas. Lleva una mano al talón del mismo lado o a la zona lumbar si no llega. El otro brazo puede subir hacia el cielo mientras el pecho se abre. Mantén la pelvis avanzando suave y el abdomen activo para que la apertura no caiga en las lumbares.",
+        duration: "4 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Phalakasana",
+        nameSpanish: "Plancha",
+        description:
+          "Desde cuatro apoyos, lleva un pie atrás y luego el otro hasta formar una línea larga desde talones hasta coronilla. Empuja el suelo con las manos, separa los omóplatos y lleva el ombligo hacia dentro. La postura enciende el centro sin rigidez: respira corto si hace falta, pero mantén presencia.",
+        duration: "3 series de 5 respiraciones",
+      },
+      {
+        nameSanskrit: "Vasisthasana sobre rodilla",
+        nameSpanish: "Plancha lateral apoyada",
+        description:
+          "Desde cuatro apoyos, apoya una mano bajo el hombro y gira el pecho hacia un lado. La rodilla inferior queda en el suelo como base y la pierna superior se extiende larga. Eleva el brazo libre hacia el cielo y mantén el costado activo. Cambia de lado sin prisa.",
+        duration: "4 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Chaturanga sobre rodillas",
+        nameSpanish: "Chaturanga con rodillas apoyadas",
+        description:
+          "Desde plancha con rodillas al suelo, adelanta un poco el pecho y flexiona los codos pegados a las costillas. Baja solo hasta donde los hombros se mantengan amplios. Empuja el suelo para volver. Esta variante trabaja brazos, pecho y core sin sacrificar alineación.",
+        duration: "5 repeticiones lentas",
+      },
+      {
+        nameSanskrit: "Setu Bandhasana Dinámico",
+        nameSpanish: "Puente dinámico",
+        description:
+          "Túmbate boca arriba con rodillas flexionadas y pies apoyados. Con la inspiración sube la pelvis vértebra a vértebra; con la espiración baja igual de lento. Mantén los pies firmes, el cuello largo y el abdomen acompañando el movimiento. El calor nace de la repetición consciente.",
+        duration: "8 ciclos lentos",
+      },
+      {
+        nameSanskrit: "Utkatasana",
+        nameSpanish: "Silla",
+        description:
+          "De pie, flexiona las rodillas como si fueras a sentarte atrás. Lleva el peso hacia los talones, alarga la columna y eleva los brazos si los hombros lo permiten. Mantén el abdomen activo y el pecho amplio. La intensidad está en sostener sin endurecerte.",
+        duration: "5 respiraciones",
+      },
+      {
+        nameSanskrit: "Virabhadrasana III sobre silla",
+        nameSpanish: "Guerrero 3 con apoyo",
+        description:
+          "Coloca las manos sobre el respaldo o asiento de una silla firme. Camina hacia atrás hasta alargar el torso y eleva una pierna hacia atrás, paralela al suelo o más baja. Mantén las caderas niveladas y la pierna de apoyo despierta. Cambia de lado.",
+        duration: "5 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Parivrtta Utkatasana",
+        nameSpanish: "Silla girada",
+        description:
+          "Desde Utkatasana, une las palmas delante del pecho. Alarga la columna al inhalar y gira el torso al exhalar, llevando un codo hacia el exterior del muslo contrario. Las rodillas se mantienen juntas y alineadas. La torsión estimula el fuego digestivo sin perder la base.",
+        duration: "4 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Parivrtta Sukhasana",
+        nameSpanish: "Torsión sentada simple",
+        description:
+          "Siéntate en Sukhasana con la columna alta. Lleva una mano a la rodilla contraria y la otra al suelo detrás de ti. Inhala creciendo desde la pelvis; exhala girando suavemente el pecho y la mirada. Vuelve al centro y cambia de lado.",
+        duration: "5 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Jathara Parivartanasana",
+        nameSpanish: "Torsión supina con rodillas",
+        description:
+          "Túmbate boca arriba, flexiona las rodillas y abre los brazos en cruz. Deja caer las rodillas hacia un lado manteniendo ambos hombros pesados. Respira en el abdomen y vuelve al centro con control antes de cambiar de lado.",
+        duration: "6 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Bharmanasana opuestos",
+        nameSpanish: "Cuatro apoyos con brazo y pierna opuestos",
+        description:
+          "En cuatro apoyos, extiende un brazo hacia adelante y la pierna contraria hacia atrás. Mira al suelo para mantener el cuello largo. Abraza el abdomen hacia dentro y estabiliza la pelvis. Cambia de lado, buscando firmeza más que altura.",
+        duration: "5 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Vyaghrasana",
+        nameSpanish: "Tigre",
+        description:
+          "Desde cuatro apoyos, extiende una pierna hacia atrás al inhalar. Al exhalar, redondea la espalda y lleva la rodilla hacia el codo o hacia el pecho. Repite con ritmo lento, sintiendo cómo el abdomen inicia el movimiento.",
+        duration: "6 repeticiones por lado",
+      },
+      {
+        nameSanskrit: "Anjaneyasana con torsión simple",
+        nameSpanish: "Estocada baja girada",
+        description:
+          "Desde Anjaneyasana, apoya la mano contraria al pie delantero en el suelo o sobre un bloque. Gira el pecho hacia la pierna delantera y extiende el brazo libre hacia arriba o en diagonal. La rodilla posterior queda acolchada y la respiración guía la torsión.",
+        duration: "5 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Abdominales con piernas en mesa supina",
+        nameSpanish: "Abdominales con piernas en mesa",
+        description:
+          "Túmbate boca arriba y lleva las piernas a mesa, con rodillas sobre caderas y espinillas paralelas al suelo. Coloca las manos detrás de la cabeza sin tirar del cuello. Al exhalar, activa el abdomen y eleva suavemente cabeza y hombros; al inhalar, baja con control. Mantén la espalda baja estable y el movimiento pequeño.",
+        duration: "8 repeticiones lentas",
+      },
+      {
+        nameSanskrit: "Plancha sobre antebrazos",
+        nameSpanish: "Plancha sobre antebrazos",
+        description:
+          "Apoya los antebrazos paralelos en el suelo, codos bajo hombros. Extiende las piernas atrás y empuja talones y coronilla en direcciones opuestas. Activa abdomen y glúteos suavemente para que la pelvis no caiga. Baja rodillas si necesitas conservar la respiración.",
+        duration: "3 series de 4 respiraciones",
+      },
+      {
+        nameSanskrit: "Elevación de piernas supina",
+        nameSpanish: "Elevación de piernas una a la vez",
+        description:
+          "Túmbate boca arriba con una pierna extendida en el suelo y la otra elevándose hacia el techo. Mantén la espalda baja estable y los brazos relajados. Baja la pierna con control y cambia. El trabajo es lento, profundo y muy centrado.",
+        duration: "6 repeticiones por lado",
+      },
+      {
+        nameSanskrit: "Bicicleta lenta supina",
+        nameSpanish: "Bicicleta lenta",
+        description:
+          "Boca arriba, lleva las manos detrás de la cabeza sin tirar del cuello. Eleva una rodilla mientras extiendes la otra pierna y rota el pecho apenas hacia la rodilla flexionada. Cambia de lado muy despacio, priorizando control sobre velocidad.",
+        duration: "8 ciclos lentos",
       },
       {
         nameSanskrit: "Parivrtta Janu Sirsasana",
@@ -105,13 +294,6 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
         description:
           "De pie con los pies separados aproximadamente un metro. Pie derecho hacia adelante, pie izquierdo girado 60 grados. Lleva el brazo izquierdo hacia el exterior del pie derecho o a la tibia. El brazo derecho sube hacia el techo. Gira el pecho hacia arriba abriendo completamente. Esta torsión profunda comprime y luego libera los órganos digestivos, estimulando directamente Manipura. Mantén el core activado.",
         duration: "5 respiraciones por lado",
-      },
-      {
-        nameSanskrit: "Ustrasana",
-        nameSpanish: "El Camello",
-        description:
-          "Arrodíllate con las rodillas separadas como los caderas. Lleva las manos a los lumbares con los dedos hacia abajo. Con la inspiración abre el pecho hacia el techo y empieza a inclinarte hacia atrás. Si estás lista lleva las manos a los talones — si no queda con las manos en los lumbares. El cuello es largo. Esta apertura del pecho después de trabajar el core crea confianza en el propio fuego interior.",
-        duration: "5 respiraciones",
       },
     ],
     pranayama: [
@@ -228,6 +410,210 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
           "De pie, da un gran paso hacia atrás con el pie izquierdo. El pie posterior gira unos 45 grados. Dobla la rodilla anterior hasta formar un ángulo de 90 grados. Las manos suben sobre la cabeza. Arraiga con fuerza ambos pies en el suelo sintiendo la solidez de las piernas como raíces de un árbol. En esta secuencia es el único guerrero — porque la tierra necesita fuerza arraigada.",
         duration: "6 respiraciones por lado",
       },
+      {
+        slug: "tadasana-con-peso",
+        nameSanskrit: "Tadasana con peso",
+        nameSpanish: "Montana con peso",
+        description:
+          "De pie, separa los pies al ancho de caderas y sosten un peso ligero en cada mano. Siente el peso bajar hacia las plantas de los pies sin colapsar la postura. Crece desde la coronilla, suaviza rodillas y hombros, y deja que el cuerpo registre la gravedad como una base estable.",
+        duration: "8 respiraciones",
+      },
+      {
+        slug: "malasana-tierra-variant",
+        nameSanskrit: "Malasana",
+        nameSpanish: "Guirnalda",
+        description:
+          "Baja a una sentadilla profunda con pies abiertos y rodillas siguiendo la direccion de los dedos. Une las palmas delante del pecho y usa los codos para crear espacio sin empujar de mas. Siente el suelo sosteniendo pelvis, pies y respiracion.",
+        duration: "8 respiraciones",
+      },
+      {
+        slug: "malasana-tierra-variant-2",
+        nameSanskrit: "Malasana",
+        nameSpanish: "Guirnalda, variante",
+        description:
+          "Desde la sentadilla, manten el pecho amplio y las manos en oracion. Si los talones se elevan, coloca una manta debajo. Esta segunda version ofrece variedad visual para trabajar el mismo patron de raiz: caderas bajas, columna presente y pies despiertos.",
+        duration: "8 respiraciones",
+      },
+      {
+        slug: "balasana-tierra-variant",
+        nameSanskrit: "Balasana",
+        nameSpanish: "Nino",
+        description:
+          "Arrodillate, lleva la pelvis hacia los talones y deja que el torso se entregue al suelo. La frente descansa y la espalda se ensancha con cada exhalacion. Usa esta version como pausa de enraizamiento cuando el cuerpo pide bajar el ritmo.",
+        duration: "10 respiraciones",
+      },
+      {
+        slug: "balasana-extendida",
+        nameSanskrit: "Balasana extendida",
+        nameSpanish: "Nino con brazos al frente",
+        description:
+          "Desde Balasana, camina las manos hacia adelante y alarga los costados sin despegar la pelvis de los talones mas de lo necesario. La frente baja y los hombros se suavizan. La postura une descanso con una linea larga desde caderas hasta manos.",
+        duration: "10 respiraciones",
+      },
+      {
+        slug: "marjaryasana-bitilasana-tierra-variant",
+        nameSanskrit: "Marjaryasana-Bitilasana",
+        nameSpanish: "Gato-Vaca",
+        description:
+          "En cuatro apoyos, alterna entre redondear la espalda al exhalar y abrir el pecho al inhalar. El movimiento nace en la pelvis y viaja por toda la columna. Manten manos y rodillas firmes para que la movilidad se sienta contenida por la tierra.",
+        duration: "10 ciclos lentos",
+      },
+      {
+        slug: "setu-bandhasana-tierra-variant",
+        nameSanskrit: "Setu Bandhasana",
+        nameSpanish: "Puente",
+        description:
+          "Boca arriba, flexiona rodillas y apoya los pies. Presiona el suelo con ambos pies y eleva la pelvis lentamente, vertebra a vertebra. Sosten arriba sintiendo gluteos e isquiotibiales activos sin cargar el cuello.",
+        duration: "3 series de 5 respiraciones",
+      },
+      {
+        slug: "supta-baddha-konasana-tierra-variant",
+        nameSanskrit: "Supta Baddha Konasana",
+        nameSpanish: "Mariposa supina",
+        description:
+          "Tumbate boca arriba, junta las plantas de los pies y deja que las rodillas caigan hacia los lados. Descansa las manos donde el cuerpo se sienta seguro. La gravedad abre la pelvis sin esfuerzo y el sacro se vuelve pesado.",
+        duration: "2 minutos",
+      },
+      {
+        slug: "paschimottanasana-tierra-variant",
+        nameSanskrit: "Paschimottanasana",
+        nameSpanish: "Flexion sentada",
+        description:
+          "Sientate con piernas extendidas. Inhala alargando la columna y exhala inclinandote desde la pelvis hacia las piernas. Toma pies, tobillos o piernas sin tirar. La intencion es ceder peso hacia adelante con paciencia.",
+        duration: "8 respiraciones",
+      },
+      {
+        slug: "prasarita-padottanasana-tierra-variant",
+        nameSanskrit: "Prasarita Padottanasana",
+        nameSpanish: "Flexion con piernas abiertas",
+        description:
+          "Abre las piernas en una base amplia, pies firmes y paralelos. Inclina el torso hacia adelante y apoya las manos en el suelo o bloques. Siente el peso repartido en los cuatro puntos de cada pie mientras la cabeza desciende.",
+        duration: "8 respiraciones",
+      },
+      {
+        slug: "virabhadrasana-i-tierra-variant",
+        nameSanskrit: "Virabhadrasana I",
+        nameSpanish: "Guerrero 1",
+        description:
+          "Desde una zancada larga, gira el pie posterior y flexiona la rodilla delantera. Eleva los brazos y arraiga ambas piernas como si empujaras la esterilla en direcciones opuestas. La fuerza nace de sostener la base.",
+        duration: "5 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Virabhadrasana II",
+        nameSpanish: "Guerrero 2",
+        description:
+          "Abre las piernas, gira el pie delantero hacia afuera y flexiona esa rodilla. Extiende los brazos en linea con los hombros y mira sobre la mano delantera. Manten ambos pies activos para que la postura sea amplia, firme y estable.",
+        duration: "5 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Uttanasana",
+        nameSpanish: "Flexion de pie",
+        description:
+          "Desde Tadasana, inclinate hacia adelante dejando que el torso caiga sobre las piernas. Dobla rodillas si hace falta y permite que cabeza, cuello y brazos pesen. La postura invita a soltar hacia abajo sin perder contacto con los pies.",
+        duration: "8 respiraciones",
+      },
+      {
+        nameSanskrit: "Ardha Uttanasana",
+        nameSpanish: "Media flexion",
+        description:
+          "Desde Uttanasana, lleva las manos a tibias, muslos o bloques y alarga la columna hacia adelante. El pecho se abre, el cuello queda largo y la pelvis se mantiene estable. Es una pausa de claridad entre flexion y verticalidad.",
+        duration: "5 respiraciones",
+      },
+      {
+        nameSanskrit: "Padangusthasana",
+        nameSpanish: "Tomar el dedo gordo",
+        description:
+          "De pie, inclinate hacia adelante y toma los dedos gordos con indice y medio si llegas sin forzar. Alarga la espalda al inhalar y profundiza suavemente al exhalar. La base sigue en los pies, no en el tiron de las manos.",
+        duration: "6 respiraciones",
+      },
+      {
+        slug: "vrksasana-tierra-variant",
+        nameSanskrit: "Vrksasana",
+        nameSpanish: "Arbol",
+        description:
+          "De pie, lleva un pie al muslo interno o pantorrilla de la pierna opuesta, evitando la rodilla. Une las palmas o eleva los brazos. Mira un punto fijo y siente como el equilibrio crece desde la planta del pie apoyado.",
+        duration: "5 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Vrksasana baja",
+        nameSpanish: "Arbol bajo",
+        description:
+          "Apoya un talon en el tobillo contrario o deja los dedos del pie tocando el suelo. Manten la pelvis nivelada y las manos en el pecho. Es una version accesible para cultivar raiz antes de buscar altura.",
+        duration: "5 respiraciones por lado",
+      },
+      {
+        slug: "sukhasana-tierra-variant",
+        nameSanskrit: "Sukhasana",
+        nameSpanish: "Postura facil",
+        description:
+          "Sientate con piernas cruzadas y pelvis elevada si lo necesitas. Apoya las manos sobre las rodillas y deja que la columna se organice desde la base. La quietud tambien es una postura de tierra.",
+        duration: "10 respiraciones",
+      },
+      {
+        nameSanskrit: "Dandasana",
+        nameSpanish: "Baston",
+        description:
+          "Sientate con piernas extendidas y pies activos. Apoya las manos junto a las caderas y crece desde la pelvis hasta la coronilla. La sencillez de la forma revela donde hace falta soporte, fuerza o suavidad.",
+        duration: "8 respiraciones",
+      },
+      {
+        nameSanskrit: "Janu Sirsasana",
+        nameSpanish: "Cabeza a la rodilla",
+        description:
+          "Desde sentado, flexiona una rodilla y lleva la planta del pie al muslo interno contrario. Gira el torso hacia la pierna extendida e inclinate desde la pelvis. Respira hacia la parte posterior del cuerpo y cambia de lado.",
+        duration: "6 respiraciones por lado",
+      },
+      {
+        slug: "upavista-konasana-simple",
+        nameSanskrit: "Upavista Konasana simple",
+        nameSpanish: "Sentada con piernas abiertas",
+        description:
+          "Sientate con las piernas abiertas en un angulo comodo. Apoya las manos delante o junto a la pelvis y alarga la columna. Permite que el interior de las piernas se abra sin empujar, sosteniendo una base amplia y tranquila.",
+        duration: "8 respiraciones",
+      },
+      {
+        nameSanskrit: "Adho Mukha Svanasana",
+        nameSpanish: "Perro boca abajo",
+        description:
+          "Desde cuatro apoyos, eleva la pelvis hacia arriba y atras. Dobla rodillas si ayuda a alargar la espalda. Empuja el suelo con las manos y lleva peso hacia los pies, creando una montana estable con el cuerpo.",
+        duration: "6 respiraciones",
+      },
+      {
+        nameSanskrit: "Adho Mukha Svanasana sobre rodillas",
+        nameSpanish: "Perro boca abajo apoyado",
+        description:
+          "Desde rodillas, camina las manos al frente y lleva la pelvis hacia atras y arriba, manteniendo las rodillas apoyadas. Alarga axilas y columna sin exigir los isquiotibiales. Es una version mas suave para hombros y espalda.",
+        duration: "6 respiraciones",
+      },
+      {
+        nameSanskrit: "Tadasana en puntillas",
+        nameSpanish: "Montana en puntillas",
+        description:
+          "De pie, activa la base y eleva lentamente los talones. Manten el abdomen suave pero despierto y la mirada estable. Baja con control, como si cada descenso volviera a sellar la conexion con la tierra.",
+        duration: "6 repeticiones lentas",
+      },
+      {
+        nameSanskrit: "Apanasana",
+        nameSpanish: "Rodillas al pecho",
+        description:
+          "Tumbate boca arriba y abraza las rodillas hacia el pecho. Deja que la espalda baja se ensanche sobre el suelo y respira hacia el abdomen. La postura recoge la energia y devuelve sensacion de contencion.",
+        duration: "10 respiraciones",
+      },
+      {
+        slug: "baddha-konasana-tierra-variant",
+        nameSanskrit: "Baddha Konasana",
+        nameSpanish: "Mariposa sentada",
+        description:
+          "Sientate, une las plantas de los pies y deja las rodillas abiertas hacia los lados. Manten la columna alta y las manos suaves. Esta imagen extra de la tanda Tierra queda como variante de apertura estable de caderas.",
+        duration: "8 respiraciones",
+      },
+      {
+        nameSanskrit: "Savasana con piernas dobladas",
+        nameSpanish: "Descanso con piernas dobladas",
+        description:
+          "Tumbate boca arriba con rodillas flexionadas y pies apoyados, separados al ancho de caderas. Deja que la espalda baja descanse y que el peso del cuerpo baje al suelo. Esta variante de cierre conserva la raiz sin exigir inmovilidad total.",
+        duration: "3 minutos",
+      },
     ],
     pranayama: [
       {
@@ -274,38 +660,66 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
     ],
     asanas: [
       {
-        nameSanskrit: "Flujo Pélvico Libre",
-        nameSpanish: "Flujo Pélvico Libre",
+        nameSanskrit: "Círculos de cadera de pie",
+        nameSpanish: "Círculos de cadera de pie",
         description:
           "De pie con los pies separados como los caderas, rodillas ligeramente dobladas. Cierra los ojos. Empieza a mover los caderas en círculos lentos — primero en una dirección, luego en la otra. No hay un esquema correcto. Deja que la pelvis se mueva como quiera, como el agua que encuentra su camino. Después prueba movimientos adelante y atrás, luego de un lado al otro. La respiración es libre y profunda.",
         duration: "2 minutos",
       },
       {
-        nameSanskrit: "Anjaneyasana Profundo",
+        nameSanskrit: "Anjaneyasana",
         nameSpanish: "Estocada Baja",
         description:
-          "De pie, da un gran paso hacia atrás con el pie izquierdo y baja la rodilla al suelo. La rodilla anterior derecha forma un ángulo de 90 grados. Lleva ambas manos a la rodilla anterior. Deja la pelvis bajar hacia abajo — no empujes activamente, deja que la gravedad y la respiración hagan el trabajo. Con cada espiración los psoas se abren. Los psoas acumulan la memoria emocional — abrirlos es un acto de liberación.",
+          "Da un paso largo hacia atrás y baja la rodilla posterior al suelo, acolchándola si hace falta. Eleva el pecho y deja que los brazos suban con suavidad, sin colapsar la zona lumbar. La pelvis desciende como una marea lenta, abriendo el psoas y la parte frontal de la cadera sin empujar.",
+        duration: "8 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Anjaneyasana con manos en la rodilla",
+        nameSpanish: "Estocada baja con apoyo",
+        description:
+          "Desde la estocada baja, lleva ambas manos a la rodilla anterior y deja que el torso se mantenga vertical. Con cada espiración permite que la pelvis se suavice hacia abajo. Esta variante sostiene la apertura desde un lugar más contenido, ideal para escuchar la cadera sin exigir equilibrio.",
         duration: "2 minutos por lado",
       },
       {
-        nameSanskrit: "Baddha Konasana con Oscilación",
-        nameSpanish: "La Mariposa",
+        nameSanskrit: "Baddha Konasana",
+        nameSpanish: "Mariposa sentada",
+        description:
+          "Siéntate con las plantas de los pies unidas y las rodillas abiertas hacia los lados. Eleva la pelvis con una manta si la espalda se redondea. Toma los pies con suavidad, alarga la columna y deja que el interior de las piernas se abra sin empujar.",
+        duration: "8 respiraciones",
+      },
+      {
+        nameSanskrit: "Baddha Konasana con balanceo",
+        nameSpanish: "Mariposa con balanceo",
         description:
           "Siéntate con las plantas de los pies unidas y las rodillas abiertas a los lados. Sujeta los pies con las manos. Empieza pequeños movimientos ondulantes con las rodillas — arriba y abajo como alas de mariposa que baten lentamente. No estás intentando bajar las rodillas, estás permitiendo que la pelvis se mueva con ritmo. Añade un ligero movimiento ondulante del torso adelante y atrás.",
         duration: "2 minutos",
       },
       {
-        nameSanskrit: "Upavista Konasana con Movimiento",
-        nameSpanish: "Ángulo Amplio",
+        nameSanskrit: "Upavista Konasana",
+        nameSpanish: "Ángulo amplio",
         description:
-          "Siéntate con las piernas abiertas en un ángulo amplio. Manos en el suelo delante de ti. Empieza a oscilar el torso lentamente de derecha a izquierda como un péndulo. Luego prueba a hacer círculos lentos con el torso. El interior del muslo se abre gradualmente y la zona del segundo chakra respira.",
-        duration: "2 minutos",
+          "Siéntate con las piernas abiertas en un ángulo cómodo. Mantén las rodillas ligeramente flexionadas si los isquiotibiales tiran y apoya las manos delante o junto a la pelvis. Respira hacia el suelo pélvico y permite que la base se vuelva amplia, líquida y estable.",
+        duration: "8 respiraciones",
+      },
+      {
+        nameSanskrit: "Upavista Konasana con torsión torso",
+        nameSpanish: "Ángulo amplio con torsión",
+        description:
+          "Desde Upavista Konasana, apoya una mano detrás de la pelvis y la otra sobre la pierna contraria o el suelo. Inhala para crecer y exhala girando el torso sin tirar del cuello. La torsión nace desde el abdomen bajo y masajea suavemente la zona sacra.",
+        duration: "5 respiraciones por lado",
       },
       {
         nameSanskrit: "Ardha Matsyendrasana",
         nameSpanish: "Torsión Sentada",
         description:
           "Siéntate con las piernas extendidas. Dobla la rodilla derecha y lleva el pie derecho al suelo al exterior de la rodilla izquierda. Con la inspiración alarga la columna hacia arriba. Con la espiración rota el torso hacia la derecha llevando el codo izquierdo al exterior de la rodilla derecha. El brazo derecho está en el suelo detrás como apoyo. Esta espiral masajea los órganos reproductivos y el sacro.",
+        duration: "5 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Bharadvajasana",
+        nameSpanish: "Torsión simple sentada de lado",
+        description:
+          "Siéntate con las piernas dobladas hacia un lado. Alarga la columna al inhalar y gira el torso hacia el lado contrario al exhalar, apoyando las manos donde sostengan sin forzar. La pelvis permanece pesada mientras la espalda se mueve como una espiral suave.",
         duration: "5 respiraciones por lado",
       },
       {
@@ -316,6 +730,13 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
         duration: "3 minutos por lado",
       },
       {
+        nameSanskrit: "Eka Pada Rajakapotasana preparatoria",
+        nameSpanish: "Paloma simple",
+        description:
+          "Desde cuatro apoyos, trae una rodilla hacia la muñeca del mismo lado y extiende la pierna contraria atrás. Mantén la pelvis apoyada sobre un soporte si queda en el aire. El torso puede quedarse erguido o inclinarse apenas, respirando hacia la cadera externa sin perseguir profundidad.",
+        duration: "8 respiraciones por lado",
+      },
+      {
         nameSanskrit: "Viparita Karani",
         nameSpanish: "Piernas en la Pared",
         description:
@@ -323,11 +744,95 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
         duration: "5 minutos",
       },
       {
-        nameSanskrit: "Movimiento Libre Final",
-        nameSpanish: "Movimiento Libre Final",
+        nameSanskrit: "Supta Padangusthasana",
+        nameSpanish: "Pierna estirada supina",
         description:
-          "Vuelve de pie o siéntate. Cierra los ojos. Muévete solo siguiendo la respiración y las sensaciones del cuerpo. No hay una postura correcta. Deja que el agua encuentre su forma natural por hoy.",
-        duration: "3 minutos",
+          "Túmbate boca arriba y eleva una pierna hacia el techo, manteniendo la otra larga o flexionada si la espalda lo pide. Toma detrás del muslo o usa una correa. Respira hacia la parte posterior de la pierna, dejando que el sacro pese sobre el suelo.",
+        duration: "6 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Supta Padangusthasana lateral",
+        nameSpanish: "Pierna estirada supina lateral",
+        description:
+          "Desde Supta Padangusthasana, abre la pierna elevada hacia el lado solo hasta donde la pelvis pueda seguir pesada. La mano contraria puede descansar sobre la cadera opuesta para recordarle al cuerpo que no necesita girar. Respira en la ingle y vuelve lento al centro.",
+        duration: "6 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Ananda Balasana",
+        nameSpanish: "Bebé feliz",
+        description:
+          "Boca arriba, flexiona las rodillas hacia las axilas y toma los bordes externos de los pies, tobillos o muslos. Deja que el sacro descanse pesado y balancea apenas si el cuerpo lo pide. La postura invita a soltar la pelvis desde un gesto simple y lúdico.",
+        duration: "8 respiraciones",
+      },
+      {
+        nameSanskrit: "Movimiento ondulante de pelvis supina",
+        nameSpanish: "Ondulación de pelvis boca arriba",
+        description:
+          "Túmbate boca arriba con rodillas flexionadas y pies apoyados. Al inhalar permite una pequeña curva lumbar; al exhalar deja que el sacro ruede y la espalda baja se acerque al suelo. Mantén el movimiento lento, como una ola que recorre la pelvis.",
+        duration: "10 ciclos lentos",
+      },
+      {
+        nameSanskrit: "Círculos de rodillas supina",
+        nameSpanish: "Círculos de rodillas boca arriba",
+        description:
+          "Boca arriba, lleva las rodillas hacia el pecho sin comprimir el abdomen. Dibuja círculos pequeños con ambas rodillas, primero hacia un lado y luego hacia el otro. El movimiento lubrica caderas y sacro, y ayuda a que la respiración vuelva al vientre bajo.",
+        duration: "8 círculos por dirección",
+      },
+      {
+        nameSanskrit: "Limpiaparabrisas supino",
+        nameSpanish: "Rodillas lado a lado",
+        description:
+          "Boca arriba con rodillas flexionadas y pies más anchos que las caderas. Deja caer las rodillas hacia un lado y luego hacia el otro, como limpiaparabrisas lentos. Mantén hombros pesados y permite que la pelvis cambie de peso sin brusquedad.",
+        duration: "10 ciclos lentos",
+      },
+      {
+        nameSanskrit: "Mandukasana",
+        nameSpanish: "Rana suave",
+        description:
+          "Desde cuatro apoyos, separa las rodillas hasta un rango cómodo y apoya antebrazos o manos. Mantén tobillos en línea con rodillas si es posible y coloca soporte bajo la pelvis si la apertura se siente intensa. Respira amplio hacia el interior de los muslos.",
+        duration: "8 respiraciones",
+      },
+      {
+        nameSanskrit: "Gomukhasana piernas",
+        nameSpanish: "Piernas de cara de vaca",
+        description:
+          "Siéntate cruzando una rodilla sobre la otra y acerca los pies hacia los lados de las caderas. Eleva la pelvis con soporte si una cadera queda flotando. Alarga la columna y respira hacia la cadera externa, sin añadir trabajo de brazos.",
+        duration: "6 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Sukhasana con torsión",
+        nameSpanish: "Torsión en postura fácil",
+        description:
+          "Siéntate en Sukhasana sobre una manta si lo necesitas. Lleva una mano a la rodilla contraria y la otra detrás de la pelvis. Inhala para crecer y exhala girando suave, como si la columna fuera agua en espiral. Cambia de lado sin prisa.",
+        duration: "5 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Parighasana",
+        nameSpanish: "Postura del cerrojo",
+        description:
+          "Desde rodillas, extiende una pierna hacia el lado con el pie apoyado. Lleva una mano a la pierna extendida y el otro brazo por encima de la cabeza, creando una apertura lateral desde la cintura. Respira hacia las costillas bajas y cambia de lado.",
+        duration: "5 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Skandasana",
+        nameSpanish: "Estocada lateral",
+        description:
+          "Separa los pies en una base amplia y flexiona una rodilla mientras la otra pierna se alarga hacia el lado. Mantén manos en el suelo o juntas delante del pecho, según el equilibrio. La pelvis se desplaza de forma lateral, explorando profundidad sin perder suavidad.",
+        duration: "5 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Parsva Balasana",
+        nameSpanish: "Hilo en aguja",
+        description:
+          "En cuatro apoyos, desliza un brazo por debajo del pecho hacia el lado contrario hasta apoyar hombro y sien. La otra mano puede quedarse delante del rostro o caminar un poco hacia adelante. Respira en la parte alta de la espalda y cambia de lado.",
+        duration: "6 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Posición fetal lateral",
+        nameSpanish: "Descanso fetal de lado",
+        description:
+          "Recuéstate de lado con las rodillas flexionadas hacia el pecho y una mano sosteniendo la cabeza o el abdomen. Deja que la espalda se redondee con naturalidad y que la respiración se vuelva íntima. Esta forma cierra la práctica como un regreso al agua interna.",
+        duration: "2 minutos por lado",
       },
     ],
     pranayama: [
@@ -380,11 +885,18 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
     ],
     asanas: [
       {
-        nameSanskrit: "Apertura Torácica en Cuatro Apoyos",
-        nameSpanish: "Apertura Torácica en Cuatro Apoyos",
+        nameSanskrit: "Brazos al cielo en Tadasana",
+        nameSpanish: "Montaña con brazos al cielo",
         description:
-          "En cuatro apoyos con muñecas bajo los hombros y rodillas bajo los caderas. Lleva la mano derecha detrás de la nuca con el codo abierto hacia el lado. Con la inspiración abre el codo hacia el techo rotando la columna torácica — solo la parte alta de la espalda se mueve. Con la espiración lleva el codo hacia abajo haciendo pasar el brazo bajo el pecho hacia el lado izquierdo. El pecho se abre y se cierra como un corazón que respira.",
-        duration: "8 por lado",
+          "De pie en Tadasana, enraíza los pies y eleva ambos brazos hacia el cielo. Mantén las costillas bajas suaves, la nuca larga y los hombros lejos de las orejas. Cada inhalación abre espacio en los pulmones; cada exhalación ordena la columna sin rigidez.",
+        duration: "8 respiraciones",
+      },
+      {
+        nameSanskrit: "Apertura de brazos en cruz de pie",
+        nameSpanish: "Brazos en cruz de pie",
+        description:
+          "Desde Tadasana, abre los brazos hacia los lados a la altura de los hombros, palmas hacia adelante o hacia arriba. Ensancha clavículas y siente el pecho amplio sin empujar las costillas. Respira como si el aire entrara por el centro del corazón y saliera por las manos.",
+        duration: "8 respiraciones",
       },
       {
         nameSanskrit: "Anahatasana",
@@ -394,11 +906,19 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
         duration: "2 minutos",
       },
       {
-        nameSanskrit: "Bhujangasana Bajo",
-        nameSpanish: "La Cobra",
+        nameSanskrit: "Bhujangasana",
+        nameSpanish: "Cobra",
         description:
-          "Túmbate boca abajo con las manos planas bajo los hombros. Lleva los codos cerca de las costillas. Con la inspiración eleva el pecho usando solo los músculos de la espalda — los brazos se enderezan solo parcialmente. Los hombros bajan lejos de las orejas. El cuello es largo. No eches la cabeza hacia atrás. Siente el pecho abrirse hacia el cielo. Con la espiración baja lentamente.",
-        duration: "3 series de 5 respiraciones",
+          "Túmbate boca abajo con las manos bajo los hombros y los codos cerca del cuerpo. Con la inhalación, eleva el pecho usando primero la espalda y luego el apoyo de las manos. Mantén el pubis pesado, hombros amplios y mirada al frente para abrir el pecho sin comprimir lumbares.",
+        duration: "5 respiraciones",
+      },
+      {
+        slug: "bhujangasana-baja",
+        nameSanskrit: "Bhujangasana baja",
+        nameSpanish: "Esfinge",
+        description:
+          "Boca abajo, apoya antebrazos en el suelo con codos debajo o ligeramente delante de los hombros. Alarga las piernas y deja que el pecho avance entre los brazos. La apertura es baja, respirable y sostenida, como una ventana suave para los pulmones.",
+        duration: "8 respiraciones",
       },
       {
         nameSanskrit: "Gomukhasana Brazos",
@@ -408,18 +928,11 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
         duration: "2 minutos por lado",
       },
       {
-        nameSanskrit: "Garudasana",
-        nameSpanish: "El Águila",
+        nameSanskrit: "Garudasana brazos",
+        nameSpanish: "Águila solo brazos",
         description:
           "De pie, dobla ligeramente las rodillas. Lleva el brazo derecho bajo el brazo izquierdo y envuelve los antebrazos llevando las palmas en contacto si es posible. Eleva los codos a la altura de los hombros. Siente como las escápulas se abren — esto disuelve la zona entre las escápulas donde a menudo se acumula la tensión emocional.",
         duration: "8 respiraciones por lado",
-      },
-      {
-        nameSanskrit: "Camatkarasana",
-        nameSpanish: "La Estrella Fugaz",
-        description:
-          "Desde el perro boca abajo, lleva el peso al brazo izquierdo. Abre el cuerpo rotando hacia la derecha llevando el pie derecho al suelo. El brazo derecho sube hacia el techo. El pecho está abierto hacia el cielo. Esta postura pide confianza — deja que el corazón se abra sin miedo.",
-        duration: "3 respiraciones por lado",
       },
       {
         nameSanskrit: "Matsyasana",
@@ -429,18 +942,123 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
         duration: "2 minutos",
       },
       {
-        nameSanskrit: "Setu Bandhasana con Respiración Expansiva",
-        nameSpanish: "Setu Bandhasana con Respiración Expansiva",
+        nameSanskrit: "Matsyasana apoyado",
+        nameSpanish: "Pez con cojín bajo escápulas",
         description:
-          "Túmbate boca arriba, rodillas dobladas, pies en el suelo. Con la inspiración eleva los caderas y concéntrate en la expansión lateral de las costillas — cada inspiración las costillas se abren como alas. Siente los pulmones expandirse en anchura. Entrelaza los dedos bajo la espalda y empuja los hombros hacia abajo abriendo aún más el pecho.",
-        duration: "5 respiraciones mantenida",
+          "Coloca un cojín, bolster o manta enrollada bajo las escápulas y recuéstate sobre el soporte. Deja que la cabeza descanse donde el cuello se sienta cómodo y permite que los brazos caigan a los lados. La postura abre el pecho sin esfuerzo, como si el aire hiciera espacio desde dentro.",
+        duration: "2 minutos",
+      },
+      {
+        nameSanskrit: "Setu Bandhasana con apertura costal",
+        nameSpanish: "Puente con apertura costal",
+        description:
+          "Túmbate boca arriba con rodillas flexionadas y pies apoyados. Eleva la pelvis en Setu Bandhasana y lleva los brazos por encima de la cabeza si los hombros lo permiten. Respira hacia las costillas laterales, dejando que el puente sea amplio y liviano, no tenso.",
+        duration: "5 respiraciones",
       },
       {
         nameSanskrit: "Balasana con Brazos Abiertos",
         nameSpanish: "Balasana con Brazos Abiertos",
         description:
-          "Lleva los glúteos hacia los talones y baja el torso. Los brazos están abiertos a los lados como alas de un pájaro posado. El corazón ha trabajado, ahora se descansa abierto y suave.",
+          "Lleva los glúteos hacia los talones y baja el torso. Abre los brazos hacia los lados, o apóyalos donde el pecho pueda descansar sin tensión. El corazón ha trabajado; ahora se recoge abierto y suave.",
         duration: "10 respiraciones",
+      },
+      {
+        nameSanskrit: "Balasana con brazos extendidos al frente",
+        nameSpanish: "Balasana extendida",
+        description:
+          "Desde Balasana, camina las manos hacia adelante y deja que la frente baje al suelo o a un soporte. Alarga axilas, costillas y espalda alta mientras la pelvis descansa hacia los talones. La respiración se abre por la parte posterior del corazón.",
+        duration: "10 respiraciones",
+      },
+      {
+        nameSanskrit: "Apertura torácica en cuatro apoyos",
+        nameSpanish: "Brazo al cielo",
+        description:
+          "En cuatro apoyos, lleva una mano detrás de la nuca o extiende el brazo hacia el cielo. Inhala abriendo el pecho hacia el lado y exhala volviendo al centro con control. La rotación nace en la parte alta de la espalda, como una ventana que se abre para ventilar el pecho.",
+        duration: "8 repeticiones por lado",
+      },
+      {
+        nameSanskrit: "Parsva Balasana invertida",
+        nameSpanish: "Brazo enhebrado al cielo",
+        description:
+          "Desde cuatro apoyos, enhebra un brazo por debajo del pecho y apoya hombro y sien. El brazo libre puede quedarse como apoyo o abrirse hacia arriba si el equilibrio y el cuello están cómodos. Respira entre las escápulas y cambia de lado sin prisa.",
+        duration: "6 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Círculos de hombros sentada",
+        nameSpanish: "Círculos de hombros sentada",
+        description:
+          "Siéntate con la columna alta y los brazos relajados. Dibuja círculos lentos con los hombros, primero hacia atrás y luego hacia adelante. Permite que el movimiento libere cuello, clavículas y parte alta de la espalda sin levantar la respiración.",
+        duration: "8 círculos por dirección",
+      },
+      {
+        nameSanskrit: "Círculos de brazos amplios",
+        nameSpanish: "Círculos amplios de brazos",
+        description:
+          "De pie o sentada, abre los brazos y dibuja círculos grandes y lentos en el aire. Mantén las costillas suaves y ajusta el tamaño del círculo para que los hombros no se irriten. La práctica despierta la sensación de alas y espacio alrededor del pecho.",
+        duration: "6 círculos por dirección",
+      },
+      {
+        nameSanskrit: "Postura de la mariposa con brazos abiertos",
+        nameSpanish: "Mariposa con brazos abiertos",
+        description:
+          "Siéntate en Baddha Konasana y abre los brazos a los lados con las palmas hacia arriba o hacia adelante. Eleva la pelvis con soporte si lo necesitas. La base se suaviza mientras el pecho se ofrece al aire con amplitud y calma.",
+        duration: "8 respiraciones",
+      },
+      {
+        nameSanskrit: "Sukhasana con manos en el corazón",
+        nameSpanish: "Postura fácil con manos al corazón",
+        description:
+          "Siéntate en Sukhasana sobre una manta si ayuda a alargar la espalda. Junta las manos delante del corazón y deja que los pulgares toquen el esternón. Siente el ritmo de la respiración en las palmas y permite que el pecho se vuelva receptivo.",
+        duration: "8 respiraciones",
+      },
+      {
+        nameSanskrit: "Sukhasana con brazos al cielo",
+        nameSpanish: "Postura fácil con brazos al cielo",
+        description:
+          "Desde Sukhasana, eleva los brazos hacia arriba con hombros relajados. Mantén la pelvis pesada y la coronilla larga. La respiración sube por los costados como una corriente clara, ampliando pulmones y clavículas.",
+        duration: "8 respiraciones",
+      },
+      {
+        nameSanskrit: "Apertura de pecho con manos entrelazadas atrás",
+        nameSpanish: "Manos entrelazadas atrás",
+        description:
+          "De pie o sentada, entrelaza las manos detrás de la espalda y alarga los nudillos hacia atrás y abajo. Abre clavículas sin empujar las costillas hacia adelante. Si los hombros se tensan, toma una correa o separa más las manos.",
+        duration: "6 respiraciones",
+      },
+      {
+        nameSanskrit: "Apertura de pecho con manos en lumbares",
+        nameSpanish: "Manos en lumbares",
+        description:
+          "Coloca las manos en la zona lumbar con dedos hacia abajo o hacia los lados. Lleva codos ligeramente hacia atrás y eleva el esternón sin colapsar el cuello. Es una apertura pequeña y directa para recordar al pecho que puede respirar.",
+        duration: "6 respiraciones",
+      },
+      {
+        nameSanskrit: "Estiramiento lateral de pie",
+        nameSpanish: "Medialuna simple",
+        description:
+          "Desde Tadasana, eleva un brazo y deja que el torso se incline suavemente hacia el lado contrario. Mantén ambos pies enraizados y respira hacia las costillas abiertas. Vuelve al centro y cambia de lado, buscando espacio más que profundidad.",
+        duration: "5 respiraciones por lado",
+      },
+      {
+        nameSanskrit: "Cobra con manos elevadas",
+        nameSpanish: "Cobra sin apoyo de manos",
+        description:
+          "Boca abajo, lleva las manos apenas elevadas del suelo o flotando junto al pecho. Inhala y levanta el pecho desde la fuerza de la espalda alta, manteniendo el cuello largo. La postura refina la apertura torácica sin depender del empuje de los brazos.",
+        duration: "3 series de 4 respiraciones",
+      },
+      {
+        nameSanskrit: "Apertura de brazos tumbada boca arriba",
+        nameSpanish: "Cactus arms",
+        description:
+          "Recuéstate boca arriba y abre los brazos en forma de cactus, con codos flexionados y palmas hacia arriba. Ajusta mantas bajo brazos si los hombros quedan en el aire. Deja que la respiración ensanche el pecho de forma pasiva y sostenida.",
+        duration: "2 minutos",
+      },
+      {
+        nameSanskrit: "Savasana con brazos abiertos en cruz",
+        nameSpanish: "Descanso con brazos en cruz",
+        description:
+          "Túmbate boca arriba con piernas cómodas y brazos abiertos a los lados. Deja las palmas hacia arriba y permite que el pecho descanse ancho, sin esfuerzo. El aire entra y sale como cielo despejado alrededor del cuerpo.",
+        duration: "3 minutos",
       },
     ],
     pranayama: [

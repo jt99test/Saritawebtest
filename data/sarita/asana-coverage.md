@@ -16,13 +16,31 @@ Important:
 - [x] `Tadasana` -> `tadasana.png`
 - [x] `Navasana` -> `navasana.png`
 - [x] `Ardha Navasana` -> `ardha-navasana.png`
-  - Ambiguous: the image reads visually like a stronger/full boat variation more than the lower half-boat described in the routine.
 - [x] `Salabhasana` -> `salabhasana.png`
+- [x] `Ardha Salabhasana` -> `ardha-salabhasana.png`
 - [x] `Dhanurasana` -> `dhanurasana.png`
+- [x] `Ardha Dhanurasana` -> `ardha-dhanurasana.png`
+- [x] `Ustrasana` -> `ustrasana.png`
+- [x] `Ardha Ustrasana` -> `ardha-ustrasana.png`
+- [x] `Phalakasana` -> `phalakasana.png`
+- [x] `Vasisthasana sobre rodilla` -> `vasisthasana-sobre-rodilla.png`
+- [x] `Chaturanga sobre rodillas` -> `chaturanga-sobre-rodillas.png`
+- [x] `Setu Bandhasana Dinamico` -> `setu-bandhasana-dinamico.png`
+- [x] `Utkatasana` -> `utkatasana.png`
+- [x] `Virabhadrasana III sobre silla` -> `virabhadrasana-iii-sobre-silla.png`
+- [x] `Parivrtta Utkatasana` -> `parivrtta-utkatasana.png`
+- [x] `Parivrtta Sukhasana` -> `parivrtta-sukhasana.png`
+- [x] `Jathara Parivartanasana` -> `jathara-parivartanasana.png`
+- [x] `Bharmanasana opuestos` -> `bharmanasana-opuestos.png`
+- [x] `Vyaghrasana` -> `vyaghrasana.png`
+- [x] `Anjaneyasana con torsion simple` -> `anjaneyasana-con-torsion-simple.png`
+- [ ] `Abdominales con piernas en mesa supina` - no provided image; text-only fallback
+- [x] `Plancha sobre antebrazos` -> `plancha-sobre-antebrazos.png`
+- [x] `Elevacion de piernas supina` -> `elevacion-de-piernas-supina.png`
+- [x] `Bicicleta lenta supina` -> `bicicleta-lenta-supina.png`
 - [x] `Parivrtta Janu Sirsasana` -> `parivrtta-janu-sirsasana.png`
   - Ambiguous: the image reads closer to a `Janu Sirsasana` / head-to-knee fold than a clearly revolved side-bend.
 - [x] `Parivrtta Trikonasana` -> `parivrtta-trikonasana.png`
-- [x] `Ustrasana` -> `ustrasana.png`
 
 ### Tierra
 
@@ -38,29 +56,66 @@ Important:
 
 ### Agua
 
-- [ ] `Flujo Pelvico Libre` - no single canonical pose image; text-only fallback
-- [x] `Anjaneyasana Profundo` -> `anjaneyasana.png`
-- [x] `Baddha Konasana con Oscilacion` -> `baddha-konasana.png`
-  - Note: the image is a static butterfly seat, not the oscillating action itself.
-- [x] `Upavista Konasana con Movimiento` -> `upavista-konasana.png`
+- [ ] `Circulos de cadera de pie` - no provided image; text-only fallback
+- [x] `Anjaneyasana` -> `anjaneyasana.png`
+- [x] `Anjaneyasana con manos en la rodilla` -> `anjaneyasana-con-manos-en-la-rodilla.png`
+- [x] `Baddha Konasana` -> `baddha-konasana.png`
+- [x] `Baddha Konasana con balanceo` -> `baddha-konasana-con-balanceo.png`
+- [x] `Upavista Konasana` -> `upavista-konasana.png`
+- [x] `Upavista Konasana con torsion torso` -> `upavista-konasana-con-torsion-torso.png`
 - [x] `Ardha Matsyendrasana` -> `ardha-matsyendrasana.png`
+- [x] `Bharadvajasana` -> `bharadvajasana.png`
 - [x] `Supta Kapotasana` -> `supta-kapotasana.png`
+- [x] `Eka Pada Rajakapotasana preparatoria` -> `eka-pada-rajakapotasana-preparatoria.png`
 - [x] `Viparita Karani` -> `viparita-karani.png`
-  - Note: visually valid, though the wall is not illustrated.
-- [ ] `Movimiento Libre Final` - no single canonical pose image; text-only fallback
+- [x] `Supta Padangusthasana` -> `supta-padangusthasana.png`
+- [x] `Supta Padangusthasana lateral` -> `supta-padangusthasana-lateral.png`
+- [ ] `Ananda Balasana` - no provided image; text-only fallback
+- [ ] `Movimiento ondulante de pelvis supina` - no provided image; text-only fallback
+- [x] `Circulos de rodillas supina` -> `circulos-de-rodillas-supina.png`
+- [x] `Limpiaparabrisas supino` -> `limpiaparabrisas-supino.png`
+- [x] `Mandukasana` -> `mandukasana.png`
+- [x] `Gomukhasana piernas` -> `gomukhasana-piernas.png`
+- [ ] `Sukhasana con torsion` - no provided image; text-only fallback
+- [x] `Parighasana` -> `parighasana.png`
+- [x] `Skandasana` -> `skandasana.png`
+- [x] `Parsva Balasana` -> `parsva-balasana.png`
+- [ ] `Posicion fetal lateral` - no provided image; text-only fallback
 
 ### Aire
 
+- [x] `Brazos al cielo en Tadasana` -> `brazos-al-cielo-en-tadasana.png`
+- [ ] `Apertura de brazos en cruz de pie` - no provided image; text-only fallback
 - [x] `Apertura Toracica en Cuatro Apoyos` -> `apertura-toracica-en-cuatro-apoyos.png`
 - [x] Alternate photo for the same asana -> `apertura-toracica-en-cuatro-apoyos-variation.png`
 - [x] `Anahatasana` -> `anahatasana.png`
-- [x] `Bhujangasana Bajo` -> `bhujangasana-bajo.png`
+- [x] `Bhujangasana` -> `bhujangasana.png`
+- [x] `Bhujangasana baja` -> `bhujangasana-baja.png`
 - [x] `Gomukhasana Brazos` -> `gomukhasana-brazos.png`
-- [x] `Garudasana` -> `garudasana.png`
-- [x] `Camatkarasana` -> `camatkarasana.png`
+- [x] `Garudasana brazos` -> `garudasana-brazos.png`
 - [x] `Matsyasana` -> `matsyasana.png`
-- [x] `Setu Bandhasana con Respiracion Expansiva` -> reuse `setu-bandhasana.png`
+- [x] `Matsyasana apoyado` -> `matsyasana-apoyado.png`
+- [x] `Setu Bandhasana con apertura costal` -> `setu-bandhasana-con-apertura-costal.png`
 - [x] `Balasana con Brazos Abiertos` -> `balasana-con-brazos-abiertos.png`
+- [x] `Balasana con brazos extendidos al frente` -> `balasana-con-brazos-extendidos-al-frente.png`
+- [x] `Parsva Balasana invertida` -> `parsva-balasana-invertida.png`
+- [ ] `Circulos de hombros sentada` - no provided image; text-only fallback
+- [ ] `Circulos de brazos amplios` - no provided image; text-only fallback
+- [ ] `Postura de la mariposa con brazos abiertos` - no provided image; text-only fallback
+- [ ] `Sukhasana con manos en el corazon` - no provided image; text-only fallback
+- [ ] `Sukhasana con brazos al cielo` - no provided image; text-only fallback
+- [ ] `Apertura de pecho con manos entrelazadas atras` - no provided image; text-only fallback
+- [ ] `Apertura de pecho con manos en lumbares` - no provided image; text-only fallback
+- [ ] `Estiramiento lateral de pie` - no provided image; text-only fallback
+- [ ] `Cobra con manos elevadas` - no provided image; text-only fallback
+- [ ] `Apertura de brazos tumbada boca arriba` - no provided image; text-only fallback
+- [ ] `Savasana con brazos abiertos en cruz` - no provided image; text-only fallback
+
+Air image notes:
+- [ ] `hf_20260507_215241_4dd749fa-1d62-46d0-ba3b-1d56923eb129.png`
+  - Not used: this reads as a low-lunge twist, not as one of the requested air poses.
+- [ ] `hf_20260507_215333_7b11599d-1922-4e2a-ac14-69a528767fb6.png`
+  - Not used: duplicate/alternate of `Balasana con brazos extendidos al frente`; it does not show arms opened in a cross.
 
 ### Lavado Intestinal
 
@@ -99,28 +154,43 @@ Important:
 
 - `anahatasana.png`
 - `anjaneyasana.png`
+- `anjaneyasana-con-torsion-simple.png`
 - `apertura-toracica-en-cuatro-apoyos.png`
 - `apertura-toracica-en-cuatro-apoyos-variation.png`
+- `ardha-dhanurasana.png`
 - `ardha-matsyendrasana.png`
 - `ardha-navasana.png`
+- `ardha-salabhasana.png`
+- `ardha-ustrasana.png`
 - `baddha-konasana.png`
 - `balasana.png`
 - `balasana-con-brazos-abiertos.png`
+- `bharmanasana-opuestos.png`
 - `bhujangasana-bajo.png`
+- `bicicleta-lenta-supina.png`
 - `camatkarasana.png`
+- `chaturanga-sobre-rodillas.png`
 - `dhanurasana.png`
+- `elevacion-de-piernas-supina.png`
 - `garudasana.png`
 - `gomukhasana-brazos.png`
+- `jathara-parivartanasana.png`
 - `kati-chakrasana.png`
 - `marjaryasana-bitilasana.png`
 - `malasana.png`
 - `matsyasana.png`
 - `navasana.png`
+- `parivrtta-sukhasana.png`
 - `parivrtta-janu-sirsasana.png`
 - `parivrtta-trikonasana.png`
+- `parivrtta-utkatasana.png`
+- `parsva-balasana.png`
 - `paschimottanasana.png`
+- `phalakasana.png`
+- `plancha-sobre-antebrazos.png`
 - `prasarita-padottanasana.png`
 - `salabhasana.png`
+- `setu-bandhasana-dinamico.png`
 - `setu-bandhasana.png`
 - `sukhasana.png`
 - `supta-baddha-konasana.png`
@@ -132,6 +202,10 @@ Important:
 - `udarakarshanasana.png`
 - `ustrasana.png`
 - `upavista-konasana.png`
+- `utkatasana.png`
+- `vasisthasana-sobre-rodilla.png`
 - `viparita-karani.png`
 - `virabhadrasana-i.png`
+- `virabhadrasana-iii-sobre-silla.png`
 - `vrksasana.png`
+- `vyaghrasana.png`
