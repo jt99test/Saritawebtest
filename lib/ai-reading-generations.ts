@@ -1,7 +1,5 @@
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 
-import { createServiceSupabaseClient } from "@/lib/supabase/server";
-
 export type AiReadingScope =
   | "planet"
   | "general"
@@ -39,10 +37,6 @@ export type AiReadingReservation =
 
 function normalizedLocale(locale?: string) {
   return locale === "en" || locale === "it" ? locale : "es";
-}
-
-function aiReadingStoreClient(fallback: SupabaseClient) {
-  return process.env.SUPABASE_SERVICE_ROLE_KEY ? createServiceSupabaseClient() : fallback;
 }
 
 export function getAiGenerationStatus(content: unknown): "generating" | "failed" | null {
@@ -102,8 +96,7 @@ export async function getCachedAiReading({
 }: AiReadingCacheInput) {
   if (!readingId) return null;
 
-  const store = aiReadingStoreClient(supabase);
-  const { data, error } = await store
+  const { data, error } = await supabase
     .from("ai_reading_generations")
     .select("content")
     .eq("user_id", user.id)
@@ -133,35 +126,13 @@ export async function reserveAiReadingGeneration({
     return { ok: false, response: new Response("readingId required", { status: 400 }) };
   }
 
-  const normalized = normalizedLocale(locale);
-  const store = aiReadingStoreClient(supabase);
-  const { error } = await store
-    .from("ai_reading_generations")
-    .insert({
-      user_id: user.id,
-      reading_id: readingId,
-      scope,
-      item_key: itemKey,
-      locale: normalized,
-      content: GENERATING_CONTENT,
-    });
-
-  if (!error) {
-    return { ok: true, reserved: true };
-  }
-
-  if (error.code !== "23505") {
-    console.error("AI reading reservation failed:", error.message);
-    return { ok: false, response: new Response("AI reading reservation failed", { status: 500 }) };
-  }
-
   const content = await getCachedAiReading({
     supabase,
     user,
     readingId,
     scope,
     itemKey,
-    locale: normalized,
+    locale,
   });
 
   const status = getAiGenerationStatus(content);
@@ -170,24 +141,14 @@ export async function reserveAiReadingGeneration({
   }
 
   if (status === "failed") {
-    const { error: retryError } = await store
-      .from("ai_reading_generations")
-      .update({ content: GENERATING_CONTENT })
-      .eq("user_id", user.id)
-      .eq("reading_id", readingId)
-      .eq("scope", scope)
-      .eq("item_key", itemKey)
-      .eq("locale", normalized);
-
-    if (retryError) {
-      console.error("AI reading reservation retry failed:", retryError.message);
-      return { ok: false, response: new Response("AI reading reservation failed", { status: 500 }) };
-    }
-
     return { ok: true, reserved: true };
   }
 
-  return { ok: true, reserved: false, content };
+  if (content) {
+    return { ok: true, reserved: false, content };
+  }
+
+  return { ok: true, reserved: true };
 }
 
 export async function setCachedAiReading({
@@ -201,19 +162,38 @@ export async function setCachedAiReading({
 }: SetAiReadingCacheInput) {
   if (!readingId) return;
 
-  const store = aiReadingStoreClient(supabase);
-  const { error } = await store
+  const normalized = normalizedLocale(locale);
+  const { data: updated, error: updateError } = await supabase
     .from("ai_reading_generations")
-    .update(
-      {
-        content,
-      },
-    )
+    .update({ content })
     .eq("user_id", user.id)
     .eq("reading_id", readingId)
     .eq("scope", scope)
     .eq("item_key", itemKey)
-    .eq("locale", normalizedLocale(locale));
+    .eq("locale", normalized)
+    .select("id")
+    .maybeSingle();
+
+  if (!updateError && updated) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from("ai_reading_generations")
+    .upsert(
+      {
+        user_id: user.id,
+        reading_id: readingId,
+        scope,
+        item_key: itemKey,
+        locale: normalized,
+        content,
+      },
+      {
+        onConflict: "reading_id,scope,item_key,locale",
+        ignoreDuplicates: true,
+      },
+    );
 
   if (error) {
     console.error("AI reading cache save failed:", error.message);
