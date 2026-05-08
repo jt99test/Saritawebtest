@@ -96,6 +96,20 @@ function pointLabel(id: ChartPointId, locale?: string) {
   return getPointLabel(id, locale);
 }
 
+function lifecycleTransitLabel(transit: Pick<ActiveTransit, "lifecycleEvent">, locale?: string) {
+  if (!transit.lifecycleEvent) return "";
+  const labels: Record<NonNullable<ActiveTransit["lifecycleEvent"]>, Record<"es" | "en" | "it", string>> = {
+    "jupiter-return": { es: "Retorno de Júpiter", en: "Jupiter return", it: "Ritorno di Giove" },
+    "jupiter-opposition": { es: "Oposición de Júpiter", en: "Jupiter opposition", it: "Opposizione di Giove" },
+    "saturn-return": { es: "Retorno de Saturno", en: "Saturn return", it: "Ritorno di Saturno" },
+    "saturn-opposition": { es: "Oposición de Saturno", en: "Saturn opposition", it: "Opposizione di Saturno" },
+    "uranus-return": { es: "Retorno de Urano", en: "Uranus return", it: "Ritorno di Urano" },
+    "uranus-opposition": { es: "Oposición de Urano", en: "Uranus opposition", it: "Opposizione di Urano" },
+  };
+  const language = locale === "en" || locale === "it" ? locale : "es";
+  return labels[transit.lifecycleEvent][language];
+}
+
 function cleanJsonPayload(rawPayload: string) {
   const withoutFence = rawPayload
     .replace(/^```(?:json)?\s*/i, "")
@@ -188,7 +202,8 @@ function transitWeight(transit: ActiveTransit) {
   };
   const tightness = transit.strength === "tight" ? 3 : transit.strength === "moderate" ? 2 : 1;
   const natalPatternBonus = Math.min(1.5, transit.activatedNatalAspects.length * 0.35);
-  return (planetWeight[transit.transitingPlanet] ?? 1) + aspectWeight[transit.aspectType] + tightness + natalPatternBonus - transit.orb;
+  const lifecycleBonus = transit.lifecycleEvent ? 2 : 0;
+  return (planetWeight[transit.transitingPlanet] ?? 1) + aspectWeight[transit.aspectType] + tightness + natalPatternBonus + lifecycleBonus - transit.orb;
 }
 
 function topTransits(transits: ActiveTransit[]) {
@@ -302,6 +317,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
       transitingPlanet: t.transitingPlanet,
       natalPlanet: t.natalPlanet,
       aspectType: t.aspectType,
+      lifecycleEvent: t.lifecycleEvent,
       orb: t.orb,
       strength: t.strength,
       natalHouse: findPoint(chart, t.natalPlanet)?.house,
@@ -625,7 +641,8 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
                 className="flex items-center justify-between gap-4 border border-black/12 bg-white px-4 py-3"
               >
                 <p className="text-sm text-[#5c4a24]">
-                  {pointLabel(transit.transitingPlanet, locale)} {getAspectLabel(transit.aspectType, locale).toLowerCase()} {pointLabel(transit.natalPlanet, locale)}
+                  {lifecycleTransitLabel(transit, locale) ||
+                    `${pointLabel(transit.transitingPlanet, locale)} ${getAspectLabel(transit.aspectType, locale).toLowerCase()} ${pointLabel(transit.natalPlanet, locale)}`}
                 </p>
                 <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#8a7a4e]">
                   {transit.orb.toFixed(1)}°

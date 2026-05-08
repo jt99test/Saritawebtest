@@ -39,6 +39,7 @@ export type LunarReportMetadata = {
     transitingPlanet: string;
     natalPlanet: string;
     aspectType: string;
+    lifecycleEvent?: "jupiter-return" | "jupiter-opposition" | "saturn-return" | "saturn-opposition" | "uranus-return" | "uranus-opposition";
     orb: number;
     exactnessDate: string;
     strength: "tight" | "moderate" | "wide";

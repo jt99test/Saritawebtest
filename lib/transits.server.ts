@@ -41,6 +41,7 @@ export type ActiveTransit = {
   transitingPlanet: ChartPointId;
   natalPlanet: ChartPointId;
   aspectType: AspectId;
+  lifecycleEvent?: "jupiter-return" | "jupiter-opposition" | "saturn-return" | "saturn-opposition" | "uranus-return" | "uranus-opposition";
   orb: number;
   exactnessDate: string;
   strength: "tight" | "moderate" | "wide";
@@ -73,7 +74,7 @@ const TRANSIT_PLANETS: Array<{ id: SupportedTransitPlanet; body: number }> = [
 
 const TRANSIT_RULES: Record<SupportedTransitPlanet, TransitRule> = {
   saturn:  { aspects: [{ type: "conjunction", angle: 0 }, { type: "opposition", angle: 180 }, { type: "square", angle: 90 }, { type: "trine", angle: 120 }], orb: 2, searchWindowDays: 60 },
-  jupiter: { aspects: [{ type: "conjunction", angle: 0 }, { type: "trine", angle: 120 }, { type: "sextile", angle: 60 }], orb: 2, searchWindowDays: 45 },
+  jupiter: { aspects: [{ type: "conjunction", angle: 0 }, { type: "opposition", angle: 180 }, { type: "trine", angle: 120 }, { type: "sextile", angle: 60 }], orb: 2, searchWindowDays: 45 },
   uranus:  { aspects: [{ type: "conjunction", angle: 0 }, { type: "opposition", angle: 180 }, { type: "square", angle: 90 }], orb: 1.5, searchWindowDays: 90 },
   neptune: { aspects: [{ type: "conjunction", angle: 0 }, { type: "opposition", angle: 180 }, { type: "square", angle: 90 }], orb: 1.5, searchWindowDays: 90 },
   pluto:   { aspects: [{ type: "conjunction", angle: 0 }, { type: "opposition", angle: 180 }, { type: "square", angle: 90 }], orb: 1.5, searchWindowDays: 120 },
@@ -100,6 +101,20 @@ function toStrength(orb: number, maxOrb: number): ActiveTransit["strength"] {
   if (orb <= maxOrb / 3) return "tight";
   if (orb <= (maxOrb * 2) / 3) return "moderate";
   return "wide";
+}
+
+function getLifecycleEvent(
+  transitingPlanet: SupportedTransitPlanet,
+  natalPlanet: ChartPointId,
+  aspectType: AspectId,
+): ActiveTransit["lifecycleEvent"] {
+  if (transitingPlanet !== natalPlanet) return undefined;
+  if (transitingPlanet !== "jupiter" && transitingPlanet !== "saturn" && transitingPlanet !== "uranus") {
+    return undefined;
+  }
+  if (aspectType === "conjunction") return `${transitingPlanet}-return`;
+  if (aspectType === "opposition") return `${transitingPlanet}-opposition`;
+  return undefined;
 }
 
 function getPlanetLongitude(se: SwissEph, planet: SupportedTransitPlanet, date: Date) {
@@ -177,6 +192,7 @@ export async function getActiveTransits(natalChart: NatalChartData, date: Date):
             transitingPlanet: transit.id,
             natalPlanet: natalPoint.id,
             aspectType: aspect.type,
+            lifecycleEvent: getLifecycleEvent(transit.id, natalPoint.id, aspect.type),
             orb: Math.round(orb * 100) / 100,
             exactnessDate: findExactnessDate(se, transit.id, natalPoint.longitude, aspect.angle, date),
             strength: toStrength(orb, rules.orb),

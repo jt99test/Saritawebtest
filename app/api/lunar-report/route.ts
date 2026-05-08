@@ -42,6 +42,28 @@ type CachedLunarContent = {
 
 const ACTIONS_MARKER = "__SARITA_ACTIONS__";
 
+type LifecycleEvent =
+  | "jupiter-return"
+  | "jupiter-opposition"
+  | "saturn-return"
+  | "saturn-opposition"
+  | "uranus-return"
+  | "uranus-opposition";
+
+function lifecycleTransitLabel(lifecycleEvent?: LifecycleEvent, locale?: string) {
+  if (!lifecycleEvent) return "";
+  const labels: Record<LifecycleEvent, Record<"es" | "en" | "it", string>> = {
+    "jupiter-return": { es: "Retorno de Júpiter", en: "Jupiter return", it: "Ritorno di Giove" },
+    "jupiter-opposition": { es: "Oposición de Júpiter", en: "Jupiter opposition", it: "Opposizione di Giove" },
+    "saturn-return": { es: "Retorno de Saturno", en: "Saturn return", it: "Ritorno di Saturno" },
+    "saturn-opposition": { es: "Oposición de Saturno", en: "Saturn opposition", it: "Opposizione di Saturno" },
+    "uranus-return": { es: "Retorno de Urano", en: "Uranus return", it: "Ritorno di Urano" },
+    "uranus-opposition": { es: "Oposición de Urano", en: "Uranus opposition", it: "Opposizione di Urano" },
+  };
+  const language = locale === "en" || locale === "it" ? locale : "es";
+  return labels[lifecycleEvent][language];
+}
+
 function langInstruction(locale?: string): string {
   if (locale === "en") return "Write entirely in English. Do not output Spanish words unless they are proper names.";
   if (locale === "it") return "Write entirely in Italian. Do not output Spanish words unless they are proper names.";
@@ -104,7 +126,8 @@ async function buildTransitList(chart: NatalChartData, lunationTimestamp: string
   return {
     lines: structured
       .map((transit) => {
-        return `- ${transit.transitingPlanetLabel} ${transit.aspectLabel} ${transit.natalPlanetLabel} (orbe ${transit.orb}°). Relevancia: ${transit.relevance}.`;
+        const lifecycleLabel = lifecycleTransitLabel(transit.lifecycleEvent, locale);
+        return `- ${lifecycleLabel ? `${lifecycleLabel}: ` : ""}${transit.transitingPlanetLabel} ${transit.aspectLabel} ${transit.natalPlanetLabel} (orbe ${transit.orb}°). Relevancia: ${transit.relevance}.`;
       })
       .join("\n"),
     structured,

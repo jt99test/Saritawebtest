@@ -20,6 +20,7 @@ type TransitInput = {
   transitingPlanet: ChartPointId;
   natalPlanet: ChartPointId;
   aspectType: string;
+  lifecycleEvent?: "jupiter-return" | "jupiter-opposition" | "saturn-return" | "saturn-opposition" | "uranus-return" | "uranus-opposition";
   orb: number;
   strength: string;
   natalHouse?: number;
@@ -31,6 +32,44 @@ type TransitInput = {
     orb: number;
   }>;
 };
+
+function getLifecycleLabel(lifecycleEvent: TransitInput["lifecycleEvent"], locale?: string) {
+  if (!lifecycleEvent) return "";
+  const labels: Record<NonNullable<TransitInput["lifecycleEvent"]>, Record<"es" | "en" | "it", string>> = {
+    "jupiter-return": {
+      es: "Retorno de Júpiter",
+      en: "Jupiter return",
+      it: "Ritorno di Giove",
+    },
+    "jupiter-opposition": {
+      es: "Oposición de Júpiter",
+      en: "Jupiter opposition",
+      it: "Opposizione di Giove",
+    },
+    "saturn-return": {
+      es: "Retorno de Saturno",
+      en: "Saturn return",
+      it: "Ritorno di Saturno",
+    },
+    "saturn-opposition": {
+      es: "Oposición de Saturno",
+      en: "Saturn opposition",
+      it: "Opposizione di Saturno",
+    },
+    "uranus-return": {
+      es: "Retorno de Urano",
+      en: "Uranus return",
+      it: "Ritorno di Urano",
+    },
+    "uranus-opposition": {
+      es: "Oposición de Urano",
+      en: "Uranus opposition",
+      it: "Opposizione di Urano",
+    },
+  };
+  const language = locale === "en" || locale === "it" ? locale : "es";
+  return labels[lifecycleEvent][language];
+}
 
 type TransitReadingPayload = {
   reading: string;
@@ -155,8 +194,12 @@ export async function POST(request: Request) {
     const patternDesc = natalPatterns
       ? locale === "it" ? ` Riattiva memoria natale: ${natalPatterns}.` : locale === "en" ? ` Reactivates natal memory: ${natalPatterns}.` : ` Reactiva memoria natal: ${natalPatterns}.`
       : locale === "it" ? " Non e stato rilevato un aspetto natale diretto associato a questo punto." : locale === "en" ? " No direct natal aspect associated with this point was detected." : " No se detecto un aspecto natal directo asociado a este punto.";
+    const lifecycleLabel = getLifecycleLabel(transit.lifecycleEvent, locale);
+    const lifecycleDesc = lifecycleLabel
+      ? locale === "it" ? ` Ciclo vitale importante: ${lifecycleLabel}.` : locale === "en" ? ` Important life-cycle transit: ${lifecycleLabel}.` : ` Ciclo vital importante: ${lifecycleLabel}.`
+      : "";
 
-    return `- ${getPointLabel(transit.transitingPlanet, locale)} ${getAspectLabel(transit.aspectType, locale)} ${getPointLabel(transit.natalPlanet, locale)} natal. Orb ${transit.orb} degrees, ${tightness}.${natalHouseDesc}${transitHouseDesc}${patternDesc}`;
+    return `- ${lifecycleLabel ? `${lifecycleLabel}: ` : ""}${getPointLabel(transit.transitingPlanet, locale)} ${getAspectLabel(transit.aspectType, locale)} ${getPointLabel(transit.natalPlanet, locale)} natal. Orb ${transit.orb} degrees, ${tightness}.${natalHouseDesc}${transitHouseDesc}${lifecycleDesc}${patternDesc}`;
   }).join("\n");
   const houseNumbers = [...new Set(transits.slice(0, 6)
     .map((transit) => transit.transitingHouse ?? transit.natalHouse)
