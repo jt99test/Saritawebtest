@@ -5,6 +5,7 @@ type AsanaVisualTone = "fuego" | "tierra" | "agua" | "aire" | "neutral";
 type AsanaVisualProps = {
   asana: Pick<Asana, "imagePath" | "nameSanskrit" | "nameSpanish">;
   tone?: AsanaVisualTone;
+  missingImageLabel?: string;
   className?: string;
 };
 
@@ -19,10 +20,14 @@ const TONE_GLOW: Record<AsanaVisualTone, string> = {
 export function AsanaVisual({
   asana,
   tone = "neutral",
+  missingImageLabel = "Sin foto disponible",
   className = "",
 }: AsanaVisualProps) {
   const frameClassName =
     `aspect-[3/4] w-full overflow-hidden rounded-[1.15rem] border border-black/10 bg-[#f5f0e6] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.44)] ${className}`.trim();
+  const imageAlt = asana.nameSanskrit === asana.nameSpanish
+    ? asana.nameSpanish
+    : `${asana.nameSanskrit} · ${asana.nameSpanish}`;
 
   if (asana.imagePath) {
     return (
@@ -30,7 +35,7 @@ export function AsanaVisual({
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={asana.imagePath}
-          alt={`${asana.nameSanskrit} · ${asana.nameSpanish}`}
+          alt={imageAlt}
           className="h-full w-full object-contain object-center opacity-[0.88] brightness-[1.22] contrast-[0.88] saturate-[0.78] sepia-[0.18]"
         />
         <div
@@ -56,10 +61,10 @@ export function AsanaVisual({
           <span className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 rounded-full border border-current/20" />
         </div>
         <p className="mt-5 font-serif text-2xl leading-tight text-ivory/88">
-          {asana.nameSanskrit}
+          {asana.nameSpanish}
         </p>
         <p className="mt-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048]">
-          Sin foto disponible
+          {missingImageLabel}
         </p>
       </div>
     </div>

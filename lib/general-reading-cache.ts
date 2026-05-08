@@ -2,7 +2,7 @@ import type { GeneralReadingTheme } from "@/lib/general-reading";
 import type { Locale } from "@/lib/i18n";
 import type { ReadingGender } from "@/lib/reading-gender";
 
-const STORAGE_KEY = "sarita_general_readings-v3";
+const STORAGE_KEY = "sarita_general_readings-v4";
 const MAX_CHARTS = 5;
 
 type ReadingCacheStore = Record<string, Record<string, string>>;

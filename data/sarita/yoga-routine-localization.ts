@@ -910,7 +910,7 @@ export function localizeAsana(asana: Asana, locale: Locale): Asana {
 
   const localized = findLocalizedAsana(asana.slug, asana.element, locale);
   if (localized) {
-    return { ...asana, ...localized };
+    return { ...asana, ...localized, nameSanskrit: localized.nameSpanish };
   }
 
   const aliasedSlug = asanaLocalizationAliases[asana.slug];
@@ -920,11 +920,13 @@ export function localizeAsana(asana: Asana, locale: Locale): Asana {
     return {
       ...asana,
       ...aliased,
+      nameSanskrit: translatedName ?? aliased.nameSpanish,
       ...(translatedName ? { nameSpanish: translatedName } : {}),
     };
   }
 
-  return { ...asana, ...translatedFallbackAsana(asana, locale) };
+  const fallback = translatedFallbackAsana(asana, locale);
+  return { ...asana, ...fallback, nameSanskrit: fallback.nameSpanish };
 }
 
 export function localizePranayama(

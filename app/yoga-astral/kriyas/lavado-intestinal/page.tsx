@@ -146,7 +146,11 @@ export default async function LavadoIntestinalPage() {
                               reverse ? "lg:order-2 lg:border-l" : "lg:border-r"
                             }`}
                           >
-                            <AsanaVisual asana={asana} tone="neutral" />
+                            <AsanaVisual
+                              asana={asana}
+                              tone="neutral"
+                              missingImageLabel={locale === "en" ? "No photo available" : locale === "it" ? "Foto non disponibile" : "Sin foto disponible"}
+                            />
                           </div>
                           <div className="flex flex-col justify-center p-6 sm:p-8">
                             <div className="flex items-center gap-4">
@@ -158,11 +162,13 @@ export default async function LavadoIntestinalPage() {
                               </span>
                             </div>
                             <h3 className="mt-5 font-serif text-3xl leading-tight text-ivory">
-                              {asana.nameSanskrit}
-                            </h3>
-                            <p className="mt-1 text-sm uppercase tracking-[0.2em] text-[#3a3048]">
                               {asana.nameSpanish}
-                            </p>
+                            </h3>
+                            {asana.nameSanskrit !== asana.nameSpanish ? (
+                              <p className="mt-1 text-sm uppercase tracking-[0.2em] text-[#3a3048]">
+                                {asana.nameSanskrit}
+                              </p>
+                            ) : null}
                             {asana.description ? (
                               <p className="mt-5 text-sm leading-7 text-[#3a3048]">
                                 {asana.description}

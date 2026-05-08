@@ -160,7 +160,11 @@ export default function PersonalizedYogaPage() {
                         <PremiumCard className="overflow-hidden border-black/10 bg-white/88 shadow-[0_16px_44px_rgba(30,26,46,0.08)]">
                           <div className="grid gap-0 lg:grid-cols-[minmax(16rem,0.78fr)_minmax(0,1fr)]">
                             <div className={`border-b border-black/10 bg-[#f8f4eb]/70 p-4 sm:p-5 lg:border-b-0 ${reverse ? "lg:order-2 lg:border-l" : "lg:border-r"}`}>
-                              <AsanaVisual asana={asana} tone={asana.element} />
+                              <AsanaVisual
+                                asana={asana}
+                                tone={asana.element}
+                                missingImageLabel={locale === "en" ? "No photo available" : locale === "it" ? "Foto non disponibile" : "Sin foto disponible"}
+                              />
                             </div>
                             <div className="flex flex-col justify-center p-6 sm:p-8">
                               <div className="flex flex-wrap items-center gap-3">
@@ -174,10 +178,12 @@ export default function PersonalizedYogaPage() {
                                   {asana.duration}
                                 </span>
                               </div>
-                              <h3 className="mt-5 font-serif text-2xl leading-tight text-ivory sm:text-3xl">{asana.nameSanskrit}</h3>
-                              <p className="mt-1 text-sm uppercase tracking-[0.2em] text-[#3a3048]">
-                                {asana.nameSpanish}
-                              </p>
+                              <h3 className="mt-5 font-serif text-2xl leading-tight text-ivory sm:text-3xl">{asana.nameSpanish}</h3>
+                              {asana.nameSanskrit !== asana.nameSpanish ? (
+                                <p className="mt-1 text-sm uppercase tracking-[0.2em] text-[#3a3048]">
+                                  {asana.nameSanskrit}
+                                </p>
+                              ) : null}
                               <p className="mt-5 text-sm leading-7 text-[#3a3048]">
                                 {asana.description}
                               </p>
