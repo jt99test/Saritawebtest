@@ -37,7 +37,7 @@
       },
       {
         "title": "Rutina de carta natal",
-        "description": "Una prÃ¡ctica corporal creada desde la mezcla elemental de tu carta.",
+        "description": "Una práctica corporal creada desde la mezcla elemental de tu carta.",
         "href": "/yoga-astral"
       },
       {
@@ -82,7 +82,7 @@
     "submit": "Ver mi carta natal",
     "confirmEyebrow": "antes de generar",
     "confirmTitle": "Revisa tus datos",
-    "confirmBody": "Cuando generes esta carta, los datos no se podrÃ¡n editar dentro de la misma lectura. Si hay un error, tendrÃ¡s que crear una lectura nueva y contarÃ¡ para tu lÃ­mite mensual.",
+    "confirmBody": "Cuando generes esta carta, los datos no se podrán editar dentro de la misma lectura. Si hay un error, tendrás que crear una lectura nueva y contará para tu límite mensual.",
     "confirmEdit": "Corregir datos",
     "confirmContinue": "Generar carta"
   },
@@ -995,14 +995,14 @@
   },
   "helpPage": {
     "faqs": [
-      { "question": "Â¿CÃ³mo calculo mi carta natal?", "answer": "Entra en el formulario, aÃ±ade tu fecha, hora y ciudad de nacimiento, y SARITA calcularÃ¡ tu carta." },
-      { "question": "Â¿Necesito saber la hora exacta de nacimiento?", "answer": "SÃ­, cuanto mÃ¡s exacta sea la hora, mejor. El Ascendente y las casas cambian rÃ¡pido." },
-      { "question": "Â¿QuÃ© incluye el plan gratuito?", "answer": "Incluye la carta natal completa y 1 lectura al mes. Pro incluye 5 lecturas al mes; Avanzado incluye 20 y suma TrÃ¡nsitos, RevoluciÃ³n Solar, SinastrÃ­a y AstrocartografÃ­a." },
-      { "question": "Â¿CÃ³mo cancelo mi suscripciÃ³n?", "answer": "Desde tu cuenta, usando el botÃ³n de gestiÃ³n de facturaciÃ³n." },
-      { "question": "Â¿QuÃ© es la RevoluciÃ³n Solar?", "answer": "Es la carta del momento en que el Sol vuelve a su posiciÃ³n natal. Muestra temas del aÃ±o." },
-      { "question": "Â¿QuÃ© es el Lavado Intestinal?", "answer": "Es una guÃ­a digital de Laghoo Shankhaprakshala, una prÃ¡ctica corta de limpieza intestinal." },
-      { "question": "Â¿Mis datos estÃ¡n seguros?", "answer": "Usamos Supabase para proteger cuentas y datos, y Stripe para pagos. Puedes pedir eliminaciÃ³n cuando quieras." },
-      { "question": "Â¿CÃ³mo contacto con soporte?", "answer": "EscrÃ­benos a contacto@saritaastrology.com." }
+      { "question": "¿Cómo calculo mi carta natal?", "answer": "Entra en el formulario, añade tu fecha, hora y ciudad de nacimiento, y SARITA calculará tu carta." },
+      { "question": "¿Necesito saber la hora exacta de nacimiento?", "answer": "Sí, cuanto más exacta sea la hora, mejor. El Ascendente y las casas cambian rápido." },
+      { "question": "¿Qué incluye el plan gratuito?", "answer": "Incluye la carta natal completa y 1 lectura al mes. Pro incluye 5 lecturas al mes; Avanzado incluye 20 y suma Tránsitos, Revolución Solar, Sinastría y Astrocartografía." },
+      { "question": "¿Cómo cancelo mi suscripción?", "answer": "Desde tu cuenta, usando el botón de gestión de facturación." },
+      { "question": "¿Qué es la Revolución Solar?", "answer": "Es la carta del momento en que el Sol vuelve a su posición natal. Muestra temas del año." },
+      { "question": "¿Qué es el Lavado Intestinal?", "answer": "Es una guía digital de Laghoo Shankhaprakshala, una práctica corta de limpieza intestinal." },
+      { "question": "¿Mis datos están seguros?", "answer": "Usamos Supabase para proteger cuentas y datos, y Stripe para pagos. Puedes pedir eliminación cuando quieras." },
+      { "question": "¿Cómo contacto con soporte?", "answer": "Escríbenos a contacto@saritaastrology.com." }
     ]
   },
   "lavadoPage": {

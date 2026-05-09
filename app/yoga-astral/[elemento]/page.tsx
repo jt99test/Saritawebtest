@@ -8,6 +8,7 @@ import { illustrations } from "@/data/illustrations";
 import { yogaRoutines } from "@/data/sarita/yoga-routines";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
+import { PaidFeatureGate } from "@/components/paywall/paid-feature-gate";
 import { PremiumCard } from "@/components/ui/premium-card";
 import { AsanaVisual } from "@/components/yoga/asana-visual";
 import { RoutineCompletionButton } from "@/components/yoga/routine-completion-button";
@@ -120,7 +121,8 @@ export default async function YogaAstralElementPage({
             </Link>
           </div>
 
-          <div className="space-y-8 pb-10 sm:space-y-10">
+          <PaidFeatureGate dictionary={dictionary} featureName={yogaCopy.title}>
+            <div className="space-y-8 pb-10 sm:space-y-10">
             <header className="border-t border-[rgba(181,163,110,0.15)] pt-6 sm:pt-8">
               <div>
                 <div className="flex flex-col items-center gap-5 text-center md:flex-row md:text-left">
@@ -317,7 +319,8 @@ export default async function YogaAstralElementPage({
               </Link>
               <RoutineCompletionButton storageKey={`sarita:yoga:${elemento}:completed`} />
             </footer>
-          </div>
+            </div>
+          </PaidFeatureGate>
         </Container>
       </section>
     </main>

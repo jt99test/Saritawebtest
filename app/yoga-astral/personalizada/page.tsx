@@ -9,6 +9,7 @@ import { RoutineCompletionButton } from "@/components/yoga/routine-completion-bu
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
+import { PaidFeatureGate } from "@/components/paywall/paid-feature-gate";
 import { PremiumCard } from "@/components/ui/premium-card";
 import { CHART_RESULT_KEY, type ChartCalculationResult } from "@/lib/chart-session";
 import { dictionaries } from "@/lib/i18n";
@@ -128,7 +129,8 @@ export default function PersonalizedYogaPage() {
               </div>
             </div>
           ) : routine ? (
-            <div className="space-y-8 pb-10 sm:space-y-10">
+            <PaidFeatureGate dictionary={dictionary} featureName={dictionary.yogaAstral.title}>
+              <div className="space-y-8 pb-10 sm:space-y-10">
               <header className="border-t border-[rgba(181,163,110,0.15)] pt-6 sm:pt-8">
                 <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#3a3048]">{dictionary.yogaAstral.title}</p>
                 <h1 className="mt-3 font-serif text-[38px] leading-tight text-ivory sm:mt-4 sm:text-6xl">
@@ -208,7 +210,8 @@ export default function PersonalizedYogaPage() {
                 </Link>
                 <RoutineCompletionButton storageKey={`sarita:yoga:personalizada:${routine.monthKey}:${routine.id}:completed`} />
               </footer>
-            </div>
+              </div>
+            </PaidFeatureGate>
           ) : null}
         </Container>
       </section>

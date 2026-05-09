@@ -392,12 +392,23 @@ export function NatalChartExperience({
                 <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-[#3a3048]">
                   {dictionary.yogaAstral.intro}
                 </p>
-                <Link
-                  href="/yoga-astral"
-                  className="mt-5 inline-flex border border-dusty-gold/38 bg-dusty-gold/[0.075] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/62 hover:bg-dusty-gold/[0.12]"
-                >
-                  {dictionary.yogaAstral.title}
-                </Link>
+                {!planLoading && !hasPlanAccess(plan, "pro") ? (
+                  <button
+                    type="button"
+                    onClick={() => openPricing("pro")}
+                    className="mt-5 inline-flex border border-dusty-gold/38 bg-dusty-gold/[0.075] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/62 hover:bg-dusty-gold/[0.12]"
+                  >
+                    <span aria-hidden="true" className="mr-2">🔒</span>
+                    {dictionary.yogaAstral.title}
+                  </button>
+                ) : (
+                  <Link
+                    href="/yoga-astral"
+                    className="mt-5 inline-flex border border-dusty-gold/38 bg-dusty-gold/[0.075] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/62 hover:bg-dusty-gold/[0.12]"
+                  >
+                    {dictionary.yogaAstral.title}
+                  </Link>
+                )}
               </div>
             ) : null}
           </section>

@@ -47,28 +47,28 @@ export function PricingModal({ open, onClose, requiredPlan }: PricingModalProps)
   ];
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-overlay/92 px-4 py-8 backdrop-blur-xl">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(181,163,110,0.12),transparent_42%)]" />
-      <div className="relative mx-auto max-w-5xl">
-        <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-5">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#1e1a2e]/42 px-4 py-8 backdrop-blur-xl">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(245,240,230,0.72),transparent_46%)]" />
+      <div className="relative mx-auto max-w-5xl border border-black/10 bg-cosmic-950 px-5 py-6 shadow-[0_28px_90px_rgba(30,26,46,0.24)] sm:px-8 sm:py-8">
+        <div className="flex items-center justify-between gap-4 border-b border-black/10 pb-5">
           <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#b5a36e]/72">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5c4a24]">
               {copy.lockedTabCta}
             </p>
-            <h2 className="mt-2 font-serif text-[34px] leading-tight text-[#ece8df] sm:text-[48px]">
+            <h2 className="mt-2 font-serif text-[34px] leading-tight text-ivory sm:text-[48px]">
               {copy.lockedTabTitle.replace("{plan}", requiredPlan === "pro" ? copy.proName : copy.avanzadoName)}
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="border border-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#ece8df]/62 transition hover:border-white/20 hover:text-[#ece8df]"
+            className="border border-black/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:border-dusty-gold/35 hover:text-ivory"
           >
             {dictionary.common.close}
           </button>
         </div>
 
-        <div className="mt-6 inline-flex border border-white/10 bg-black/[0.05] p-1">
+        <div className="mt-6 inline-flex border border-black/10 bg-black/[0.035] p-1">
           {(["monthly", "yearly"] as const).map((option) => (
             <button
               key={option}
@@ -76,7 +76,7 @@ export function PricingModal({ open, onClose, requiredPlan }: PricingModalProps)
               onClick={() => setPeriod(option)}
               className={[
                 "px-5 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] transition",
-                period === option ? "bg-dusty-gold/18 text-[#b5a36e]" : "text-[#ece8df]/58 hover:text-[#ece8df]",
+                period === option ? "bg-dusty-gold/18 text-dusty-gold" : "text-[#3a3048] hover:text-ivory",
               ].join(" ")}
             >
               {option === "monthly" ? copy.monthly : copy.yearly}
@@ -95,48 +95,48 @@ export function PricingModal({ open, onClose, requiredPlan }: PricingModalProps)
               <article
                 key={plan.id}
                 className={[
-                  "border bg-black/[0.04] p-6 shadow-[0_8px_32px_rgba(0,0,0,0.32)]",
+                  "border p-6 shadow-[0_12px_36px_rgba(30,26,46,0.08)]",
                   highlighted
-                    ? "border-dusty-gold/60 shadow-[0_0_40px_rgba(181,163,110,0.18)] ring-1 ring-dusty-gold/30"
-                    : "border-white/10",
+                    ? "border-dusty-gold/50 bg-dusty-gold/[0.055] ring-1 ring-dusty-gold/24"
+                    : "border-black/10 bg-white",
                 ].join(" ")}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="font-serif text-4xl text-[#ece8df]">{plan.name}</h3>
-                    <p className="mt-1 text-sm text-[#ece8df]/58">
+                    <h3 className="font-serif text-4xl text-ivory">{plan.name}</h3>
+                    <p className="mt-1 text-sm text-[#3a3048]">
                       {plan.id === "pro" ? copy.proTagline : copy.avanzadoTagline}
                     </p>
                     {plan.id === "avanzado" ? (
-                      <p className="mt-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#b5a36e]/78">
+                      <p className="mt-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24]">
                         {copy.mostPopular}
                       </p>
                     ) : null}
                   </div>
                   {period === "yearly" ? (
-                    <span className="border border-dusty-gold/24 bg-dusty-gold/8 px-4 py-2 text-[13px] font-semibold uppercase tracking-[0.16em] text-[#b5a36e]/82">
+                    <span className="border border-dusty-gold/24 bg-dusty-gold/8 px-4 py-2 text-[13px] font-semibold uppercase tracking-[0.16em] text-[#5c4a24]">
                       {copy.savesBadge.replace("{amount}", PRICES[plan.id].saving)}
                     </span>
                   ) : null}
                 </div>
 
                 <div className="mt-6">
-                  <span className="font-serif text-5xl text-[#ece8df]">{price}</span>
-                  <span className="ml-2 text-sm text-[#ece8df]/58">{period === "monthly" ? copy.perMonth : copy.perYear}</span>
-                  {period === "yearly" ? <p className="mt-2 text-sm text-[#ece8df]/58">{copy.billedYearly}</p> : null}
+                  <span className="font-serif text-5xl text-ivory">{price}</span>
+                  <span className="ml-2 text-sm text-[#3a3048]">{period === "monthly" ? copy.perMonth : copy.perYear}</span>
+                  {period === "yearly" ? <p className="mt-2 text-sm text-[#3a3048]">{copy.billedYearly}</p> : null}
                 </div>
 
                 <ul className="mt-7 space-y-3">
                   {plan.features.map((feature) => (
-                    <li key={feature} className="flex gap-3 text-sm leading-6 text-[#ece8df]/72">
-                      <span className="mt-0.5 shrink-0 text-base text-[#b5a36e]/90">{"\u2713"}</span>
+                    <li key={feature} className="flex gap-3 text-sm leading-6 text-[#3a3048]">
+                      <span className="mt-0.5 shrink-0 text-base text-[#5c4a24]">{"\u2713"}</span>
                       <span>{feature}</span>
                     </li>
                   ))}
                 </ul>
 
                 {period === "yearly" ? (
-                  <p className="mt-6 border-y border-dusty-gold/16 py-3 text-sm text-[#b5a36e]/82">
+                  <p className="mt-6 border-y border-dusty-gold/16 py-3 text-sm text-[#5c4a24]">
                     {copy.lavadoFreeHighlight}
                   </p>
                 ) : null}
@@ -149,7 +149,7 @@ export function PricingModal({ open, onClose, requiredPlan }: PricingModalProps)
                 >
                   {loading ? copy.checkoutLoading : copy.upgrade}
                 </PrimaryButton>
-                <p className="mt-3 text-center text-[12px] uppercase tracking-[0.16em] text-[#ece8df]/58">
+                <p className="mt-3 text-center text-[12px] uppercase tracking-[0.16em] text-[#3a3048]">
                   {copy.cancelAnytime}
                 </p>
               </article>

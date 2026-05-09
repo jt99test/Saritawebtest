@@ -5,7 +5,7 @@ import type { NatalChartData } from "@/lib/chart";
 
 export function PublicChartWheel({ chart }: { chart: NatalChartData }) {
   return (
-    <div className="pointer-events-none mx-auto max-w-[54rem]">
+    <div className="pointer-events-none mx-auto flex max-w-[54rem] justify-center">
       <NatalChartWheel chart={chart} />
     </div>
   );

@@ -4,6 +4,7 @@ import { useSyncExternalStore } from "react";
 import Link from "next/link";
 
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
+import { PaidFeatureGate } from "@/components/paywall/paid-feature-gate";
 import { YogaAstralPage } from "@/components/yoga/yoga-astral-page";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
@@ -80,7 +81,9 @@ export default function YogaAstralRoutePage() {
           </div>
 
           {result?.chart ? (
-            <YogaAstralPage chart={result.chart} dictionary={dictionary} locale={locale} />
+            <PaidFeatureGate dictionary={dictionary} featureName={dictionary.yogaAstral.title}>
+              <YogaAstralPage chart={result.chart} dictionary={dictionary} locale={locale} />
+            </PaidFeatureGate>
           ) : (
             <div className="flex flex-1 items-center justify-center">
               <div className="max-w-3xl text-center">
