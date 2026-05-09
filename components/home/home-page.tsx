@@ -29,6 +29,14 @@ export function HomePage() {
     setStoredLocale(nextLocale);
   }
 
+  function featureTitle(title: string) {
+    return title.replace(/astrocartography|astrocartograf[ií]a|astrocartografia/i, (match) => {
+      if (/astrocartography/i.test(match)) return "Astro cartography";
+      if (/astrocartograf[ií]a/i.test(match)) return "Astro cartografía";
+      return "Astro cartografia";
+    });
+  }
+
   return (
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
@@ -142,8 +150,8 @@ export function HomePage() {
                   <span className="mb-2 block text-xl text-[#5c4a24] sm:mb-3 sm:text-2xl">
                     {["\u263d", "\u2609", "\u2644", "\u260c", "\u2609", "\u26ad", "\u2641"][index] ?? "\u263d"}
                   </span>
-                  <span className="block text-[10px] font-semibold uppercase leading-4 tracking-[0.16em] text-[#3a3048] transition group-hover:text-[#5c4a24] [overflow-wrap:anywhere] sm:text-[12px] sm:tracking-[0.18em] xl:tracking-[0.24em]">
-                    {feature.title}
+                  <span className="block text-[10px] font-semibold uppercase leading-4 tracking-[0.16em] text-[#3a3048] transition group-hover:text-[#5c4a24] [overflow-wrap:normal] [word-break:normal] sm:text-[12px] sm:tracking-[0.18em] xl:tracking-[0.24em]">
+                    {featureTitle(feature.title)}
                   </span>
                   <span className="mt-1 block text-[11px] leading-4 text-[#3a3048] transition group-hover:text-[#3a3048] sm:text-xs sm:leading-5">
                     {feature.description}
