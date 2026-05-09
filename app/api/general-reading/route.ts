@@ -34,6 +34,52 @@ function extractTextContent(message: Message) {
     .trim();
 }
 
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+const ZODIAC_REPLACEMENTS = {
+  en: [
+    ["Tauro", "Taurus"],
+    ["Géminis", "Gemini"],
+    ["Geminis", "Gemini"],
+    ["Cáncer", "Cancer"],
+    ["Escorpio", "Scorpio"],
+    ["Sagitario", "Sagittarius"],
+    ["Capricornio", "Capricorn"],
+    ["Acuario", "Aquarius"],
+    ["Piscis", "Pisces"],
+  ],
+  it: [
+    ["Aries", "Ariete"],
+    ["Tauro", "Toro"],
+    ["Géminis", "Gemelli"],
+    ["Geminis", "Gemelli"],
+    ["Cáncer", "Cancro"],
+    ["Cancer", "Cancro"],
+    ["Leo", "Leone"],
+    ["Virgo", "Vergine"],
+    ["Libra", "Bilancia"],
+    ["Escorpio", "Scorpione"],
+    ["Sagitario", "Sagittario"],
+    ["Capricornio", "Capricorno"],
+    ["Acuario", "Acquario"],
+    ["Piscis", "Pesci"],
+  ],
+} as const;
+
+function normalizeGeneratedLanguage(content: string, locale?: string) {
+  if (locale !== "en" && locale !== "it") {
+    return content;
+  }
+
+  return ZODIAC_REPLACEMENTS[locale].reduce((nextContent, [source, target]) => {
+    const articlePattern = new RegExp(`\\b(?:el|la|los|las|the)\\s+${escapeRegExp(source)}\\b`, "gi");
+    const barePattern = new RegExp(`\\b${escapeRegExp(source)}\\b`, "g");
+    return nextContent.replace(articlePattern, target).replace(barePattern, target);
+  }, content).replace(/\s{2,}/g, " ").trim();
+}
+
 function buildPrompt(chart: NatalChartData, theme: GeneralReadingTheme, locale?: string, gender?: ReadingGender) {
   const chartSummary = getChartSummaryForPrompt(chart, locale);
   const themeInstruction = getThemeInstruction(chart, theme, locale);
@@ -122,7 +168,7 @@ export async function POST(request: Request) {
       gender?: ReadingGender;
     };
     const readingGender = normalizeReadingGender(gender);
-    const itemKey = `v4:${theme}:${readingGender || "unspecified"}`;
+    const itemKey = `v5:${theme}:${readingGender || "unspecified"}`;
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
@@ -208,7 +254,7 @@ export async function POST(request: Request) {
         max_tokens: 260,
         messages: [{ role: "user", content: prompt }],
       });
-      content = extractTextContent(message);
+      content = normalizeGeneratedLanguage(extractTextContent(message), locale);
     } catch (error) {
       console.error("General reading generation failed", error);
       await markAiReadingGenerationFailed({

@@ -186,9 +186,11 @@ export function getThemeInstruction(chart: NatalChartData, theme: GeneralReading
   const chiron = points.find((point) => point.id === "chiron");
   const ascSign = getSignName(
     zodiacSigns.find((sign) => sign.start <= chart.meta.ascendant && chart.meta.ascendant < sign.start + 30)?.id ?? "aries",
+    locale,
   );
   const mcSign = getSignName(
     zodiacSigns.find((sign) => sign.start <= chart.meta.mc && chart.meta.mc < sign.start + 30)?.id ?? "capricorn",
+    locale,
   );
   const seventhHouseSign = getHouseSign(chart, 7);
   const thirdHouseSign = getHouseSign(chart, 3);
@@ -201,14 +203,22 @@ export function getThemeInstruction(chart: NatalChartData, theme: GeneralReading
     .map((aspect) => {
       const otherId = aspect.from === seventhHouseRulerId ? aspect.to : aspect.from;
       const other = points.find((point) => point.id === otherId);
-      const otherHouse = other ? ` casa ${other.house}` : "";
-      return `${ASPECT_LABELS[aspect.type]} con ${POINT_LABELS[otherId]}${otherHouse} (orbe ${aspect.orb.toFixed(1)} grados)`;
+      const otherHouse = other ? ` ${housePhrase(other.house, locale)}` : "";
+      const connector = locale === "en" ? "with" : "con";
+      const degreeLabel = locale === "en" ? "degrees" : locale === "it" ? "gradi" : "grados";
+      return `${getAspectLabel(aspect.type, locale)} ${connector} ${getPointLabel(otherId, locale)}${otherHouse} (orbe ${aspect.orb.toFixed(1)} ${degreeLabel})`;
     })
     .join(", ");
   const hardAspects = chart.aspects
     .filter((aspect) => aspect.type === "square" || aspect.type === "opposition")
     .slice(0, 5)
     .map((aspect) => `${ASPECT_LABELS[aspect.type]} ${POINT_LABELS[aspect.from]} / ${POINT_LABELS[aspect.to]} (${aspect.orb.toFixed(1)}°)`)
+    .join(", ");
+
+  const localizedHardAspects = chart.aspects
+    .filter((aspect) => aspect.type === "square" || aspect.type === "opposition")
+    .slice(0, 5)
+    .map((aspect) => `${getAspectLabel(aspect.type, locale)} ${getPointLabel(aspect.from, locale)} / ${getPointLabel(aspect.to, locale)} (${aspect.orb.toFixed(1)}°)`)
     .join(", ");
 
   const seventhHouseRulerName = getPointLabel(seventhHouseRulerId, locale);
@@ -222,7 +232,7 @@ export function getThemeInstruction(chart: NatalChartData, theme: GeneralReading
       "tu-proposito": `Write about ${chart.event.name}'s life direction through the Midheaven in ${mcSign}, the 10th house, and the North Node in ${getSignName(northNode?.sign ?? "aries", locale)} in ${housePhrase(northNode?.house ?? 10, locale)}. Name where their evolution points, what they need to develop, and what kind of legacy they can build.`,
       "lo-que-suelto": `Write about ${chart.event.name}'s South Node in ${getSignName(southNode?.sign ?? "libra", locale)} in ${housePhrase(southNode?.house ?? 4, locale)}. Treat it as memory, familiar territory, old talent, automatic mechanism, and a pattern they are learning to release. Always connect it to the North Node: not as rejection of the past, but as conscious integration.`,
       "tu-herida-medicina": `Write about ${chart.event.name}'s Chiron in ${getSignName(chiron?.sign ?? "aries", locale)} in ${housePhrase(chiron?.house ?? 1, locale)}. Frame it as a central wound, therapeutic sensitivity, and medicine born from having lived through that vulnerability. Keep the tone psychological, careful, and non-fatalistic.`,
-      "tus-desafios": `Write about ${chart.event.name}'s central challenges through Saturn in ${getSignName(saturn?.sign ?? "capricorn", locale)} in ${housePhrase(saturn?.house ?? 10, locale)}, and the most significant squares/oppositions in the chart (${hardAspects || "no especially tight hard aspects"}). Explain what friction asks them to mature, what patterns need work, and what will be hard but growth-producing.`,
+      "tus-desafios": `Write about ${chart.event.name}'s central challenges through Saturn in ${getSignName(saturn?.sign ?? "capricorn", locale)} in ${housePhrase(saturn?.house ?? 10, locale)}, and the most significant squares/oppositions in the chart (${localizedHardAspects || "no especially tight hard aspects"}). Explain what friction asks them to mature, what patterns need work, and what will be hard but growth-producing.`,
       "tu-ascendente": `Write about ${chart.event.name}'s Ascendant in ${ascSign} as an evolutionary path, direction of growth, and route of learning. Do NOT describe it as what people see first, an exterior personality, a mask, an appearance, or a first impression. Explain that the Sun shows an innate language of vitality and talent, while the Ascendant shows the road life keeps inviting them to climb: situations, people, and experiences that help them recognize and develop potential not yet fully embodied. Include the chart ruler from the general summary and explain how this path speaks with the Sun in ${getSignName(sun?.sign ?? "leo", locale)} and Moon in ${getSignName(moon?.sign ?? "cancer", locale)}.`,
       "como-actuas": `Write about how ${chart.event.name} acts through Mars in ${getSignName(mars?.sign ?? "aries", locale)} in ${housePhrase(mars?.house ?? 1, locale)}. Describe drive, desire, physical energy, anger, courage, initiative, and conflict style.`,
       "donde-creces": `Write about where ${chart.event.name} grows through Jupiter in ${getSignName(jupiter?.sign ?? "sagittarius", locale)} in ${housePhrase(jupiter?.house ?? 9, locale)}. Describe expansion, opportunities, abundance, faith, luck, and learning.`,
@@ -243,7 +253,7 @@ export function getThemeInstruction(chart: NatalChartData, theme: GeneralReading
       "tu-proposito": `Scrivi del proposito di vita di ${chart.event.name} attraverso il Medio Cielo in ${mcSign}, la casa 10 e il Nodo Nord in ${getSignName(northNode?.sign ?? "aries", locale)} in ${housePhrase(northNode?.house ?? 10, locale)}. Indica verso dove punta l'evoluzione, cosa deve sviluppare e che eredita puo costruire.`,
       "lo-que-suelto": `Scrivi del Nodo Sud di ${chart.event.name} in ${getSignName(southNode?.sign ?? "libra", locale)} in ${housePhrase(southNode?.house ?? 4, locale)}. Interpretalo come memoria, zona conosciuta, talento antico, meccanismo automatico e schema che sta imparando a lasciare. Collegalo sempre al Nodo Nord: non come rifiuto del passato, ma come integrazione consapevole.`,
       "tu-herida-medicina": `Scrivi di Chirone di ${chart.event.name} in ${getSignName(chiron?.sign ?? "aries", locale)} in ${housePhrase(chiron?.house ?? 1, locale)}. Trattalo come ferita centrale, sensibilita terapeutica e medicina nata dall'attraversare quella vulnerabilita. Tono psicologico, delicato e non fatalista.`,
-      "tus-desafios": `Scrivi delle sfide centrali di ${chart.event.name} attraverso Saturno in ${getSignName(saturn?.sign ?? "capricorn", locale)} in ${housePhrase(saturn?.house ?? 10, locale)}, e le quadrature/opposizioni piu significative della carta (${hardAspects || "nessun aspetto duro particolarmente stretto"}). Spiega quali attriti chiedono maturazione, quali schemi vanno lavorati e cosa sara impegnativo ma fertile.`,
+      "tus-desafios": `Scrivi delle sfide centrali di ${chart.event.name} attraverso Saturno in ${getSignName(saturn?.sign ?? "capricorn", locale)} in ${housePhrase(saturn?.house ?? 10, locale)}, e le quadrature/opposizioni piu significative della carta (${localizedHardAspects || "nessun aspetto duro particolarmente stretto"}). Spiega quali attriti chiedono maturazione, quali schemi vanno lavorati e cosa sara impegnativo ma fertile.`,
       "tu-ascendente": `Scrivi dell'Ascendente di ${chart.event.name} in ${ascSign} come cammino evolutivo, direzione di crescita e via di apprendimento. NON descriverlo come cio che gli altri vedono per primo, personalita esterna, maschera, apparenza o prima impressione. Spiega che il Sole mostra un linguaggio innato di vitalita e talento, mentre l'Ascendente indica la strada che la vita invita a salire: situazioni, persone ed esperienze attraverso cui riconoscere e sviluppare potenziali non ancora pienamente incarnati. Includi il governatore della carta indicato nel riassunto generale e spiega come questo cammino dialoga con il Sole in ${getSignName(sun?.sign ?? "leo", locale)} e la Luna in ${getSignName(moon?.sign ?? "cancer", locale)}.`,
       "como-actuas": `Scrivi di come agisce ${chart.event.name} attraverso Marte in ${getSignName(mars?.sign ?? "aries", locale)} in ${housePhrase(mars?.house ?? 1, locale)}. Descrivi impulso, desiderio, energia fisica, rabbia, coraggio, iniziativa e stile di conflitto.`,
       "donde-creces": `Scrivi dove cresce ${chart.event.name} attraverso Giove in ${getSignName(jupiter?.sign ?? "sagittarius", locale)} in ${housePhrase(jupiter?.house ?? 9, locale)}. Descrivi espansione, opportunita, abbondanza, fede, fortuna e apprendimento.`,

@@ -132,7 +132,7 @@ export function HomePage() {
           </div>
 
           <div className="relative z-10 border-t border-black/10 py-3 sm:py-4">
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
               {features.map((feature, index) => (
                 <Link
                   key={feature.href}
