@@ -119,7 +119,7 @@ export function ChartShareActions({ chart, dictionary, plan }: ChartShareActions
     const subtitle = [chart.event.dateLabel, chart.event.locationLabel].filter(Boolean).join("   ·   ");
     const wheelMarkup = new XMLSerializer().serializeToString(clone);
     const source = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2000" viewBox="0 0 1600 2000" role="img" aria-label="${escapeXml(dictionary.chart.shareTitle)} - ${escapeXml(chart.event.name)}">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2000" viewBox="0 0 1600 2000" preserveAspectRatio="xMidYMin meet" style="display:block;width:100%;height:auto;background:#f5f0e6;" role="img" aria-label="${escapeXml(dictionary.chart.shareTitle)} - ${escapeXml(chart.event.name)}">
   <defs>
     <radialGradient id="sarita-export-bg" cx="50%" cy="34%" r="68%">
       <stop offset="0%" stop-color="#fffaf0"/>
