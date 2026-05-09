@@ -34,7 +34,7 @@ Important:
 - [x] `Bharmanasana opuestos` -> `bharmanasana-opuestos.png`
 - [x] `Vyaghrasana` -> `vyaghrasana.png`
 - [x] `Anjaneyasana con torsion simple` -> `anjaneyasana-con-torsion-simple.png`
-- [ ] `Abdominales con piernas en mesa supina` - no provided image; text-only fallback
+- [ ] `Abdominales con piernas en mesa supina` - no provided image; removed from yoga routines
 - [x] `Plancha sobre antebrazos` -> `plancha-sobre-antebrazos.png`
 - [x] `Elevacion de piernas supina` -> `elevacion-de-piernas-supina.png`
 - [x] `Bicicleta lenta supina` -> `bicicleta-lenta-supina.png`
@@ -56,7 +56,7 @@ Important:
 
 ### Agua
 
-- [ ] `Circulos de cadera de pie` - no provided image; text-only fallback
+- [x] `Circulos de cadera de pie` -> `circulos-de-cadera-de-pie.png`
 - [x] `Anjaneyasana` -> `anjaneyasana.png`
 - [x] `Anjaneyasana con manos en la rodilla` -> `anjaneyasana-con-manos-en-la-rodilla.png`
 - [x] `Baddha Konasana` -> `baddha-konasana.png`
@@ -70,22 +70,22 @@ Important:
 - [x] `Viparita Karani` -> `viparita-karani.png`
 - [x] `Supta Padangusthasana` -> `supta-padangusthasana.png`
 - [x] `Supta Padangusthasana lateral` -> `supta-padangusthasana-lateral.png`
-- [ ] `Ananda Balasana` - no provided image; text-only fallback
-- [ ] `Movimiento ondulante de pelvis supina` - no provided image; text-only fallback
+- [ ] `Ananda Balasana` - no provided image; removed from yoga routines
+- [ ] `Movimiento ondulante de pelvis supina` - no provided image; removed from yoga routines
 - [x] `Circulos de rodillas supina` -> `circulos-de-rodillas-supina.png`
 - [x] `Limpiaparabrisas supino` -> `limpiaparabrisas-supino.png`
 - [x] `Mandukasana` -> `mandukasana.png`
 - [x] `Gomukhasana piernas` -> `gomukhasana-piernas.png`
-- [ ] `Sukhasana con torsion` - no provided image; text-only fallback
+- [x] `Sukhasana con torsion` -> `sukhasana-con-torsion.png`
 - [x] `Parighasana` -> `parighasana.png`
 - [x] `Skandasana` -> `skandasana.png`
 - [x] `Parsva Balasana` -> `parsva-balasana.png`
-- [ ] `Posicion fetal lateral` - no provided image; text-only fallback
+- [x] `Posicion fetal lateral` -> `posicion-fetal-lateral.png`
 
 ### Aire
 
 - [x] `Brazos al cielo en Tadasana` -> `brazos-al-cielo-en-tadasana.png`
-- [ ] `Apertura de brazos en cruz de pie` - no provided image; text-only fallback
+- [ ] `Apertura de brazos en cruz de pie` - no provided image; removed from yoga routines
 - [x] `Apertura Toracica en Cuatro Apoyos` -> `apertura-toracica-en-cuatro-apoyos.png`
 - [x] Alternate photo for the same asana -> `apertura-toracica-en-cuatro-apoyos-variation.png`
 - [x] `Anahatasana` -> `anahatasana.png`
@@ -99,17 +99,17 @@ Important:
 - [x] `Balasana con Brazos Abiertos` -> `balasana-con-brazos-abiertos.png`
 - [x] `Balasana con brazos extendidos al frente` -> `balasana-con-brazos-extendidos-al-frente.png`
 - [x] `Parsva Balasana invertida` -> `parsva-balasana-invertida.png`
-- [ ] `Circulos de hombros sentada` - no provided image; text-only fallback
-- [ ] `Circulos de brazos amplios` - no provided image; text-only fallback
-- [ ] `Postura de la mariposa con brazos abiertos` - no provided image; text-only fallback
-- [ ] `Sukhasana con manos en el corazon` - no provided image; text-only fallback
-- [ ] `Sukhasana con brazos al cielo` - no provided image; text-only fallback
-- [ ] `Apertura de pecho con manos entrelazadas atras` - no provided image; text-only fallback
-- [ ] `Apertura de pecho con manos en lumbares` - no provided image; text-only fallback
-- [ ] `Estiramiento lateral de pie` - no provided image; text-only fallback
-- [ ] `Cobra con manos elevadas` - no provided image; text-only fallback
-- [ ] `Apertura de brazos tumbada boca arriba` - no provided image; text-only fallback
-- [ ] `Savasana con brazos abiertos en cruz` - no provided image; text-only fallback
+- [x] `Circulos de hombros sentada` -> `circulos-de-hombros-sentada.png`
+- [ ] `Circulos de brazos amplios` - no provided image; removed from yoga routines
+- [x] `Postura de la mariposa con brazos abiertos` -> `postura-de-la-mariposa-con-brazos-abiertos.png`
+- [x] `Sukhasana con manos en el corazon` -> `sukhasana-con-manos-en-el-corazon.png`
+- [x] `Sukhasana con brazos al cielo` -> `sukhasana-con-brazos-al-cielo.png`
+- [x] `Apertura de pecho con manos entrelazadas atras` -> `apertura-de-pecho-con-manos-entrelazadas-atras.png`
+- [x] `Apertura de pecho con manos en lumbares` -> `apertura-de-pecho-con-manos-en-lumbares.png`
+- [x] `Estiramiento lateral de pie` -> `estiramiento-lateral-de-pie.png`
+- [x] `Cobra con manos elevadas` -> `cobra-con-manos-elevadas.png`
+- [ ] `Apertura de brazos tumbada boca arriba` - no provided image; removed from yoga routines
+- [ ] `Savasana con brazos abiertos en cruz` - no provided image; removed from yoga routines
 
 Air image notes:
 - [ ] `hf_20260507_215241_4dd749fa-1d62-46d0-ba3b-1d56923eb129.png`

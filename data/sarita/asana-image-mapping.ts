@@ -36,7 +36,10 @@ export const asanaImages: Record<string, string> = {
   "garudasana-brazos": "/yoga/garudasana-brazos.png",
   "gomukhasana-brazos": "/yoga/gomukhasana-brazos.png",
   "jathara-parivartanasana": "/yoga/jathara-parivartanasana.png",
+  "circulos-de-cadera-de-pie": "/yoga/circulos-de-cadera-de-pie.png",
+  "circulos-de-hombros-sentada": "/yoga/circulos-de-hombros-sentada.png",
   "circulos-de-rodillas-supina": "/yoga/circulos-de-rodillas-supina.png",
+  "cobra-con-manos-elevadas": "/yoga/cobra-con-manos-elevadas.png",
   "eka-pada-rajakapotasana-preparatoria":
     "/yoga/eka-pada-rajakapotasana-preparatoria.png",
   "gomukhasana-piernas": "/yoga/gomukhasana-piernas.png",
@@ -53,6 +56,10 @@ export const asanaImages: Record<string, string> = {
   navasana: "/yoga/navasana.png",
   "navasana-fire-variant": "/yoga/navasana-fire-variant.png",
   "anjaneyasana-con-torsion-simple": "/yoga/anjaneyasana-con-torsion-simple.png",
+  "apertura-de-pecho-con-manos-en-lumbares":
+    "/yoga/apertura-de-pecho-con-manos-en-lumbares.png",
+  "apertura-de-pecho-con-manos-entrelazadas-atras":
+    "/yoga/apertura-de-pecho-con-manos-entrelazadas-atras.png",
   "parivrtta-sukhasana": "/yoga/parivrtta-sukhasana.png",
   "parivrtta-janu-sirsasana": "/yoga/parivrtta-janu-sirsasana.png",
   "parivrtta-trikonasana": "/yoga/parivrtta-trikonasana.png",
@@ -64,6 +71,7 @@ export const asanaImages: Record<string, string> = {
   "paschimottanasana-tierra-variant": "/yoga/paschimottanasana-tierra-variant.png",
   phalakasana: "/yoga/phalakasana.png",
   "plancha-sobre-antebrazos": "/yoga/plancha-sobre-antebrazos.png",
+  "posicion-fetal-lateral": "/yoga/posicion-fetal-lateral.png",
   "adho-mukha-svanasana": "/yoga/adho-mukha-svanasana.png",
   "adho-mukha-svanasana-sobre-rodillas":
     "/yoga/adho-mukha-svanasana-sobre-rodillas.png",
@@ -72,6 +80,8 @@ export const asanaImages: Record<string, string> = {
   dandasana: "/yoga/dandasana.png",
   "janu-sirsasana": "/yoga/janu-sirsasana.png",
   padangusthasana: "/yoga/padangusthasana.png",
+  "postura-de-la-mariposa-con-brazos-abiertos":
+    "/yoga/postura-de-la-mariposa-con-brazos-abiertos.png",
   "prasarita-padottanasana": "/yoga/prasarita-padottanasana.png",
   "prasarita-padottanasana-tierra-variant":
     "/yoga/prasarita-padottanasana-tierra-variant.png",
@@ -83,6 +93,10 @@ export const asanaImages: Record<string, string> = {
     "/yoga/setu-bandhasana-con-apertura-costal.png",
   "setu-bandhasana-tierra-variant": "/yoga/setu-bandhasana-tierra-variant.png",
   sukhasana: "/yoga/sukhasana.png",
+  "sukhasana-con-brazos-al-cielo": "/yoga/sukhasana-con-brazos-al-cielo.png",
+  "sukhasana-con-manos-en-el-corazon":
+    "/yoga/sukhasana-con-manos-en-el-corazon.png",
+  "sukhasana-con-torsion": "/yoga/sukhasana-con-torsion.png",
   "sukhasana-tierra-variant": "/yoga/sukhasana-tierra-variant.png",
   "supta-baddha-konasana": "/yoga/supta-baddha-konasana.png",
   "supta-baddha-konasana-tierra-variant":
@@ -107,6 +121,7 @@ export const asanaImages: Record<string, string> = {
   mandukasana: "/yoga/mandukasana.png",
   "limpiaparabrisas-supino": "/yoga/limpiaparabrisas-supino.png",
   skandasana: "/yoga/skandasana.png",
+  "estiramiento-lateral-de-pie": "/yoga/estiramiento-lateral-de-pie.png",
   uttanasana: "/yoga/uttanasana.png",
   utkatasana: "/yoga/utkatasana.png",
   "vasisthasana-sobre-rodilla": "/yoga/vasisthasana-sobre-rodilla.png",

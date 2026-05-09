@@ -246,7 +246,7 @@ export const yogaRoutines: Record<
 
       return {
         slug,
-        element: "fuego",
+        element: "fuego" as const,
         nameSanskrit,
         nameSpanish: normalizeText(asana.nameSpanish),
         description: normalizeText(asana.description),
@@ -254,7 +254,7 @@ export const yogaRoutines: Record<
         warning: ASANA_WARNINGS[slug] ?? "Practica con suavidad y detente ante dolor, mareo o falta de aire.",
         imagePath: asanaImages[slug] ?? null,
       };
-    }),
+    }).filter((asana) => asana.imagePath),
     pranayama: legacyElementRoutines.fuego.pranayama.map((item) => ({
       name: normalizeText(item.name),
       description: normalizeText(item.description),
@@ -293,7 +293,7 @@ export const yogaRoutines: Record<
 
       return {
         slug,
-        element: "tierra",
+        element: "tierra" as const,
         nameSanskrit,
         nameSpanish: normalizeText(asana.nameSpanish),
         description: normalizeText(asana.description),
@@ -301,7 +301,7 @@ export const yogaRoutines: Record<
         warning: ASANA_WARNINGS[slug] ?? "Practica con suavidad y detente ante dolor, mareo o falta de aire.",
         imagePath: asanaImages[slug] ?? null,
       };
-    }),
+    }).filter((asana) => asana.imagePath),
     pranayama: legacyElementRoutines.tierra.pranayama.map((item) => ({
       name: normalizeText(item.name),
       description: normalizeText(item.description),
@@ -340,7 +340,7 @@ export const yogaRoutines: Record<
 
       return {
         slug,
-        element: "agua",
+        element: "agua" as const,
         nameSanskrit,
         nameSpanish: normalizeText(asana.nameSpanish),
         description: normalizeText(asana.description),
@@ -348,7 +348,7 @@ export const yogaRoutines: Record<
         warning: ASANA_WARNINGS[slug] ?? "Practica con suavidad y detente ante dolor, mareo o falta de aire.",
         imagePath: asanaImages[slug] ?? null,
       };
-    }),
+    }).filter((asana) => asana.imagePath),
     pranayama: legacyElementRoutines.agua.pranayama.map((item) => ({
       name: normalizeText(item.name),
       description: normalizeText(item.description),
@@ -387,7 +387,7 @@ export const yogaRoutines: Record<
 
       return {
         slug,
-        element: "aire",
+        element: "aire" as const,
         nameSanskrit,
         nameSpanish: normalizeText(asana.nameSpanish),
         description: normalizeText(asana.description),
@@ -395,7 +395,7 @@ export const yogaRoutines: Record<
         warning: ASANA_WARNINGS[slug] ?? "Practica con suavidad y detente ante dolor, mareo o falta de aire.",
         imagePath: asanaImages[slug] ?? null,
       };
-    }),
+    }).filter((asana) => asana.imagePath),
     pranayama: legacyElementRoutines.aire.pranayama.map((item) => ({
       name: normalizeText(item.name),
       description: normalizeText(item.description),
