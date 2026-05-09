@@ -44,6 +44,21 @@
         "title": "Astrocartography",
         "description": "Your planetary lines across the world map.",
         "href": "/astrocartografia"
+      },
+      {
+        "title": "Transits",
+        "description": "What the current sky is activating in your chart.",
+        "href": "/form"
+      },
+      {
+        "title": "Solar Return",
+        "description": "The themes opening around your birthday year.",
+        "href": "/form"
+      },
+      {
+        "title": "Synastry",
+        "description": "A chart-to-chart reading of the bond between two people.",
+        "href": "/form"
       }
     ]
   },

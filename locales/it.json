@@ -44,6 +44,21 @@
         "title": "Astrocartografia",
         "description": "Le tue linee planetarie sulla mappa del mondo.",
         "href": "/astrocartografia"
+      },
+      {
+        "title": "Transiti",
+        "description": "Ciò che il cielo attuale sta attivando nella tua carta.",
+        "href": "/form"
+      },
+      {
+        "title": "Rivoluzione Solare",
+        "description": "I temi che si aprono attorno al tuo anno di compleanno.",
+        "href": "/form"
+      },
+      {
+        "title": "Sinastria",
+        "description": "Una lettura carta a carta del legame tra due persone.",
+        "href": "/form"
       }
     ]
   },

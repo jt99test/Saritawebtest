@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect } from "react";
 import Image from "next/image";
@@ -132,7 +132,7 @@ export function HomePage() {
           </div>
 
           <div className="relative z-10 border-t border-black/10 py-3 sm:py-4">
-            <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-7">
               {features.map((feature, index) => (
                 <Link
                   key={feature.href}
@@ -140,7 +140,7 @@ export function HomePage() {
                   className="group block border-l border-black/10 px-3 py-2 text-left transition hover:border-dusty-gold/45 hover:bg-white sm:px-4"
                 >
                   <span className="mb-2 block text-xl text-[#5c4a24] sm:mb-3 sm:text-2xl">
-                    {["☽", "☉", "♄", "♁"][index] ?? "☽"}
+                    {["\u263d", "\u2609", "\u2644", "\u260c", "\u2609", "\u26ad", "\u2641"][index] ?? "\u263d"}
                   </span>
                   <span className="block text-[10px] font-semibold uppercase leading-4 tracking-[0.16em] text-[#3a3048] transition group-hover:text-[#5c4a24] sm:text-[12px] sm:tracking-[0.24em]">
                     {feature.title}
