@@ -12,7 +12,7 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData } from "@/lib/chart";
-import { getAspectLabel, getHouseArea, getPointLabel } from "@/lib/chart-labels";
+import { getAspectLabel, getHouseArea, getPointLabel, getSignLabel } from "@/lib/chart-labels";
 import { jsonOnlyInstruction, nativeToneInstruction, promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -126,6 +126,38 @@ function isTransitReadingPayload(value: unknown): value is TransitReadingPayload
   );
 }
 
+function formatNatalConditionLine(chart: NatalChartData, planetId: ChartPointId, locale?: string) {
+  const natalPoint = chart.points.find((point) => point.id === planetId);
+  if (!natalPoint) return null;
+
+  const natalAspects = chart.aspects
+    .filter((aspect) => aspect.from === planetId || aspect.to === planetId)
+    .sort((left, right) => left.orb - right.orb)
+    .slice(0, 3)
+    .map((aspect) => {
+      const otherPointId = aspect.from === planetId ? aspect.to : aspect.from;
+      return `${getAspectLabel(aspect.type, locale)} ${getPointLabel(otherPointId, locale)}`;
+    })
+    .join(", ");
+
+  const retrogradeLabel = natalPoint.retrograde
+    ? locale === "en" ? ", retrograde" : locale === "it" ? ", retrogrado" : ", retrógrado"
+    : "";
+  const aspectsLabel = natalAspects || (
+    locale === "en" ? "no major natal aspects" : locale === "it" ? "nessun aspetto natale principale" : "sin aspectos natales principales"
+  );
+
+  if (locale === "en") {
+    return `- ${getPointLabel(planetId, locale)} — natal ${getSignLabel(natalPoint.sign, locale)} house ${natalPoint.house}${retrogradeLabel}, aspects: ${aspectsLabel}.`;
+  }
+
+  if (locale === "it") {
+    return `- ${getPointLabel(planetId, locale)} — natale in ${getSignLabel(natalPoint.sign, locale)} casa ${natalPoint.house}${retrogradeLabel}, aspetti: ${aspectsLabel}.`;
+  }
+
+  return `- ${getPointLabel(planetId, locale)} — natal en ${getSignLabel(natalPoint.sign, locale)} casa ${natalPoint.house}${retrogradeLabel}, aspectos: ${aspectsLabel}.`;
+}
+
 export async function POST(request: Request) {
   if (!process.env.ANTHROPIC_API_KEY) {
     return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
@@ -190,6 +222,18 @@ export async function POST(request: Request) {
   const name = chart.event.name;
   const natalSun = chart.points.find((point) => point.id === "sun");
   const natalMoon = chart.points.find((point) => point.id === "moon");
+  const activeTransitingPlanets = [...new Set(transits.map((transit) => transit.transitingPlanet))];
+  const natalConditionLines = activeTransitingPlanets
+    .map((planetId) => formatNatalConditionLine(chart, planetId, locale))
+    .filter((line): line is string => Boolean(line))
+    .join("\n");
+  const natalConditionSection = natalConditionLines || (
+    locale === "en"
+      ? "- No natal condition found for the active transiting planets."
+      : locale === "it"
+        ? "- Nessuna condizione natale trovata per i pianeti in transito attivi."
+        : "- No se encontró condición natal para los planetas transitantes activos."
+  );
 
   const transitLines = transits.slice(0, 6).map((transit) => {
     const natalHouseDesc = transit.natalHouse
@@ -240,6 +284,9 @@ ${name}'s natal chart:
 - Natal Sun: ${natalSun ? `${natalSun.sign} house ${natalSun.house}` : "-"}
 - Natal Moon: ${natalMoon ? `${natalMoon.sign} house ${natalMoon.house}` : "-"}
 
+Natal condition of active transiting planets:
+${natalConditionSection}
+
 Active transits now:
 ${transitLines}
 
@@ -248,6 +295,7 @@ Reading logic:
 - Transits show the when: the moment those patterns become active in lived experience.
 - Do not read the transit in isolation. If a transit touches a natal planet that participates in a natal aspect, interpret that aspect as an inner memory waking up.
 - Use the transiting planet's house as the current area where the experience is moving. Use the natal house as the inner memory receiving the activation.
+- Use the natal condition of the active transiting planet to calibrate tone: if it is well-aspected natally, lean toward its constructive expression; if it is stressed, acknowledge the friction while framing it as growth.
 - Avoid punishment or fixed fate. Present the activation as a chance for awareness, integration, and a freer response.
 - If there is "Reactivates natal memory", use that information in dominantBody and reading.
 
@@ -278,6 +326,9 @@ Carta natale di ${name}:
 - Sole natale: ${natalSun ? `${natalSun.sign} casa ${natalSun.house}` : "-"}
 - Luna natale: ${natalMoon ? `${natalMoon.sign} casa ${natalMoon.house}` : "-"}
 
+Condizione natale dei pianeti in transito attivi:
+${natalConditionSection}
+
 Transiti attivi ora:
 ${transitLines}
 
@@ -286,6 +337,7 @@ Logica di lettura:
 - I transiti mostrano il quando: il momento in cui quegli schemi si attivano nell'esperienza.
 - Non leggere il transito isolato. Se un transito tocca un pianeta natale coinvolto in un aspetto natale, interpreta quell'aspetto come memoria interna che si risveglia.
 - Usa la casa del pianeta in transito come area attuale dell'esperienza. Usa la casa natale come memoria interna che riceve l'attivazione.
+- Usa la condizione natale del pianeta in transito attivo per calibrare il tono: se e ben aspettato nella carta natale, privilegia l'espressione costruttiva; se e sotto tensione, riconosci l'attrito mantenendolo come crescita.
 - Evita punizione o destino fisso. Presenta l'attivazione come occasione di consapevolezza, integrazione e risposta piu libera.
 - Se c'e "Riattiva memoria natale", usa quell'informazione in dominantBody e in reading.
 
@@ -314,6 +366,9 @@ Carta natal de ${name}:
 - Sol natal: ${natalSun ? `${natalSun.sign} casa ${natalSun.house}` : "-"}
 - Luna natal: ${natalMoon ? `${natalMoon.sign} casa ${natalMoon.house}` : "-"}
 
+Condición natal de los planetas transitantes activos:
+${natalConditionSection}
+
 Transitos activos ahora mismo:
 ${transitLines}
 
@@ -322,6 +377,7 @@ Logica de lectura:
 - Los transitos muestran el cuando: el momento en que esos patrones se activan en la experiencia.
 - No leas el transito aislado. Si un transito toca un planeta natal que participa en un aspecto natal, interpreta ese aspecto como una memoria interna que se despierta.
 - Usa la casa del planeta en transito como el area actual donde se esta moviendo la experiencia. Usa la casa natal como la memoria interna que recibe esa activacion.
+- Usa la condicion natal del planeta transitante activo para calibrar el tono: si esta bien aspectado natalmente, inclinate hacia su expresion constructiva; si esta tensionado, reconoce la friccion sin dejar de enmarcarla como crecimiento.
 - Evita hablar de castigo o destino fijo. Presenta la activacion como oportunidad de conciencia, integracion y respuesta mas libre.
 - Si hay "Reactiva memoria natal", usa esa informacion en dominantBody y en reading.
 

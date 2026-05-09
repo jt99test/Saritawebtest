@@ -254,13 +254,6 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
         duration: "5 respiraciones por lado",
       },
       {
-        nameSanskrit: "Abdominales con piernas en mesa supina",
-        nameSpanish: "Abdominales con piernas en mesa",
-        description:
-          "Túmbate boca arriba y lleva las piernas a mesa, con rodillas sobre caderas y espinillas paralelas al suelo. Coloca las manos detrás de la cabeza sin tirar del cuello. Al exhalar, activa el abdomen y eleva suavemente cabeza y hombros; al inhalar, baja con control. Mantén la espalda baja estable y el movimiento pequeño.",
-        duration: "8 repeticiones lentas",
-      },
-      {
         nameSanskrit: "Plancha sobre antebrazos",
         nameSpanish: "Plancha sobre antebrazos",
         description:
@@ -607,13 +600,6 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
           "Sientate, une las plantas de los pies y deja las rodillas abiertas hacia los lados. Manten la columna alta y las manos suaves. Esta imagen extra de la tanda Tierra queda como variante de apertura estable de caderas.",
         duration: "8 respiraciones",
       },
-      {
-        nameSanskrit: "Savasana con piernas dobladas",
-        nameSpanish: "Descanso con piernas dobladas",
-        description:
-          "Tumbate boca arriba con rodillas flexionadas y pies apoyados, separados al ancho de caderas. Deja que la espalda baja descanse y que el peso del cuerpo baje al suelo. Esta variante de cierre conserva la raiz sin exigir inmovilidad total.",
-        duration: "3 minutos",
-      },
     ],
     pranayama: [
       {
@@ -758,20 +744,6 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
         duration: "6 respiraciones por lado",
       },
       {
-        nameSanskrit: "Ananda Balasana",
-        nameSpanish: "Bebé feliz",
-        description:
-          "Boca arriba, flexiona las rodillas hacia las axilas y toma los bordes externos de los pies, tobillos o muslos. Deja que el sacro descanse pesado y balancea apenas si el cuerpo lo pide. La postura invita a soltar la pelvis desde un gesto simple y lúdico.",
-        duration: "8 respiraciones",
-      },
-      {
-        nameSanskrit: "Movimiento ondulante de pelvis supina",
-        nameSpanish: "Ondulación de pelvis boca arriba",
-        description:
-          "Túmbate boca arriba con rodillas flexionadas y pies apoyados. Al inhalar permite una pequeña curva lumbar; al exhalar deja que el sacro ruede y la espalda baja se acerque al suelo. Mantén el movimiento lento, como una ola que recorre la pelvis.",
-        duration: "10 ciclos lentos",
-      },
-      {
         nameSanskrit: "Círculos de rodillas supina",
         nameSpanish: "Círculos de rodillas boca arriba",
         description:
@@ -892,13 +864,6 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
         duration: "8 respiraciones",
       },
       {
-        nameSanskrit: "Apertura de brazos en cruz de pie",
-        nameSpanish: "Brazos en cruz de pie",
-        description:
-          "Desde Tadasana, abre los brazos hacia los lados a la altura de los hombros, palmas hacia adelante o hacia arriba. Ensancha clavículas y siente el pecho amplio sin empujar las costillas. Respira como si el aire entrara por el centro del corazón y saliera por las manos.",
-        duration: "8 respiraciones",
-      },
-      {
         nameSanskrit: "Anahatasana",
         nameSpanish: "Corazón en Tierra",
         description:
@@ -991,13 +956,6 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
         duration: "8 círculos por dirección",
       },
       {
-        nameSanskrit: "Círculos de brazos amplios",
-        nameSpanish: "Círculos amplios de brazos",
-        description:
-          "De pie o sentada, abre los brazos y dibuja círculos grandes y lentos en el aire. Mantén las costillas suaves y ajusta el tamaño del círculo para que los hombros no se irriten. La práctica despierta la sensación de alas y espacio alrededor del pecho.",
-        duration: "6 círculos por dirección",
-      },
-      {
         nameSanskrit: "Postura de la mariposa con brazos abiertos",
         nameSpanish: "Mariposa con brazos abiertos",
         description:
@@ -1045,20 +1003,6 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
         description:
           "Boca abajo, lleva las manos apenas elevadas del suelo o flotando junto al pecho. Inhala y levanta el pecho desde la fuerza de la espalda alta, manteniendo el cuello largo. La postura refina la apertura torácica sin depender del empuje de los brazos.",
         duration: "3 series de 4 respiraciones",
-      },
-      {
-        nameSanskrit: "Apertura de brazos tumbada boca arriba",
-        nameSpanish: "Cactus arms",
-        description:
-          "Recuéstate boca arriba y abre los brazos en forma de cactus, con codos flexionados y palmas hacia arriba. Ajusta mantas bajo brazos si los hombros quedan en el aire. Deja que la respiración ensanche el pecho de forma pasiva y sostenida.",
-        duration: "2 minutos",
-      },
-      {
-        nameSanskrit: "Savasana con brazos abiertos en cruz",
-        nameSpanish: "Descanso con brazos en cruz",
-        description:
-          "Túmbate boca arriba con piernas cómodas y brazos abiertos a los lados. Deja las palmas hacia arriba y permite que el pecho descanse ancho, sin esfuerzo. El aire entra y sale como cielo despejado alrededor del cuerpo.",
-        duration: "3 minutos",
       },
     ],
     pranayama: [
