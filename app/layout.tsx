@@ -4,6 +4,7 @@ import { Suspense } from "react";
 
 import { fontSans, fontSerif } from "@/app/fonts";
 import { AuthModal } from "@/components/auth/auth-modal";
+import { InstallAppPrompt } from "@/components/ui/install-app-prompt";
 import { CookieBanner } from "@/components/ui/cookie-banner";
 import { NoticeProvider } from "@/components/ui/notice-provider";
 import { defaultLocale, isLocale, LOCALE_STORAGE_KEY } from "@/lib/i18n";
@@ -58,6 +59,7 @@ export default async function RootLayout({
       <body className="min-h-full bg-cosmic-950 font-sans text-ivory">
         {children}
         <CookieBanner />
+        <InstallAppPrompt />
         <NoticeProvider />
         <Suspense fallback={null}>
           <AuthModal />
