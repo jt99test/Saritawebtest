@@ -104,18 +104,19 @@ function ResultPageContent() {
           ) : null}
 
           <div className="fixed inset-x-0 top-0 z-[60] border-b border-black/10 bg-cosmic-950/92 backdrop-blur-xl">
-            <div className="mx-auto grid min-h-12 max-w-[1180px] grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-4 sm:px-6 lg:px-8">
+            <div className="mx-auto grid min-h-12 max-w-[1180px] grid-cols-[2.5rem_1fr_2.5rem] items-center gap-2 px-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-4 sm:px-6 lg:px-8">
             <Link
               href="/"
               className="flex h-10 w-10 items-center justify-center justify-self-start overflow-hidden text-2xl leading-none text-[#3a3048] transition hover:text-ivory sm:h-auto sm:w-auto sm:truncate sm:text-xs sm:font-medium sm:uppercase sm:tracking-[0.24em]"
               aria-label={dictionary.result.back}
             >
-              <span className="sm:hidden">‹</span>
-              <span className="hidden sm:inline">← {dictionary.result.back}</span>
+              <span className="sm:hidden">{"\u2039"}</span>
+              <span className="hidden sm:inline">{"\u2190"} {dictionary.result.back}</span>
             </Link>
 
-            <p className="hidden justify-self-center text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5c4a24] sm:block">
-              {result?.saved ? dictionary.standalonePages.savedReading : ""}
+            <p className="justify-self-center font-serif text-[15px] uppercase tracking-[0.28em] text-[#5c4a24] sm:text-[12px] sm:font-semibold sm:tracking-[0.22em]">
+              <span className="sm:hidden">{dictionary.brand.name}</span>
+              <span className="hidden sm:inline">{result?.saved ? dictionary.standalonePages.savedReading : ""}</span>
             </p>
 
             <div className="flex min-w-0 items-center gap-2 justify-self-end sm:gap-4 sm:border-l sm:border-black/15 sm:pl-4">

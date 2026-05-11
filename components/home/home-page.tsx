@@ -44,6 +44,13 @@ export function HomePage() {
     locale === "en" ? "View all readings" : locale === "it" ? "Vedi tutte le letture" : "Ver todas las lecturas";
   const lessReadingsLabel =
     locale === "en" ? "Show less" : locale === "it" ? "Mostra meno" : "Ver menos";
+  const mobileMenuLinks = [
+    { href: "/form", label: dictionary.common.newReading },
+    { href: "/lecturas", label: dictionary.common.viewReadings },
+    { href: "/cuenta", label: dictionary.nav.account },
+    { href: "/precios", label: dictionary.nav.pricing },
+    { href: "/ayuda", label: dictionary.nav.help },
+  ];
 
   return (
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
@@ -67,19 +74,22 @@ export function HomePage() {
         <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 hidden h-[34vh] bg-gradient-to-t from-cosmic-950 via-cosmic-950/72 to-transparent sm:block" />
 
         <Container className="relative flex min-h-[100svh] flex-col pb-5 pt-4 sm:min-h-screen sm:pb-10 sm:pt-6">
-          <div className="flex items-center justify-between rounded-full border border-white/10 bg-[#fffaf0]/16 px-3 py-2.5 text-ivory shadow-[0_12px_34px_rgba(0,0,0,0.18)] backdrop-blur-md sm:hidden">
+          <div className="grid grid-cols-[2.5rem_1fr_2.5rem] items-center rounded-full border border-white/10 bg-[#fffaf0]/16 px-3 py-2.5 text-ivory shadow-[0_12px_34px_rgba(0,0,0,0.18)] backdrop-blur-md sm:hidden">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="flex h-10 w-10 items-center justify-center font-serif text-2xl text-ivory"
+              className="flex h-10 w-10 items-center justify-center justify-self-start font-serif text-2xl text-ivory"
               aria-label="Menu"
             >
               S
             </button>
+            <span className="justify-self-center font-serif text-[15px] uppercase tracking-[0.28em] text-ivory">
+              {dictionary.brand.name}
+            </span>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-white/18 bg-white/10 text-lg text-ivory"
+              className="flex h-10 w-10 items-center justify-center justify-self-end rounded-full border border-white/18 bg-white/10 text-lg text-ivory"
               aria-label={dictionary.common.account}
             >
               ♙
@@ -106,15 +116,23 @@ export function HomePage() {
                     ×
                   </button>
                 </div>
+                <div className="mt-5 grid gap-2">
+                  {mobileMenuLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="border border-black/10 bg-white/52 px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#3a3048] transition hover:border-dusty-gold/40 hover:text-[#5c4a24]"
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
                 <div className="mt-5 border-y border-black/10 py-4">
                   <AccountButton />
                 </div>
                 <div className="mt-4">
                   <LanguageSelector dictionary={dictionary} locale={locale} onChange={handleLocaleChange} />
-                </div>
-                <div className="mt-5 grid gap-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#3a3048]">
-                  <Link href="/precios" onClick={() => setMobileMenuOpen(false)}>{dictionary.nav.pricing}</Link>
-                  <Link href="/ayuda" onClick={() => setMobileMenuOpen(false)}>{dictionary.nav.help}</Link>
                 </div>
               </div>
             </div>

@@ -11,12 +11,14 @@ export type AiReadingScope =
 
 type AiReadingGenerationRow = {
   content: unknown;
+  created_at?: string | null;
 };
 
 const GENERATION_STATUS_KEY = "__saritaGenerationStatus";
 const GENERATING_CONTENT = { [GENERATION_STATUS_KEY]: "generating" };
 const FAILED_CONTENT = { [GENERATION_STATUS_KEY]: "failed" };
 const DEFAULT_DAILY_AI_READING_LIMIT = 10;
+const STALE_GENERATION_MS = 2 * 60 * 1000;
 
 type AiReadingCacheInput = {
   supabase: SupabaseClient;
@@ -54,6 +56,16 @@ function isMissingRateLimitTable(error: { code?: string; message?: string } | nu
     error.message?.includes("ai_reading_request_events") ||
     error.message?.toLowerCase().includes("does not exist")
   );
+}
+
+function isStaleGenerating(content: unknown, createdAt?: string | null) {
+  if (getAiGenerationStatus(content) !== "generating") return false;
+  if (!createdAt) return true;
+
+  const createdTime = new Date(createdAt).getTime();
+  if (!Number.isFinite(createdTime)) return true;
+
+  return Date.now() - createdTime > STALE_GENERATION_MS;
 }
 
 export function getAiGenerationStatus(content: unknown): "generating" | "failed" | null {
@@ -115,7 +127,7 @@ export async function getCachedAiReading({
 
   const { data, error } = await supabase
     .from("ai_reading_generations")
-    .select("content")
+    .select("content, created_at")
     .eq("user_id", user.id)
     .eq("reading_id", readingId)
     .eq("scope", scope)
@@ -143,21 +155,30 @@ export async function reserveAiReadingGeneration({
     return { ok: false, response: new Response("readingId required", { status: 400 }) };
   }
 
-  const content = await getCachedAiReading({
-    supabase,
-    user,
-    readingId,
-    scope,
-    itemKey,
-    locale,
-  });
+  const { data: cachedRow, error: cacheError } = await supabase
+    .from("ai_reading_generations")
+    .select("content, created_at")
+    .eq("user_id", user.id)
+    .eq("reading_id", readingId)
+    .eq("scope", scope)
+    .eq("item_key", itemKey)
+    .eq("locale", normalizedLocale(locale))
+    .maybeSingle<AiReadingGenerationRow>();
 
+  if (cacheError) {
+    console.error("AI reading cache lookup failed:", cacheError.message);
+    return { ok: false, response: new Response("AI reading cache lookup failed", { status: 500 }) };
+  }
+
+  const content = cachedRow?.content ?? null;
   const status = getAiGenerationStatus(content);
-  if (status === "generating") {
+  const staleGenerating = isStaleGenerating(content, cachedRow?.created_at);
+
+  if (status === "generating" && !staleGenerating) {
     return { ok: false, response: aiGenerationStatusResponse(status) };
   }
 
-  if (content && status !== "failed") {
+  if (content && status !== "failed" && !staleGenerating) {
     return { ok: true, reserved: false, content };
   }
 
@@ -172,31 +193,7 @@ export async function reserveAiReadingGeneration({
     .gte("created_at", dayStart.toISOString());
 
   if (isMissingRateLimitTable(countError)) {
-    const { count: fallbackCount, error: fallbackError } = await supabase
-      .from("ai_reading_generations")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .gte("created_at", dayStart.toISOString());
-
-    if (fallbackError) {
-      console.error("AI reading fallback rate limit lookup failed:", fallbackError.message);
-      return { ok: false, response: new Response("AI reading rate limit check failed", { status: 500 }) };
-    }
-
-    if ((fallbackCount ?? 0) >= limit) {
-      return {
-        ok: false,
-        response: new Response("Daily AI reading limit reached", {
-          status: 429,
-          headers: {
-            "Cache-Control": "no-cache",
-            "Retry-After": String(Math.max(1, Math.ceil((dayStart.getTime() + 86_400_000 - Date.now()) / 1000))),
-            "X-Sarita-AI-Limit": String(limit),
-            "X-Sarita-AI-Remaining": "0",
-          },
-        }),
-      };
-    }
+    console.warn("AI reading request event table missing; rate limit will activate after the migration is applied.");
   } else if (countError) {
     console.error("AI reading rate limit lookup failed:", countError.message);
     return { ok: false, response: new Response("AI reading rate limit check failed", { status: 500 }) };
@@ -227,16 +224,16 @@ export async function reserveAiReadingGeneration({
     if (isMissingRateLimitTable(eventError)) {
       console.warn("AI reading request event table missing; falling back without event logging.");
     } else {
-    console.error("AI reading rate limit event failed:", eventError.message);
-    return { ok: false, response: new Response("AI reading rate limit event failed", { status: 500 }) };
+      console.error("AI reading rate limit event failed:", eventError.message);
+      return { ok: false, response: new Response("AI reading rate limit event failed", { status: 500 }) };
     }
   }
 
   const normalized = normalizedLocale(locale);
-  if (status === "failed") {
+  if (status === "failed" || staleGenerating) {
     const { error } = await supabase
       .from("ai_reading_generations")
-      .update({ content: GENERATING_CONTENT })
+      .update({ content: GENERATING_CONTENT, created_at: new Date().toISOString() })
       .eq("user_id", user.id)
       .eq("reading_id", readingId)
       .eq("scope", scope)
