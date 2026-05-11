@@ -48,6 +48,16 @@ const TAB_REQUIREMENTS: Partial<Record<PageTabId, PaidPlan>> = {
   astrocartography: "avanzado",
 };
 
+const TAB_ICONS: Record<PageTabId, string> = {
+  natal: "☉",
+  moon: "☽",
+  yoga: "♄",
+  complete: "♃",
+  solarReturn: "☌",
+  synastry: "♀",
+  astrocartography: "⌖",
+};
+
 function hasPlanAccess(currentPlan: string, requiredPlan?: PaidPlan) {
   if (!requiredPlan) {
     return true;
@@ -175,6 +185,7 @@ export function NatalChartExperience({
   const { panelOpen, selectedPointId } = useChartStore();
   const { plan, loading: planLoading } = usePlan();
   const [pageTab, setPageTab] = useState<PageTabId>("natal");
+  const [sectionMenuOpen, setSectionMenuOpen] = useState(false);
   const [pricingOpen, setPricingOpen] = useState(false);
   const [pricingRequiredPlan, setPricingRequiredPlan] = useState<PaidPlan>("pro");
   const tabListRef = useRef<HTMLElement | null>(null);
@@ -220,21 +231,81 @@ export function NatalChartExperience({
   return (
     <div className="relative mx-auto w-full min-w-0 max-w-[880px] px-3 pb-16 pt-3 sm:px-6 sm:pb-20 sm:pt-4 lg:max-w-[1180px] lg:px-8">
       <div className="space-y-3">
+        <div className="relative md:hidden">
+          <button
+            type="button"
+            onClick={() => setSectionMenuOpen(true)}
+            className="flex w-full items-center justify-between border border-black/10 bg-white/76 px-4 py-3 text-left shadow-[0_10px_30px_rgba(30,26,46,0.08)]"
+            aria-haspopup="dialog"
+            aria-expanded={sectionMenuOpen}
+          >
+            <span className="flex min-w-0 items-center gap-3">
+              <span className="text-xl text-[#5c4a24]">{TAB_ICONS[pageTab]}</span>
+              <span className="min-w-0 truncate text-[12px] font-semibold uppercase tracking-[0.18em] text-[#1e1a2e]">
+                {dictionary.result.primaryTabs[pageTab]}
+              </span>
+            </span>
+            <span className="text-[#8a7a4e]">⌄</span>
+          </button>
+          {sectionMenuOpen ? (
+            <div className="fixed inset-0 z-[1000] bg-black/35 backdrop-blur-sm" onClick={() => setSectionMenuOpen(false)}>
+              <div
+                className="absolute inset-x-3 top-16 border border-dusty-gold/24 bg-[#f8f4eb] p-3 shadow-[0_24px_80px_rgba(0,0,0,0.28)]"
+                onClick={(event) => event.stopPropagation()}
+              >
+                {PAGE_TABS.map((tab) => {
+                  const active = pageTab === tab;
+                  const requiredPlan = TAB_REQUIREMENTS[tab];
+                  const locked = !planLoading && !hasPlanAccess(plan, requiredPlan);
+                  return (
+                    <button
+                      key={tab}
+                      type="button"
+                      onClick={() => {
+                        setPageTab(tab);
+                        setSectionMenuOpen(false);
+                        if (locked && requiredPlan) {
+                          openPricing(requiredPlan);
+                        }
+                      }}
+                      className={[
+                        "flex w-full items-center justify-between gap-3 px-3 py-3 text-left transition",
+                        active ? "bg-dusty-gold/12 text-[#5c4a24]" : "text-[#1e1a2e] hover:bg-white/60",
+                      ].join(" ")}
+                    >
+                      <span className="flex min-w-0 items-center gap-3">
+                        <span className="text-xl text-[#5c4a24]">{TAB_ICONS[tab]}</span>
+                        <span className="min-w-0 truncate text-[12px] font-semibold uppercase tracking-[0.16em]">
+                          {dictionary.result.primaryTabs[tab]}
+                        </span>
+                      </span>
+                      {locked && requiredPlan ? (
+                        <span className="border border-dusty-gold/25 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#5c4a24]">
+                          {requiredPlan === "pro" ? dictionary.paywall.lockedBadgePro : dictionary.paywall.lockedBadgeAvanzado}
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
+        </div>
         <div className="relative">
         <div className="mb-2 flex flex-col gap-1 border-b border-dusty-gold/14 pb-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
             <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5c4a24]">
               {dictionary.result.readingContextLabel}
             </p>
-            <p className="mt-1 truncate font-serif text-[18px] leading-6 text-ivory">
+            <p className="mt-1 font-serif text-[19px] leading-6 text-ivory sm:truncate sm:text-[18px]">
               {stickyTitle}
             </p>
           </div>
-          <p className="truncate text-[11px] font-semibold uppercase tracking-[0.18em] text-[#3a3048] sm:max-w-[48%] sm:text-right">
+          <p className="text-[11px] font-semibold uppercase leading-5 tracking-[0.14em] text-[#3a3048] sm:max-w-[48%] sm:truncate sm:text-right sm:tracking-[0.18em]">
             {dictionary.result.primaryTabs[pageTab]}{headerSubtitle ? ` · ${headerSubtitle}` : ""}
           </p>
         </div>
-        <div className="relative">
+        <div className="relative hidden md:block">
         <nav ref={tabListRef} className="flex max-w-full snap-x snap-mandatory gap-0 overflow-x-auto overscroll-x-contain border-b border-black/10 pb-0 pt-0 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
           {PAGE_TABS.map((tab) => {
             const active = pageTab === tab;
@@ -283,7 +354,7 @@ export function NatalChartExperience({
         <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-cosmic-950 to-transparent md:hidden" />
         <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-cosmic-950 to-transparent md:hidden" />
         </div>
-        <div className="mt-2 flex justify-center gap-1.5 md:hidden" aria-hidden="true">
+        <div className="mt-2 hidden justify-center gap-1.5 md:hidden" aria-hidden="true">
           {PAGE_TABS.map((tab) => (
             <span
               key={tab}

@@ -13,7 +13,11 @@ import { dictionaries } from "@/lib/i18n";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { usePlan } from "@/lib/use-plan";
 
-export function AccountButton() {
+type AccountButtonProps = {
+  compact?: boolean;
+};
+
+export function AccountButton({ compact = false }: AccountButtonProps) {
   const router = useRouter();
   const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
@@ -23,7 +27,7 @@ export function AccountButton() {
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [menuPinned, setMenuPinned] = useState(false);
+  const [, setMenuPinned] = useState(false);
   const [menuPosition, setMenuPosition] = useState<{ top: number; left: number; width: number } | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
@@ -163,9 +167,12 @@ export function AccountButton() {
       <button
         type="button"
         onClick={openAuthModal}
-        className="max-w-[6.8rem] truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[#1e1a2e] transition hover:text-[#5c4a24] min-[430px]:text-xs min-[430px]:tracking-[0.2em]"
+        className={compact
+          ? "flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-[#fffaf0]/70 text-lg text-[#1e1a2e] transition hover:text-[#5c4a24]"
+          : "max-w-[6.8rem] truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[#1e1a2e] transition hover:text-[#5c4a24] min-[430px]:text-xs min-[430px]:tracking-[0.2em]"}
+        aria-label={dictionary.auth.signIn}
       >
-        {dictionary.auth.signIn}
+        {compact ? "♙" : dictionary.auth.signIn}
       </button>
     );
   }
@@ -187,9 +194,11 @@ export function AccountButton() {
         }}
         aria-haspopup="menu"
         aria-expanded={menuOpen}
-        className="max-w-[6.8rem] truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[#1e1a2e] transition hover:text-[#5c4a24] min-[430px]:text-xs min-[430px]:tracking-[0.2em]"
+        className={compact
+          ? "flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-[#fffaf0]/70 text-lg text-[#1e1a2e] transition hover:text-[#5c4a24]"
+          : "max-w-[6.8rem] truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[#1e1a2e] transition hover:text-[#5c4a24] min-[430px]:text-xs min-[430px]:tracking-[0.2em]"}
       >
-        {dictionary.common.account}
+        {compact ? "♙" : dictionary.common.account}
       </button>
 
       {menuOpen && menuPosition

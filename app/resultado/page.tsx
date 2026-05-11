@@ -73,9 +73,12 @@ function ResultPageContent() {
 
   useEffect(() => {
     if (checkoutStatus === "success" || checkoutStatus === "cancelled") {
-      setBanner(checkoutStatus);
-      const timeout = window.setTimeout(() => setBanner(null), 4000);
-      return () => window.clearTimeout(timeout);
+      const showTimeout = window.setTimeout(() => setBanner(checkoutStatus), 0);
+      const hideTimeout = window.setTimeout(() => setBanner(null), 4000);
+      return () => {
+        window.clearTimeout(showTimeout);
+        window.clearTimeout(hideTimeout);
+      };
     }
 
     return undefined;
@@ -104,9 +107,10 @@ function ResultPageContent() {
             <div className="mx-auto grid min-h-12 max-w-[1180px] grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-4 sm:px-6 lg:px-8">
             <Link
               href="/"
-              className="min-w-0 justify-self-start truncate text-[10px] font-medium uppercase tracking-[0.14em] text-[#3a3048] transition hover:text-ivory min-[430px]:tracking-[0.16em] sm:text-xs sm:tracking-[0.24em]"
+              className="flex h-10 w-10 items-center justify-center justify-self-start overflow-hidden text-2xl leading-none text-[#3a3048] transition hover:text-ivory sm:h-auto sm:w-auto sm:truncate sm:text-xs sm:font-medium sm:uppercase sm:tracking-[0.24em]"
+              aria-label={dictionary.result.back}
             >
-              <span className="sm:hidden">← Inicio</span>
+              <span className="sm:hidden">‹</span>
               <span className="hidden sm:inline">← {dictionary.result.back}</span>
             </Link>
 
@@ -114,14 +118,19 @@ function ResultPageContent() {
               {result?.saved ? dictionary.standalonePages.savedReading : ""}
             </p>
 
-            <div className="flex min-w-0 items-center gap-2 justify-self-end border-l border-black/15 pl-2 sm:gap-4 sm:pl-4">
+            <div className="flex min-w-0 items-center gap-2 justify-self-end sm:gap-4 sm:border-l sm:border-black/15 sm:pl-4">
               <Link
                 href="/form"
                 className="hidden text-right text-[10px] font-medium uppercase tracking-[0.16em] text-[#3a3048] transition hover:text-ivory/80 min-[430px]:inline sm:text-xs sm:tracking-[0.24em]"
               >
                 {dictionary.form.back}
               </Link>
-              <AccountButton />
+              <span className="sm:hidden">
+                <AccountButton compact />
+              </span>
+              <span className="hidden sm:inline">
+                <AccountButton />
+              </span>
             </div>
           </div>
 

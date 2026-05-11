@@ -47,6 +47,15 @@ function normalizedLocale(locale?: string) {
   return locale === "en" || locale === "it" ? locale : "es";
 }
 
+function isMissingRateLimitTable(error: { code?: string; message?: string } | null) {
+  if (!error) return false;
+  return (
+    error.code === "42P01" ||
+    error.message?.includes("ai_reading_request_events") ||
+    error.message?.toLowerCase().includes("does not exist")
+  );
+}
+
 export function getAiGenerationStatus(content: unknown): "generating" | "failed" | null {
   if (!content || typeof content !== "object" || Array.isArray(content)) {
     return null;
@@ -162,12 +171,36 @@ export async function reserveAiReadingGeneration({
     .eq("user_id", user.id)
     .gte("created_at", dayStart.toISOString());
 
-  if (countError) {
+  if (isMissingRateLimitTable(countError)) {
+    const { count: fallbackCount, error: fallbackError } = await supabase
+      .from("ai_reading_generations")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .gte("created_at", dayStart.toISOString());
+
+    if (fallbackError) {
+      console.error("AI reading fallback rate limit lookup failed:", fallbackError.message);
+      return { ok: false, response: new Response("AI reading rate limit check failed", { status: 500 }) };
+    }
+
+    if ((fallbackCount ?? 0) >= limit) {
+      return {
+        ok: false,
+        response: new Response("Daily AI reading limit reached", {
+          status: 429,
+          headers: {
+            "Cache-Control": "no-cache",
+            "Retry-After": String(Math.max(1, Math.ceil((dayStart.getTime() + 86_400_000 - Date.now()) / 1000))),
+            "X-Sarita-AI-Limit": String(limit),
+            "X-Sarita-AI-Remaining": "0",
+          },
+        }),
+      };
+    }
+  } else if (countError) {
     console.error("AI reading rate limit lookup failed:", countError.message);
     return { ok: false, response: new Response("AI reading rate limit check failed", { status: 500 }) };
-  }
-
-  if ((count ?? 0) >= limit) {
+  } else if ((count ?? 0) >= limit) {
     return {
       ok: false,
       response: new Response("Daily AI reading limit reached", {
@@ -191,8 +224,12 @@ export async function reserveAiReadingGeneration({
     });
 
   if (eventError) {
+    if (isMissingRateLimitTable(eventError)) {
+      console.warn("AI reading request event table missing; falling back without event logging.");
+    } else {
     console.error("AI reading rate limit event failed:", eventError.message);
     return { ok: false, response: new Response("AI reading rate limit event failed", { status: 500 }) };
+    }
   }
 
   const normalized = normalizedLocale(locale);

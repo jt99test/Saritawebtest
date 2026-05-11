@@ -1292,17 +1292,22 @@ export function ChartLayerRail() {
   ];
 
   return (
-    <div className="mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col overflow-hidden border border-black/12 bg-white/85 p-3 shadow-[0_8px_24px_rgba(0,0,0,0.08)] sm:max-w-[34rem] sm:p-4 lg:mx-0 lg:w-auto lg:min-w-[12rem]">
+    <div className="mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col overflow-hidden border-y border-black/10 bg-transparent py-3 sm:max-w-[34rem] sm:border sm:border-black/12 sm:bg-white/85 sm:p-4 sm:shadow-[0_8px_24px_rgba(0,0,0,0.08)] lg:mx-0 lg:w-auto lg:min-w-[12rem]">
       <p className="mb-3 text-center font-serif text-[14px] italic lowercase tracking-[0.15em] text-[#5c4a24] lg:text-left">
         {dictionary.result.toggles.view}
       </p>
-      <div className="grid grid-cols-2 gap-x-3 gap-y-3 lg:flex lg:flex-col lg:gap-3">
+      <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] sm:grid sm:grid-cols-2 sm:gap-x-3 sm:gap-y-3 sm:overflow-visible sm:pb-0 lg:flex lg:flex-col lg:gap-3 [&::-webkit-scrollbar]:hidden">
         {controls.map((control) => (
           <button
             key={control.id}
             type="button"
             onClick={control.onClick}
-            className="flex min-w-0 items-center gap-2 py-1 text-left transition focus-visible:outline-none sm:gap-3"
+            className={[
+              "flex min-h-10 shrink-0 items-center gap-2 border px-3 py-2 text-left transition focus-visible:outline-none sm:min-h-0 sm:min-w-0 sm:border-0 sm:px-0 sm:py-1 sm:gap-3",
+              control.active
+                ? "border-[#5c4a24]/24 bg-[#5c4a24]/12 text-[#1e1a2e]"
+                : "border-black/10 bg-white/62 text-[#3a3048]",
+            ].join(" ")}
             aria-pressed={control.active}
             aria-label={control.label}
           >
@@ -1317,8 +1322,8 @@ export function ChartLayerRail() {
             />
             <span
               className={[
-                "min-w-0 break-words text-[12px] font-semibold leading-4 sm:text-[13px] sm:leading-5",
-                control.active ? "text-ivory" : "text-[#3a3048]",
+                "whitespace-nowrap text-[11px] font-semibold uppercase leading-4 tracking-[0.12em] sm:min-w-0 sm:whitespace-normal sm:break-words sm:text-[13px] sm:normal-case sm:tracking-normal sm:leading-5",
+                control.active ? "text-[#1e1a2e] sm:text-ivory" : "text-[#3a3048]",
               ].join(" ")}
             >
               {control.label}

@@ -7,6 +7,7 @@ import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 const INSTALL_PROMPT_DISMISSED_KEY = "sarita_install_prompt_dismissed_at";
 const INSTALL_PROMPT_INSTALLED_KEY = "sarita_install_prompt_installed";
 const DISMISS_DAYS = 14;
+const SHOW_DELAY_MS = 1800;
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -91,7 +92,7 @@ export function InstallAppPrompt() {
       showTimeout = window.setTimeout(() => {
         setIos(nextIos);
         setVisible(true);
-      }, 3500);
+      }, SHOW_DELAY_MS);
     }
 
     function handleBeforeInstallPrompt(event: Event) {
@@ -144,26 +145,26 @@ export function InstallAppPrompt() {
   }
 
   return (
-    <div className="fixed inset-x-4 bottom-20 z-[1100] mx-auto max-w-md border border-dusty-gold/30 bg-[#0a0a14]/96 p-4 text-ivory shadow-[0_22px_70px_rgba(0,0,0,0.38)] backdrop-blur-md sm:bottom-6 sm:right-6 sm:left-auto sm:mx-0">
+    <div className="fixed inset-x-4 bottom-[7rem] z-[1100] mx-auto max-w-md border border-dusty-gold/30 bg-[#f8f4eb]/96 p-4 text-[#1e1a2e] shadow-[0_22px_70px_rgba(30,26,46,0.22)] backdrop-blur-md sm:bottom-6 sm:right-6 sm:left-auto sm:mx-0">
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-dusty-gold/35 bg-dusty-gold/12 font-serif text-lg text-dusty-gold">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-dusty-gold/35 bg-dusty-gold/12 font-serif text-lg text-[#5c4a24]">
           S
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-dusty-gold">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
             {text.eyebrow}
           </p>
-          <h2 className="mt-1 font-serif text-xl leading-snug text-ivory">
+          <h2 className="mt-1 font-serif text-xl leading-snug text-[#1e1a2e]">
             {text.title}
           </h2>
-          <p className="mt-2 text-sm leading-6 text-muted-ivory">
+          <p className="mt-2 text-sm leading-6 text-[#3a3048]">
             {body}
           </p>
         </div>
         <button
           type="button"
           onClick={dismiss}
-          className="shrink-0 px-2 py-1 text-sm text-muted-ivory transition hover:text-ivory"
+          className="shrink-0 px-2 py-1 text-sm text-[#8a7a4e] transition hover:text-[#1e1a2e]"
           aria-label={text.close}
         >
           ×
@@ -173,7 +174,7 @@ export function InstallAppPrompt() {
         <button
           type="button"
           onClick={dismiss}
-          className="border border-white/12 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-ivory transition hover:border-white/20 hover:text-ivory"
+          className="border border-black/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#3a3048] transition hover:border-black/15 hover:text-[#1e1a2e]"
         >
           {text.later}
         </button>
@@ -181,7 +182,7 @@ export function InstallAppPrompt() {
           <button
             type="button"
             onClick={installApp}
-            className="border border-dusty-gold/45 bg-dusty-gold/16 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-dusty-gold transition hover:bg-dusty-gold/22"
+            className="border border-dusty-gold/45 bg-dusty-gold/14 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:bg-dusty-gold/20"
           >
             {text.install}
           </button>
