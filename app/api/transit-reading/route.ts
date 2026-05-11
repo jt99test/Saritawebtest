@@ -84,6 +84,24 @@ type TransitReadingPayload = {
   readingGeneratedAt?: string;
 };
 
+function natalAspectTone(aspectType: string, locale?: string) {
+  const challenging = aspectType === "square" || aspectType === "opposition" || aspectType === "quincunx";
+  const flowing = aspectType === "trine" || aspectType === "sextile";
+  if (locale === "en") {
+    if (challenging) return "possible discomfort/friction";
+    if (flowing) return "available support";
+    return "strong inner emphasis";
+  }
+  if (locale === "it") {
+    if (challenging) return "possibile disagio/attrito";
+    if (flowing) return "sostegno disponibile";
+    return "enfasi interna forte";
+  }
+  if (challenging) return "posible malestar/friccion";
+  if (flowing) return "apoyo disponible";
+  return "enfasis interno fuerte";
+}
+
 function extractTextContent(message: Message) {
   return message.content
     .map((block) => block.type === "text" ? block.text : "")
@@ -133,10 +151,9 @@ function formatNatalConditionLine(chart: NatalChartData, planetId: ChartPointId,
   const natalAspects = chart.aspects
     .filter((aspect) => aspect.from === planetId || aspect.to === planetId)
     .sort((left, right) => left.orb - right.orb)
-    .slice(0, 3)
     .map((aspect) => {
       const otherPointId = aspect.from === planetId ? aspect.to : aspect.from;
-      return `${getAspectLabel(aspect.type, locale)} ${getPointLabel(otherPointId, locale)}`;
+      return `${getAspectLabel(aspect.type, locale)} ${getPointLabel(otherPointId, locale)} (${natalAspectTone(aspect.type, locale)}, orb ${aspect.orb} degrees)`;
     })
     .join(", ");
 
@@ -245,10 +262,10 @@ export async function POST(request: Request) {
       : "";
     const transitHouseDesc = transit.transitingHouse
       ? locale === "it"
-        ? ` Il pianeta in transito cade in casa ${transit.transitingHouse} per il luogo attuale: ${getHouseArea(transit.transitingHouse, locale) || `casa ${transit.transitingHouse}`}.`
+        ? ` La longitudine attuale del pianeta in transito cade nella casa ${transit.transitingHouse} della carta natale: ${getHouseArea(transit.transitingHouse, locale) || `casa ${transit.transitingHouse}`}.`
         : locale === "en"
-          ? ` Transiting planet falls in house ${transit.transitingHouse} for the current location: ${getHouseArea(transit.transitingHouse, locale) || `house ${transit.transitingHouse}`}.`
-          : ` El planeta en transito cae en casa ${transit.transitingHouse} para la ubicacion actual: ${getHouseArea(transit.transitingHouse, locale) || `casa ${transit.transitingHouse}`}.`
+          ? ` The transiting planet's current longitude falls in natal house ${transit.transitingHouse}: ${getHouseArea(transit.transitingHouse, locale) || `house ${transit.transitingHouse}`}.`
+          : ` La longitud actual del planeta en transito cae en la casa ${transit.transitingHouse} de la carta natal: ${getHouseArea(transit.transitingHouse, locale) || `casa ${transit.transitingHouse}`}.`
       : "";
     const tightness = transit.strength === "tight"
       ? locale === "en" ? "very exact" : locale === "it" ? "molto esatto" : "muy exacto"
@@ -257,8 +274,7 @@ export async function POST(request: Request) {
         : locale === "en" ? "background" : locale === "it" ? "di sfondo" : "de fondo";
 
     const natalPatterns = (transit.activatedNatalAspects ?? [])
-      .slice(0, 3)
-      .map((aspect) => `${getPointLabel(aspect.pointA, locale)} ${getAspectLabel(aspect.aspectType, locale)} ${getPointLabel(aspect.pointB, locale)} natal (orb ${aspect.orb} degrees)`)
+      .map((aspect) => `${getPointLabel(aspect.pointA, locale)} ${getAspectLabel(aspect.aspectType, locale)} ${getPointLabel(aspect.pointB, locale)} natal (${natalAspectTone(aspect.aspectType, locale)}, orb ${aspect.orb} degrees)`)
       .join("; ");
     const patternDesc = natalPatterns
       ? locale === "it" ? ` Riattiva memoria natale: ${natalPatterns}.` : locale === "en" ? ` Reactivates natal memory: ${natalPatterns}.` : ` Reactiva memoria natal: ${natalPatterns}.`
@@ -294,7 +310,9 @@ Reading logic:
 - The natal chart shows the what: patterns, deep memory, and baseline learning.
 - Transits show the when: the moment those patterns become active in lived experience.
 - Do not read the transit in isolation. If a transit touches a natal planet that participates in a natal aspect, interpret that aspect as an inner memory waking up.
-- Use the transiting planet's house as the current area where the experience is moving. Use the natal house as the inner memory receiving the activation.
+- Use the transiting planet's house as the current area where the experience is moving, but this means the house where the transiting planet's current longitude falls inside the natal chart. Do not use the standalone transit chart's house as the life area.
+- Use the natal house of the touched natal planet as the inner memory receiving the activation.
+- Process the natal aspects listed as "Reactivates natal memory". Challenging natal aspects can show discomfort, pressure, anxiety, conflict, or old coping patterns; flowing natal aspects can show resources and support. Do not ignore either.
 - Use the natal condition of the active transiting planet to calibrate tone: if it is well-aspected natally, lean toward its constructive expression; if it is stressed, acknowledge the friction while framing it as growth.
 - Avoid punishment or fixed fate. Present the activation as a chance for awareness, integration, and a freer response.
 - If there is "Reactivates natal memory", use that information in dominantBody and reading.
@@ -336,7 +354,9 @@ Logica di lettura:
 - La carta natale mostra il cosa: schemi, memoria profonda e apprendimenti di base.
 - I transiti mostrano il quando: il momento in cui quegli schemi si attivano nell'esperienza.
 - Non leggere il transito isolato. Se un transito tocca un pianeta natale coinvolto in un aspetto natale, interpreta quell'aspetto come memoria interna che si risveglia.
-- Usa la casa del pianeta in transito come area attuale dell'esperienza. Usa la casa natale come memoria interna che riceve l'attivazione.
+- Usa la casa del pianeta in transito come area attuale dell'esperienza, ma significa la casa in cui la longitudine attuale del pianeta in transito cade dentro la carta natale. Non usare la casa della carta di transito autonoma come area di vita.
+- Usa la casa natale del pianeta natale toccato come memoria interna che riceve l'attivazione.
+- Elabora gli aspetti natali indicati come "Riattiva memoria natale". Gli aspetti natali difficili possono mostrare disagio, pressione, ansia, conflitto o vecchi automatismi; quelli fluidi possono mostrare risorse e sostegno. Non ignorare nessuno dei due.
 - Usa la condizione natale del pianeta in transito attivo per calibrare il tono: se e ben aspettato nella carta natale, privilegia l'espressione costruttiva; se e sotto tensione, riconosci l'attrito mantenendolo come crescita.
 - Evita punizione o destino fisso. Presenta l'attivazione come occasione di consapevolezza, integrazione e risposta piu libera.
 - Se c'e "Riattiva memoria natale", usa quell'informazione in dominantBody e in reading.
@@ -376,7 +396,9 @@ Logica de lectura:
 - La carta natal muestra el que: patrones, memoria profunda y aprendizajes de base.
 - Los transitos muestran el cuando: el momento en que esos patrones se activan en la experiencia.
 - No leas el transito aislado. Si un transito toca un planeta natal que participa en un aspecto natal, interpreta ese aspecto como una memoria interna que se despierta.
-- Usa la casa del planeta en transito como el area actual donde se esta moviendo la experiencia. Usa la casa natal como la memoria interna que recibe esa activacion.
+- Usa la casa del planeta en transito como el area actual donde se esta moviendo la experiencia, pero esto significa la casa donde la longitud actual del planeta en transito cae dentro de la carta natal. No uses la casa de la carta de transito independiente como area de vida.
+- Usa la casa natal del planeta natal tocado como la memoria interna que recibe esa activacion.
+- Procesa los aspectos natales indicados como "Reactiva memoria natal". Los aspectos natales tensos pueden mostrar malestar, presion, ansiedad, conflicto o patrones antiguos; los aspectos fluidos pueden mostrar recursos y apoyo. No ignores ninguno.
 - Usa la condicion natal del planeta transitante activo para calibrar el tono: si esta bien aspectado natalmente, inclinate hacia su expresion constructiva; si esta tensionado, reconoce la friccion sin dejar de enmarcarla como crecimiento.
 - Evita hablar de castigo o destino fijo. Presenta la activacion como oportunidad de conciencia, integracion y respuesta mas libre.
 - Si hay "Reactiva memoria natal", usa esa informacion en dominantBody y en reading.

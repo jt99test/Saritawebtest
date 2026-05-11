@@ -874,7 +874,7 @@ export const elementRoutines: Record<"fuego" | "tierra" | "agua" | "aire", Eleme
         nameSanskrit: "Bhujangasana",
         nameSpanish: "Cobra",
         description:
-          "Túmbate boca abajo con las manos bajo los hombros y los codos cerca del cuerpo. Con la inhalación, eleva el pecho usando primero la espalda y luego el apoyo de las manos. Mantén el pubis pesado, hombros amplios y mirada al frente para abrir el pecho sin comprimir lumbares.",
+          "Túmbate boca abajo con las manos bajo los hombros y los codos cerca del cuerpo. Con la inhalación, eleva el pecho usando primero la espalda y luego el apoyo de las manos. No levantes la pelvis ni los huesos de la cadera del suelo. Ajusta la flexión de los codos según la movilidad de tu espalda, sin forzar la zona lumbar. Mantén el pubis pesado, hombros amplios y mirada al frente.",
         duration: "5 respiraciones",
       },
       {

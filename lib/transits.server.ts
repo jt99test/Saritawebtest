@@ -72,14 +72,22 @@ const TRANSIT_PLANETS: Array<{ id: SupportedTransitPlanet; body: number }> = [
   { id: "venus",   body: SE_BODIES.venus   },
 ];
 
+const MAJOR_TRANSIT_ASPECTS: TransitRule["aspects"] = [
+  { type: "conjunction", angle: 0 },
+  { type: "opposition", angle: 180 },
+  { type: "square", angle: 90 },
+  { type: "trine", angle: 120 },
+  { type: "sextile", angle: 60 },
+];
+
 const TRANSIT_RULES: Record<SupportedTransitPlanet, TransitRule> = {
-  saturn:  { aspects: [{ type: "conjunction", angle: 0 }, { type: "opposition", angle: 180 }, { type: "square", angle: 90 }, { type: "trine", angle: 120 }], orb: 2, searchWindowDays: 60 },
-  jupiter: { aspects: [{ type: "conjunction", angle: 0 }, { type: "opposition", angle: 180 }, { type: "trine", angle: 120 }, { type: "sextile", angle: 60 }], orb: 2, searchWindowDays: 45 },
-  uranus:  { aspects: [{ type: "conjunction", angle: 0 }, { type: "opposition", angle: 180 }, { type: "square", angle: 90 }], orb: 1.5, searchWindowDays: 90 },
-  neptune: { aspects: [{ type: "conjunction", angle: 0 }, { type: "opposition", angle: 180 }, { type: "square", angle: 90 }], orb: 1.5, searchWindowDays: 90 },
-  pluto:   { aspects: [{ type: "conjunction", angle: 0 }, { type: "opposition", angle: 180 }, { type: "square", angle: 90 }], orb: 1.5, searchWindowDays: 120 },
-  mars:    { aspects: [{ type: "conjunction", angle: 0 }, { type: "opposition", angle: 180 }], orb: 2, searchWindowDays: 14 },
-  venus:   { aspects: [{ type: "conjunction", angle: 0 }, { type: "opposition", angle: 180 }], orb: 2, searchWindowDays: 14 },
+  saturn:  { aspects: MAJOR_TRANSIT_ASPECTS, orb: 2, searchWindowDays: 60 },
+  jupiter: { aspects: MAJOR_TRANSIT_ASPECTS, orb: 2, searchWindowDays: 45 },
+  uranus:  { aspects: MAJOR_TRANSIT_ASPECTS, orb: 1.5, searchWindowDays: 90 },
+  neptune: { aspects: MAJOR_TRANSIT_ASPECTS, orb: 1.5, searchWindowDays: 90 },
+  pluto:   { aspects: MAJOR_TRANSIT_ASPECTS, orb: 1.5, searchWindowDays: 120 },
+  mars:    { aspects: MAJOR_TRANSIT_ASPECTS, orb: 2, searchWindowDays: 14 },
+  venus:   { aspects: MAJOR_TRANSIT_ASPECTS, orb: 2, searchWindowDays: 14 },
 };
 
 function toJulianDay(se: SwissEph, date: Date): number {
@@ -148,7 +156,6 @@ function natalAspectsForPoint(natalChart: NatalChartData, pointId: ChartPointId)
   return natalChart.aspects
     .filter((aspect) => aspect.from === pointId || aspect.to === pointId)
     .sort((left, right) => left.orb - right.orb)
-    .slice(0, 4)
     .map((aspect) => ({
       pointA: aspect.from,
       pointB: aspect.to,

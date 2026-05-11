@@ -278,7 +278,7 @@ const yogaCopy: Record<Exclude<Locale, "es">, Record<RoutineElement, LocalizedRo
         "bhujangasana-bajo": {
           nameSpanish: "Low Cobra",
           duration: "3 rounds of 5 breaths",
-          description: "Lie on your belly with the hands under the shoulders and elbows close to the ribs. Inhale and lift the chest using the back muscles more than the hands. Keep the neck long and lower slowly on the exhale.",
+          description: "Lie on your belly with the hands under the shoulders and elbows close to the ribs. Inhale and lift the chest using the back muscles more than the hands. Do not lift the pelvis or hip bones off the floor. Adjust the bend of the elbows according to your back mobility, without forcing the low back. Keep the neck long and lower slowly on the exhale.",
           warning: "Do not lock the elbows or compress the low back. Avoid with advanced pregnancy or acute low-back pain.",
         },
         "gomukhasana-brazos": {
@@ -593,7 +593,7 @@ const yogaCopy: Record<Exclude<Locale, "es">, Record<RoutineElement, LocalizedRo
         "bhujangasana-bajo": {
           nameSpanish: "Cobra bassa",
           duration: "3 serie da 5 respiri",
-          description: "Sdraiati a pancia in giù con le mani sotto le spalle e i gomiti vicini alle costole. Inspirando solleva il petto usando più la schiena che le mani. Il collo resta lungo; espirando scendi lentamente.",
+          description: "Sdraiati a pancia in giù con le mani sotto le spalle e i gomiti vicini alle costole. Inspirando solleva il petto usando più la schiena che le mani. Non sollevare il bacino né le ossa delle anche dal pavimento. Regola la flessione dei gomiti secondo la mobilità della schiena, senza forzare la zona lombare. Il collo resta lungo; espirando scendi lentamente.",
           warning: "Non bloccare i gomiti né comprimere la zona lombare. Evita con gravidanza avanzata o dolore lombare acuto.",
         },
         "gomukhasana-brazos": {

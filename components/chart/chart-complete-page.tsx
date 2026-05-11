@@ -7,7 +7,8 @@ import { BiWheelInfoPanel } from "@/components/chart/bi-wheel-info-panel";
 import { LocationAutocomplete } from "@/components/form/location-autocomplete";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { calculateCurrentTransitsAction } from "@/lib/actions";
-import type { ChartPoint, ChartPointId, NatalChartData } from "@/lib/chart";
+import type { ChartPoint, ChartPointId, HouseCusp, NatalChartData } from "@/lib/chart";
+import { normalizeLongitude } from "@/lib/chart";
 import { hashNatalChart } from "@/lib/chart-hash";
 import type { FormValues } from "@/lib/chart-session";
 import type { PlaceSuggestion } from "@/lib/geocoding";
@@ -184,6 +185,21 @@ function findPoint(chart: NatalChartData, id: ChartPointId) {
   return chart.points.find((point) => point.id === id) ?? chart.extendedPoints?.find((point) => point.id === id);
 }
 
+function getHouseForLongitude(longitude: number, houses: HouseCusp[]) {
+  const normalized = normalizeLongitude(longitude);
+  for (let index = 0; index < houses.length; index += 1) {
+    const current = houses[index]!;
+    const next = houses[(index + 1) % houses.length]!;
+    const start = normalizeLongitude(current.longitude);
+    const end = normalizeLongitude(next.longitude);
+    const inHouse = start <= end
+      ? normalized >= start && normalized < end
+      : normalized >= start || normalized < end;
+    if (inHouse) return current.house;
+  }
+  return houses[houses.length - 1]?.house ?? 12;
+}
+
 function transitWeight(transit: ActiveTransit) {
   const planetWeight: Partial<Record<ChartPointId, number>> = {
     pluto: 6,
@@ -218,7 +234,7 @@ function activatedHouses(chart: NatalChartData, transits: ActiveTransit[], trans
   topTransits(transits).forEach((transit) => {
     const natalPoint = findPoint(chart, transit.natalPlanet);
     const transitingPoint = transitChart ? findPoint(transitChart, transit.transitingPlanet) : null;
-    const house = transitingPoint?.house ?? natalPoint?.house;
+    const house = transitingPoint ? getHouseForLongitude(transitingPoint.longitude, chart.houses) : natalPoint?.house;
     if (!house) return;
     const current = byHouse.get(house) ?? {
       house,
@@ -316,7 +332,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
   useEffect(() => {
     if (!result?.ok || result.transits.length === 0 || !chartHash || !aiCacheHash) return;
     let active = true;
-    const cacheKey = `transits:v2:${locale}:${request?.gender || "unspecified"}:${currentLocationKey}`;
+    const cacheKey = `transits:v3:${locale}:${request?.gender || "unspecified"}:${currentLocationKey}`;
     const cachedData = getCachedPremiumReading<TransitData>(aiCacheHash, cacheKey);
     if (cachedData) {
       setTransitReading("");
@@ -335,7 +351,10 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
       orb: t.orb,
       strength: t.strength,
       natalHouse: findPoint(chart, t.natalPlanet)?.house,
-      transitingHouse: findPoint(result.chart, t.transitingPlanet)?.house,
+      transitingHouse: (() => {
+        const transitingPoint = findPoint(result.chart, t.transitingPlanet);
+        return transitingPoint ? getHouseForLongitude(transitingPoint.longitude, chart.houses) : undefined;
+      })(),
       activatedNatalAspects: t.activatedNatalAspects,
     }));
     setTransitReading("");
