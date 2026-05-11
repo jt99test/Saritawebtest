@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 
@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://saritaastrology.com"),
   title: "SARITA",
   description: siteDescription,
+  appleWebApp: {
+    capable: true,
+    title: "SARITA",
+    statusBarStyle: "black-translucent",
+  },
   openGraph: {
     title: "SARITA",
     description: siteDescription,
@@ -28,6 +33,12 @@ export const metadata: Metadata = {
     title: "SARITA",
     description: siteDescription,
   },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#0a0a14",
 };
 
 export default async function RootLayout({

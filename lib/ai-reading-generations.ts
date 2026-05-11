@@ -16,6 +16,7 @@ type AiReadingGenerationRow = {
 const GENERATION_STATUS_KEY = "__saritaGenerationStatus";
 const GENERATING_CONTENT = { [GENERATION_STATUS_KEY]: "generating" };
 const FAILED_CONTENT = { [GENERATION_STATUS_KEY]: "failed" };
+const DEFAULT_DAILY_AI_READING_LIMIT = 10;
 
 type AiReadingCacheInput = {
   supabase: SupabaseClient;
@@ -34,6 +35,13 @@ export type AiReadingReservation =
   | { ok: true; reserved: true }
   | { ok: true; reserved: false; content: unknown }
   | { ok: false; response: Response };
+
+function dailyAiReadingLimit() {
+  const configured = Number(process.env.AI_READING_DAILY_LIMIT);
+  return Number.isFinite(configured) && configured > 0
+    ? Math.floor(configured)
+    : DEFAULT_DAILY_AI_READING_LIMIT;
+}
 
 function normalizedLocale(locale?: string) {
   return locale === "en" || locale === "it" ? locale : "es";
@@ -140,12 +148,95 @@ export async function reserveAiReadingGeneration({
     return { ok: false, response: aiGenerationStatusResponse(status) };
   }
 
+  if (content && status !== "failed") {
+    return { ok: true, reserved: false, content };
+  }
+
+  const limit = dailyAiReadingLimit();
+  const dayStart = new Date();
+  dayStart.setUTCHours(0, 0, 0, 0);
+
+  const { count, error: countError } = await supabase
+    .from("ai_reading_request_events")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .gte("created_at", dayStart.toISOString());
+
+  if (countError) {
+    console.error("AI reading rate limit lookup failed:", countError.message);
+    return { ok: false, response: new Response("AI reading rate limit check failed", { status: 500 }) };
+  }
+
+  if ((count ?? 0) >= limit) {
+    return {
+      ok: false,
+      response: new Response("Daily AI reading limit reached", {
+        status: 429,
+        headers: {
+          "Cache-Control": "no-cache",
+          "Retry-After": String(Math.max(1, Math.ceil((dayStart.getTime() + 86_400_000 - Date.now()) / 1000))),
+          "X-Sarita-AI-Limit": String(limit),
+          "X-Sarita-AI-Remaining": "0",
+        },
+      }),
+    };
+  }
+
+  const { error: eventError } = await supabase
+    .from("ai_reading_request_events")
+    .insert({
+      user_id: user.id,
+      reading_id: readingId,
+      scope,
+    });
+
+  if (eventError) {
+    console.error("AI reading rate limit event failed:", eventError.message);
+    return { ok: false, response: new Response("AI reading rate limit event failed", { status: 500 }) };
+  }
+
+  const normalized = normalizedLocale(locale);
   if (status === "failed") {
+    const { error } = await supabase
+      .from("ai_reading_generations")
+      .update({ content: GENERATING_CONTENT })
+      .eq("user_id", user.id)
+      .eq("reading_id", readingId)
+      .eq("scope", scope)
+      .eq("item_key", itemKey)
+      .eq("locale", normalized);
+
+    if (error) {
+      console.error("AI reading generation reservation update failed:", error.message);
+      return { ok: false, response: new Response("AI reading generation reservation failed", { status: 500 }) };
+    }
+
     return { ok: true, reserved: true };
   }
 
-  if (content) {
-    return { ok: true, reserved: false, content };
+  const { error } = await supabase
+    .from("ai_reading_generations")
+    .insert({
+      user_id: user.id,
+      reading_id: readingId,
+      scope,
+      item_key: itemKey,
+      locale: normalized,
+      content: GENERATING_CONTENT,
+    });
+
+  if (error) {
+    const latestContent = await getCachedAiReading({ supabase, user, readingId, scope, itemKey, locale });
+    const latestStatus = getAiGenerationStatus(latestContent);
+    if (latestStatus === "generating" || latestStatus === "failed") {
+      return { ok: false, response: aiGenerationStatusResponse(latestStatus) };
+    }
+    if (latestContent) {
+      return { ok: true, reserved: false, content: latestContent };
+    }
+
+    console.error("AI reading generation reservation insert failed:", error.message);
+    return { ok: false, response: new Response("AI reading generation reservation failed", { status: 500 }) };
   }
 
   return { ok: true, reserved: true };
