@@ -17,7 +17,7 @@ type AiReadingGenerationRow = {
 const GENERATION_STATUS_KEY = "__saritaGenerationStatus";
 const GENERATING_CONTENT = { [GENERATION_STATUS_KEY]: "generating" };
 const FAILED_CONTENT = { [GENERATION_STATUS_KEY]: "failed" };
-const DEFAULT_DAILY_AI_READING_LIMIT = 10;
+const DEFAULT_DAILY_AI_READING_LIMIT = 75;
 const STALE_GENERATION_MS = 2 * 60 * 1000;
 
 type AiReadingCacheInput = {
@@ -58,6 +58,21 @@ function isMissingRateLimitTable(error: { code?: string; message?: string } | nu
   );
 }
 
+function isMissingCacheTable(error: { code?: string; message?: string } | null) {
+  if (!error) return false;
+  return (
+    error.code === "42P01" ||
+    error.message?.includes("ai_reading_generations") ||
+    error.message?.toLowerCase().includes("does not exist")
+  );
+}
+
+function isMissingCreatedAtColumn(error: { code?: string; message?: string } | null) {
+  if (!error) return false;
+  const message = error.message?.toLowerCase() ?? "";
+  return error.code === "42703" || error.code === "PGRST204" || message.includes("created_at");
+}
+
 function isStaleGenerating(content: unknown, createdAt?: string | null) {
   if (getAiGenerationStatus(content) !== "generating") return false;
   if (!createdAt) return true;
@@ -66,6 +81,49 @@ function isStaleGenerating(content: unknown, createdAt?: string | null) {
   if (!Number.isFinite(createdTime)) return true;
 
   return Date.now() - createdTime > STALE_GENERATION_MS;
+}
+
+async function getAiReadingGenerationRow({
+  supabase,
+  user,
+  readingId,
+  scope,
+  itemKey,
+  locale,
+}: AiReadingCacheInput) {
+  if (!readingId) return { row: null as AiReadingGenerationRow | null, error: null };
+
+  const query = supabase
+    .from("ai_reading_generations")
+    .select("content, created_at")
+    .eq("user_id", user.id)
+    .eq("reading_id", readingId)
+    .eq("scope", scope)
+    .eq("item_key", itemKey)
+    .eq("locale", normalizedLocale(locale))
+    .maybeSingle<AiReadingGenerationRow>();
+
+  const { data, error } = await query;
+  if (!error) return { row: data ?? null, error: null };
+
+  if (!isMissingCreatedAtColumn(error)) {
+    return { row: null, error };
+  }
+
+  const fallback = await supabase
+    .from("ai_reading_generations")
+    .select("content")
+    .eq("user_id", user.id)
+    .eq("reading_id", readingId)
+    .eq("scope", scope)
+    .eq("item_key", itemKey)
+    .eq("locale", normalizedLocale(locale))
+    .maybeSingle<Pick<AiReadingGenerationRow, "content">>();
+
+  return {
+    row: fallback.data ? { content: fallback.data.content, created_at: null } : null,
+    error: fallback.error,
+  };
 }
 
 export function getAiGenerationStatus(content: unknown): "generating" | "failed" | null {
@@ -125,22 +183,21 @@ export async function getCachedAiReading({
 }: AiReadingCacheInput) {
   if (!readingId) return null;
 
-  const { data, error } = await supabase
-    .from("ai_reading_generations")
-    .select("content, created_at")
-    .eq("user_id", user.id)
-    .eq("reading_id", readingId)
-    .eq("scope", scope)
-    .eq("item_key", itemKey)
-    .eq("locale", normalizedLocale(locale))
-    .maybeSingle<AiReadingGenerationRow>();
+  const { row, error } = await getAiReadingGenerationRow({
+    supabase,
+    user,
+    readingId,
+    scope,
+    itemKey,
+    locale,
+  });
 
   if (error) {
     console.error("AI reading cache lookup failed:", error.message);
     return null;
   }
 
-  return data?.content ?? null;
+  return row?.content ?? null;
 }
 
 export async function reserveAiReadingGeneration({
@@ -155,19 +212,23 @@ export async function reserveAiReadingGeneration({
     return { ok: false, response: new Response("readingId required", { status: 400 }) };
   }
 
-  const { data: cachedRow, error: cacheError } = await supabase
-    .from("ai_reading_generations")
-    .select("content, created_at")
-    .eq("user_id", user.id)
-    .eq("reading_id", readingId)
-    .eq("scope", scope)
-    .eq("item_key", itemKey)
-    .eq("locale", normalizedLocale(locale))
-    .maybeSingle<AiReadingGenerationRow>();
+  const { row: cachedRow, error: cacheError } = await getAiReadingGenerationRow({
+    supabase,
+    user,
+    readingId,
+    scope,
+    itemKey,
+    locale,
+  });
 
   if (cacheError) {
-    console.error("AI reading cache lookup failed:", cacheError.message);
-    return { ok: false, response: new Response("AI reading cache lookup failed", { status: 500 }) };
+    if (isMissingCacheTable(cacheError)) {
+      console.warn("AI reading generation cache table missing; generating without cache reservation.");
+      return { ok: true, reserved: true };
+    }
+
+    console.warn("AI reading cache lookup failed; generating without cache reservation.", cacheError.message);
+    return { ok: true, reserved: true };
   }
 
   const content = cachedRow?.content ?? null;
@@ -231,7 +292,7 @@ export async function reserveAiReadingGeneration({
 
   const normalized = normalizedLocale(locale);
   if (status === "failed" || staleGenerating) {
-    const { error } = await supabase
+    let { error } = await supabase
       .from("ai_reading_generations")
       .update({ content: GENERATING_CONTENT, created_at: new Date().toISOString() })
       .eq("user_id", user.id)
@@ -240,9 +301,21 @@ export async function reserveAiReadingGeneration({
       .eq("item_key", itemKey)
       .eq("locale", normalized);
 
+    if (isMissingCreatedAtColumn(error)) {
+      const fallback = await supabase
+        .from("ai_reading_generations")
+        .update({ content: GENERATING_CONTENT })
+        .eq("user_id", user.id)
+        .eq("reading_id", readingId)
+        .eq("scope", scope)
+        .eq("item_key", itemKey)
+        .eq("locale", normalized);
+
+      error = fallback.error;
+    }
+
     if (error) {
-      console.error("AI reading generation reservation update failed:", error.message);
-      return { ok: false, response: new Response("AI reading generation reservation failed", { status: 500 }) };
+      console.warn("AI reading generation reservation update failed; generating without cache reservation.", error.message);
     }
 
     return { ok: true, reserved: true };
@@ -269,8 +342,8 @@ export async function reserveAiReadingGeneration({
       return { ok: true, reserved: false, content: latestContent };
     }
 
-    console.error("AI reading generation reservation insert failed:", error.message);
-    return { ok: false, response: new Response("AI reading generation reservation failed", { status: 500 }) };
+    console.warn("AI reading generation reservation insert failed; generating without cache reservation.", error.message);
+    return { ok: true, reserved: true };
   }
 
   return { ok: true, reserved: true };
