@@ -48,7 +48,7 @@ export default function FormPage() {
   }
 
   const inputClass =
-    "min-h-[4.25rem] w-full appearance-none rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-[16px] leading-6 text-ivory outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-muted-ivory hover:border-black/25 focus:border-dusty-gold/55 focus:ring-2 focus:ring-dusty-gold/20 disabled:opacity-50 sm:text-sm sm:placeholder:text-sm";
+    "min-h-[4.25rem] w-full appearance-none rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-[16px] leading-6 text-ivory outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-muted-ivory hover:border-black/25 focus:border-dusty-gold/55 focus:ring-2 focus:ring-dusty-gold/20 disabled:opacity-50 sm:text-sm sm:placeholder:text-sm [&::-webkit-date-and-time-value]:min-h-6 [&::-webkit-date-and-time-value]:text-left [&::-webkit-date-and-time-value]:text-[inherit]";
   const labelClass = "mb-2 block text-xs uppercase tracking-[0.28em] text-[#3a3048]";
 
   return (

@@ -659,11 +659,11 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
 
       <div className="mt-10 grid gap-5 border-t border-dusty-gold/14 pt-8">
         <p className="font-serif text-2xl text-ivory">{synastryCopy.addPerson}</p>
-        <input className="rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-sm text-ivory outline-none transition placeholder:text-muted-ivory hover:border-black/25" placeholder={dictionary.form.fields.name} value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
-        <input className="rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-sm text-ivory outline-none transition placeholder:text-muted-ivory hover:border-black/25" type="date" value={form.birthDate} onChange={(event) => setForm((current) => ({ ...current, birthDate: clampIsoDateYear(event.target.value) }))} />
+        <input className="min-h-[4.25rem] rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-[16px] leading-6 text-ivory outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-muted-ivory hover:border-black/25 sm:text-sm sm:placeholder:text-sm" placeholder={dictionary.form.fields.name} value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
+        <input className="min-h-[4.25rem] rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-[16px] leading-6 text-ivory outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-muted-ivory hover:border-black/25 sm:text-sm sm:placeholder:text-sm [&::-webkit-date-and-time-value]:min-h-6 [&::-webkit-date-and-time-value]:text-left [&::-webkit-date-and-time-value]:text-[inherit]" type="date" value={form.birthDate} onChange={(event) => setForm((current) => ({ ...current, birthDate: clampIsoDateYear(event.target.value) }))} />
         <div>
           <input
-            className="w-full rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-sm text-ivory outline-none transition placeholder:text-muted-ivory hover:border-black/25 disabled:opacity-50"
+            className="min-h-[4.25rem] w-full appearance-none rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-[16px] leading-6 text-ivory outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-muted-ivory hover:border-black/25 disabled:opacity-50 sm:text-sm sm:placeholder:text-sm [&::-webkit-date-and-time-value]:min-h-6 [&::-webkit-date-and-time-value]:text-left [&::-webkit-date-and-time-value]:text-[inherit]"
             type="time"
             value={form.birthTimeUnknown ? "" : form.birthTime}
             disabled={form.birthTimeUnknown}
