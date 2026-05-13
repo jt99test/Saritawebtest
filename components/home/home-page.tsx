@@ -111,17 +111,10 @@ export function HomePage({ moonStatus }: HomePageProps) {
     { href: "/precios", label: dictionary.nav.pricing },
     { href: "/ayuda", label: dictionary.nav.help },
   ];
-  const mobileNavItems = [
-    { href: "/", label: dictionary.home.mobileNav.home, active: true },
-    { href: "/luna-del-mes", label: dictionary.home.mobileNav.moon, active: false },
-    { href: "#lecturas", label: dictionary.home.mobileNav.readings, active: false },
-    { href: "/yoga-astral", label: dictionary.home.mobileNav.routine, active: false },
-    { href: "/cuenta", label: dictionary.home.mobileNav.profile, active: false },
-  ];
   const revealTransition = { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const };
 
   return (
-    <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950 pb-24 sm:pb-0">
+    <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950 sm:pb-0">
       <AtmosphericBackground variant="page" />
 
       <section className="relative isolate min-h-[86svh] overflow-hidden sm:min-h-screen">
@@ -151,9 +144,6 @@ export function HomePage({ moonStatus }: HomePageProps) {
             >
               S
             </button>
-            <span className="justify-self-center font-serif text-[15px] uppercase tracking-[0.28em] text-ivory">
-              {dictionary.brand.name}
-            </span>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
@@ -327,7 +317,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.35 }}
                 transition={revealTransition}
-                className="overflow-hidden rounded-[2rem] border border-black/10 bg-[#fffaf0]/84 px-5 py-5 shadow-[0_16px_38px_rgba(30,26,46,0.11)] backdrop-blur-sm"
+                className="overflow-hidden rounded-[2rem] border border-black/16 bg-[#fffaf0]/84 px-5 py-5 shadow-[0_16px_38px_rgba(30,26,46,0.17)] backdrop-blur-sm"
               >
                 <div className="mb-4 h-px w-16 bg-gradient-to-r from-dusty-gold/70 to-transparent" />
                 <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">{moonCopy.eyebrow}</p>
@@ -351,7 +341,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ ...revealTransition, delay: 0.06 }}
-                className="overflow-hidden rounded-[2rem] border border-black/10 bg-[#fffaf0]/84 px-5 py-5 shadow-[0_16px_38px_rgba(30,26,46,0.11)] backdrop-blur-sm"
+                className="overflow-hidden rounded-[2rem] border border-black/16 bg-[#fffaf0]/84 px-5 py-5 shadow-[0_16px_38px_rgba(30,26,46,0.17)] backdrop-blur-sm"
               >
                 <div className="mb-4 h-px w-16 bg-gradient-to-r from-dusty-gold/70 to-transparent" />
                 <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">{startHereCopy.eyebrow}</p>
@@ -402,7 +392,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                   >
                     <Link
                       href={feature.href}
-                      className="group grid min-h-16 min-w-0 grid-cols-[2.5rem_1fr] items-center gap-x-3 overflow-hidden rounded-[1.7rem] border border-black/10 bg-[linear-gradient(180deg,rgba(255,250,240,0.84),rgba(255,250,240,0.72))] px-4 py-4 text-left shadow-[0_12px_28px_rgba(30,26,46,0.08)] backdrop-blur-sm transition hover:border-dusty-gold/45 hover:bg-white sm:block sm:min-h-0 sm:border-l sm:border-t-0 sm:border-r-0 sm:border-b-0 sm:rounded-none sm:bg-transparent sm:px-4 sm:py-2 sm:shadow-none sm:backdrop-blur-0"
+                      className="group grid min-h-16 min-w-0 grid-cols-[2.5rem_1fr] items-center gap-x-3 overflow-hidden rounded-[1.7rem] border border-black/16 bg-[linear-gradient(180deg,rgba(255,250,240,0.84),rgba(255,250,240,0.72))] px-4 py-4 text-left shadow-[0_16px_38px_rgba(30,26,46,0.17)] backdrop-blur-sm transition hover:border-dusty-gold/45 hover:bg-white sm:block sm:min-h-0 sm:border-l sm:border-t-0 sm:border-r-0 sm:border-b-0 sm:rounded-none sm:bg-transparent sm:px-4 sm:py-2 sm:shadow-none sm:backdrop-blur-0"
                     >
                       <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-dusty-gold/55 to-transparent sm:hidden" />
                       <span className="flex h-10 w-10 items-center justify-center rounded-full border border-dusty-gold/25 bg-white/54 text-[1.35rem] leading-none text-[#5c4a24] sm:mb-3 sm:h-auto sm:w-auto sm:rounded-none sm:border-0 sm:bg-transparent sm:text-2xl">
@@ -442,22 +432,6 @@ export function HomePage({ moonStatus }: HomePageProps) {
         </Container>
       </section>
 
-      <nav className="fixed inset-x-3 bottom-3 z-[80] rounded-[1.6rem] border border-black/10 bg-[#fffaf0]/92 px-3 py-2 shadow-[0_20px_50px_rgba(30,26,46,0.18)] backdrop-blur-xl sm:hidden">
-        <div className="grid grid-cols-5 gap-1">
-          {mobileNavItems.map((item) => (
-            <Link
-              key={item.label}
-              href={item.href}
-              className={`flex min-h-11 flex-col items-center justify-center gap-1 rounded-[1rem] px-1 py-2 text-center transition ${item.active ? "bg-white/72 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]" : ""}`}
-            >
-              <span className={`h-1.5 w-1.5 rounded-full ${item.active ? "bg-[#5c4a24]" : "bg-black/10"}`} />
-              <span className={`text-[10px] font-semibold uppercase tracking-[0.14em] ${item.active ? "text-[#5c4a24]" : "text-[#3a3048]"}`}>
-                {item.label}
-              </span>
-            </Link>
-          ))}
-        </div>
-      </nav>
     </main>
   );
 }

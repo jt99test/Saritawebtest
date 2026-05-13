@@ -29,7 +29,7 @@ export function LunationToggle({
 
   return (
     <div className={hasExtraLunations
-      ? "flex flex-wrap items-start justify-center gap-4 md:gap-8 lg:gap-12"
+      ? "flex snap-x snap-mandatory overflow-x-auto gap-3 px-5 pb-2 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden md:flex-wrap md:snap-none md:overflow-x-visible md:items-start md:justify-center md:gap-8 lg:gap-12"
       : "flex flex-wrap items-start justify-center gap-8 min-[420px]:flex-nowrap md:gap-14 lg:gap-20"}
     >
       {options.map((option) => {
@@ -46,7 +46,7 @@ export function LunationToggle({
             aria-pressed={active}
             className={[
               hasExtraLunations
-                ? "group flex w-[min(28vw,116px)] flex-col items-center p-2 text-center outline-none transition duration-[400ms] ease-out focus-visible:ring-2 focus-visible:ring-dusty-gold/70 focus-visible:ring-offset-4 focus-visible:ring-offset-cosmic-950 sm:w-[126px] lg:w-[150px]"
+                ? "group flex w-[min(38vw,148px)] flex-shrink-0 snap-center flex-col items-center p-2 text-center outline-none transition duration-[400ms] ease-out focus-visible:ring-2 focus-visible:ring-dusty-gold/70 focus-visible:ring-offset-4 focus-visible:ring-offset-cosmic-950 md:flex-shrink md:w-[126px] lg:w-[150px]"
                 : "group flex w-[min(40vw,140px)] flex-col items-center p-3 text-center outline-none transition duration-[400ms] ease-out focus-visible:ring-2 focus-visible:ring-dusty-gold/70 focus-visible:ring-offset-4 focus-visible:ring-offset-cosmic-950 lg:w-[180px]",
               active
                 ? "scale-100 cursor-pointer border border-dusty-gold/48 bg-dusty-gold/22 text-dusty-gold opacity-100 shadow-[0_8px_22px_rgba(181,163,110,0.22)]"
