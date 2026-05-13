@@ -64,6 +64,12 @@ export type MonthlyLunarData = {
   lunaLlenaSecondary?: MonthlyLunarActivation | null;
 };
 
+export type CurrentMoonStatus = {
+  sign: SignId;
+  phase: "new" | "waxing" | "full" | "waning";
+  longitude: number;
+};
+
 type LunationKind = "nueva" | "llena";
 
 const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
@@ -221,6 +227,27 @@ export async function getLunaNuevaForMonth(year: number, month: number): Promise
 export async function getLunaLlenaForMonth(year: number, month: number): Promise<LunationPoint | null> {
   const se = await initSwisseph();
   return getLunationsForMonth(se, year, month, "llena")[0] ?? null;
+}
+
+export async function getCurrentMoonStatus(date = new Date()): Promise<CurrentMoonStatus> {
+  const se = await initSwisseph();
+  const { sunLongitude, moonLongitude } = getSunMoonLongitudes(se, date);
+  const angle = normalizeLongitude(moonLongitude - sunLongitude);
+
+  let phase: CurrentMoonStatus["phase"] = "waxing";
+  if (angle < 22.5 || angle >= 337.5) {
+    phase = "new";
+  } else if (angle >= 157.5 && angle <= 202.5) {
+    phase = "full";
+  } else if (angle > 180) {
+    phase = "waning";
+  }
+
+  return {
+    sign: getSignFromLongitude(moonLongitude),
+    phase,
+    longitude: moonLongitude,
+  };
 }
 
 export async function getMonthlyLunarData(

@@ -23,7 +23,56 @@
   "home": {
     "eyebrow": "Carta natal · Carta astral",
     "subtitle": "El cielo del día en que naciste",
-    "cta": "Generar carta natal",
+    "cta": "Ver mi carta natal",
+    "scrollCue": "Descubre más",
+    "currentMoon": {
+      "eyebrow": "Estado lunar actual",
+      "title": "La luna de hoy",
+      "phases": {
+        "new": "Luna nueva",
+        "waxing": "Luna creciente",
+        "full": "Luna llena",
+        "waning": "Luna menguante"
+      },
+      "descriptions": {
+        "new": "Momento de sembrar intención y escuchar lo que quiere empezar a nacer.",
+        "waxing": "Fase de movimiento, ajuste y pequeños pasos que piden continuidad.",
+        "full": "Tiempo de visibilidad emocional, culminación y conciencia sobre lo que ya está maduro.",
+        "waning": "Momento de depurar, bajar el ritmo y soltar lo que ya cumplió su ciclo."
+      }
+    },
+    "startHere": {
+      "eyebrow": "Empieza aquí",
+      "title": "Elige tu primera puerta de entrada",
+      "items": [
+        {
+          "title": "Si es tu primera vez",
+          "description": "Empieza por tu carta natal y entiende la estructura base de tu energía.",
+          "href": "/form",
+          "cta": "Ver mi carta natal"
+        },
+        {
+          "title": "Si quieres leer el momento actual",
+          "description": "Abre Luna del mes para sentir el clima emocional y los movimientos de ahora.",
+          "href": "/luna-del-mes",
+          "cta": "Abrir Luna del mes"
+        },
+        {
+          "title": "Si buscas algo práctico",
+          "description": "Ve a tu rutina y transforma la lectura en una práctica corporal diaria.",
+          "href": "/yoga-astral",
+          "cta": "Ver rutina"
+        }
+      ]
+    },
+    "featuredTitle": "Lecturas destacadas",
+    "mobileNav": {
+      "home": "Inicio",
+      "moon": "Luna",
+      "readings": "Lecturas",
+      "routine": "Rutinas",
+      "profile": "Perfil"
+    },
     "features": [
       {
         "title": "Carta natal",

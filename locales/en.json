@@ -23,7 +23,56 @@
   "home": {
     "eyebrow": "Natal chart · Birth chart",
     "subtitle": "The sky on the day you were born",
-    "cta": "Generate natal chart",
+    "cta": "See my natal chart",
+    "scrollCue": "Discover more",
+    "currentMoon": {
+      "eyebrow": "Current moon",
+      "title": "Today's moon",
+      "phases": {
+        "new": "New moon",
+        "waxing": "Waxing moon",
+        "full": "Full moon",
+        "waning": "Waning moon"
+      },
+      "descriptions": {
+        "new": "A moment to plant intention and listen for what is ready to begin.",
+        "waxing": "A phase for movement, adjustment, and small steps that need continuity.",
+        "full": "A time of emotional visibility, culmination, and awareness of what is already ripe.",
+        "waning": "A moment to simplify, lower the pace, and release what has completed its cycle."
+      }
+    },
+    "startHere": {
+      "eyebrow": "Start here",
+      "title": "Choose your first doorway in",
+      "items": [
+        {
+          "title": "If this is your first time",
+          "description": "Begin with your natal chart and understand the basic structure of your energy.",
+          "href": "/form",
+          "cta": "See my natal chart"
+        },
+        {
+          "title": "If you want the current moment",
+          "description": "Open Moon of the month to feel the emotional weather and what is moving now.",
+          "href": "/luna-del-mes",
+          "cta": "Open Moon of the month"
+        },
+        {
+          "title": "If you want something practical",
+          "description": "Go to your routine and turn the reading into a daily body practice.",
+          "href": "/yoga-astral",
+          "cta": "See routine"
+        }
+      ]
+    },
+    "featuredTitle": "Featured readings",
+    "mobileNav": {
+      "home": "Home",
+      "moon": "Moon",
+      "readings": "Readings",
+      "routine": "Routine",
+      "profile": "Profile"
+    },
     "features": [
       {
         "title": "Natal chart",

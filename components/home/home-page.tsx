@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -12,9 +12,17 @@ import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { illustrations } from "@/data/illustrations";
+import { getSignLabel } from "@/lib/chart-labels";
 import { dictionaries, type Locale } from "@/lib/i18n";
+import type { CurrentMoonStatus } from "@/lib/lunar.server";
 
-export function HomePage() {
+type HomePageProps = {
+  moonStatus: CurrentMoonStatus;
+};
+
+const FEATURE_SYMBOLS = ["\u263d", "\u2609", "\u2644", "\u260c", "\u2609", "\u26ad", "\u2641"] as const;
+
+export function HomePage({ moonStatus }: HomePageProps) {
   const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
   const features = dictionary.home.features;
@@ -40,6 +48,11 @@ export function HomePage() {
   }
 
   const featuredItems = showAllFeatures ? features : features.slice(0, 3);
+  const moonCopy = dictionary.home.currentMoon;
+  const startHereCopy = dictionary.home.startHere;
+  const moonPhaseLabel = moonCopy.phases[moonStatus.phase];
+  const moonPhaseDescription = moonCopy.descriptions[moonStatus.phase];
+  const moonSignLabel = getSignLabel(moonStatus.sign, locale);
   const moreReadingsLabel =
     locale === "en" ? "View all readings" : locale === "it" ? "Vedi tutte le letture" : "Ver todas las lecturas";
   const lessReadingsLabel =
@@ -51,12 +64,19 @@ export function HomePage() {
     { href: "/precios", label: dictionary.nav.pricing },
     { href: "/ayuda", label: dictionary.nav.help },
   ];
+  const mobileNavItems = [
+    { href: "/", label: dictionary.home.mobileNav.home, active: true },
+    { href: "/luna-del-mes", label: dictionary.home.mobileNav.moon, active: false },
+    { href: "#lecturas", label: dictionary.home.mobileNav.readings, active: false },
+    { href: "/yoga-astral", label: dictionary.home.mobileNav.routine, active: false },
+    { href: "/cuenta", label: dictionary.home.mobileNav.profile, active: false },
+  ];
 
   return (
-    <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
+    <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950 pb-24 sm:pb-0">
       <AtmosphericBackground variant="page" />
 
-      <section className="relative isolate min-h-[100svh] overflow-hidden">
+      <section className="relative isolate min-h-[86svh] overflow-hidden sm:min-h-screen">
         <AtmosphericBackground variant="hero" />
         <AtmosphericBackground variant="heroGlow" />
 
@@ -69,11 +89,11 @@ export function HomePage() {
           style={{ objectPosition: "70% center" }}
           sizes="100vw"
         />
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(0,0,0,0.04),rgba(0,0,0,0.04)_42%,rgba(0,0,0,0.04)),linear-gradient(180deg,rgba(0,0,0,0.04),rgba(0,0,0,0.04)_76%,#f5f0e6)]" />
-        <div className="pointer-events-none absolute inset-x-0 top-[52svh] bottom-0 -z-10 bg-gradient-to-b from-transparent via-[#f5f0e6]/62 to-[#f5f0e6]/88 sm:hidden" />
+        <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(0,0,0,0.04),rgba(0,0,0,0.04)_42%,rgba(0,0,0,0.04)),linear-gradient(180deg,rgba(0,0,0,0.04),rgba(0,0,0,0.04)_72%,#f5f0e6)]" />
+        <div className="pointer-events-none absolute inset-x-0 top-[46svh] bottom-0 -z-10 bg-gradient-to-b from-transparent via-[#f5f0e6]/70 to-[#f5f0e6]/92 sm:hidden" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 hidden h-[34vh] bg-gradient-to-t from-cosmic-950 via-cosmic-950/72 to-transparent sm:block" />
 
-        <Container className="relative flex min-h-[100svh] flex-col pb-5 pt-4 sm:min-h-screen sm:pb-10 sm:pt-6">
+        <Container className="relative flex min-h-[86svh] flex-col px-4 pb-5 pt-4 sm:min-h-screen sm:pb-10 sm:pt-6">
           <div className="grid grid-cols-[2.5rem_1fr_2.5rem] items-center rounded-full border border-white/10 bg-[#fffaf0]/16 px-3 py-2.5 text-ivory shadow-[0_12px_34px_rgba(0,0,0,0.18)] backdrop-blur-md sm:hidden">
             <button
               type="button"
@@ -164,102 +184,153 @@ export function HomePage() {
             </div>
           </div>
 
-          <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 items-center pt-6 sm:pt-10">
+          <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 items-center pt-5 sm:pt-10">
             <motion.div
-              className="flex w-full max-w-[34rem] flex-col items-start gap-5 text-left sm:gap-6"
+              className="flex w-full max-w-[34rem] flex-col items-start gap-4 text-left sm:gap-6"
               initial="hidden"
               animate="show"
               variants={{ hidden: {}, show: {} }}
             >
-            <motion.div
-              className="h-px w-20 bg-gradient-to-r from-dusty-gold/70 to-transparent sm:w-28"
-              variants={{
-                hidden: { opacity: 0, y: 12 },
-                show: { opacity: 1, y: 0 },
-              }}
-              transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
-            />
-            <motion.h1
-              className="max-w-[9ch] text-[3.35rem] leading-[0.92] font-medium text-ivory drop-shadow-[0_18px_34px_rgba(0,0,0,0.58)] sm:text-8xl lg:text-[8rem]"
-              variants={{
-                hidden: { opacity: 0, y: 12 },
-                show: { opacity: 1, y: 0 },
-              }}
-              transition={{ delay: 0.12, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
-            >
-              {dictionary.brand.name}
-            </motion.h1>
-
-            <motion.p
-              className="max-w-xl text-balance text-[0.9rem] leading-6 text-ivory/76 drop-shadow-[0_8px_24px_rgba(0,0,0,0.5)] sm:text-base sm:leading-7"
-              variants={{
-                hidden: { opacity: 0, y: 12 },
-                show: { opacity: 1, y: 0 },
-              }}
-              transition={{ delay: 0.26, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
-            >
-              {dictionary.home.subtitle}
-            </motion.p>
-
-            <motion.div
-              className="py-12 sm:py-1"
-              variants={{
-                hidden: { opacity: 0, y: 12 },
-                show: { opacity: 1, y: 0 },
-              }}
-              transition={{ delay: 0.42, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
-            >
-              <PrimaryButton
-                href="/form"
-                className="min-h-12 min-w-0 px-8 py-4 text-[0.74rem] uppercase tracking-[0.16em] sm:min-w-56 sm:px-8 sm:py-4 sm:text-[0.8rem] sm:tracking-[0.18em]"
+              <motion.div
+                className="h-px w-20 bg-gradient-to-r from-dusty-gold/70 to-transparent sm:w-28"
+                variants={{
+                  hidden: { opacity: 0, y: 12 },
+                  show: { opacity: 1, y: 0 },
+                }}
+                transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+              />
+              <motion.h1
+                className="max-w-[9ch] text-[3.2rem] leading-[0.92] font-medium text-ivory drop-shadow-[0_18px_34px_rgba(0,0,0,0.58)] sm:text-8xl lg:text-[8rem]"
+                variants={{
+                  hidden: { opacity: 0, y: 12 },
+                  show: { opacity: 1, y: 0 },
+                }}
+                transition={{ delay: 0.12, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
               >
-                {dictionary.home.cta}
-              </PrimaryButton>
-            </motion.div>
-            <motion.p
-              className="pt-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-ivory/70 sm:hidden"
-              variants={{
-                hidden: { opacity: 0, y: 12 },
-                show: { opacity: 1, y: 0 },
-              }}
-              transition={{ delay: 0.56, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
-            >
-              {locale === "en" ? "Discover more" : locale === "it" ? "Scopri di piu" : "Descubre mas"} ↓
-            </motion.p>
+                {dictionary.brand.name}
+              </motion.h1>
+
+              <motion.p
+                className="max-w-xl text-balance text-[0.95rem] leading-6 text-ivory/80 drop-shadow-[0_8px_24px_rgba(0,0,0,0.5)] sm:text-base sm:leading-7"
+                variants={{
+                  hidden: { opacity: 0, y: 12 },
+                  show: { opacity: 1, y: 0 },
+                }}
+                transition={{ delay: 0.26, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                {dictionary.home.subtitle}
+              </motion.p>
+
+              <motion.div
+                className="pt-6 pb-8 sm:py-1"
+                variants={{
+                  hidden: { opacity: 0, y: 12 },
+                  show: { opacity: 1, y: 0 },
+                }}
+                transition={{ delay: 0.42, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                <PrimaryButton
+                  href="/form"
+                  className="min-h-14 min-w-0 px-8 py-4 text-[0.78rem] uppercase tracking-[0.18em] shadow-[0_18px_40px_rgba(255,255,255,0.14),0_18px_42px_rgba(0,0,0,0.22)] sm:min-w-56 sm:px-8 sm:py-4 sm:text-[0.8rem] sm:tracking-[0.18em]"
+                >
+                  {dictionary.home.cta}
+                </PrimaryButton>
+              </motion.div>
+              <motion.a
+                href="#empieza"
+                className="pt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-ivory/70 sm:hidden"
+                variants={{
+                  hidden: { opacity: 0, y: 12 },
+                  show: { opacity: 1, y: 0 },
+                }}
+                transition={{ delay: 0.56, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                {dictionary.home.scrollCue} ↓
+              </motion.a>
             </motion.div>
           </div>
 
           <div className="relative z-10 border-t border-black/10 pt-8 pb-3 sm:py-4">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4 2xl:grid-cols-7">
-              {featuredItems.map((feature) => (
-                <Link
-                  key={feature.href}
-                  href={feature.href}
-                  className="group grid min-h-16 min-w-0 grid-cols-[2.25rem_1fr] items-center gap-x-3 border border-black/10 bg-[#fffaf0]/78 px-4 py-3 text-left shadow-[0_10px_30px_rgba(30,26,46,0.08)] backdrop-blur-sm transition hover:border-dusty-gold/45 hover:bg-white sm:block sm:min-h-0 sm:border-l sm:border-t-0 sm:border-r-0 sm:border-b-0 sm:bg-transparent sm:px-4 sm:py-2 sm:shadow-none sm:backdrop-blur-0"
+            <div className="space-y-4 sm:hidden">
+              <section className="border border-black/10 bg-[#fffaf0]/82 px-5 py-5 shadow-[0_12px_32px_rgba(30,26,46,0.1)] backdrop-blur-sm">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">{moonCopy.eyebrow}</p>
+                <div className="mt-3 flex items-start justify-between gap-4">
+                  <div>
+                    <h2 className="font-serif text-[2rem] leading-none text-[#1e1a2e]">{moonCopy.title}</h2>
+                    <p className="mt-3 text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5c4a24]">
+                      {moonPhaseLabel} en {moonSignLabel}
+                    </p>
+                  </div>
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full border border-dusty-gold/35 bg-white/55 font-serif text-2xl text-[#5c4a24]">
+                    ☾
+                  </div>
+                </div>
+                <p className="mt-4 text-[13px] leading-6 text-[#3a3048]">{moonPhaseDescription}</p>
+              </section>
+
+              <section id="empieza" className="border border-black/10 bg-[#fffaf0]/82 px-5 py-5 shadow-[0_12px_32px_rgba(30,26,46,0.1)] backdrop-blur-sm">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">{startHereCopy.eyebrow}</p>
+                <h2 className="mt-3 font-serif text-[2rem] leading-tight text-[#1e1a2e]">{startHereCopy.title}</h2>
+                <div className="mt-5 grid gap-3">
+                  {startHereCopy.items.map((item, index) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="grid grid-cols-[2.25rem_1fr] gap-x-3 border border-black/10 bg-white/52 px-4 py-4 transition hover:border-dusty-gold/40 hover:bg-white/72"
+                    >
+                      <span className="flex h-9 w-9 items-center justify-center rounded-full border border-dusty-gold/30 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#5c4a24]">
+                        0{index + 1}
+                      </span>
+                      <span className="min-w-0">
+                        <span className="block text-[12px] font-semibold uppercase tracking-[0.18em] text-[#3a3048]">{item.title}</span>
+                        <span className="mt-2 block text-[13px] leading-5 text-[#3a3048]">{item.description}</span>
+                        <span className="mt-3 inline-block text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24]">{item.cta}</span>
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            </div>
+
+            <div id="lecturas" className="mt-8 sm:mt-0">
+              <div className="mb-4 flex items-end justify-between sm:hidden">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">{dictionary.home.eyebrow}</p>
+                  <h2 className="mt-2 font-serif text-[2rem] leading-tight text-[#1e1a2e]">{dictionary.home.featuredTitle}</h2>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4 2xl:grid-cols-7">
+                {featuredItems.map((feature) => (
+                  <Link
+                    key={feature.href}
+                    href={feature.href}
+                    className="group grid min-h-16 min-w-0 grid-cols-[2.25rem_1fr] items-center gap-x-3 border border-black/10 bg-[#fffaf0]/78 px-4 py-3 text-left shadow-[0_10px_30px_rgba(30,26,46,0.08)] backdrop-blur-sm transition hover:border-dusty-gold/45 hover:bg-white sm:block sm:min-h-0 sm:border-l sm:border-t-0 sm:border-r-0 sm:border-b-0 sm:bg-transparent sm:px-4 sm:py-2 sm:shadow-none sm:backdrop-blur-0"
+                  >
+                    <span className="block pt-0.5 text-2xl leading-none text-[#5c4a24] sm:mb-3 sm:text-2xl">
+                      {FEATURE_SYMBOLS[features.indexOf(feature)] ?? "\u263d"}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-[10px] font-semibold uppercase leading-4 tracking-[0.16em] text-[#3a3048] transition group-hover:text-[#5c4a24] [overflow-wrap:normal] [word-break:normal] sm:text-[12px] sm:tracking-[0.18em] xl:tracking-[0.24em]">
+                        {featureTitle(feature.title)}
+                      </span>
+                      <span className="mt-1 block text-[11px] leading-4 text-[#3a3048] transition group-hover:text-[#3a3048] sm:text-xs sm:leading-5">
+                        {feature.description}
+                      </span>
+                    </span>
+                  </Link>
+                ))}
+              </div>
+              <div className="mt-4 text-center sm:hidden">
+                <button
+                  type="button"
+                  onClick={() => setShowAllFeatures((current) => !current)}
+                  className="border border-black/10 bg-[#fffaf0]/70 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24]"
                 >
-                  <span className="block pt-0.5 text-2xl leading-none text-[#5c4a24] sm:mb-3 sm:text-2xl">
-                    {["\u263d", "\u2609", "\u2644", "\u260c", "\u2609", "\u26ad", "\u2641"][features.indexOf(feature)] ?? "\u263d"}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block text-[10px] font-semibold uppercase leading-4 tracking-[0.16em] text-[#3a3048] transition group-hover:text-[#5c4a24] [overflow-wrap:normal] [word-break:normal] sm:text-[12px] sm:tracking-[0.18em] xl:tracking-[0.24em]">
-                      {featureTitle(feature.title)}
-                    </span>
-                    <span className="mt-1 block text-[11px] leading-4 text-[#3a3048] transition group-hover:text-[#3a3048] sm:text-xs sm:leading-5">
-                      {feature.description}
-                    </span>
-                  </span>
-                </Link>
-              ))}
+                  {showAllFeatures ? lessReadingsLabel : moreReadingsLabel}
+                </button>
+              </div>
             </div>
-            <div className="mt-4 text-center sm:hidden">
-              <button
-                type="button"
-                onClick={() => setShowAllFeatures((current) => !current)}
-                className="border border-black/10 bg-[#fffaf0]/70 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24]"
-              >
-                {showAllFeatures ? lessReadingsLabel : moreReadingsLabel}
-              </button>
-            </div>
+
             <div className="mt-20 flex flex-wrap justify-center gap-x-4 gap-y-2 text-[10px] uppercase tracking-[0.14em] text-[#3a3048] sm:mt-5 sm:gap-x-5 sm:text-[12px] sm:tracking-[0.18em]">
               <span className="basis-full text-center text-[10px] tracking-[0.18em] text-[#8a7a4e] sm:hidden">© 2026 SARITA</span>
               <Link href="/precios" className="transition hover:text-dusty-gold">{dictionary.nav.pricing}</Link>
@@ -270,6 +341,23 @@ export function HomePage() {
           </div>
         </Container>
       </section>
+
+      <nav className="fixed inset-x-3 bottom-3 z-[80] rounded-[1.6rem] border border-black/10 bg-[#fffaf0]/92 px-3 py-2 shadow-[0_20px_50px_rgba(30,26,46,0.18)] backdrop-blur-xl sm:hidden">
+        <div className="grid grid-cols-5 gap-1">
+          {mobileNavItems.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-[1rem] px-1 py-2 text-center"
+            >
+              <span className={`h-1.5 w-1.5 rounded-full ${item.active ? "bg-[#5c4a24]" : "bg-black/10"}`} />
+              <span className={`text-[10px] font-semibold uppercase tracking-[0.14em] ${item.active ? "text-[#5c4a24]" : "text-[#3a3048]"}`}>
+                {item.label}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </nav>
     </main>
   );
 }

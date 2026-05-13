@@ -23,7 +23,56 @@
   "home": {
     "eyebrow": "Carta natale · Tema natale",
     "subtitle": "Il cielo del giorno in cui sei nato",
-    "cta": "Genera carta natale",
+    "cta": "Vedi la mia carta natale",
+    "scrollCue": "Scopri di più",
+    "currentMoon": {
+      "eyebrow": "Stato lunare attuale",
+      "title": "La luna di oggi",
+      "phases": {
+        "new": "Luna nuova",
+        "waxing": "Luna crescente",
+        "full": "Luna piena",
+        "waning": "Luna calante"
+      },
+      "descriptions": {
+        "new": "È il momento di piantare un'intenzione e ascoltare ciò che vuole cominciare a nascere.",
+        "waxing": "Una fase di movimento, aggiustamento e piccoli passi che chiedono continuità.",
+        "full": "Tempo di visibilità emotiva, culminazione e coscienza di ciò che è già maturo.",
+        "waning": "Un momento per alleggerire, rallentare e lasciare andare ciò che ha già compiuto il suo ciclo."
+      }
+    },
+    "startHere": {
+      "eyebrow": "Inizia qui",
+      "title": "Scegli la tua prima porta d'ingresso",
+      "items": [
+        {
+          "title": "Se è la tua prima volta",
+          "description": "Inizia dalla tua carta natale e comprendi la struttura di base della tua energia.",
+          "href": "/form",
+          "cta": "Vedi la mia carta natale"
+        },
+        {
+          "title": "Se vuoi leggere il momento attuale",
+          "description": "Apri Luna del mese per sentire il clima emotivo e i movimenti di adesso.",
+          "href": "/luna-del-mes",
+          "cta": "Apri Luna del mese"
+        },
+        {
+          "title": "Se cerchi qualcosa di pratico",
+          "description": "Vai alla tua routine e trasforma la lettura in una pratica corporea quotidiana.",
+          "href": "/yoga-astral",
+          "cta": "Vedi routine"
+        }
+      ]
+    },
+    "featuredTitle": "Letture in evidenza",
+    "mobileNav": {
+      "home": "Inizio",
+      "moon": "Luna",
+      "readings": "Letture",
+      "routine": "Routine",
+      "profile": "Profilo"
+    },
     "features": [
       {
         "title": "Carta natale",
