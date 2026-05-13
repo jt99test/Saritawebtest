@@ -71,6 +71,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
     { href: "/yoga-astral", label: dictionary.home.mobileNav.routine, active: false },
     { href: "/cuenta", label: dictionary.home.mobileNav.profile, active: false },
   ];
+  const revealTransition = { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const };
 
   return (
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950 pb-24 sm:pb-0">
@@ -211,7 +212,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
               </motion.h1>
 
               <motion.p
-                className="max-w-xl text-balance text-[0.95rem] leading-6 text-ivory/80 drop-shadow-[0_8px_24px_rgba(0,0,0,0.5)] sm:text-base sm:leading-7"
+                className="max-w-[30rem] text-balance text-[0.98rem] leading-[1.7] text-ivory/84 drop-shadow-[0_8px_24px_rgba(0,0,0,0.5)] sm:text-base sm:leading-7"
                 variants={{
                   hidden: { opacity: 0, y: 12 },
                   show: { opacity: 1, y: 0 },
@@ -244,6 +245,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                   show: { opacity: 1, y: 0 },
                 }}
                 transition={{ delay: 0.56, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+                animate={{ y: [0, 4, 0] }}
               >
                 {dictionary.home.scrollCue} ↓
               </motion.a>
@@ -252,72 +254,102 @@ export function HomePage({ moonStatus }: HomePageProps) {
 
           <div className="relative z-10 border-t border-black/10 pt-8 pb-3 sm:py-4">
             <div className="space-y-4 sm:hidden">
-              <section className="border border-black/10 bg-[#fffaf0]/82 px-5 py-5 shadow-[0_12px_32px_rgba(30,26,46,0.1)] backdrop-blur-sm">
+              <motion.section
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.35 }}
+                transition={revealTransition}
+                className="overflow-hidden rounded-[2rem] border border-black/10 bg-[#fffaf0]/84 px-5 py-5 shadow-[0_16px_38px_rgba(30,26,46,0.11)] backdrop-blur-sm"
+              >
+                <div className="mb-4 h-px w-16 bg-gradient-to-r from-dusty-gold/70 to-transparent" />
                 <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">{moonCopy.eyebrow}</p>
                 <div className="mt-3 flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="font-serif text-[2rem] leading-none text-[#1e1a2e]">{moonCopy.title}</h2>
-                    <p className="mt-3 text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5c4a24]">
+                    <h2 className="font-serif text-[1.9rem] leading-[1.02] text-[#1e1a2e]">{moonCopy.title}</h2>
+                    <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24]">
                       {moonPhaseLabel} en {moonSignLabel}
                     </p>
                   </div>
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full border border-dusty-gold/35 bg-white/55 font-serif text-2xl text-[#5c4a24]">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full border border-dusty-gold/35 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.92),rgba(255,255,255,0.45))] font-serif text-2xl text-[#5c4a24] shadow-[0_10px_24px_rgba(30,26,46,0.08)]">
                     ☾
                   </div>
                 </div>
-                <p className="mt-4 text-[13px] leading-6 text-[#3a3048]">{moonPhaseDescription}</p>
-              </section>
+                <p className="mt-4 text-[13px] leading-[1.75] text-[#342b43]">{moonPhaseDescription}</p>
+              </motion.section>
 
-              <section id="empieza" className="border border-black/10 bg-[#fffaf0]/82 px-5 py-5 shadow-[0_12px_32px_rgba(30,26,46,0.1)] backdrop-blur-sm">
+              <motion.section
+                id="empieza"
+                initial={{ opacity: 0, y: 18 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ ...revealTransition, delay: 0.06 }}
+                className="overflow-hidden rounded-[2rem] border border-black/10 bg-[#fffaf0]/84 px-5 py-5 shadow-[0_16px_38px_rgba(30,26,46,0.11)] backdrop-blur-sm"
+              >
+                <div className="mb-4 h-px w-16 bg-gradient-to-r from-dusty-gold/70 to-transparent" />
                 <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">{startHereCopy.eyebrow}</p>
-                <h2 className="mt-3 font-serif text-[2rem] leading-tight text-[#1e1a2e]">{startHereCopy.title}</h2>
+                <h2 className="mt-3 max-w-[12ch] font-serif text-[1.9rem] leading-[1.05] text-[#1e1a2e]">{startHereCopy.title}</h2>
                 <div className="mt-5 grid gap-3">
                   {startHereCopy.items.map((item, index) => (
-                    <Link
+                    <motion.div
                       key={item.href}
-                      href={item.href}
-                      className="grid grid-cols-[2.25rem_1fr] gap-x-3 border border-black/10 bg-white/52 px-4 py-4 transition hover:border-dusty-gold/40 hover:bg-white/72"
+                      initial={{ opacity: 0, y: 12 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, amount: 0.3 }}
+                      transition={{ ...revealTransition, delay: 0.08 * index }}
                     >
-                      <span className="flex h-9 w-9 items-center justify-center rounded-full border border-dusty-gold/30 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#5c4a24]">
-                        0{index + 1}
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block text-[12px] font-semibold uppercase tracking-[0.18em] text-[#3a3048]">{item.title}</span>
-                        <span className="mt-2 block text-[13px] leading-5 text-[#3a3048]">{item.description}</span>
-                        <span className="mt-3 inline-block text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24]">{item.cta}</span>
-                      </span>
-                    </Link>
+                      <Link
+                        href={item.href}
+                        className="grid grid-cols-[2.5rem_1fr] gap-x-3 rounded-[1.6rem] border border-black/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.38))] px-4 py-4 shadow-[0_8px_22px_rgba(30,26,46,0.06)] transition hover:border-dusty-gold/40 hover:bg-white/72"
+                      >
+                        <span className="flex h-10 w-10 items-center justify-center rounded-full border border-dusty-gold/30 bg-white/58 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5c4a24]">
+                          0{index + 1}
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-[#3a3048]">{item.title}</span>
+                          <span className="mt-2 block text-[13px] leading-[1.65] text-[#342b43]">{item.description}</span>
+                          <span className="mt-3 inline-block text-[11px] font-semibold uppercase tracking-[0.16em] text-[#5c4a24]">{item.cta}</span>
+                        </span>
+                      </Link>
+                    </motion.div>
                   ))}
                 </div>
-              </section>
+              </motion.section>
             </div>
 
             <div id="lecturas" className="mt-8 sm:mt-0">
               <div className="mb-4 flex items-end justify-between sm:hidden">
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">{dictionary.home.eyebrow}</p>
-                  <h2 className="mt-2 font-serif text-[2rem] leading-tight text-[#1e1a2e]">{dictionary.home.featuredTitle}</h2>
+                  <h2 className="mt-2 font-serif text-[1.9rem] leading-[1.05] text-[#1e1a2e]">{dictionary.home.featuredTitle}</h2>
                 </div>
               </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4 2xl:grid-cols-7">
-                {featuredItems.map((feature) => (
-                  <Link
+                {featuredItems.map((feature, index) => (
+                  <motion.div
                     key={feature.href}
-                    href={feature.href}
-                    className="group grid min-h-16 min-w-0 grid-cols-[2.25rem_1fr] items-center gap-x-3 border border-black/10 bg-[#fffaf0]/78 px-4 py-3 text-left shadow-[0_10px_30px_rgba(30,26,46,0.08)] backdrop-blur-sm transition hover:border-dusty-gold/45 hover:bg-white sm:block sm:min-h-0 sm:border-l sm:border-t-0 sm:border-r-0 sm:border-b-0 sm:bg-transparent sm:px-4 sm:py-2 sm:shadow-none sm:backdrop-blur-0"
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.35 }}
+                    transition={{ ...revealTransition, delay: 0.05 * index }}
                   >
-                    <span className="block pt-0.5 text-2xl leading-none text-[#5c4a24] sm:mb-3 sm:text-2xl">
-                      {FEATURE_SYMBOLS[features.indexOf(feature)] ?? "\u263d"}
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block text-[10px] font-semibold uppercase leading-4 tracking-[0.16em] text-[#3a3048] transition group-hover:text-[#5c4a24] [overflow-wrap:normal] [word-break:normal] sm:text-[12px] sm:tracking-[0.18em] xl:tracking-[0.24em]">
-                        {featureTitle(feature.title)}
+                    <Link
+                      href={feature.href}
+                      className="group grid min-h-16 min-w-0 grid-cols-[2.5rem_1fr] items-center gap-x-3 overflow-hidden rounded-[1.7rem] border border-black/10 bg-[linear-gradient(180deg,rgba(255,250,240,0.84),rgba(255,250,240,0.72))] px-4 py-4 text-left shadow-[0_12px_28px_rgba(30,26,46,0.08)] backdrop-blur-sm transition hover:border-dusty-gold/45 hover:bg-white sm:block sm:min-h-0 sm:border-l sm:border-t-0 sm:border-r-0 sm:border-b-0 sm:rounded-none sm:bg-transparent sm:px-4 sm:py-2 sm:shadow-none sm:backdrop-blur-0"
+                    >
+                      <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-dusty-gold/55 to-transparent sm:hidden" />
+                      <span className="flex h-10 w-10 items-center justify-center rounded-full border border-dusty-gold/25 bg-white/54 text-[1.35rem] leading-none text-[#5c4a24] sm:mb-3 sm:h-auto sm:w-auto sm:rounded-none sm:border-0 sm:bg-transparent sm:text-2xl">
+                        {FEATURE_SYMBOLS[features.indexOf(feature)] ?? "\u263d"}
                       </span>
-                      <span className="mt-1 block text-[11px] leading-4 text-[#3a3048] transition group-hover:text-[#3a3048] sm:text-xs sm:leading-5">
-                        {feature.description}
+                      <span className="min-w-0">
+                        <span className="block text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-[#3a3048] transition group-hover:text-[#5c4a24] [overflow-wrap:normal] [word-break:normal] sm:text-[12px] sm:tracking-[0.18em] xl:tracking-[0.24em]">
+                          {featureTitle(feature.title)}
+                        </span>
+                        <span className="mt-1.5 block text-[12px] leading-[1.55] text-[#342b43] transition group-hover:text-[#342b43] sm:text-xs sm:leading-5">
+                          {feature.description}
+                        </span>
                       </span>
-                    </span>
-                  </Link>
+                    </Link>
+                  </motion.div>
                 ))}
               </div>
               <div className="mt-4 text-center sm:hidden">
@@ -348,7 +380,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <Link
               key={item.label}
               href={item.href}
-              className="flex min-h-11 flex-col items-center justify-center gap-1 rounded-[1rem] px-1 py-2 text-center"
+              className={`flex min-h-11 flex-col items-center justify-center gap-1 rounded-[1rem] px-1 py-2 text-center transition ${item.active ? "bg-white/72 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]" : ""}`}
             >
               <span className={`h-1.5 w-1.5 rounded-full ${item.active ? "bg-[#5c4a24]" : "bg-black/10"}`} />
               <span className={`text-[10px] font-semibold uppercase tracking-[0.14em] ${item.active ? "text-[#5c4a24]" : "text-[#3a3048]"}`}>
