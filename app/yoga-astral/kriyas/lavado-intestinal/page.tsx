@@ -7,6 +7,7 @@ import { LavadoBuyButton } from "@/components/paywall/lavado-buy-button";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { PremiumCard } from "@/components/ui/premium-card";
+import { PrimaryButton } from "@/components/ui/primary-button";
 import { AsanaVisual } from "@/components/yoga/asana-visual";
 import { dictionaries, defaultLocale, isLocale, LOCALE_STORAGE_KEY } from "@/lib/i18n";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -94,12 +95,13 @@ export default async function LavadoIntestinalPage() {
                     label={dictionary.paywall.lavado.gateOnetimeCta}
                     loadingLabel={dictionary.paywall.checkoutLoading}
                   />
-                  <Link
+                  <PrimaryButton
                     href="/resultado"
-                    className="border border-black/10 px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:border-black/15 hover:text-ivory"
+                    variant="ghostGold"
+                    className="px-5 py-3 text-[12px] uppercase tracking-[0.2em]"
                   >
                     {dictionary.paywall.lavado.gatePlansCta}
-                  </Link>
+                  </PrimaryButton>
                 </div>
               </section>
             ) : null}

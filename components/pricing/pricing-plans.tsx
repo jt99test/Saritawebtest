@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 
+import { PrimaryButton } from "@/components/ui/primary-button";
 import { startCheckout } from "@/lib/checkout";
 import type { Dictionary } from "@/lib/i18n";
 import { PLAN_LIMITS } from "@/lib/reading-limits";
@@ -94,21 +94,22 @@ export function PricingPlans({ dictionary }: PricingPlansProps) {
                 </p>
               ) : null}
               {isPaid ? (
-                <button
-                  type="button"
+                <PrimaryButton
                   disabled={Boolean(loadingKey)}
                   onClick={() => void checkout(plan)}
-                  className="mt-7 w-full border border-dusty-gold/35 bg-dusty-gold/12 px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold transition hover:bg-dusty-gold/18 disabled:cursor-wait disabled:opacity-50"
+                  variant="ghostGold"
+                  className="mt-7 w-full px-5 py-3 text-[12px] uppercase tracking-[0.2em] disabled:cursor-wait disabled:opacity-50"
                 >
                   {loadingKey === priceKey ? dictionary.paywall.checkoutLoading : dictionary.pricing.choose}
-                </button>
+                </PrimaryButton>
               ) : (
-                <Link
+                <PrimaryButton
                   href="/form"
-                  className="mt-7 block w-full border border-black/10 px-5 py-3 text-center text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:border-black/15 hover:text-ivory"
+                  variant="ghostGold"
+                  className="mt-7 flex w-full px-5 py-3 text-[12px] uppercase tracking-[0.2em]"
                 >
                   {dictionary.pricing.startFree}
-                </Link>
+                </PrimaryButton>
               )}
             </article>
           );

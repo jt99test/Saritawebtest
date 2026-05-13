@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { DateTime } from "luxon";
 
+import { Section } from "@/components/ui/section";
 import type { Dictionary } from "@/lib/i18n";
 import type { LunarReportMetadata } from "@/lib/lunar-report";
 
@@ -73,18 +74,22 @@ export function ActiveTransitsList({ transits, timezone, dictionary }: ActiveTra
   const locale = localeFromDictionary(dictionary);
 
   return (
-    <section className="mx-auto max-w-[720px] lg:max-w-[800px]">
+    <Section
+      tone="dark"
+      withContainer={false}
+      className="mx-auto max-w-[720px] rounded-[1.8rem] px-5 py-7 lg:max-w-[800px] sm:px-7"
+    >
       <div className="text-center">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/82">
           {dictionary.lunar.activeTransitsEyebrow}
         </p>
-        <h3 className="mt-1.5 font-serif text-[32px] font-normal leading-tight text-ivory">
+        <h3 className="mt-1.5 font-serif text-[32px] font-normal leading-tight text-[#f5f0e6]">
           {dictionary.lunar.activeTransitsTitle}
         </h3>
       </div>
 
       {transits.length === 0 ? (
-        <p className="mt-8 text-center font-serif text-base italic text-[#3a3048]">
+        <p className="mt-8 text-center font-serif text-base italic text-[#f5f0e6]/72">
           {dictionary.lunar.quietMonth}
         </p>
       ) : (
@@ -98,10 +103,10 @@ export function ActiveTransitsList({ transits, timezone, dictionary }: ActiveTra
                   type="button"
                   onClick={() => setSelectedIndex(index)}
                   className={[
-                    "border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition",
+                    "rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition",
                     active
-                      ? "border-dusty-gold/60 bg-dusty-gold/[0.07] text-[#5c4a24]"
-                      : "border-black/10 bg-white text-[#3a3048] hover:bg-black/[0.02]",
+                      ? "border-dusty-gold/60 bg-dusty-gold/10 text-dusty-gold"
+                      : "border-black/15 bg-transparent text-[#f5f0e6]/78 hover:border-dusty-gold/35 hover:text-[#f5f0e6]",
                   ].join(" ")}
                 >
                   {`${PLANET_GLYPHS[transit.transitingPlanet] ?? "•"} ${transit.transitingPlanetLabel}`}
@@ -115,7 +120,7 @@ export function ActiveTransitsList({ transits, timezone, dictionary }: ActiveTra
             if (!transit) return null;
             const body = getThemeLabel(transit);
             return (
-              <article className="mt-4 border border-black/10 bg-white p-6">
+              <article className="mt-4 rounded-[1.6rem] border border-black/10 bg-white p-6 shadow-[0_8px_24px_rgba(0,0,0,0.13),inset_0_1px_0_rgba(255,255,255,0.7)]">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
                   {lifecycleTransitLabel(transit, locale) ||
                     `${transit.transitingPlanetLabel} ${transit.aspectLabel.toLowerCase()} ${transit.natalPlanetLabel}`}
@@ -136,6 +141,6 @@ export function ActiveTransitsList({ transits, timezone, dictionary }: ActiveTra
           })()}
         </>
       )}
-    </section>
+    </Section>
   );
 }

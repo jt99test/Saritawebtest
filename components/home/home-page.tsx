@@ -1,20 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "motion/react";
+import type { User } from "@supabase/supabase-js";
 
 import { AccountButton } from "@/components/auth/account-button";
 import { LanguageSelector } from "@/components/i18n/language-selector";
 import { setStoredLocale, useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
+import { showNotice } from "@/components/ui/notice-provider";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { illustrations } from "@/data/illustrations";
 import { getSignLabel } from "@/lib/chart-labels";
+import { clearChartSession } from "@/lib/chart-session";
 import { dictionaries, type Locale } from "@/lib/i18n";
 import type { CurrentMoonStatus } from "@/lib/lunar.server";
+import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
 type HomePageProps = {
   moonStatus: CurrentMoonStatus;
@@ -25,9 +29,12 @@ const FEATURE_SYMBOLS = ["\u263d", "\u2609", "\u2644", "\u260c", "\u2609", "\u26
 export function HomePage({ moonStatus }: HomePageProps) {
   const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
+  const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const features = dictionary.home.features;
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showAllFeatures, setShowAllFeatures] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [signingOut, setSigningOut] = useState(false);
 
   useEffect(() => {
     if (window.location.hash) {
@@ -35,8 +42,48 @@ export function HomePage({ moonStatus }: HomePageProps) {
     }
   }, []);
 
+  useEffect(() => {
+    let mounted = true;
+
+    supabase.auth.getUser().then(({ data }) => {
+      if (mounted) {
+        setUser(data.user);
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
+
   function handleLocaleChange(nextLocale: Locale) {
     setStoredLocale(nextLocale);
+  }
+
+  async function signOut() {
+    setSigningOut(true);
+    showNotice({ message: dictionary.auth.signingOut, tone: "info" });
+    const { error } = await supabase.auth.signOut({ scope: "global" });
+    setSigningOut(false);
+
+    if (error) {
+      console.error("Sign out failed:", error.message);
+      showNotice({ message: error.message, tone: "error" });
+      return;
+    }
+
+    clearChartSession();
+    setUser(null);
+    setMobileMenuOpen(false);
+    showNotice({ message: dictionary.auth.signedOut, tone: "success" });
+    window.location.assign("/");
   }
 
   function featureTitle(title: string) {
@@ -149,8 +196,29 @@ export function HomePage({ moonStatus }: HomePageProps) {
                     </Link>
                   ))}
                 </div>
-                <div className="mt-5 border-y border-black/10 py-4">
-                  <AccountButton />
+                <div className="mt-5 border-t border-black/10 pt-4">
+                  {user ? (
+                    <div className="grid gap-2">
+                      <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                        {dictionary.common.account}
+                      </p>
+                      <Link
+                        href="/cuenta"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="border border-black/10 bg-white/52 px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#3a3048] transition hover:border-dusty-gold/40 hover:text-[#5c4a24]"
+                      >
+                        {dictionary.nav.account}
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => void signOut()}
+                        disabled={signingOut}
+                        className="w-full border border-black/10 bg-white/52 px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.18em] text-[#3a3048] transition hover:border-dusty-gold/40 hover:text-[#5c4a24] disabled:cursor-wait disabled:opacity-50"
+                      >
+                        {signingOut ? dictionary.auth.processing : dictionary.common.signOut}
+                      </button>
+                    </div>
+                  ) : null}
                 </div>
                 <div className="mt-4">
                   <LanguageSelector dictionary={dictionary} locale={locale} onChange={handleLocaleChange} />

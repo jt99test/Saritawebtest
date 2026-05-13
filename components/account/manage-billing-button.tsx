@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { PrimaryButton } from "@/components/ui/primary-button";
 import type { Dictionary } from "@/lib/i18n";
 
 export function ManageBillingButton({ dictionary }: { dictionary: Dictionary }) {
@@ -23,13 +24,13 @@ export function ManageBillingButton({ dictionary }: { dictionary: Dictionary }) 
   }
 
   return (
-    <button
-      type="button"
+    <PrimaryButton
       onClick={() => void openPortal()}
       disabled={loading}
-      className="mt-6 border border-dusty-gold/35 bg-dusty-gold/12 px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold transition hover:bg-dusty-gold/18 disabled:cursor-wait disabled:opacity-50"
+      variant="ghostGold"
+      className="mt-6 px-5 py-3 text-[12px] uppercase tracking-[0.2em] disabled:cursor-wait disabled:opacity-50"
     >
       {loading ? dictionary.paywall.checkoutLoading : dictionary.account.manageBilling}
-    </button>
+    </PrimaryButton>
   );
 }

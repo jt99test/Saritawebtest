@@ -48,7 +48,7 @@ export default function FormPage() {
   }
 
   const inputClass =
-    "min-h-[4.25rem] w-full appearance-none rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-[16px] leading-6 text-ivory outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-muted-ivory hover:border-black/25 focus:border-dusty-gold/55 focus:ring-2 focus:ring-dusty-gold/20 disabled:opacity-50 sm:text-sm sm:placeholder:text-sm [&::-webkit-date-and-time-value]:min-h-6 [&::-webkit-date-and-time-value]:text-left [&::-webkit-date-and-time-value]:text-[inherit]";
+    "min-h-[4.25rem] w-full appearance-none rounded-2xl border border-black/10 bg-white/70 px-5 py-4 text-[16px] leading-6 text-[#1e1a2e] shadow-[0_2px_8px_rgba(0,0,0,0.06)] outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-[#3a3048]/55 hover:border-black/15 focus:border-dusty-gold/50 focus:shadow-[0_0_0_3px_rgba(111,90,42,0.12)] disabled:opacity-50 sm:text-sm sm:placeholder:text-sm [&::-webkit-date-and-time-value]:min-h-6 [&::-webkit-date-and-time-value]:text-left [&::-webkit-date-and-time-value]:text-[inherit]";
   const labelClass = "mb-2 block text-xs uppercase tracking-[0.28em] text-[#3a3048]";
 
   return (
@@ -226,22 +226,23 @@ export default function FormPage() {
               </div>
             </dl>
             <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-              <button
+              <PrimaryButton
                 type="button"
                 onClick={() => setConfirmOpen(false)}
                 disabled={submitting}
-                className="border border-black/15 px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#3a3048] transition hover:border-black/25 hover:bg-black/[0.03] disabled:opacity-50"
+                variant="ghostGold"
+                className="px-5 py-3 text-[12px] uppercase tracking-[0.18em] disabled:opacity-50"
               >
                 {dictionary.form.confirmEdit}
-              </button>
-              <button
+              </PrimaryButton>
+              <PrimaryButton
                 type="button"
                 onClick={submitChart}
                 disabled={submitting}
-                className="border border-dusty-gold/38 bg-dusty-gold/[0.12] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/62 hover:bg-dusty-gold/[0.18] disabled:opacity-50"
+                className="px-5 py-3 text-[12px] uppercase tracking-[0.18em] disabled:opacity-50"
               >
                 {submitting ? dictionary.loading.steps[2] : dictionary.form.confirmContinue}
-              </button>
+              </PrimaryButton>
             </div>
           </div>
         </div>

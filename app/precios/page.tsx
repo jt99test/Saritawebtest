@@ -1,9 +1,10 @@
 import { cookies } from "next/headers";
-import Link from "next/link";
 
 import { PricingPlans } from "@/components/pricing/pricing-plans";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
+import { OrnamenticDivider } from "@/components/ui/ornamentic-divider";
+import { PrimaryButton } from "@/components/ui/primary-button";
 import { defaultLocale, dictionaries, isLocale, LOCALE_STORAGE_KEY } from "@/lib/i18n";
 
 async function getDictionary() {
@@ -34,6 +35,7 @@ export default async function PricingPage() {
             <PricingPlans dictionary={dictionary} />
           </div>
 
+          <OrnamenticDivider className="mx-auto mt-12 max-w-3xl sm:mt-16" />
           <section className="mx-auto mt-12 max-w-3xl sm:mt-16">
             <h2 className="text-center font-serif text-3xl text-ivory sm:text-4xl">{dictionary.pricing.faqTitle}</h2>
             <div className="mt-8 border-t border-black/10">
@@ -49,12 +51,13 @@ export default async function PricingPage() {
           </section>
 
           <div className="mt-16 text-center">
-            <Link
+            <PrimaryButton
               href="/form"
-              className="inline-flex items-center justify-center border border-dusty-gold/35 bg-dusty-gold/12 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold transition hover:bg-dusty-gold/18"
+              variant="ghostGold"
+              className="px-6 py-3 text-[12px] uppercase tracking-[0.2em]"
             >
               {dictionary.pricing.startFree}
-            </Link>
+            </PrimaryButton>
           </div>
         </Container>
       </section>

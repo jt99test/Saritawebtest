@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import Link from "next/link";
 
 import { getGeneralReadingCards } from "@/data/chart-readings";
 import { hashNatalChart } from "@/lib/chart-hash";
@@ -12,6 +11,8 @@ import type { Dictionary } from "@/lib/i18n";
 import type { ReadingGender } from "@/lib/reading-gender";
 import { normalizeReadingText, splitReading } from "@/lib/reading-text";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
+import { PremiumCard } from "@/components/ui/premium-card";
+import { PrimaryButton } from "@/components/ui/primary-button";
 
 type ChartGeneralReadingProps = {
   chart: NatalChartData;
@@ -21,6 +22,11 @@ type ChartGeneralReadingProps = {
 };
 
 const PLAN_REQUIRED_ERROR = "SARITA_PLAN_REQUIRED";
+
+function isQuestionHeading(value: string) {
+  const trimmed = value.trim();
+  return trimmed.startsWith("¿") || trimmed.endsWith("?") || trimmed.includes("?");
+}
 
 function renderEmphasis(text: string): ReactNode[] {
   const nodes: ReactNode[] = [];
@@ -67,7 +73,8 @@ const THEME_META: Record<GeneralReadingTheme, { glyph: string; label: string }> 
 
 function ReadingPanelSkeleton() {
   return (
-    <article className="mt-4 min-h-[160px] overflow-hidden border border-black/10 bg-white p-5 sm:p-6 animate-pulse">
+    <PremiumCard className="mt-4 min-h-[160px] overflow-hidden p-5 sm:p-6 animate-pulse">
+      <div className="mb-4 h-[3px] w-12 rounded-full bg-dusty-gold/50" />
       <div className="h-3 w-24 rounded bg-black/8" />
       <div className="mt-3 h-6 w-3/4 rounded bg-black/8" />
       <div className="mt-3 space-y-2">
@@ -75,13 +82,14 @@ function ReadingPanelSkeleton() {
         <div className="h-3 w-5/6 rounded bg-black/6" />
         <div className="h-3 w-4/6 rounded bg-black/6" />
       </div>
-    </article>
+    </PremiumCard>
   );
 }
 
 function LockedReadingPanel({ dictionary }: { dictionary: Dictionary }) {
   return (
-    <article className="mt-4 min-h-[160px] overflow-hidden border border-dusty-gold/30 bg-white p-5 shadow-[0_4px_16px_rgba(0,0,0,0.06)] sm:p-6">
+    <PremiumCard className="mt-4 min-h-[160px] overflow-hidden border-dusty-gold/30 p-5 sm:p-6">
+      <div className="mb-4 h-[3px] w-12 rounded-full bg-dusty-gold/50" />
       <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
         {dictionary.chart.lockedEyebrow}
       </p>
@@ -91,13 +99,14 @@ function LockedReadingPanel({ dictionary }: { dictionary: Dictionary }) {
       <p className="mt-3 text-sm leading-7 text-[#3a3048]">
         {dictionary.chart.lockedBody}
       </p>
-      <Link
+      <PrimaryButton
         href="/precios"
-        className="mt-5 inline-flex border border-dusty-gold/45 bg-dusty-gold/[0.07] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/70 hover:bg-dusty-gold/[0.12]"
+        variant="ghostGold"
+        className="mt-5 px-5 py-3 text-[12px] uppercase tracking-[0.18em]"
       >
         {dictionary.chart.seePlans}
-      </Link>
-    </article>
+      </PrimaryButton>
+    </PremiumCard>
   );
 }
 
@@ -267,28 +276,37 @@ export function ChartGeneralReading({ chart, dictionary, readingId, gender }: Ch
         ) : selectedLoading ? (
           <ReadingPanelSkeleton />
         ) : (
-          <article className="mt-4 min-h-[160px] overflow-hidden border border-black/10 bg-white p-5 sm:p-6">
+          <PremiumCard className="mt-4 min-h-[160px] overflow-hidden p-5 sm:p-6">
+            <div className="mb-4 h-[3px] w-12 rounded-full bg-dusty-gold/50" />
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
               {(selectedCard?.title ?? THEME_META[selectedTheme].label).toUpperCase()}
             </p>
             {selectedError ? (
               <div className="mt-3">
                 <p className="text-sm leading-7 text-[#3a3048]">{selectedError}</p>
-                <button
+                <PrimaryButton
                   type="button"
                   onClick={() => {
                     if (chartHash) {
                       void fetchReading(selectedTheme, chartHash);
                     }
                   }}
-                  className="mt-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] underline underline-offset-4"
+                  variant="ghostGold"
+                  className="mt-4 px-5 py-3 text-[12px] uppercase tracking-[0.18em]"
                 >
                   {dictionary.chart.retry}
-                </button>
+                </PrimaryButton>
               </div>
             ) : (
               <>
-                <h3 className="mt-2 break-words font-serif text-[22px] leading-snug text-ivory sm:text-[24px]">
+                <h3
+                  className={[
+                    "mt-2 break-words font-serif text-[22px] leading-snug text-ivory sm:text-[24px]",
+                    isQuestionHeading(selectedSplit.headline)
+                      ? "border-l-2 border-dusty-gold/50 pl-5 text-left"
+                      : "",
+                  ].join(" ").trim()}
+                >
                   {renderEmphasis(selectedSplit.headline)}
                 </h3>
                 {selectedSplit.body ? (
@@ -296,7 +314,7 @@ export function ChartGeneralReading({ chart, dictionary, readingId, gender }: Ch
                 ) : null}
               </>
             )}
-          </article>
+          </PremiumCard>
         )}
       </div>
     </section>

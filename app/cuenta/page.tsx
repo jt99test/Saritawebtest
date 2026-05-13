@@ -6,6 +6,7 @@ import { AccountSettings } from "@/components/account/account-settings";
 import { ManageBillingButton } from "@/components/account/manage-billing-button";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
+import { PrimaryButton } from "@/components/ui/primary-button";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { defaultLocale, dictionaries, isLocale, LOCALE_STORAGE_KEY } from "@/lib/i18n";
 import { stripe } from "@/lib/stripe";
@@ -78,12 +79,13 @@ export default async function AccountPage() {
                   {dictionary.account.renewalDate}: {renewalDate}
                 </p>
                 {plan === "free" ? (
-                  <Link
+                  <PrimaryButton
                     href="/precios"
-                    className="mt-6 inline-flex border border-dusty-gold/35 bg-dusty-gold/12 px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold transition hover:bg-dusty-gold/18"
+                    variant="ghostGold"
+                    className="mt-6 px-5 py-3 text-[12px] uppercase tracking-[0.2em]"
                   >
                     {dictionary.account.upgradePlan}
-                  </Link>
+                  </PrimaryButton>
                 ) : (
                   <ManageBillingButton dictionary={dictionary} />
                 )}

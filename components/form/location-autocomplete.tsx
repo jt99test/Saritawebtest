@@ -147,7 +147,7 @@ export function LocationAutocomplete({
         aria-expanded={showDropdown}
         aria-controls={listId}
         aria-autocomplete="list"
-        className="min-h-[4.25rem] w-full appearance-none rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-[16px] leading-6 text-ivory outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-muted-ivory hover:border-black/25 focus:border-dusty-gold/55 focus:ring-2 focus:ring-dusty-gold/20 disabled:opacity-50 sm:text-sm sm:placeholder:text-sm"
+        className="min-h-[4.25rem] w-full appearance-none rounded-2xl border border-black/10 bg-white/70 px-5 py-4 text-[16px] leading-6 text-[#1e1a2e] shadow-[0_2px_8px_rgba(0,0,0,0.06)] outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-[#3a3048]/55 hover:border-black/15 focus:border-dusty-gold/50 focus:shadow-[0_0_0_3px_rgba(111,90,42,0.12)] disabled:opacity-50 sm:text-sm sm:placeholder:text-sm"
       />
 
       {selectedLocation ? (

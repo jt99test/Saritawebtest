@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { cookies } from "next/headers";
 
 import { PublicChartWheel } from "@/components/chart/public-chart-wheel";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
+import { PrimaryButton } from "@/components/ui/primary-button";
 import { formatSignPosition, type NatalChartData } from "@/lib/chart";
 import { defaultLocale, dictionaries, isLocale, LOCALE_STORAGE_KEY } from "@/lib/i18n";
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
@@ -57,12 +57,13 @@ export default async function SharedChartPage({ params }: { params: Promise<{ id
           <div className="mx-auto mt-7 max-w-[min(78vh,760px)]">
             <PublicChartWheel chart={chart} />
           </div>
-          <Link
+          <PrimaryButton
             href="/"
-            className="mt-7 inline-flex border border-dusty-gold/35 bg-dusty-gold/12 px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold transition hover:bg-dusty-gold/18"
+            variant="ghostGold"
+            className="mt-7 px-6 py-3 text-[12px] uppercase tracking-[0.2em]"
           >
             {dictionary.chart.createCta}
-          </Link>
+          </PrimaryButton>
           </div>
         </Container>
       </section>

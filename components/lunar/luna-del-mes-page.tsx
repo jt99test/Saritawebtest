@@ -27,6 +27,8 @@ import { LunationReadingCard } from "@/components/lunar/lunation-reading-card";
 import { ActiveTransitsList } from "@/components/lunar/active-transits-list";
 import { LunarRoutineCta } from "@/components/lunar/lunar-routine-cta";
 import { PracticalActions } from "@/components/lunar/practical-actions";
+import { OrnamenticDivider } from "@/components/ui/ornamentic-divider";
+import { PrimaryButton } from "@/components/ui/primary-button";
 
 type LunaDelMesPageProps = {
   chart: NatalChartData;
@@ -410,12 +412,13 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
 
         {selectedMetadata ? (
           <div className="mt-6 flex justify-center">
-            <Link
+            <PrimaryButton
               href={selectedRoutineHref}
-              className="inline-flex border border-dusty-gold/38 bg-dusty-gold/[0.075] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/62 hover:bg-dusty-gold/[0.12]"
+              variant="ghostGold"
+              className="px-5 py-3 text-[12px] uppercase tracking-[0.18em]"
             >
               {selectedRoutineLabel}
-            </Link>
+            </PrimaryButton>
           </div>
         ) : null}
       </header>
@@ -449,6 +452,7 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
             />
           </div>
 
+          <OrnamenticDivider className="mx-auto mt-7 max-w-[720px] sm:mt-9" />
           <div className="mt-10 lg:mt-12">
             <ActiveTransitsList
               transits={selectedMetadata.activeTransits}
@@ -457,10 +461,12 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
             />
           </div>
 
+          <OrnamenticDivider className="mx-auto mt-7 max-w-[720px] sm:mt-9" />
           <div className="mt-10 lg:mt-12">
             <PracticalActions actions={actions} dictionary={dictionary} loading={activeStream.loading} />
           </div>
 
+          <OrnamenticDivider className="mx-auto mt-7 max-w-[720px] sm:mt-9" />
           <div className="mt-10 lg:mt-12">
             <LunarRoutineCta metadata={selectedMetadata} dictionary={dictionary} />
           </div>

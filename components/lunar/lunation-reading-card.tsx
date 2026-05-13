@@ -1,6 +1,7 @@
 "use client";
 
 import { PrimaryButton } from "@/components/ui/primary-button";
+import { PremiumCard } from "@/components/ui/premium-card";
 import { RenderedReading } from "@/components/ui/rendered-reading";
 import type { Dictionary } from "@/lib/i18n";
 
@@ -20,14 +21,11 @@ export function LunationReadingCard({
   dictionary,
 }: LunationReadingCardProps) {
   return (
-    <section className="mx-auto max-w-[680px] text-center">
-      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
-        {dictionary.lunar.personalizedReading}
-      </p>
-
+    <section className="mx-auto max-w-[680px]">
       <div className="mt-6">
         {loading ? (
-          <article className="mx-auto animate-pulse border border-black/10 bg-white p-5 shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
+          <PremiumCard className="mx-auto animate-pulse p-5">
+            <div className="mb-4 h-[3px] w-12 rounded-full bg-dusty-gold/50" />
             <div className="h-3 w-24 rounded bg-black/8" />
             <div className="mt-3 h-6 w-3/4 rounded bg-black/8" />
             <div className="mt-3 space-y-2">
@@ -35,10 +33,16 @@ export function LunationReadingCard({
               <div className="h-3 w-5/6 rounded bg-black/6" />
               <div className="h-3 w-4/6 rounded bg-black/6" />
             </div>
-          </article>
+          </PremiumCard>
         ) : error ? (
-          <div className="mt-4 space-y-4">
-            <p className="font-serif text-[17px] leading-8 text-[#3a3048]">{error}</p>
+          <div className="mt-4 space-y-4 text-left">
+            <PremiumCard className="p-5">
+              <div className="mb-4 h-[3px] w-12 rounded-full bg-dusty-gold/50" />
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                {dictionary.lunar.personalizedReading}
+              </p>
+              <p className="mt-3 font-serif text-[17px] leading-8 text-[#3a3048]">{error}</p>
+            </PremiumCard>
             <PrimaryButton
               type="button"
               onClick={onRetry}
@@ -49,13 +53,20 @@ export function LunationReadingCard({
             </PrimaryButton>
           </div>
         ) : prose ? (
-          <RenderedReading
-            text={prose}
-            className="mx-auto mt-2 max-w-none text-left font-serif text-[17px] leading-[1.72] text-ivory/88"
-            paragraphClassName="mb-4"
-          />
+          <PremiumCard className="p-5 sm:p-6">
+            <div className="mb-4 h-[3px] w-12 rounded-full bg-dusty-gold/50" />
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+              {dictionary.lunar.personalizedReading}
+            </p>
+            <RenderedReading
+              text={prose}
+              className="mx-auto mt-4 max-w-none text-left font-serif text-[17px] leading-[1.72] text-[#1e1a2e]"
+              paragraphClassName="mb-4"
+            />
+          </PremiumCard>
         ) : (
-          <article className="mx-auto animate-pulse border border-black/10 bg-white p-5 shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
+          <PremiumCard className="mx-auto animate-pulse p-5">
+            <div className="mb-4 h-[3px] w-12 rounded-full bg-dusty-gold/50" />
             <div className="h-3 w-24 rounded bg-black/8" />
             <div className="mt-3 h-6 w-3/4 rounded bg-black/8" />
             <div className="mt-3 space-y-2">
@@ -63,7 +74,7 @@ export function LunationReadingCard({
               <div className="h-3 w-5/6 rounded bg-black/6" />
               <div className="h-3 w-4/6 rounded bg-black/6" />
             </div>
-          </article>
+          </PremiumCard>
         )}
       </div>
     </section>

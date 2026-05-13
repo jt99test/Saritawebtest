@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-
+import { PrimaryButton } from "@/components/ui/primary-button";
 import type { Dictionary } from "@/lib/i18n";
 import type { LunarReportMetadata } from "@/lib/lunar-report";
 
@@ -43,12 +42,13 @@ export function LunarRoutineCta({ metadata, dictionary }: LunarRoutineCtaProps) 
             {copy.lunarRoutineBody}
           </p>
         </div>
-        <Link
+        <PrimaryButton
           href={href}
-          className="inline-flex shrink-0 items-center justify-center border border-dusty-gold/38 bg-dusty-gold/[0.075] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/62 hover:bg-dusty-gold/[0.12]"
+          variant="ghostGold"
+          className="shrink-0 px-5 py-3 text-[12px] uppercase tracking-[0.18em]"
         >
           {ctaLabel}
-        </Link>
+        </PrimaryButton>
       </div>
     </section>
   );

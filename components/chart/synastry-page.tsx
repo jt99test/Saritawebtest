@@ -55,6 +55,11 @@ type PartnerRow = {
 type SynastryLayerId = "fisico" | "sexual" | "emocional" | "mental" | "profesional" | "evolutivo";
 type SynastryWheelMode = "all" | "aspected";
 
+function isQuestionHeading(value: string) {
+  const trimmed = value.trim();
+  return trimmed.startsWith("¿") || trimmed.endsWith("?") || trimmed.includes("?");
+}
+
 const LAYERS: Array<{
   id: SynastryLayerId;
   points: ChartPointId[];
@@ -594,7 +599,14 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
                   ) : (
                     <>
                       {headline ? (
-                        <h3 className="mt-2 break-words font-serif text-[22px] leading-snug text-ivory sm:text-[24px]">
+                        <h3
+                          className={[
+                            "mt-2 break-words font-serif text-[22px] leading-snug text-ivory sm:text-[24px]",
+                            isQuestionHeading(headline)
+                              ? "border-l-2 border-dusty-gold/50 pl-5 text-left"
+                              : "",
+                          ].join(" ").trim()}
+                        >
                           {headline}
                         </h3>
                       ) : null}
@@ -659,11 +671,11 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
 
       <div className="mt-10 grid gap-5 border-t border-dusty-gold/14 pt-8">
         <p className="font-serif text-2xl text-ivory">{synastryCopy.addPerson}</p>
-        <input className="min-h-[4.25rem] rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-[16px] leading-6 text-ivory outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-muted-ivory hover:border-black/25 sm:text-sm sm:placeholder:text-sm" placeholder={dictionary.form.fields.name} value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
-        <input className="min-h-[4.25rem] rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-[16px] leading-6 text-ivory outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-muted-ivory hover:border-black/25 sm:text-sm sm:placeholder:text-sm [&::-webkit-date-and-time-value]:min-h-6 [&::-webkit-date-and-time-value]:text-left [&::-webkit-date-and-time-value]:text-[inherit]" type="date" value={form.birthDate} onChange={(event) => setForm((current) => ({ ...current, birthDate: clampIsoDateYear(event.target.value) }))} />
+        <input className="min-h-[4.25rem] rounded-2xl border border-black/10 bg-white/70 px-5 py-4 text-[16px] leading-6 text-[#1e1a2e] shadow-[0_2px_8px_rgba(0,0,0,0.06)] outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-[#3a3048]/55 hover:border-black/15 focus:border-dusty-gold/50 focus:shadow-[0_0_0_3px_rgba(111,90,42,0.12)] sm:text-sm sm:placeholder:text-sm" placeholder={dictionary.form.fields.name} value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
+        <input className="min-h-[4.25rem] rounded-2xl border border-black/10 bg-white/70 px-5 py-4 text-[16px] leading-6 text-[#1e1a2e] shadow-[0_2px_8px_rgba(0,0,0,0.06)] outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-[#3a3048]/55 hover:border-black/15 focus:border-dusty-gold/50 focus:shadow-[0_0_0_3px_rgba(111,90,42,0.12)] sm:text-sm sm:placeholder:text-sm [&::-webkit-date-and-time-value]:min-h-6 [&::-webkit-date-and-time-value]:text-left [&::-webkit-date-and-time-value]:text-[inherit]" type="date" value={form.birthDate} onChange={(event) => setForm((current) => ({ ...current, birthDate: clampIsoDateYear(event.target.value) }))} />
         <div>
           <input
-            className="min-h-[4.25rem] w-full appearance-none rounded-2xl border border-black/15 bg-cosmic-900 px-4 py-4 text-[16px] leading-6 text-ivory outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-muted-ivory hover:border-black/25 disabled:opacity-50 sm:text-sm sm:placeholder:text-sm [&::-webkit-date-and-time-value]:min-h-6 [&::-webkit-date-and-time-value]:text-left [&::-webkit-date-and-time-value]:text-[inherit]"
+            className="min-h-[4.25rem] w-full appearance-none rounded-2xl border border-black/10 bg-white/70 px-5 py-4 text-[16px] leading-6 text-[#1e1a2e] shadow-[0_2px_8px_rgba(0,0,0,0.06)] outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-[#3a3048]/55 hover:border-black/15 focus:border-dusty-gold/50 focus:shadow-[0_0_0_3px_rgba(111,90,42,0.12)] disabled:opacity-50 sm:text-sm sm:placeholder:text-sm [&::-webkit-date-and-time-value]:min-h-6 [&::-webkit-date-and-time-value]:text-left [&::-webkit-date-and-time-value]:text-[inherit]"
             type="time"
             value={form.birthTimeUnknown ? "" : form.birthTime}
             disabled={form.birthTimeUnknown}
@@ -695,20 +707,21 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
           <p className="mb-2 text-xs uppercase tracking-[0.28em] text-[#3a3048]">{dictionary.form.fields.gender}</p>
           <div className="grid gap-2 sm:grid-cols-2">
             {(["female", "male"] as const).map((option) => (
-              <button
+              <PrimaryButton
                 key={option}
                 type="button"
+                variant="ghostGold"
                 aria-pressed={form.gender === option}
                 onClick={() => setForm((current) => ({ ...current, gender: current.gender === option ? "" : option }))}
                 className={[
-                  "rounded-2xl border px-4 py-4 text-sm font-semibold uppercase tracking-[0.18em] transition",
+                  "w-full px-4 py-4 text-sm uppercase tracking-[0.18em]",
                   form.gender === option
-                    ? "border-dusty-gold/55 bg-dusty-gold/14 text-[#5c4a24]"
-                    : "border-black/15 bg-cosmic-900 text-ivory hover:border-black/25",
+                    ? "border-dusty-gold/60 bg-dusty-gold/14 text-[#5c4a24]"
+                    : "border-black/10 bg-white/70 text-[#3a3048]",
                 ].join(" ")}
               >
                 {dictionary.form.genderOptions[option]}
-              </button>
+              </PrimaryButton>
             ))}
           </div>
         </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { DateTime } from "luxon";
 
 import type { Dictionary, Locale } from "@/lib/i18n";
@@ -18,6 +17,7 @@ import { ReadingUsageBanner } from "@/components/chart/reading-usage-banner";
 import { useChartStore } from "@/components/chart/chart-store";
 import { ChartLayerRail, NatalChartWheel } from "@/components/chart/natal-chart-wheel";
 import { PlanetDetailPanel } from "@/components/chart/planet-detail-panel";
+import { PrimaryButton } from "@/components/ui/primary-button";
 import { PricingModal } from "@/components/paywall/pricing-modal";
 import { SolarReturnPage } from "@/components/chart/solar-return-page";
 import { SynastryPage } from "@/components/chart/synastry-page";
@@ -464,21 +464,23 @@ export function NatalChartExperience({
                   {dictionary.yogaAstral.intro}
                 </p>
                 {!planLoading && !hasPlanAccess(plan, "pro") ? (
-                  <button
+                  <PrimaryButton
                     type="button"
+                    variant="ghostGold"
                     onClick={() => openPricing("pro")}
-                    className="mt-5 inline-flex border border-dusty-gold/38 bg-dusty-gold/[0.075] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/62 hover:bg-dusty-gold/[0.12]"
+                    className="mt-5 px-5 py-3 text-[12px] uppercase tracking-[0.18em]"
                   >
                     <span aria-hidden="true" className="mr-2">🔒</span>
                     {dictionary.yogaAstral.title}
-                  </button>
+                  </PrimaryButton>
                 ) : (
-                  <Link
+                  <PrimaryButton
                     href="/yoga-astral"
-                    className="mt-5 inline-flex border border-dusty-gold/38 bg-dusty-gold/[0.075] px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/62 hover:bg-dusty-gold/[0.12]"
+                    variant="ghostGold"
+                    className="mt-5 px-5 py-3 text-[12px] uppercase tracking-[0.18em]"
                   >
                     {dictionary.yogaAstral.title}
-                  </Link>
+                  </PrimaryButton>
                 )}
               </div>
             ) : null}

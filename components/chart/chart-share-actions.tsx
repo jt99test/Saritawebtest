@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { PrimaryButton } from "@/components/ui/primary-button";
 import { formatSignPosition, type NatalChartData } from "@/lib/chart";
 import type { Dictionary } from "@/lib/i18n";
 
@@ -198,13 +199,13 @@ export function ChartShareActions({ chart, dictionary, plan }: ChartShareActions
             <p className="mt-5 break-all border border-black/10 bg-black/[0.04] p-3 text-sm text-[#3a3048]">
               {shareUrl}
             </p>
-            <button
-              type="button"
+            <PrimaryButton
               onClick={() => void copyLink()}
-              className="mt-5 border border-dusty-gold/35 bg-dusty-gold/12 px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-dusty-gold transition hover:bg-dusty-gold/18"
+              variant="ghostGold"
+              className="mt-5 px-5 py-3 text-[12px] uppercase tracking-[0.2em]"
             >
               {copied ? dictionary.chart.linkCopied : dictionary.chart.copyLink}
-            </button>
+            </PrimaryButton>
             <button
               type="button"
               onClick={() => setShareUrl("")}

@@ -1,5 +1,6 @@
 import type { LunarReportActionSet } from "@/lib/lunar-report";
 import type { Dictionary } from "@/lib/i18n";
+import { Section } from "@/components/ui/section";
 
 type PracticalActionsProps = {
   actions: LunarReportActionSet | null;
@@ -26,12 +27,16 @@ export function PracticalActions({ actions, dictionary }: PracticalActionsProps)
   const copy = dictionary.lunarActions;
 
   return (
-    <section className="mx-auto max-w-[720px] pb-16 lg:pb-20">
+    <Section
+      tone="dark"
+      withContainer={false}
+      className="mx-auto max-w-[720px] rounded-[1.8rem] px-5 py-7 pb-10 lg:pb-12 sm:px-7"
+    >
       <div className="text-center">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
+        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/82">
           {copy.eyebrow}
         </p>
-        <h3 className="mt-1.5 font-serif text-[32px] font-normal leading-tight text-ivory">
+        <h3 className="mt-1.5 font-serif text-[32px] font-normal leading-tight text-[#f5f0e6]">
           {copy.title}
         </h3>
       </div>
@@ -61,10 +66,10 @@ export function PracticalActions({ actions, dictionary }: PracticalActionsProps)
           ))}
         </div>
       ) : (
-        <p className="mx-auto mt-8 max-w-[440px] text-center font-serif text-[17px] italic leading-[1.7] text-[#3a3048]">
+        <p className="mx-auto mt-8 max-w-[440px] text-center font-serif text-[17px] italic leading-[1.7] text-[#f5f0e6]/72">
           {copy.empty}
         </p>
       )}
-    </section>
+    </Section>
   );
 }
