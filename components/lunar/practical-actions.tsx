@@ -28,7 +28,7 @@ export function PracticalActions({ actions, dictionary }: PracticalActionsProps)
 
   return (
     <Section
-      tone="dark"
+      tone="tinted"
       withContainer={false}
       className="mx-auto max-w-[720px] rounded-[1.8rem] px-5 py-7 pb-10 lg:pb-12 sm:px-7"
     >
@@ -36,7 +36,7 @@ export function PracticalActions({ actions, dictionary }: PracticalActionsProps)
         <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/82">
           {copy.eyebrow}
         </p>
-        <h3 className="mt-1.5 font-serif text-[32px] font-normal leading-tight text-[#f5f0e6]">
+        <h3 className="mt-1.5 font-serif text-[32px] font-normal leading-tight text-ivory">
           {copy.title}
         </h3>
       </div>
@@ -56,7 +56,7 @@ export function PracticalActions({ actions, dictionary }: PracticalActionsProps)
               </p>
               <p
                 className={[
-                  "absolute right-0 text-[12px] text-ivory/20 [font-variant-numeric:tabular-nums]",
+                  "absolute right-0 text-[12px] text-[#3a3048]/30 [font-variant-numeric:tabular-nums]",
                   index === 0 ? "top-0" : "top-6",
                 ].join(" ")}
               >
@@ -66,7 +66,7 @@ export function PracticalActions({ actions, dictionary }: PracticalActionsProps)
           ))}
         </div>
       ) : (
-        <p className="mx-auto mt-8 max-w-[440px] text-center font-serif text-[17px] italic leading-[1.7] text-[#f5f0e6]/72">
+        <p className="mx-auto mt-8 max-w-[440px] text-center font-serif text-[17px] italic leading-[1.7] text-[#3a3048]/72">
           {copy.empty}
         </p>
       )}

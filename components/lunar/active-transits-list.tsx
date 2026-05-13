@@ -75,7 +75,7 @@ export function ActiveTransitsList({ transits, timezone, dictionary }: ActiveTra
 
   return (
     <Section
-      tone="dark"
+      tone="tinted"
       withContainer={false}
       className="mx-auto max-w-[720px] rounded-[1.8rem] px-5 py-7 lg:max-w-[800px] sm:px-7"
     >
@@ -83,13 +83,13 @@ export function ActiveTransitsList({ transits, timezone, dictionary }: ActiveTra
         <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/82">
           {dictionary.lunar.activeTransitsEyebrow}
         </p>
-        <h3 className="mt-1.5 font-serif text-[32px] font-normal leading-tight text-[#f5f0e6]">
+        <h3 className="mt-1.5 font-serif text-[32px] font-normal leading-tight text-ivory">
           {dictionary.lunar.activeTransitsTitle}
         </h3>
       </div>
 
       {transits.length === 0 ? (
-        <p className="mt-8 text-center font-serif text-base italic text-[#f5f0e6]/72">
+        <p className="mt-8 text-center font-serif text-base italic text-[#3a3048]/72">
           {dictionary.lunar.quietMonth}
         </p>
       ) : (
@@ -106,7 +106,7 @@ export function ActiveTransitsList({ transits, timezone, dictionary }: ActiveTra
                     "rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition",
                     active
                       ? "border-dusty-gold/60 bg-dusty-gold/10 text-dusty-gold"
-                      : "border-black/15 bg-transparent text-[#f5f0e6]/78 hover:border-dusty-gold/35 hover:text-[#f5f0e6]",
+                      : "border-black/15 bg-transparent text-[#3a3048] hover:border-dusty-gold/35 hover:text-[#5c4a24]",
                   ].join(" ")}
                 >
                   {`${PLANET_GLYPHS[transit.transitingPlanet] ?? "•"} ${transit.transitingPlanetLabel}`}

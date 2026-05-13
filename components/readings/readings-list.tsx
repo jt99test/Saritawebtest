@@ -42,7 +42,7 @@ export function ReadingsList({ readings }: { readings: StoredReading[] }) {
 
   if (!readings.length) {
     return (
-      <div className="mt-8 grid overflow-hidden border-t border-dusty-gold/14 pt-7 sm:grid-cols-[0.9fr_1.1fr] sm:gap-8">
+      <div className="mt-8 grid overflow-hidden rounded-[1.8rem] border border-dusty-gold/14 bg-[#f8f2e8]/82 p-5 shadow-[0_12px_34px_rgba(30,26,46,0.05),inset_0_1px_0_rgba(255,255,255,0.72)] sm:grid-cols-[0.9fr_1.1fr] sm:gap-8 sm:p-6">
         <div className="relative hidden min-h-52 overflow-hidden border border-black/10 sm:block">
           <Image
             src={illustrations.scenes.landing}
@@ -72,7 +72,7 @@ export function ReadingsList({ readings }: { readings: StoredReading[] }) {
   }
 
   return (
-    <div className="mt-8 border-t border-dusty-gold/14">
+    <div className="mt-8 rounded-[1.8rem] border border-dusty-gold/14 bg-[#f8f2e8]/82 px-5 py-2 shadow-[0_12px_34px_rgba(30,26,46,0.05),inset_0_1px_0_rgba(255,255,255,0.72)] sm:px-6">
       {readings.map((reading) => {
         const result = getStoredResult(reading);
         const label = result?.chart.event.name ?? dictionary.readings.fallbackTitle;

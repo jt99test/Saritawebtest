@@ -239,7 +239,7 @@ export function ChartGeneralReading({ chart, dictionary, readingId, gender }: Ch
         </h2>
       </div>
 
-      <div className="mx-auto mt-8 max-w-[760px] sm:mt-10">
+      <div className="mx-auto mt-8 max-w-[760px] rounded-[1.8rem] border border-dusty-gold/14 bg-[#f7f1e7]/78 px-4 py-5 shadow-[0_12px_34px_rgba(30,26,46,0.05),inset_0_1px_0_rgba(255,255,255,0.72)] sm:mt-10 sm:px-5 sm:py-6">
         <div className="-mx-3 flex snap-x snap-mandatory gap-3 overflow-x-auto px-3 pb-2 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] sm:mx-0 sm:grid sm:grid-cols-5 sm:overflow-visible sm:px-0 sm:pb-0 md:grid-cols-7 [&::-webkit-scrollbar]:hidden">
           {GENERAL_READING_THEMES.map((theme) => {
             const meta = THEME_META[theme];

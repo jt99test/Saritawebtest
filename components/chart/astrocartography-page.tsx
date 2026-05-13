@@ -308,8 +308,8 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
         </p>
       </div>
 
-      <div className="mt-8">
-        <div className="min-w-0 overflow-hidden border border-black/10 bg-white shadow-[0_16px_40px_rgba(0,0,0,0.1)]">
+      <div className="mt-8 rounded-[1.9rem] border border-dusty-gold/14 bg-[#f8f2e8]/82 p-3 shadow-[0_14px_38px_rgba(30,26,46,0.06),inset_0_1px_0_rgba(255,255,255,0.75)] sm:p-4">
+        <div className="min-w-0 overflow-hidden rounded-[1.45rem] border border-black/10 bg-white shadow-[0_16px_40px_rgba(0,0,0,0.1)]">
           <div className="border-b border-black/10 p-4">
             <LocationAutocomplete
               value={city}
@@ -335,8 +335,9 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
         </div>
       </div>
 
-      <div className="mt-5 grid gap-4 lg:grid-cols-[1fr_auto]">
-        <div className="-mx-3 flex gap-2 overflow-x-auto px-3 pb-2 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden">
+      <div className="mt-5 rounded-[1.9rem] border border-dusty-gold/14 bg-[#f8f2e8]/82 p-4 shadow-[0_12px_34px_rgba(30,26,46,0.05),inset_0_1px_0_rgba(255,255,255,0.72)] lg:p-5">
+        <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
+          <div className="-mx-3 flex gap-2 overflow-x-auto px-3 pb-2 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden">
           {PLANETS.map((planet) => {
             const active = visiblePlanets.has(planet);
             const line = lines.find((entry) => entry.planetId === planet);
@@ -355,8 +356,8 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
               </button>
             );
           })}
-        </div>
-        <div className="flex flex-wrap gap-2 lg:justify-end">
+          </div>
+          <div className="flex flex-wrap gap-2 lg:justify-end">
           {ANGLES.map((angle) => {
             const active = visibleAngles.has(angle);
             return (
@@ -373,11 +374,12 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
               </button>
             );
           })}
+          </div>
         </div>
       </div>
 
       <div className="mt-8 grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-        <article className="border border-black/10 bg-white p-5 shadow-[0_10px_30px_rgba(0,0,0,0.07)]">
+        <article className="rounded-[1.6rem] border border-dusty-gold/14 bg-[#f8f2e8]/82 p-5 shadow-[0_12px_34px_rgba(30,26,46,0.05),inset_0_1px_0_rgba(255,255,255,0.72)]">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
             {copy.lineInfoEyebrow}
           </p>
@@ -408,7 +410,7 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
           )}
         </article>
 
-        <article className="border border-black/10 bg-white p-5 shadow-[0_10px_30px_rgba(0,0,0,0.07)]">
+        <article className="rounded-[1.6rem] border border-dusty-gold/14 bg-[#f8f2e8]/82 p-5 shadow-[0_12px_34px_rgba(30,26,46,0.05),inset_0_1px_0_rgba(255,255,255,0.72)]">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
             {copy.panelEyebrow}
           </p>
@@ -451,7 +453,7 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
         </article>
       </div>
 
-      <article className="mt-4 overflow-hidden border border-black/10 bg-white p-5 shadow-[0_10px_30px_rgba(0,0,0,0.07)] sm:p-6">
+      <article className="mt-4 overflow-hidden rounded-[1.6rem] border border-dusty-gold/14 bg-[#f8f2e8]/82 p-5 shadow-[0_12px_34px_rgba(30,26,46,0.05),inset_0_1px_0_rgba(255,255,255,0.72)] sm:p-6">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
               {copy.readingEyebrow}
             </p>
