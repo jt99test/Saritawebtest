@@ -235,24 +235,53 @@ export function NatalChartExperience({
           <button
             type="button"
             onClick={() => setSectionMenuOpen(true)}
-            className="flex w-full items-center justify-between border border-black/10 bg-white/76 px-4 py-3 text-left shadow-[0_10px_30px_rgba(30,26,46,0.08)]"
+            className="flex w-full items-center justify-between rounded-[1.35rem] border border-dusty-gold/16 bg-[#fbf7ef]/90 px-4 py-3.5 text-left shadow-[0_12px_30px_rgba(30,26,46,0.06),inset_0_1px_0_rgba(255,255,255,0.72)]"
             aria-haspopup="dialog"
             aria-expanded={sectionMenuOpen}
           >
-            <span className="flex min-w-0 items-center gap-3">
-              <span className="text-xl text-[#5c4a24]">{TAB_ICONS[pageTab]}</span>
-              <span className="min-w-0 truncate text-[12px] font-semibold uppercase tracking-[0.18em] text-[#1e1a2e]">
-                {dictionary.result.primaryTabs[pageTab]}
+            <span className="flex min-w-0 items-center gap-3.5">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-dusty-gold/18 bg-white/80 text-[20px] text-[#5c4a24] shadow-[inset_0_1px_0_rgba(255,255,255,0.72)]">
+                {TAB_ICONS[pageTab]}
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[10px] font-medium uppercase tracking-[0.22em] text-[#8a7a4e]">
+                  {dictionary.result.readingContextLabel}
+                </span>
+                <span className="mt-1 block min-w-0 truncate text-[13px] font-semibold uppercase tracking-[0.16em] text-[#1e1a2e]">
+                  {dictionary.result.primaryTabs[pageTab]}
+                </span>
               </span>
             </span>
-            <span className="text-[#8a7a4e]">⌄</span>
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-dusty-gold/16 bg-white/75 text-[15px] text-[#8a7a4e]">
+              {"\u2304"}
+            </span>
           </button>
           {sectionMenuOpen ? (
             <div className="fixed inset-0 z-[1000] bg-black/35 backdrop-blur-sm" onClick={() => setSectionMenuOpen(false)}>
               <div
-                className="absolute inset-x-3 top-16 border border-dusty-gold/24 bg-[#f8f4eb] p-3 shadow-[0_24px_80px_rgba(0,0,0,0.28)]"
+                className="absolute inset-x-3 bottom-3 rounded-[2rem] border border-dusty-gold/20 bg-[#fbf7ef]/98 p-4 shadow-[0_28px_90px_rgba(0,0,0,0.26)]"
                 onClick={(event) => event.stopPropagation()}
               >
+                <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-dusty-gold/22" />
+                <div className="mb-4 flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#8a7a4e]">
+                      {dictionary.result.readingContextLabel}
+                    </p>
+                    <p className="mt-1 font-serif text-[27px] leading-none text-ivory">
+                      {dictionary.result.primaryTabs[pageTab]}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setSectionMenuOpen(false)}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-white/85 text-[20px] leading-none text-[#8a7a4e]"
+                    aria-label={dictionary.common.close}
+                  >
+                    {"\u00d7"}
+                  </button>
+                </div>
+                <div className="space-y-1.5">
                 {PAGE_TABS.map((tab) => {
                   const active = pageTab === tab;
                   const requiredPlan = TAB_REQUIREMENTS[tab];
@@ -269,24 +298,45 @@ export function NatalChartExperience({
                         }
                       }}
                       className={[
-                        "flex w-full items-center justify-between gap-3 px-3 py-3 text-left transition",
-                        active ? "bg-dusty-gold/12 text-[#5c4a24]" : "text-[#1e1a2e] hover:bg-white/60",
+                        "flex w-full items-center justify-between gap-3 rounded-[1.2rem] px-3.5 py-3.5 text-left transition",
+                        active
+                          ? "border border-dusty-gold/24 bg-dusty-gold/10 text-[#5c4a24] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]"
+                          : "border border-transparent text-[#1e1a2e] hover:bg-white/70",
                       ].join(" ")}
                     >
-                      <span className="flex min-w-0 items-center gap-3">
-                        <span className="text-xl text-[#5c4a24]">{TAB_ICONS[tab]}</span>
-                        <span className="min-w-0 truncate text-[12px] font-semibold uppercase tracking-[0.16em]">
-                          {dictionary.result.primaryTabs[tab]}
+                      <span className="flex min-w-0 items-center gap-3.5">
+                        <span
+                          className={[
+                            "flex h-11 w-11 shrink-0 items-center justify-center rounded-full border text-[20px]",
+                            active
+                              ? "border-dusty-gold/24 bg-white/82 text-[#5c4a24]"
+                              : "border-black/10 bg-white/76 text-[#6f5a2a]",
+                          ].join(" ")}
+                        >
+                          {TAB_ICONS[tab]}
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block min-w-0 truncate text-[12px] font-semibold uppercase tracking-[0.16em]">
+                            {dictionary.result.primaryTabs[tab]}
+                          </span>
+                          {locked && requiredPlan ? (
+                            <span className="mt-1 block text-[10px] font-medium uppercase tracking-[0.14em] text-[#8a7a4e]">
+                              {requiredPlan === "pro" ? dictionary.paywall.lockedBadgePro : dictionary.paywall.lockedBadgeAvanzado}
+                            </span>
+                          ) : null}
                         </span>
                       </span>
-                      {locked && requiredPlan ? (
-                        <span className="border border-dusty-gold/25 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#5c4a24]">
-                          {requiredPlan === "pro" ? dictionary.paywall.lockedBadgePro : dictionary.paywall.lockedBadgeAvanzado}
+                      {active ? (
+                        <span className="text-[18px] text-[#8a7a4e]">{"\u2713"}</span>
+                      ) : locked && requiredPlan ? (
+                        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-dusty-gold/16 bg-white/75 text-[14px] text-[#8a7a4e]">
+                          {"\ud83d\udd12"}
                         </span>
                       ) : null}
                     </button>
                   );
                 })}
+                </div>
               </div>
             </div>
           ) : null}
