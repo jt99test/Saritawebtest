@@ -8,7 +8,6 @@ import type { User } from "@supabase/supabase-js";
 import { AccountButton } from "@/components/auth/account-button";
 import { LanguageSelector } from "@/components/i18n/language-selector";
 import { setStoredLocale, useStoredLocale } from "@/components/i18n/use-stored-locale";
-import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { showNotice } from "@/components/ui/notice-provider";
 import { PrimaryButton } from "@/components/ui/primary-button";
@@ -113,10 +112,8 @@ export function HomePage({ moonStatus }: HomePageProps) {
 
   return (
     <main className="sarita-home-atmosphere premium-noise relative isolate min-h-screen overflow-hidden sm:pb-0">
-      <AtmosphericBackground variant="page" />
-
       <section className="relative isolate min-h-screen overflow-hidden">
-        <div className="sarita-solar-system pointer-events-none absolute inset-x-0 top-0 -z-10 h-[105svh] overflow-hidden">
+        <div className="sarita-solar-system pointer-events-none absolute inset-x-0 top-0 z-0 h-[118svh] overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,250,240,0.08),transparent_22rem),radial-gradient(circle_at_74%_56%,rgba(80,93,196,0.18),transparent_18rem)]" />
           <div className="absolute left-1/2 top-[43%] h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_32%_28%,#fff4b0,#d8a83d_44%,rgba(216,168,61,0.16)_68%,transparent_72%)] shadow-[0_0_50px_rgba(215,189,106,0.42),0_0_120px_rgba(122,75,255,0.18)] sm:h-28 sm:w-28" />
           <div className="sarita-solar-orbit h-[15rem] w-[15rem] sm:h-[23rem] sm:w-[23rem]">
@@ -132,7 +129,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <span className="sarita-solar-planet bottom-28 right-24 h-3 w-3 bg-[#c06fb1] text-[#c06fb1]" />
           </div>
         </div>
-        <Container className="relative flex min-h-screen flex-col px-4 pb-5 pt-[calc(env(safe-area-inset-top)+1rem)] sm:pb-10 sm:pt-6">
+        <Container className="relative z-10 flex min-h-screen flex-col px-4 pb-5 pt-[calc(env(safe-area-inset-top)+1rem)] sm:pb-10 sm:pt-6">
           <div className="sarita-mobile-constellation-header flex items-center justify-between sm:hidden">
             <button
               type="button"
