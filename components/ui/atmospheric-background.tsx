@@ -56,6 +56,23 @@ export function AtmosphericBackground({ variant }: AtmosphericBackgroundProps) {
           aria-hidden="true"
           className="sarita-page-atmosphere-layer pointer-events-none absolute inset-0"
         />
+        <div
+          aria-hidden="true"
+          className="sarita-page-color-wash pointer-events-none absolute inset-0"
+        />
+        <div
+          aria-hidden="true"
+          className="sarita-zodiac-field pointer-events-none absolute inset-0 overflow-hidden"
+        >
+          <span>♈</span>
+          <span>♉</span>
+          <span>♊</span>
+          <span>♋</span>
+          <span>♌</span>
+          <span>♍</span>
+          <span>♎</span>
+          <span>♏</span>
+        </div>
         <DriftLayer
           className="pointer-events-none absolute inset-[-6%] bg-cover bg-center opacity-[0.06] saturate-[0.6] contrast-[0.86]"
           style={{ backgroundImage: `url("${nebulaTextureUrl}")` }}

@@ -175,12 +175,50 @@ h6 {
   }
 }
 
+@keyframes sarita-glow-breathe {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes sarita-symbol-float {
+  0%,
+  100% {
+    opacity: 0.12;
+    transform: translate3d(0, 0, 0) rotate(-6deg);
+  }
+
+  50% {
+    opacity: 0.24;
+    transform: translate3d(0.75rem, -1rem, 0) rotate(4deg);
+  }
+}
+
 .sarita-cosmic-shell {
   background:
     radial-gradient(circle at 80% 8%, rgba(81, 70, 156, 0.42), transparent 34rem),
     radial-gradient(circle at 6% 34%, rgba(150, 70, 168, 0.24), transparent 26rem),
     linear-gradient(180deg, #070713 0%, #0c0820 42%, #070611 100%);
   color: #fffaf0;
+}
+
+.sarita-premium-card {
+  background:
+    radial-gradient(circle at 16% 0%, rgba(255, 250, 240, 0.98), transparent 13rem),
+    radial-gradient(circle at 84% 8%, rgba(215, 189, 106, 0.1), transparent 12rem),
+    linear-gradient(180deg, rgba(255, 252, 245, 0.92), rgba(240, 233, 221, 0.84));
+  border-color: rgba(111, 90, 42, 0.16);
+  box-shadow:
+    0 18px 44px rgba(30, 26, 46, 0.12),
+    0 0 34px rgba(255, 250, 240, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
 }
 
 .sarita-glass-panel {
@@ -271,10 +309,87 @@ h6 {
 
 .sarita-page-atmosphere-layer {
   background:
-    radial-gradient(circle at 18% 0%, rgba(31, 22, 54, 0.14), transparent 26rem),
-    radial-gradient(circle at 88% 4%, rgba(111, 90, 42, 0.13), transparent 20rem),
-    radial-gradient(circle at 50% 22rem, rgba(117, 83, 100, 0.13), transparent 30rem),
-    linear-gradient(180deg, #e9e3db 0, #d9d0cc 18rem, #f5f0e6 42rem, #ede7d9 100%);
+    radial-gradient(circle at 16% 0%, rgba(43, 30, 78, 0.18), transparent 24rem),
+    radial-gradient(circle at 86% 5%, rgba(196, 122, 154, 0.16), transparent 20rem),
+    radial-gradient(circle at 52% 20rem, rgba(90, 120, 190, 0.11), transparent 28rem),
+    radial-gradient(circle at 18% 36rem, rgba(215, 189, 106, 0.16), transparent 26rem),
+    linear-gradient(180deg, #e5ded9 0, #d1c7cc 15rem, #eee6dc 34rem, #f5f0e6 58rem, #ede7d9 100%);
+}
+
+.sarita-page-color-wash {
+  animation: sarita-glow-breathe 12s ease-in-out infinite;
+  background:
+    radial-gradient(circle at 82% 18%, rgba(198, 84, 178, 0.16), transparent 11rem),
+    radial-gradient(circle at 16% 28%, rgba(86, 112, 202, 0.13), transparent 13rem),
+    radial-gradient(circle at 70% 54%, rgba(215, 189, 106, 0.13), transparent 16rem),
+    linear-gradient(135deg, rgba(255, 250, 240, 0), rgba(255, 250, 240, 0.24) 46%, rgba(255, 250, 240, 0));
+  mix-blend-mode: multiply;
+}
+
+.sarita-zodiac-field span {
+  animation: sarita-symbol-float 15s ease-in-out infinite;
+  color: rgba(72, 55, 111, 0.5);
+  font-family: var(--font-bodoni), serif;
+  font-size: clamp(2rem, 7vw, 4.75rem);
+  line-height: 1;
+  position: absolute;
+  text-shadow:
+    0 0 18px rgba(255, 250, 240, 0.72),
+    0 0 34px rgba(122, 75, 255, 0.14);
+}
+
+.sarita-zodiac-field span:nth-child(1) {
+  left: 7%;
+  top: 9rem;
+}
+
+.sarita-zodiac-field span:nth-child(2) {
+  animation-delay: -5s;
+  color: rgba(111, 90, 42, 0.48);
+  right: 9%;
+  top: 17rem;
+}
+
+.sarita-zodiac-field span:nth-child(3) {
+  animation-delay: -9s;
+  color: rgba(88, 109, 185, 0.42);
+  left: 78%;
+  top: 34rem;
+}
+
+.sarita-zodiac-field span:nth-child(4) {
+  animation-delay: -2s;
+  color: rgba(186, 93, 145, 0.38);
+  left: 4%;
+  top: 50rem;
+}
+
+.sarita-zodiac-field span:nth-child(5) {
+  animation-delay: -7s;
+  color: rgba(111, 90, 42, 0.42);
+  right: 15%;
+  top: 68rem;
+}
+
+.sarita-zodiac-field span:nth-child(6) {
+  animation-delay: -12s;
+  color: rgba(72, 55, 111, 0.36);
+  left: 12%;
+  top: 88rem;
+}
+
+.sarita-zodiac-field span:nth-child(7) {
+  animation-delay: -4s;
+  color: rgba(88, 109, 185, 0.34);
+  right: 8%;
+  top: 110rem;
+}
+
+.sarita-zodiac-field span:nth-child(8) {
+  animation-delay: -10s;
+  color: rgba(186, 93, 145, 0.32);
+  left: 62%;
+  top: 132rem;
 }
 
 .sarita-home-atmosphere {
