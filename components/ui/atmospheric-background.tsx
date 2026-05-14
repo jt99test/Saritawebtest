@@ -69,7 +69,7 @@ export function AtmosphericBackground({ variant }: AtmosphericBackgroundProps) {
           <span />
         </div>
         <DriftLayer
-          className="pointer-events-none absolute inset-[-6%] bg-cover bg-center opacity-[0.08] saturate-[0.78] contrast-[0.92]"
+          className="pointer-events-none absolute inset-[-6%] bg-cover bg-center opacity-[0.035] saturate-[0.75] contrast-[0.9]"
           style={{ backgroundImage: `url("${nebulaTextureUrl}")` }}
           animate={{
             scale: [1.03, 1.08, 1.04, 1.03],
@@ -84,7 +84,7 @@ export function AtmosphericBackground({ variant }: AtmosphericBackgroundProps) {
           }}
         />
         <DriftLayer
-          className="pointer-events-none absolute inset-0 opacity-[0.13] mix-blend-multiply"
+          className="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-screen"
           style={starfieldStyle}
           animate={{
             opacity: [0.06, 0.09, 0.07],
@@ -117,7 +117,7 @@ export function AtmosphericBackground({ variant }: AtmosphericBackgroundProps) {
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(30,26,46,0.06),rgba(30,26,46,0.025)_38%,rgba(255,250,240,0)_100%)]"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(7,7,19,0.34),rgba(16,13,34,0.18)_24rem,rgba(255,250,240,0)_62rem)]"
         />
         <div
           aria-hidden="true"

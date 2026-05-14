@@ -66,12 +66,12 @@ h6 {
 
 .premium-noise::after {
   background-image:
-    radial-gradient(circle at 18% 22%, rgba(0, 0, 0, 0.08) 0, transparent 1px),
-    radial-gradient(circle at 82% 64%, rgba(0, 0, 0, 0.055) 0, transparent 1px);
+    radial-gradient(circle at 18% 22%, rgba(255, 250, 240, 0.1) 0, transparent 1px),
+    radial-gradient(circle at 82% 64%, rgba(215, 189, 106, 0.06) 0, transparent 1px);
   background-size: 180px 180px, 260px 260px;
   content: "";
   inset: 0;
-  opacity: 0.12;
+  opacity: 0.08;
   pointer-events: none;
   position: absolute;
 }
@@ -211,14 +211,14 @@ h6 {
 
 .sarita-premium-card {
   background:
-    radial-gradient(circle at 16% 0%, rgba(255, 250, 240, 0.98), transparent 13rem),
-    radial-gradient(circle at 84% 8%, rgba(215, 189, 106, 0.16), transparent 12rem),
-    linear-gradient(180deg, rgba(255, 252, 245, 0.95), rgba(236, 228, 216, 0.88));
-  border-color: rgba(111, 90, 42, 0.2);
+    radial-gradient(circle at 16% 0%, rgba(255, 250, 240, 1), transparent 13rem),
+    radial-gradient(circle at 84% 8%, rgba(215, 189, 106, 0.2), transparent 12rem),
+    linear-gradient(180deg, rgba(255, 252, 245, 0.97), rgba(236, 228, 216, 0.9));
+  border-color: rgba(255, 250, 240, 0.48);
   box-shadow:
-    0 20px 52px rgba(12, 10, 26, 0.18),
-    0 0 42px rgba(255, 250, 240, 0.34),
-    0 0 54px rgba(111, 90, 42, 0.08),
+    0 24px 62px rgba(12, 10, 26, 0.24),
+    0 0 50px rgba(255, 250, 240, 0.46),
+    0 0 70px rgba(215, 189, 106, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.82);
 }
 
@@ -310,30 +310,33 @@ h6 {
 
 .sarita-page-atmosphere-layer {
   background:
-    radial-gradient(ellipse at 50% 20rem, rgba(255, 250, 240, 0.86) 0, rgba(245, 240, 230, 0.68) 17rem, rgba(245, 240, 230, 0.28) 32rem, transparent 49rem),
-    radial-gradient(circle at 16% 4rem, rgba(82, 72, 146, 0.36), transparent 19rem),
-    radial-gradient(circle at 86% 8rem, rgba(196, 122, 154, 0.24), transparent 17rem),
-    radial-gradient(circle at 72% 34rem, rgba(215, 189, 106, 0.2), transparent 22rem),
-    linear-gradient(180deg, #090916 0, #171229 14rem, #2c243e 30rem, #655b67 48rem, #d2c8ba 70rem, #f5f0e6 94rem, #ede7d9 100%);
+    radial-gradient(ellipse at 50% 22rem, rgba(255, 250, 240, 0.88) 0, rgba(245, 240, 230, 0.64) 14rem, rgba(245, 240, 230, 0.2) 25rem, transparent 38rem),
+    radial-gradient(ellipse at 50% 58rem, rgba(255, 250, 240, 0.7) 0, rgba(245, 240, 230, 0.52) 18rem, rgba(245, 240, 230, 0.18) 34rem, transparent 50rem),
+    radial-gradient(circle at 14% 7rem, rgba(82, 72, 146, 0.48), transparent 20rem),
+    radial-gradient(circle at 88% 10rem, rgba(122, 75, 255, 0.3), transparent 18rem),
+    radial-gradient(circle at 68% 34rem, rgba(215, 189, 106, 0.26), transparent 22rem),
+    radial-gradient(circle at 12% 48rem, rgba(86, 112, 202, 0.2), transparent 24rem),
+    linear-gradient(180deg, #070713 0, #0e0c20 12rem, #19142c 28rem, #2c243e 46rem, #5a5260 68rem, #d2c8ba 92rem, #f5f0e6 118rem, #ede7d9 100%);
 }
 
 .sarita-page-color-wash {
   animation: sarita-glow-breathe 12s ease-in-out infinite;
   background:
-    radial-gradient(circle at 50% 18rem, rgba(215, 189, 106, 0.3), transparent 10rem),
-    radial-gradient(circle at 82% 16rem, rgba(122, 75, 255, 0.26), transparent 14rem),
-    radial-gradient(circle at 16% 30rem, rgba(86, 112, 202, 0.22), transparent 16rem),
-    radial-gradient(circle at 70% 52rem, rgba(215, 189, 106, 0.18), transparent 18rem);
+    radial-gradient(circle at 50% 18rem, rgba(215, 189, 106, 0.46), transparent 9rem),
+    radial-gradient(circle at 82% 16rem, rgba(122, 75, 255, 0.38), transparent 14rem),
+    radial-gradient(circle at 16% 30rem, rgba(86, 112, 202, 0.3), transparent 16rem),
+    radial-gradient(circle at 70% 52rem, rgba(215, 189, 106, 0.26), transparent 18rem),
+    radial-gradient(circle at 42% 72rem, rgba(255, 250, 240, 0.34), transparent 18rem);
   mix-blend-mode: screen;
 }
 
 .sarita-page-orbit-field span {
   animation: sarita-orbit-drift 18s ease-in-out infinite;
-  border: 1px solid rgba(255, 250, 240, 0.16);
+  border: 1px solid rgba(255, 250, 240, 0.22);
   border-radius: 9999px;
   box-shadow:
-    0 0 34px rgba(255, 250, 240, 0.08),
-    inset 0 0 42px rgba(122, 75, 255, 0.1);
+    0 0 46px rgba(255, 250, 240, 0.1),
+    inset 0 0 52px rgba(122, 75, 255, 0.14);
   height: 24rem;
   left: 50%;
   position: absolute;
@@ -343,7 +346,7 @@ h6 {
 
 .sarita-page-orbit-field span:nth-child(2) {
   animation-delay: -6s;
-  border-color: rgba(215, 189, 106, 0.18);
+  border-color: rgba(215, 189, 106, 0.24);
   height: 34rem;
   top: 22rem;
   width: 58rem;
@@ -351,7 +354,7 @@ h6 {
 
 .sarita-page-orbit-field span:nth-child(3) {
   animation-delay: -12s;
-  border-color: rgba(136, 132, 214, 0.16);
+  border-color: rgba(136, 132, 214, 0.22);
   height: 44rem;
   top: 46rem;
   width: 72rem;
