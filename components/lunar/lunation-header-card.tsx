@@ -29,12 +29,12 @@ export function LunationHeaderCard({
   )}'`;
 
   return (
-    <section className="mx-auto max-w-[720px] border-l border-dusty-gold/18 pl-4 text-left sm:pl-7">
-      <p className="text-xs uppercase tracking-[0.22em] text-[#5c4a24]">{signLabel}</p>
-      <h2 className="mt-1 font-serif text-[48px] font-normal leading-none text-ivory sm:text-[72px]">
+    <section className="sarita-glass-panel mx-auto max-w-[720px] rounded-[1.65rem] px-5 py-6 text-left sm:px-7">
+      <p className="sarita-section-label">{signLabel}</p>
+      <h2 className="sarita-sheen mt-1 inline-block font-serif text-[48px] font-normal leading-none text-[#fffaf0] sm:text-[72px]">
         {degreeLabel}
       </h2>
-      <p className="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-xs uppercase tracking-[0.14em] text-[#3a3048] [font-variant-numeric:tabular-nums]">
+      <p className="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-xs uppercase tracking-[0.14em] text-[#d7d0ff]/70 [font-variant-numeric:tabular-nums]">
         <span>{`${dictionary.result.fields.house} ${metadata.activatedHouse}`}</span>
         <span aria-hidden="true">·</span>
         <span>{metadata.areaOfLife}</span>

@@ -41,12 +41,12 @@ const HOUSE_NUMBER_RADIUS = 208;
 const ASPECT_RADIUS = 134;
 
 const SYMBOLIC_ASPECT_COLORS: Record<AspectId, string> = {
-  conjunction: "rgba(220,195,120,0.95)",
-  opposition: "rgba(220,110,110,0.85)",
-  square: "rgba(220,110,110,0.85)",
-  trine: "rgba(140,158,240,0.85)",
-  sextile: "rgba(140,158,240,0.75)",
-  quincunx: "rgba(200,200,215,0.55)",
+  conjunction: "rgba(232,197,71,0.95)",
+  opposition: "rgba(245,170,83,0.88)",
+  square: "rgba(229,93,128,0.86)",
+  trine: "rgba(100,155,255,0.86)",
+  sextile: "rgba(84,210,196,0.78)",
+  quincunx: "rgba(186,145,255,0.62)",
 };
 
 const ASPECT_SYMBOLS: Record<AspectId, string> = {
@@ -536,6 +536,8 @@ function SymbolicAspects({
             }}
           >
             <line
+              className="sarita-aspect-draw"
+              pathLength={1}
               x1={round(x1)}
               y1={round(y1)}
               x2={round(x2)}

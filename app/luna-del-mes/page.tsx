@@ -65,22 +65,23 @@ export default function LunaDelMesRoutePage() {
   );
 
   return (
-    <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
+    <main className="premium-noise sarita-cosmic-shell sarita-comet-field relative isolate min-h-screen overflow-hidden">
       <AtmosphericBackground variant="page" />
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_8%,rgba(80,80,190,0.22),transparent_22rem),linear-gradient(180deg,rgba(7,7,19,0.18),rgba(7,7,19,0.86))]" />
 
       <section className="relative min-h-[100svh] py-4 sm:min-h-screen sm:py-6">
         <Container className="relative flex min-h-[100svh] flex-col sm:min-h-screen">
           <div className="mb-3 flex items-center justify-between gap-3 pt-1 sm:mb-4 sm:gap-4">
             <Link
               href="/"
-              className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-ivory sm:text-xs sm:tracking-[0.28em]"
+              className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#d7bd6a]/78 transition hover:text-[#fffaf0] sm:text-xs sm:tracking-[0.28em]"
             >
               {dictionary.result.back}
             </Link>
 
             <Link
               href="/resultado"
-              className="text-right text-[10px] font-medium uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-[#3a3048] sm:text-xs sm:tracking-[0.28em]"
+              className="text-right text-[10px] font-medium uppercase tracking-[0.18em] text-[#d7bd6a]/78 transition hover:text-[#fffaf0] sm:text-xs sm:tracking-[0.28em]"
             >
               {dictionary.standalonePages.yourChart}
             </Link>

@@ -24,7 +24,7 @@ export function LunationReadingCard({
     <section className="mx-auto max-w-[680px]">
       <div className="mt-6">
         {loading ? (
-          <PremiumCard className="mx-auto animate-pulse p-5">
+          <PremiumCard className="sarita-glass-panel mx-auto animate-pulse p-5">
             <div className="mb-4 h-[3px] w-12 rounded-full bg-dusty-gold/50" />
             <div className="h-3 w-24 rounded bg-black/8" />
             <div className="mt-3 h-6 w-3/4 rounded bg-black/8" />
@@ -36,12 +36,12 @@ export function LunationReadingCard({
           </PremiumCard>
         ) : error ? (
           <div className="mt-4 space-y-4 text-left">
-            <PremiumCard className="p-5">
+            <PremiumCard className="sarita-glass-panel p-5">
               <div className="mb-4 h-[3px] w-12 rounded-full bg-dusty-gold/50" />
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+              <p className="sarita-section-label">
                 {dictionary.lunar.personalizedReading}
               </p>
-              <p className="mt-3 font-serif text-[17px] leading-8 text-[#3a3048]">{error}</p>
+              <p className="mt-3 font-serif text-[17px] leading-8 text-[#d7d0ff]/78">{error}</p>
             </PremiumCard>
             <PrimaryButton
               type="button"
@@ -53,19 +53,19 @@ export function LunationReadingCard({
             </PrimaryButton>
           </div>
         ) : prose ? (
-          <PremiumCard className="p-5 sm:p-6">
+          <PremiumCard className="sarita-glass-panel p-5 sm:p-6">
             <div className="mb-4 h-[3px] w-12 rounded-full bg-dusty-gold/50" />
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+            <p className="sarita-section-label">
               {dictionary.lunar.personalizedReading}
             </p>
             <RenderedReading
               text={prose}
-              className="mx-auto mt-4 max-w-none text-left font-serif text-[17px] leading-[1.72] text-[#1e1a2e]"
+              className="mx-auto mt-4 max-w-none text-left font-serif text-[17px] leading-[1.72] text-[#fffaf0]/88"
               paragraphClassName="mb-4"
             />
           </PremiumCard>
         ) : (
-          <PremiumCard className="mx-auto animate-pulse p-5">
+          <PremiumCard className="sarita-glass-panel mx-auto animate-pulse p-5">
             <div className="mb-4 h-[3px] w-12 rounded-full bg-dusty-gold/50" />
             <div className="h-3 w-24 rounded bg-black/8" />
             <div className="mt-3 h-6 w-3/4 rounded bg-black/8" />

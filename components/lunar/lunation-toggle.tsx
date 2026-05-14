@@ -77,12 +77,12 @@ export function LunationToggle({
   return (
     <>
       {hasExtraLunations ? (
-        <p className="mb-3 text-center text-[10px] font-medium uppercase tracking-[0.2em] text-[#8a7a4e] md:hidden">
+        <p className="mb-3 text-center text-[10px] font-medium uppercase tracking-[0.2em] text-[#d7bd6a]/82 md:hidden">
           {swipeHintLabel(dictionary)} {"\u2192"}
         </p>
       ) : null}
       <div className={hasExtraLunations
-        ? "flex snap-x snap-mandatory overflow-x-auto gap-3 px-5 pb-2 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden md:flex-wrap md:snap-none md:overflow-x-visible md:items-start md:justify-center md:gap-8 lg:gap-12"
+        ? "flex snap-x snap-mandatory overflow-x-auto gap-3 px-5 pb-4 pt-2 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden md:flex-wrap md:snap-none md:overflow-x-visible md:items-start md:justify-center md:gap-8 lg:gap-12"
         : "flex flex-wrap items-start justify-center gap-8 min-[420px]:flex-nowrap md:gap-14 lg:gap-20"}
       >
         {options.map((option) => {
@@ -101,8 +101,8 @@ export function LunationToggle({
                   ? "group flex w-[min(38vw,148px)] flex-shrink-0 snap-center flex-col items-center p-2 text-center outline-none transition duration-[400ms] ease-out focus-visible:ring-2 focus-visible:ring-dusty-gold/70 focus-visible:ring-offset-4 focus-visible:ring-offset-cosmic-950 md:flex-shrink md:w-[126px] lg:w-[150px]"
                   : "group flex w-[min(40vw,140px)] flex-col items-center p-3 text-center outline-none transition duration-[400ms] ease-out focus-visible:ring-2 focus-visible:ring-dusty-gold/70 focus-visible:ring-offset-4 focus-visible:ring-offset-cosmic-950 lg:w-[180px]",
                 active
-                  ? "scale-100 cursor-pointer border border-dusty-gold/48 bg-dusty-gold/22 text-dusty-gold opacity-100 shadow-[0_8px_22px_rgba(181,163,110,0.22)]"
-                  : "scale-90 cursor-pointer text-[#3a3048] opacity-70 grayscale saturate-0 hover:scale-95 hover:text-ivory/80 hover:opacity-80 hover:grayscale-0 hover:saturate-100",
+                  ? "scale-100 cursor-pointer border border-[#d7bd6a]/62 bg-[#d7bd6a]/12 text-[#d7bd6a] opacity-100 shadow-[0_0_28px_rgba(130,84,255,0.18),0_8px_22px_rgba(181,163,110,0.18)]"
+                  : "scale-90 cursor-pointer text-[#fffaf0]/48 opacity-70 grayscale saturate-0 hover:scale-95 hover:text-[#fffaf0]/78 hover:opacity-85 hover:grayscale-0 hover:saturate-100",
               ].join(" ")}
             >
               <LunarMedallion
@@ -113,7 +113,7 @@ export function LunationToggle({
               <span
                 className={[
                   "mt-4 font-serif text-[20px] font-normal leading-tight transition-colors duration-[400ms] lg:text-[23px]",
-                  active ? "text-ivory" : "text-[#3a3048] group-hover:text-[#3a3048]",
+                  active ? "text-[#fffaf0]" : "text-[#fffaf0]/52 group-hover:text-[#fffaf0]/72",
                 ].join(" ")}
               >
                 {option.label}
@@ -121,7 +121,7 @@ export function LunationToggle({
               <span
                 className={[
                   "mt-2 font-serif text-[13px] italic leading-tight transition-colors duration-[400ms]",
-                  active ? "text-[#5c4a24]" : "text-[#3a3048] group-hover:text-[#5c4a24]",
+                  active ? "text-[#d7bd6a]" : "text-[#d7d0ff]/48 group-hover:text-[#d7bd6a]/82",
                 ].join(" ")}
               >
                 {option.date}

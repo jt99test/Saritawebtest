@@ -29,16 +29,16 @@ export function LunarRoutineCta({ metadata, dictionary }: LunarRoutineCtaProps) 
   });
 
   return (
-    <section className="mx-auto max-w-[720px] border-y border-dusty-gold/16 py-6 text-left">
-      <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
+    <section className="sarita-glass-panel mx-auto max-w-[720px] rounded-[1.65rem] px-5 py-6 text-left sm:px-7">
+      <p className="sarita-section-label">
         {copy.lunarRoutineEyebrow}
       </p>
       <div className="mt-3 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
         <div>
-          <h3 className="font-serif text-[30px] font-normal leading-tight text-ivory sm:text-[36px]">
+          <h3 className="sarita-sheen inline-block font-serif text-[30px] font-normal leading-tight text-[#fffaf0] sm:text-[36px]">
             {formatTemplate(copy.lunarRoutineTitle, { element: "" }).trim()}
           </h3>
-          <p className="mt-3 max-w-[520px] text-sm leading-7 text-[#3a3048]">
+          <p className="mt-3 max-w-[520px] text-sm leading-7 text-[#fffaf0]/72">
             {copy.lunarRoutineBody}
           </p>
         </div>

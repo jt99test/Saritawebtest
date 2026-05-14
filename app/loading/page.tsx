@@ -23,6 +23,32 @@ import { dictionaries } from "@/lib/i18n";
 
 const chartGenerationPromises = new Map<string, Promise<ChartActionResult>>();
 
+function SolarSystemLoader() {
+  const orbits = [
+    { size: "h-24 w-24", duration: "10s", planet: "h-2 w-2 bg-[#64d2c4]" },
+    { size: "h-36 w-36", duration: "15s", planet: "h-2.5 w-2.5 bg-[#d7bd6a]" },
+    { size: "h-48 w-48", duration: "22s", planet: "h-2 w-2 bg-[#e55d80]" },
+  ];
+
+  return (
+    <div className="relative h-56 w-56" aria-hidden="true">
+      <div className="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_32%_28%,#fffaf0,#f2d376_48%,#7a4bff_100%)] shadow-[0_0_40px_rgba(242,211,118,0.55)]" />
+      {orbits.map((orbit) => (
+        <div
+          key={orbit.size}
+          className={[
+            "sarita-orbit absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#d7d0ff]/18",
+            orbit.size,
+          ].join(" ")}
+          style={{ animationDuration: orbit.duration }}
+        >
+          <span className={`absolute left-1/2 top-0 -translate-x-1/2 rounded-full ${orbit.planet} shadow-[0_0_16px_currentColor]`} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function getChartGenerationPromise(rawDraft: string, draft: FormValues) {
   const existing = chartGenerationPromises.get(rawDraft);
 
@@ -114,7 +140,7 @@ export default function LoadingPage() {
   }, [dictionary.loading.steps.length, dictionary.standalonePages.loadingTimeout, router]);
 
   return (
-    <main className="relative isolate min-h-screen overflow-hidden bg-cosmic-950">
+    <main className="sarita-cosmic-shell sarita-comet-field relative isolate min-h-screen overflow-hidden">
       <AtmosphericBackground variant="page" />
       <Image
         src={illustrations.scenes.landing}
@@ -124,18 +150,20 @@ export default function LoadingPage() {
         className="cosmos-slow-zoom pointer-events-none object-cover opacity-50 saturate-[0.78]"
         sizes="100vw"
       />
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04),rgba(0,0,0,0.04)_55%,#f5f0e6)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(7,7,19,0.2),rgba(7,7,19,0.82)_55%,#070713)]" />
 
       <section className="relative min-h-screen py-8 sm:py-10">
         <Container className="relative flex min-h-screen items-center justify-center">
           <Reveal mode="immediate" className="mx-auto w-full max-w-[720px] text-center">
             <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center gap-6 sm:min-h-0">
-              <p className="text-xs font-medium uppercase tracking-[0.28em] text-[#3a3048]">
+              <p className="text-xs font-medium uppercase tracking-[0.28em] text-[#d7bd6a]/82">
                 {dictionary.brand.name}
               </p>
 
+              <SolarSystemLoader />
+
               <div className="space-y-4" aria-live="polite">
-                <p className="font-serif text-3xl leading-tight text-ivory sm:text-4xl">
+                <p className="sarita-sheen inline-block font-serif text-3xl leading-tight text-[#fffaf0] sm:text-4xl">
                   {dictionary.loading.steps[stepIndex] ?? dictionary.standalonePages.loadingFallback}
                 </p>
                 <div className="flex items-center justify-center gap-2" aria-hidden="true">

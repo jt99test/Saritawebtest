@@ -30,13 +30,13 @@ export function PracticalActions({ actions, dictionary }: PracticalActionsProps)
     <Section
       tone="tinted"
       withContainer={false}
-      className="mx-auto max-w-[720px] rounded-[1.8rem] px-5 py-7 pb-10 lg:pb-12 sm:px-7"
+      className="sarita-glass-panel mx-auto max-w-[720px] rounded-[1.8rem] px-5 py-7 pb-10 lg:pb-12 sm:px-7"
     >
       <div className="text-center">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-dusty-gold/82">
+        <p className="sarita-section-label">
           {copy.eyebrow}
         </p>
-        <h3 className="mt-1.5 font-serif text-[32px] font-normal leading-tight text-ivory">
+        <h3 className="sarita-sheen mt-1.5 inline-block font-serif text-[32px] font-normal leading-tight text-[#fffaf0]">
           {copy.title}
         </h3>
       </div>
@@ -46,17 +46,17 @@ export function PracticalActions({ actions, dictionary }: PracticalActionsProps)
           {ACTION_CARDS.map((card, index) => (
             <div
               key={card.id}
-              className="relative border-t-[0.5px] border-dusty-gold/12 py-6 text-left first:border-t-0 first:pt-0 last:border-b-[0.5px]"
+              className="relative border-t-[0.5px] border-[#d7bd6a]/16 py-6 text-left first:border-t-0 first:pt-0 last:border-b-[0.5px]"
             >
-              <p className="text-[12px] uppercase tracking-[0.16em] text-[#5c4a24]">
+              <p className="text-[12px] uppercase tracking-[0.16em] text-[#d7bd6a]">
                 {copy[card.labelKey]}
               </p>
-              <p className="mt-3 pr-10 font-serif text-[21px] font-normal leading-[1.5] text-ivory">
+              <p className="mt-3 pr-10 font-serif text-[21px] font-normal leading-[1.5] text-[#fffaf0]/90">
                 {actions[card.id]}
               </p>
               <p
                 className={[
-                  "absolute right-0 text-[12px] text-[#3a3048]/30 [font-variant-numeric:tabular-nums]",
+                  "absolute right-0 text-[12px] text-[#d7d0ff]/28 [font-variant-numeric:tabular-nums]",
                   index === 0 ? "top-0" : "top-6",
                 ].join(" ")}
               >
@@ -66,7 +66,7 @@ export function PracticalActions({ actions, dictionary }: PracticalActionsProps)
           ))}
         </div>
       ) : (
-        <p className="mx-auto mt-8 max-w-[440px] text-center font-serif text-[17px] italic leading-[1.7] text-[#3a3048]/72">
+        <p className="mx-auto mt-8 max-w-[440px] text-center font-serif text-[17px] italic leading-[1.7] text-[#d7d0ff]/72">
           {copy.empty}
         </p>
       )}

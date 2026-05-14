@@ -168,9 +168,12 @@ function degreeLabel(point: ChartPoint) {
 }
 
 function aspectStroke(type: string) {
-  if (type === "trine" || type === "sextile") return "rgba(74,90,154,0.7)";
-  if (type === "square" || type === "opposition") return "rgba(170,71,66,0.68)";
-  return "rgba(138,122,78,0.72)";
+  if (type === "trine") return "rgba(100,155,255,0.72)";
+  if (type === "sextile") return "rgba(84,210,196,0.68)";
+  if (type === "square") return "rgba(229,93,128,0.72)";
+  if (type === "opposition") return "rgba(245,170,83,0.72)";
+  if (type === "quincunx") return "rgba(186,145,255,0.6)";
+  return "rgba(232,197,71,0.78)";
 }
 
 function DegreeTickRing({ ascendant }: { ascendant: number }) {
@@ -479,7 +482,19 @@ export function BiWheelChart({
             if (!from || !to) return null;
             const start = pointAtRadius(172, from.longitude, ascendant);
             const end = pointAtRadius(172, to.longitude, ascendant);
-            return <line key={aspect.id} x1={start.x} y1={start.y} x2={end.x} y2={end.y} stroke={aspectStroke(aspect.type)} strokeWidth="1.1" />;
+            return (
+              <line
+                key={aspect.id}
+                className="sarita-aspect-draw"
+                pathLength={1}
+                x1={start.x}
+                y1={start.y}
+                x2={end.x}
+                y2={end.y}
+                stroke={aspectStroke(aspect.type)}
+                strokeWidth="1.1"
+              />
+            );
           })}
           {showOuterAspects ? outerChart?.aspects.slice(0, 32).map((aspect) => {
             const from = outerPoints.find((point) => point.id === aspect.from);
@@ -490,6 +505,8 @@ export function BiWheelChart({
             return (
               <line
                 key={`outer-${aspect.id}`}
+                className="sarita-aspect-draw"
+                pathLength={1}
                 x1={start.x}
                 y1={start.y}
                 x2={end.x}
@@ -509,6 +526,8 @@ export function BiWheelChart({
             return (
               <line
                 key={`inter-${aspect.pointA}-${aspect.pointB}-${aspect.type}`}
+                className="sarita-aspect-draw"
+                pathLength={1}
                 x1={start.x}
                 y1={start.y}
                 x2={end.x}

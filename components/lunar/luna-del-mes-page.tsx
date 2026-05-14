@@ -383,19 +383,19 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
   return (
     <div className="mx-auto max-w-[1080px] pb-0 pt-5 sm:pt-8 lg:pt-10">
       <div className="mx-auto mb-6 max-w-2xl text-center sm:mb-8">
-        <p className="text-[13px] leading-6 text-[#3a3048] sm:text-sm sm:leading-7">
+        <p className="text-[13px] leading-6 text-[#fffaf0]/68 sm:text-sm sm:leading-7">
           {dictionary.lunar.intro}
         </p>
       </div>
 
       <header className="text-center">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
+        <p className="sarita-section-label">
           {dictionary.lunar.eyebrow}
         </p>
-        <h1 className="mt-1.5 font-serif text-[42px] font-normal leading-none text-ivory sm:text-[52px] lg:text-[68px]">
+        <h1 className="sarita-sheen mx-auto mt-1.5 inline-block font-serif text-[42px] font-normal leading-none text-[#fffaf0] sm:text-[52px] lg:text-[68px]">
           {currentMonth.setLocale(locale).toFormat("LLLL yyyy").toLowerCase()}
         </h1>
-        <p className="mx-auto mt-3 max-w-[480px] font-serif text-[15px] italic leading-7 text-[#3a3048] lg:max-w-[540px]">
+        <p className="mx-auto mt-3 max-w-[480px] font-serif text-[15px] italic leading-7 text-[#d7d0ff]/72 lg:max-w-[540px]">
           {dictionary.lunar.subtitle}
         </p>
 
@@ -424,11 +424,11 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
       </header>
 
       {previewLoading ? (
-        <p className="mt-12 text-center font-serif text-sm italic leading-7 text-[#3a3048]">
+        <p className="mt-12 text-center font-serif text-sm italic leading-7 text-[#fffaf0]/68">
           {dictionary.lunar.calculating}
         </p>
       ) : previewError ? (
-        <p className="mt-12 text-center font-serif text-sm italic leading-7 text-[#3a3048]">
+        <p className="mt-12 text-center font-serif text-sm italic leading-7 text-[#fffaf0]/68">
           {previewError}
         </p>
       ) : selectedMetadata ? (
@@ -472,7 +472,7 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
           </div>
         </div>
       ) : (
-        <p className="mt-12 text-center font-serif text-sm italic leading-7 text-[#3a3048]">
+        <p className="mt-12 text-center font-serif text-sm italic leading-7 text-[#fffaf0]/68">
           {dictionary.lunar.emptyMonth}
         </p>
       )}

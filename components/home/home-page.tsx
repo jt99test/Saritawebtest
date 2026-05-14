@@ -259,7 +259,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                 transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
               />
               <motion.h1
-                className="max-w-[9ch] text-[3.2rem] leading-[0.92] font-medium text-ivory drop-shadow-[0_18px_34px_rgba(0,0,0,0.58)] sm:text-8xl lg:text-[8rem]"
+                className="sarita-sheen max-w-[9ch] text-[3.2rem] leading-[0.92] font-medium text-ivory drop-shadow-[0_18px_34px_rgba(0,0,0,0.58)] sm:text-8xl lg:text-[8rem]"
                 variants={{
                   hidden: { opacity: 0, y: 12 },
                   show: { opacity: 1, y: 0 },
@@ -317,22 +317,22 @@ export function HomePage({ moonStatus }: HomePageProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.35 }}
                 transition={revealTransition}
-                className="overflow-hidden rounded-[2rem] border border-black/16 bg-[#fffaf0]/84 px-5 py-5 shadow-[0_16px_38px_rgba(30,26,46,0.17)] backdrop-blur-sm"
+                className="sarita-glass-panel overflow-hidden rounded-[2rem] px-5 py-5 backdrop-blur-sm"
               >
                 <div className="mb-4 h-px w-16 bg-gradient-to-r from-dusty-gold/70 to-transparent" />
-                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">{moonCopy.eyebrow}</p>
+                <p className="sarita-section-label">{moonCopy.eyebrow}</p>
                 <div className="mt-3 flex items-start justify-between gap-4">
                   <div>
-                    <h2 className="font-serif text-[1.9rem] leading-[1.02] text-[#1e1a2e]">{moonCopy.title}</h2>
-                    <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24]">
+                    <h2 className="font-serif text-[1.9rem] leading-[1.02] text-[#fffaf0]">{moonCopy.title}</h2>
+                    <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#d7bd6a]">
                       {moonPhaseLabel} en {moonSignLabel}
                     </p>
                   </div>
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full border border-dusty-gold/35 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.92),rgba(255,255,255,0.45))] font-serif text-2xl text-[#5c4a24] shadow-[0_10px_24px_rgba(30,26,46,0.08)]">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#d7bd6a]/35 bg-[radial-gradient(circle_at_30%_30%,rgba(255,250,240,0.18),rgba(215,189,106,0.12),rgba(7,7,19,0.68))] font-serif text-2xl text-[#d7bd6a] shadow-[0_0_24px_rgba(122,75,255,0.18)]">
                     ☾
                   </div>
                 </div>
-                <p className="mt-4 text-[13px] leading-[1.75] text-[#342b43]">{moonPhaseDescription}</p>
+                <p className="mt-4 text-[13px] leading-[1.75] text-[#fffaf0]/74">{moonPhaseDescription}</p>
               </motion.section>
 
               <motion.section
@@ -341,11 +341,11 @@ export function HomePage({ moonStatus }: HomePageProps) {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ ...revealTransition, delay: 0.06 }}
-                className="overflow-hidden rounded-[2rem] border border-black/16 bg-[#fffaf0]/84 px-5 py-5 shadow-[0_16px_38px_rgba(30,26,46,0.17)] backdrop-blur-sm"
+                className="sarita-glass-panel overflow-hidden rounded-[2rem] px-5 py-5 backdrop-blur-sm"
               >
                 <div className="mb-4 h-px w-16 bg-gradient-to-r from-dusty-gold/70 to-transparent" />
-                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">{startHereCopy.eyebrow}</p>
-                <h2 className="mt-3 max-w-[12ch] font-serif text-[1.9rem] leading-[1.05] text-[#1e1a2e]">{startHereCopy.title}</h2>
+                <p className="sarita-section-label">{startHereCopy.eyebrow}</p>
+                <h2 className="mt-3 max-w-[12ch] font-serif text-[1.9rem] leading-[1.05] text-[#fffaf0]">{startHereCopy.title}</h2>
                 <div className="mt-5 grid gap-3">
                   {startHereCopy.items.map((item, index) => (
                     <motion.div
@@ -357,15 +357,15 @@ export function HomePage({ moonStatus }: HomePageProps) {
                     >
                       <Link
                         href={item.href}
-                        className="grid grid-cols-[2.5rem_1fr] gap-x-3 rounded-[1.6rem] border border-black/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.38))] px-4 py-4 shadow-[0_8px_22px_rgba(30,26,46,0.06)] transition hover:border-dusty-gold/40 hover:bg-white/72"
+                        className="grid grid-cols-[2.5rem_1fr] gap-x-3 rounded-[1.6rem] border border-[#d7d0ff]/14 bg-[#070713]/28 px-4 py-4 shadow-[0_8px_22px_rgba(0,0,0,0.14)] transition hover:border-[#d7bd6a]/40 hover:bg-[#fffaf0]/8"
                       >
                         <span className="flex h-10 w-10 items-center justify-center rounded-full border border-dusty-gold/30 bg-white/58 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5c4a24]">
                           0{index + 1}
                         </span>
                         <span className="min-w-0">
-                          <span className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-[#3a3048]">{item.title}</span>
-                          <span className="mt-2 block text-[13px] leading-[1.65] text-[#342b43]">{item.description}</span>
-                          <span className="mt-3 inline-block text-[11px] font-semibold uppercase tracking-[0.16em] text-[#5c4a24]">{item.cta}</span>
+                          <span className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-[#fffaf0]/78">{item.title}</span>
+                          <span className="mt-2 block text-[13px] leading-[1.65] text-[#fffaf0]/64">{item.description}</span>
+                          <span className="mt-3 inline-block text-[11px] font-semibold uppercase tracking-[0.16em] text-[#d7bd6a]">{item.cta}</span>
                         </span>
                       </Link>
                     </motion.div>
