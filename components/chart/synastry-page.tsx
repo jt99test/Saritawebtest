@@ -117,7 +117,7 @@ function WheelModeToggle({
 }) {
   return (
     <div className="mx-auto mb-5 max-w-3xl text-center">
-      <div className="inline-flex max-w-full rounded-full border border-black/10 bg-white/80 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
+      <div className="sarita-tab-shell inline-flex max-w-full rounded-full p-1">
         {[
           { id: "all" as const, label: copy.wheelAll },
           { id: "aspected" as const, label: copy.wheelAspected },
@@ -128,7 +128,7 @@ function WheelModeToggle({
             onClick={() => onChange(option.id)}
             className={[
               "rounded-full px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] transition sm:px-4 sm:text-[11px] sm:tracking-[0.2em]",
-              mode === option.id ? "bg-[#1e1a2e] text-[#fffaf0]" : "text-[#1e1a2e] hover:bg-[#1e1a2e]/8",
+              mode === option.id ? "sarita-tab-active" : "text-[#1e1a2e] hover:bg-[#1e1a2e]/8",
             ].join(" ")}
           >
             {option.label}
@@ -520,7 +520,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
           <button
             type="button"
             onClick={() => setFlipped((current) => !current)}
-            className="border border-dusty-gold/30 bg-dusty-gold/[0.06] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:border-dusty-gold/55 hover:bg-dusty-gold/12"
+            className="sarita-night-pill px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] transition hover:border-[#d7bd6a]/60"
           >
             {synastryCopy.flipCharts}
           </button>
@@ -574,8 +574,8 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
                     className={[
                       "border py-2 text-center text-[11px] font-semibold uppercase tracking-[0.2em] transition",
                       active
-                        ? "border-[#1e1a2e] bg-[#1e1a2e] text-[#fffaf0] shadow-[0_10px_24px_rgba(30,26,46,0.16)]"
-                        : "border-black/12 bg-[#fffaf0] text-[#1e1a2e] shadow-[0_4px_14px_rgba(0,0,0,0.04)] hover:border-[#6f5a2a]/55 hover:text-[#5c4a24]",
+                        ? "sarita-tab-active"
+                        : "sarita-tab-inactive",
                     ].join(" ")}
                   >
                     {synastryCopy.layerTitles[layer.id]}
@@ -721,8 +721,8 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
                 className={[
                   "w-full px-4 py-4 text-sm uppercase tracking-[0.18em]",
                   form.gender === option
-                    ? "border-dusty-gold/60 bg-dusty-gold/14 text-[#5c4a24]"
-                    : "border-black/10 bg-white/70 text-[#3a3048]",
+                    ? "sarita-tab-active"
+                    : "sarita-tab-inactive",
                 ].join(" ")}
               >
                 {dictionary.form.genderOptions[option]}

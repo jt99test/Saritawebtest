@@ -15,9 +15,10 @@ import { usePlan } from "@/lib/use-plan";
 
 type AccountButtonProps = {
   compact?: boolean;
+  tone?: "light" | "night";
 };
 
-export function AccountButton({ compact = false }: AccountButtonProps) {
+export function AccountButton({ compact = false, tone = "light" }: AccountButtonProps) {
   const router = useRouter();
   const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
@@ -162,14 +163,19 @@ export function AccountButton({ compact = false }: AccountButtonProps) {
     setMenuOpen(true);
   }
 
+  const compactClassName = tone === "night"
+    ? "sarita-night-pill flex h-10 w-10 items-center justify-center rounded-full text-lg transition"
+    : "flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-[#fffaf0]/70 text-lg text-[#1e1a2e] transition hover:text-[#5c4a24]";
+  const textClassName = tone === "night"
+    ? "max-w-[6.8rem] truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[#fffaf0]/84 transition hover:text-[#d7bd6a] min-[430px]:text-xs min-[430px]:tracking-[0.2em]"
+    : "max-w-[6.8rem] truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[#1e1a2e] transition hover:text-[#5c4a24] min-[430px]:text-xs min-[430px]:tracking-[0.2em]";
+
   if (!user) {
     return (
       <button
         type="button"
         onClick={openAuthModal}
-        className={compact
-          ? "flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-[#fffaf0]/70 text-lg text-[#1e1a2e] transition hover:text-[#5c4a24]"
-          : "max-w-[6.8rem] truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[#1e1a2e] transition hover:text-[#5c4a24] min-[430px]:text-xs min-[430px]:tracking-[0.2em]"}
+        className={compact ? compactClassName : textClassName}
         aria-label={dictionary.auth.signIn}
       >
         {compact ? "♙" : dictionary.auth.signIn}
@@ -194,9 +200,7 @@ export function AccountButton({ compact = false }: AccountButtonProps) {
         }}
         aria-haspopup="menu"
         aria-expanded={menuOpen}
-        className={compact
-          ? "flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-[#fffaf0]/70 text-lg text-[#1e1a2e] transition hover:text-[#5c4a24]"
-          : "max-w-[6.8rem] truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[#1e1a2e] transition hover:text-[#5c4a24] min-[430px]:text-xs min-[430px]:tracking-[0.2em]"}
+        className={compact ? compactClassName : textClassName}
       >
         {compact ? "♙" : dictionary.common.account}
       </button>
@@ -207,27 +211,27 @@ export function AccountButton({ compact = false }: AccountButtonProps) {
           ref={menuRef}
           role="menu"
           onPointerDown={(event) => event.stopPropagation()}
-          className="fixed z-[1000] max-w-[calc(100vw-1.5rem)] border border-black/12 bg-white px-4 py-3 text-right shadow-[0_18px_48px_rgba(0,0,0,0.16)]"
+          className="sarita-menu-panel fixed z-[1000] max-w-[calc(100vw-1.5rem)] px-4 py-3 text-right"
           style={{ top: menuPosition.top, left: menuPosition.left, width: menuPosition.width }}
         >
           <Link
             href="/form"
             onClick={closeMenu}
-            className="block w-full border-b border-black/10 py-2 pb-3 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24] transition hover:text-ivory"
+            className="block w-full border-b border-black/10 py-2 pb-3 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24] transition hover:text-[#1e1a2e]"
           >
             {dictionary.common.newReading}
           </Link>
           <Link
             href="/lecturas"
             onClick={closeMenu}
-            className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-ivory"
+            className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-[#1e1a2e]"
           >
             {dictionary.common.viewReadings}
           </Link>
           <Link
             href="/cuenta"
             onClick={closeMenu}
-            className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-ivory"
+            className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-[#1e1a2e]"
           >
             {dictionary.nav.account}
           </Link>
@@ -235,7 +239,7 @@ export function AccountButton({ compact = false }: AccountButtonProps) {
             <Link
               href="/precios"
               onClick={closeMenu}
-              className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-ivory"
+              className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-[#1e1a2e]"
             >
               {dictionary.nav.pricing}
             </Link>
@@ -244,7 +248,7 @@ export function AccountButton({ compact = false }: AccountButtonProps) {
               type="button"
               onClick={openBillingPortal}
               disabled={portalLoading}
-              className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-ivory disabled:cursor-wait disabled:opacity-50"
+              className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-[#1e1a2e] disabled:cursor-wait disabled:opacity-50"
             >
               {portalLoading ? dictionary.paywall.checkoutLoading : dictionary.paywall.manageSubscription}
             </button>
@@ -252,7 +256,7 @@ export function AccountButton({ compact = false }: AccountButtonProps) {
           <Link
             href="/ayuda"
             onClick={closeMenu}
-            className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-ivory"
+            className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-[#1e1a2e]"
           >
             {dictionary.nav.help}
           </Link>
@@ -260,7 +264,7 @@ export function AccountButton({ compact = false }: AccountButtonProps) {
             type="button"
             onClick={() => void signOut()}
             disabled={signingOut}
-            className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-ivory disabled:cursor-wait disabled:opacity-50"
+            className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-[#1e1a2e] disabled:cursor-wait disabled:opacity-50"
           >
             {signingOut ? dictionary.auth.processing : dictionary.common.signOut}
           </button>

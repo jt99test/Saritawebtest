@@ -158,7 +158,7 @@ function WheelModeToggle({
 }) {
   return (
     <div className="mx-auto mb-5 max-w-3xl text-center">
-      <div className="inline-flex max-w-full rounded-full border border-black/10 bg-white/80 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
+      <div className="sarita-tab-shell inline-flex max-w-full rounded-full p-1">
         {[
           { id: "all" as const, label: copy.wheelAll },
           { id: "focus" as const, label: copy.wheelFocus },
@@ -169,7 +169,7 @@ function WheelModeToggle({
             onClick={() => onChange(option.id)}
             className={[
               "rounded-full px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] transition sm:px-4 sm:text-[11px] sm:tracking-[0.2em]",
-              mode === option.id ? "bg-dusty-gold/16 text-[#5c4a24]" : "text-[#3a3048] hover:text-ivory",
+              mode === option.id ? "sarita-tab-active" : "text-[#1e1a2e] hover:bg-[#1e1a2e]/8",
             ].join(" ")}
           >
             {option.label}
@@ -447,7 +447,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
         ) : null}
 
         <div className="mx-auto mt-10 max-w-5xl">
-          <div className="flex gap-0 border border-black/10">
+          <div className="sarita-tab-shell flex gap-0 overflow-hidden border">
             {summaryTabs.map((key) => {
               const active = selectedCardKey === key;
               return (
@@ -458,8 +458,8 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
                   className={[
                     "flex-1 border-r border-black/10 px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-[0.2em] transition last:border-r-0",
                     active
-                      ? "bg-dusty-gold/[0.07] text-[#5c4a24]"
-                      : "bg-white text-[#3a3048] hover:bg-black/[0.02]",
+                      ? "sarita-tab-active"
+                      : "sarita-tab-inactive",
                   ].join(" ")}
                 >
                   {cardTabLabel(key, solarCopy)}
@@ -587,8 +587,8 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
                 className={[
                   "rounded-full border px-3 py-2.5 text-sm font-semibold transition",
                   targetYear === year
-                    ? "border-dusty-gold/70 bg-dusty-gold/18 text-dusty-gold"
-                    : "border-black/15 bg-black/[0.05] text-[#3a3048] hover:border-black/15 hover:text-ivory",
+                    ? "sarita-tab-active"
+                    : "sarita-tab-inactive",
                 ].join(" ")}
               >
                 {year}

@@ -100,7 +100,7 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
   return (
     <PremiumCard className="overflow-hidden border-black/15 bg-[linear-gradient(180deg,rgba(10,12,20,0.9),rgba(8,10,18,0.78))] shadow-[0_30px_100px_rgba(0,0,0,0.42)] backdrop-blur-xl xl:sticky xl:top-6">
       <div className="border-b border-black/10 px-5 py-4">
-        <div className="inline-flex rounded-full border border-black/10 bg-white/70 p-1">
+        <div className="sarita-tab-shell inline-flex rounded-full p-1">
           {(["details", "settings"] as const).map((panel) => {
             const active = activePanel === panel;
 
@@ -111,7 +111,7 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                 onClick={() => setActivePanel(panel)}
                 className={[
                   "rounded-full px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.22em] transition",
-                  active ? "bg-white text-cosmic-950" : "text-[#3a3048] hover:text-ivory",
+                  active ? "sarita-tab-active" : "text-[#1e1a2e] hover:bg-[#1e1a2e]/8",
                 ].join(" ")}
               >
                 {dictionary.result.panels[panel]}

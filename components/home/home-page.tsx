@@ -135,7 +135,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
         <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 hidden h-[34vh] bg-gradient-to-t from-cosmic-950 via-cosmic-950/72 to-transparent sm:block" />
 
         <Container className="relative flex min-h-[86svh] flex-col px-4 pb-5 pt-4 sm:min-h-screen sm:pb-10 sm:pt-6">
-          <div className="flex items-center justify-between rounded-full border border-white/10 bg-[#fffaf0]/16 px-3 py-2.5 text-ivory shadow-[0_12px_34px_rgba(0,0,0,0.18)] backdrop-blur-md sm:hidden">
+          <div className="sarita-night-nav flex items-center justify-between rounded-full px-3 py-2.5 backdrop-blur-md sm:hidden">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
@@ -147,7 +147,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="ml-auto flex h-10 w-10 translate-x-2 items-center justify-center rounded-full border border-white/18 bg-white/10 text-lg text-ivory"
+              className="sarita-night-pill ml-auto flex h-10 w-10 translate-x-2 items-center justify-center rounded-full text-lg"
               aria-label={dictionary.common.account}
             >
               ♙
@@ -157,7 +157,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
           {mobileMenuOpen ? (
             <div className="fixed inset-0 z-[1200] bg-black/35 backdrop-blur-sm sm:hidden" onClick={() => setMobileMenuOpen(false)}>
               <div
-                className="absolute inset-x-3 top-4 border border-dusty-gold/26 bg-[#f8f4eb] p-5 text-[#1e1a2e] shadow-[0_24px_80px_rgba(0,0,0,0.28)]"
+                className="sarita-menu-panel absolute inset-x-3 top-4 p-5"
                 onClick={(event) => event.stopPropagation()}
               >
                 <div className="flex items-start justify-between gap-4">
@@ -180,7 +180,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                       key={link.href}
                       href={link.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="border border-black/10 bg-white/52 px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#3a3048] transition hover:border-dusty-gold/40 hover:text-[#5c4a24]"
+                      className="sarita-tab-inactive border px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] transition"
                     >
                       {link.label}
                     </Link>
@@ -195,7 +195,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                       <Link
                         href="/cuenta"
                         onClick={() => setMobileMenuOpen(false)}
-                        className="border border-black/10 bg-white/52 px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#3a3048] transition hover:border-dusty-gold/40 hover:text-[#5c4a24]"
+                        className="sarita-tab-inactive border px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.18em] transition"
                       >
                         {dictionary.nav.account}
                       </Link>
@@ -203,7 +203,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                         type="button"
                         onClick={() => void signOut()}
                         disabled={signingOut}
-                        className="w-full border border-black/10 bg-white/52 px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.18em] text-[#3a3048] transition hover:border-dusty-gold/40 hover:text-[#5c4a24] disabled:cursor-wait disabled:opacity-50"
+                        className="sarita-tab-inactive w-full border px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.18em] transition disabled:cursor-wait disabled:opacity-50"
                       >
                         {signingOut ? dictionary.auth.processing : dictionary.common.signOut}
                       </button>
@@ -217,11 +217,11 @@ export function HomePage({ moonStatus }: HomePageProps) {
             </div>
           ) : null}
 
-          <div className="hidden items-center justify-between gap-3 rounded-[1.4rem] border border-black/12 bg-[#fffaf0]/78 px-3 py-2.5 shadow-[0_14px_40px_rgba(30,26,46,0.12)] backdrop-blur-md sm:flex sm:gap-6 sm:rounded-full sm:px-5 sm:py-3">
+          <div className="sarita-night-nav hidden items-center justify-between gap-3 rounded-[1.4rem] px-3 py-2.5 backdrop-blur-md sm:flex sm:gap-6 sm:rounded-full sm:px-5 sm:py-3">
             <div className="min-w-0 flex-1 pt-2">
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="hidden h-px w-10 shrink-0 bg-gradient-to-r from-dusty-gold to-transparent min-[420px]:block sm:w-14" />
-                <p className="truncate text-[10px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] sm:text-[12px] sm:tracking-[0.32em]">
+                <p className="truncate text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d7bd6a] sm:text-[12px] sm:tracking-[0.32em]">
                   {dictionary.home.eyebrow}
                 </p>
               </div>
@@ -230,15 +230,16 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <div className="ml-auto flex items-center gap-3 sm:gap-4">
               <Link
                 href="/precios"
-                className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-[#1e1a2e] transition hover:text-[#5c4a24] sm:inline"
+                className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-[#fffaf0]/84 transition hover:text-[#d7bd6a] sm:inline"
               >
                 {dictionary.nav.pricing}
               </Link>
-              <AccountButton />
+              <AccountButton tone="night" />
               <LanguageSelector
                 dictionary={dictionary}
                 locale={locale}
                 onChange={handleLocaleChange}
+                tone="night"
               />
             </div>
           </div>

@@ -368,8 +368,8 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
                         className={[
                           "rounded-full border px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.24em] transition",
                           active
-                            ? "border-dusty-gold/55 bg-dusty-gold/14 text-[#5c4a24]"
-                            : "border-black/10 bg-white/45 text-[#3a3048] hover:border-black/15 hover:bg-white hover:text-ivory",
+                            ? "sarita-tab-active"
+                            : "sarita-tab-inactive",
                         ].join(" ")}
                         aria-pressed={active}
                       >

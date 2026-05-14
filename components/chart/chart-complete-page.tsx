@@ -140,7 +140,7 @@ function WheelModeToggle({
 }) {
   return (
     <div className="mx-auto mb-5 max-w-3xl text-center">
-      <div className="inline-flex max-w-full rounded-full border border-black/10 bg-white/80 p-1 shadow-[0_8px_24px_rgba(0,0,0,0.06)]">
+      <div className="sarita-tab-shell inline-flex max-w-full rounded-full p-1">
         {[
           { id: "all" as const, label: copy.wheelAll },
           { id: "active" as const, label: copy.wheelActive },
@@ -151,7 +151,7 @@ function WheelModeToggle({
             onClick={() => onChange(option.id)}
             className={[
               "rounded-full px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] transition sm:px-4 sm:text-[11px] sm:tracking-[0.2em]",
-              mode === option.id ? "bg-dusty-gold/16 text-[#5c4a24]" : "text-[#3a3048] hover:text-ivory",
+              mode === option.id ? "sarita-tab-active" : "text-[#1e1a2e] hover:bg-[#1e1a2e]/8",
             ].join(" ")}
           >
             {option.label}
@@ -644,8 +644,8 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
                       className={[
                         "border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] transition",
                         active
-                          ? "border-dusty-gold/60 bg-dusty-gold/[0.07] text-[#5c4a24]"
-                          : "border-black/10 bg-white text-[#3a3048] hover:bg-black/[0.02]",
+                          ? "sarita-tab-active"
+                          : "sarita-tab-inactive",
                       ].join(" ")}
                     >
                       {transitCopy.housePrefix} {house.house}

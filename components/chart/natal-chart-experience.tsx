@@ -356,7 +356,7 @@ export function NatalChartExperience({
           </p>
         </div>
         <div className="relative hidden md:block">
-        <nav ref={tabListRef} className="flex max-w-full snap-x snap-mandatory gap-0 overflow-x-auto overscroll-x-contain border-b border-black/10 pb-0 pt-0 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
+        <nav ref={tabListRef} className="sarita-tab-shell flex max-w-full snap-x snap-mandatory gap-1 overflow-x-auto overscroll-x-contain rounded-full p-1 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
           {PAGE_TABS.map((tab) => {
             const active = pageTab === tab;
             const requiredPlan = TAB_REQUIREMENTS[tab];
@@ -375,18 +375,18 @@ export function NatalChartExperience({
                   }
                 }}
                 className={[
-                  "group flex-shrink-0 snap-center border-b-[1.5px] px-3 pb-2.5 pt-2 text-left transition sm:px-5 sm:pb-3",
+                  "group flex-shrink-0 snap-center rounded-full border px-3 pb-2.5 pt-2 text-left transition sm:px-5 sm:pb-3",
                   active
-                    ? "border-dusty-gold bg-transparent"
+                    ? "sarita-tab-active"
                     : locked
-                      ? "border-transparent bg-dusty-gold/[0.06] hover:border-dusty-gold/30"
-                      : "border-transparent bg-transparent hover:border-dusty-gold/30",
+                      ? "border-dusty-gold/20 bg-dusty-gold/[0.06] hover:border-dusty-gold/30"
+                      : "sarita-tab-inactive",
                 ].join(" ")}
               >
                 <span
                   className={[
                     "flex items-center gap-1.5 text-[10px] font-semibold uppercase leading-none tracking-[0.16em] transition sm:gap-2 sm:text-[12px] sm:tracking-[0.22em]",
-                    active ? "text-dusty-gold" : "text-[#3a3048] group-hover:text-ivory/78",
+                    active ? "text-[#fffaf0]" : "text-[#3a3048] group-hover:text-[#5c4a24]",
                   ].join(" ")}
                 >
                   {locked ? <span aria-hidden="true">🔒</span> : null}

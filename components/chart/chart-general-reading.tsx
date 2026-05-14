@@ -257,8 +257,8 @@ export function ChartGeneralReading({ chart, dictionary, readingId, gender }: Ch
                   className={[
                     "flex h-12 w-12 items-center justify-center rounded-full font-serif text-xl transition",
                     active
-                      ? "border border-dusty-gold/60 bg-dusty-gold/[0.07] text-[#5c4a24]"
-                      : "border border-black/10 bg-white text-[#3a3048] hover:bg-black/[0.02]",
+                      ? "sarita-tab-active"
+                      : "sarita-tab-inactive border",
                   ].join(" ")}
                 >
                   {meta.glyph}
