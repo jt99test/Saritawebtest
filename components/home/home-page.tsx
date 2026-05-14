@@ -132,7 +132,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <span className="sarita-solar-planet bottom-28 right-24 h-3 w-3 bg-[#c06fb1] text-[#c06fb1]" />
           </div>
         </div>
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[30vh] bg-gradient-to-t from-[#f5f0e6] via-[#f5f0e6]/52 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[34vh] bg-gradient-to-t from-[#f5f0e6] via-[#d8d1c6]/42 to-transparent" />
 
         <Container className="relative flex min-h-screen flex-col px-4 pb-5 pt-4 sm:pb-10 sm:pt-6">
           <div className="sarita-night-nav flex items-center justify-between rounded-full px-3 py-2.5 backdrop-blur-md sm:hidden">
@@ -147,7 +147,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="sarita-night-pill ml-auto flex h-10 w-10 translate-x-2 items-center justify-center rounded-full text-lg"
+              className="sarita-night-pill ml-auto flex h-10 w-10 items-center justify-center rounded-full text-lg"
               aria-label={dictionary.common.account}
             >
               ♙
@@ -244,7 +244,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             </div>
           </div>
 
-          <div className="relative z-10 mx-auto flex min-h-[calc(100svh-7.5rem)] w-full max-w-5xl items-center justify-center pb-36 pt-8 text-center sm:min-h-[calc(100svh-8.5rem)] sm:pb-40 sm:pt-12">
+          <div className="relative z-10 mx-auto flex min-h-[calc(100svh-6.5rem)] w-full max-w-5xl items-center justify-center pb-40 pt-8 text-center sm:min-h-[calc(100svh-8.5rem)] sm:pb-44 sm:pt-12">
             <motion.div
               className="mx-auto flex w-full max-w-[42rem] flex-col items-center gap-4 sm:gap-6"
               initial="hidden"
@@ -283,7 +283,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
 
               <motion.a
                 href="#empieza"
-                className="absolute bottom-20 left-1/2 -translate-x-1/2 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#fffaf0]/58 sm:bottom-24"
+                className="absolute bottom-24 left-1/2 -translate-x-1/2 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#fffaf0]/58 sm:bottom-28"
                 variants={{
                   hidden: { opacity: 0, y: 12 },
                   show: { opacity: 1, y: 0 },
@@ -294,21 +294,21 @@ export function HomePage({ moonStatus }: HomePageProps) {
                 {dictionary.home.scrollCue} ↓
               </motion.a>
             </motion.div>
-          </div>
 
-          <motion.div
-            className="absolute inset-x-4 bottom-8 z-20 flex justify-center sm:bottom-10"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.42, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
-          >
-            <PrimaryButton
-              href="/form"
-              className="min-h-14 min-w-0 px-9 py-4 text-[0.78rem] uppercase tracking-[0.18em] shadow-[0_18px_44px_rgba(215,189,106,0.22),0_18px_42px_rgba(0,0,0,0.28)] sm:min-w-64 sm:px-10 sm:py-4 sm:text-[0.8rem]"
+            <motion.div
+              className="absolute inset-x-0 bottom-8 z-20 flex justify-center sm:bottom-10"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.42, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              {dictionary.home.cta}
-            </PrimaryButton>
-          </motion.div>
+              <PrimaryButton
+                href="/form"
+                className="min-h-14 min-w-0 px-9 py-4 text-[0.78rem] uppercase tracking-[0.18em] shadow-[0_18px_44px_rgba(215,189,106,0.22),0_18px_42px_rgba(0,0,0,0.28)] sm:min-w-64 sm:px-10 sm:py-4 sm:text-[0.8rem]"
+              >
+                {dictionary.home.cta}
+              </PrimaryButton>
+            </motion.div>
+          </div>
 
           <div id="empieza" className="relative z-10 mt-6 border-t border-black/10 pt-8 pb-3 sm:mt-10 sm:py-4">
             <div className="space-y-4 sm:hidden">

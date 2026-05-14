@@ -251,17 +251,20 @@ h6 {
 
 .sarita-solar-system {
   background:
-    radial-gradient(circle at 50% 50%, rgba(215, 189, 106, 0.18), transparent 9rem),
-    radial-gradient(circle at 54% 44%, rgba(93, 102, 199, 0.28), transparent 24rem),
-    radial-gradient(circle at 20% 28%, rgba(155, 67, 142, 0.2), transparent 18rem),
-    linear-gradient(180deg, rgba(7, 7, 19, 0.96), rgba(13, 8, 32, 0.92) 48%, rgba(5, 5, 14, 0.96));
+    radial-gradient(circle at 50% 48%, rgba(245, 230, 188, 0.2), transparent 9rem),
+    radial-gradient(circle at 52% 56%, rgba(245, 240, 230, 0.16), transparent 20rem),
+    radial-gradient(circle at 72% 36%, rgba(94, 100, 180, 0.24), transparent 24rem),
+    radial-gradient(circle at 20% 74%, rgba(111, 90, 42, 0.18), transparent 22rem),
+    linear-gradient(180deg, rgba(10, 9, 24, 0.96), rgba(29, 21, 46, 0.92) 56%, rgba(76, 69, 78, 0.76) 100%);
 }
 
 .sarita-solar-orbit {
   animation: sarita-orbit 22s linear infinite;
-  border: 1px solid rgba(255, 250, 240, 0.1);
+  border: 1px solid rgba(245, 235, 210, 0.16);
   border-radius: 9999px;
-  box-shadow: 0 0 36px rgba(122, 75, 255, 0.1);
+  box-shadow:
+    0 0 36px rgba(245, 235, 210, 0.08),
+    inset 0 0 24px rgba(122, 75, 255, 0.08);
   left: 50%;
   position: absolute;
   top: 50%;
