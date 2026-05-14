@@ -1,8 +1,4 @@
 export const illustrations = {
-  moons: {
-    nueva: "/images/premium/moon-new-dark.png",
-    llena: "/images/premium/moon-full-photo.png",
-  },
   elements: {
     fuego: "/images/premium/element-fire-solar.png",
     tierra: "/images/premium/element-earth-stone.png",
