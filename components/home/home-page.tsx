@@ -378,7 +378,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4 2xl:grid-cols-7">
                 {featuredItems.map((feature, index) => (
                   <motion.div
-                    key={feature.href}
+                    key={`${feature.href}-${index}`}
                     initial={{ opacity: 0, y: 12 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.35 }}
@@ -390,7 +390,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                     >
                       <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-dusty-gold/55 to-transparent sm:hidden" />
                       <span className="sarita-feature-icon flex h-10 w-10 items-center justify-center rounded-full text-[1.35rem] leading-none text-[#5c4a24] sm:mb-3 sm:h-auto sm:w-auto sm:rounded-none sm:border-0 sm:bg-transparent sm:text-2xl sm:shadow-none">
-                        {FEATURE_SYMBOLS[features.indexOf(feature)] ?? "\u263d"}
+                        {FEATURE_SYMBOLS[index] ?? "\u263d"}
                       </span>
                       <span className="min-w-0">
                         <span className="block text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-[#3a3048] transition group-hover:text-[#5c4a24] [overflow-wrap:normal] [word-break:normal] sm:text-[12px] sm:tracking-[0.18em] xl:tracking-[0.24em]">

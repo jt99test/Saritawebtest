@@ -54,10 +54,10 @@ export function AtmosphericBackground({ variant }: AtmosphericBackgroundProps) {
       <>
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#f5f0e6_0%,#ede7d9_100%)]"
+          className="sarita-page-atmosphere-layer pointer-events-none absolute inset-0"
         />
         <DriftLayer
-          className="pointer-events-none absolute inset-[-6%] bg-cover bg-center opacity-[0.05] saturate-[0.55] contrast-[0.82]"
+          className="pointer-events-none absolute inset-[-6%] bg-cover bg-center opacity-[0.06] saturate-[0.6] contrast-[0.86]"
           style={{ backgroundImage: `url("${nebulaTextureUrl}")` }}
           animate={{
             scale: [1.03, 1.08, 1.04, 1.03],
@@ -72,7 +72,7 @@ export function AtmosphericBackground({ variant }: AtmosphericBackgroundProps) {
           }}
         />
         <DriftLayer
-          className="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-multiply"
+          className="pointer-events-none absolute inset-0 opacity-[0.1] mix-blend-multiply"
           style={starfieldStyle}
           animate={{
             opacity: [0.06, 0.09, 0.07],
@@ -90,7 +90,7 @@ export function AtmosphericBackground({ variant }: AtmosphericBackgroundProps) {
           className="pointer-events-none absolute inset-0 mix-blend-multiply"
           style={{
             backgroundImage:
-              "radial-gradient(circle at 72% 24%, rgba(255,246,210,0.9) 0, rgba(255,246,210,0.72) 1.2px, rgba(181,163,110,0.28) 2.4px, transparent 5px)",
+              "radial-gradient(circle at 72% 24%, rgba(255,246,210,0.76) 0, rgba(255,246,210,0.58) 1.2px, rgba(181,163,110,0.22) 2.4px, transparent 5px)",
           }}
           animate={{
             opacity: [0.08, 0.18, 0.1],
@@ -105,11 +105,11 @@ export function AtmosphericBackground({ variant }: AtmosphericBackgroundProps) {
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04),rgba(0,0,0,0.04)_32%,rgba(0,0,0,0.04)_100%)]"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(30,26,46,0.06),rgba(30,26,46,0.025)_38%,rgba(255,250,240,0)_100%)]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(0,0,0,0.04),rgba(0,0,0,0.02)_48%,rgba(0,0,0,0.04))]"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(30,26,46,0.045),rgba(0,0,0,0)_48%,rgba(111,90,42,0.045))]"
         />
       </>
     );

@@ -269,6 +269,14 @@ h6 {
   color: #1e1a2e;
 }
 
+.sarita-page-atmosphere-layer {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(31, 22, 54, 0.14), transparent 26rem),
+    radial-gradient(circle at 88% 4%, rgba(111, 90, 42, 0.13), transparent 20rem),
+    radial-gradient(circle at 50% 22rem, rgba(117, 83, 100, 0.13), transparent 30rem),
+    linear-gradient(180deg, #e9e3db 0, #d9d0cc 18rem, #f5f0e6 42rem, #ede7d9 100%);
+}
+
 .sarita-home-atmosphere {
   background:
     radial-gradient(circle at 52% 22rem, rgba(116, 111, 188, 0.2), transparent 30rem),
