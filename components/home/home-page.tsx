@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion } from "motion/react";
 import type { User } from "@supabase/supabase-js";
@@ -13,7 +12,6 @@ import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { showNotice } from "@/components/ui/notice-provider";
 import { PrimaryButton } from "@/components/ui/primary-button";
-import { illustrations } from "@/data/illustrations";
 import { getSignLabel } from "@/lib/chart-labels";
 import { clearChartSession } from "@/lib/chart-session";
 import { dictionaries, type Locale } from "@/lib/i18n";
@@ -117,24 +115,26 @@ export function HomePage({ moonStatus }: HomePageProps) {
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950 sm:pb-0">
       <AtmosphericBackground variant="page" />
 
-      <section className="relative isolate min-h-[86svh] overflow-hidden sm:min-h-screen">
-        <AtmosphericBackground variant="hero" />
-        <AtmosphericBackground variant="heroGlow" />
+      <section className="relative isolate min-h-screen overflow-hidden">
+        <div className="sarita-solar-system pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,250,240,0.08),transparent_22rem),radial-gradient(circle_at_74%_56%,rgba(80,93,196,0.18),transparent_18rem)]" />
+          <div className="absolute left-1/2 top-[47%] h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_32%_28%,#fff4b0,#d8a83d_44%,rgba(216,168,61,0.16)_68%,transparent_72%)] shadow-[0_0_50px_rgba(215,189,106,0.42),0_0_120px_rgba(122,75,255,0.18)] sm:h-28 sm:w-28" />
+          <div className="sarita-solar-orbit h-[15rem] w-[15rem] sm:h-[23rem] sm:w-[23rem]">
+            <span className="sarita-solar-planet right-7 top-4 h-2.5 w-2.5 bg-[#fffaf0] text-[#fffaf0]" />
+          </div>
+          <div className="sarita-solar-orbit h-[23rem] w-[23rem] sm:h-[34rem] sm:w-[34rem]">
+            <span className="sarita-solar-planet bottom-10 left-12 h-3.5 w-3.5 bg-[#d7bd6a] text-[#d7bd6a]" />
+          </div>
+          <div className="sarita-solar-orbit h-[32rem] w-[32rem] sm:h-[48rem] sm:w-[48rem]">
+            <span className="sarita-solar-planet right-16 top-20 h-5 w-5 bg-[#8b8dd8] text-[#8b8dd8]" />
+          </div>
+          <div className="sarita-solar-orbit h-[42rem] w-[42rem] sm:h-[62rem] sm:w-[62rem]">
+            <span className="sarita-solar-planet bottom-28 right-24 h-3 w-3 bg-[#c06fb1] text-[#c06fb1]" />
+          </div>
+        </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[30vh] bg-gradient-to-t from-[#f5f0e6] via-[#f5f0e6]/52 to-transparent" />
 
-        <Image
-          src={illustrations.scenes.landing}
-          alt=""
-          fill
-          priority
-          className="pointer-events-none absolute inset-0 -z-10 h-full w-full object-cover opacity-60 saturate-[0.82]"
-          style={{ objectPosition: "70% center" }}
-          sizes="100vw"
-        />
-        <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(0,0,0,0.04),rgba(0,0,0,0.04)_42%,rgba(0,0,0,0.04)),linear-gradient(180deg,rgba(0,0,0,0.04),rgba(0,0,0,0.04)_72%,#f5f0e6)]" />
-        <div className="pointer-events-none absolute inset-x-0 top-[46svh] bottom-0 -z-10 bg-gradient-to-b from-transparent via-[#f5f0e6]/70 to-[#f5f0e6]/92 sm:hidden" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 hidden h-[34vh] bg-gradient-to-t from-cosmic-950 via-cosmic-950/72 to-transparent sm:block" />
-
-        <Container className="relative flex min-h-[86svh] flex-col px-4 pb-5 pt-4 sm:min-h-screen sm:pb-10 sm:pt-6">
+        <Container className="relative flex min-h-screen flex-col px-4 pb-5 pt-4 sm:pb-10 sm:pt-6">
           <div className="sarita-night-nav flex items-center justify-between rounded-full px-3 py-2.5 backdrop-blur-md sm:hidden">
             <button
               type="button"
@@ -244,15 +244,15 @@ export function HomePage({ moonStatus }: HomePageProps) {
             </div>
           </div>
 
-          <div className="relative z-10 mx-auto flex w-full max-w-5xl flex-1 items-center pt-5 sm:pt-10">
+          <div className="relative z-10 mx-auto flex min-h-[calc(100svh-7.5rem)] w-full max-w-5xl items-center justify-center pb-36 pt-8 text-center sm:min-h-[calc(100svh-8.5rem)] sm:pb-40 sm:pt-12">
             <motion.div
-              className="flex w-full max-w-[34rem] flex-col items-start gap-4 text-left sm:gap-6"
+              className="mx-auto flex w-full max-w-[42rem] flex-col items-center gap-4 sm:gap-6"
               initial="hidden"
               animate="show"
               variants={{ hidden: {}, show: {} }}
             >
               <motion.div
-                className="h-px w-20 bg-gradient-to-r from-dusty-gold/70 to-transparent sm:w-28"
+                className="h-px w-24 bg-gradient-to-r from-transparent via-dusty-gold/70 to-transparent sm:w-32"
                 variants={{
                   hidden: { opacity: 0, y: 12 },
                   show: { opacity: 1, y: 0 },
@@ -260,7 +260,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                 transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
               />
               <motion.h1
-                className="sarita-sheen max-w-[9ch] text-[3.2rem] leading-[0.92] font-medium text-ivory drop-shadow-[0_18px_34px_rgba(0,0,0,0.58)] sm:text-8xl lg:text-[8rem]"
+                className="sarita-sheen text-[4rem] leading-[0.88] font-medium text-[#fffaf0] drop-shadow-[0_18px_42px_rgba(0,0,0,0.64)] sm:text-8xl lg:text-[9rem]"
                 variants={{
                   hidden: { opacity: 0, y: 12 },
                   show: { opacity: 1, y: 0 },
@@ -271,7 +271,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
               </motion.h1>
 
               <motion.p
-                className="max-w-[30rem] text-balance text-[0.98rem] leading-[1.7] text-ivory/84 drop-shadow-[0_8px_24px_rgba(0,0,0,0.5)] sm:text-base sm:leading-7"
+                className="max-w-[30rem] text-balance text-[1rem] leading-[1.7] text-[#fffaf0]/78 drop-shadow-[0_8px_24px_rgba(0,0,0,0.5)] sm:text-base sm:leading-7"
                 variants={{
                   hidden: { opacity: 0, y: 12 },
                   show: { opacity: 1, y: 0 },
@@ -281,24 +281,9 @@ export function HomePage({ moonStatus }: HomePageProps) {
                 {dictionary.home.subtitle}
               </motion.p>
 
-              <motion.div
-                className="pt-6 pb-8 sm:py-1"
-                variants={{
-                  hidden: { opacity: 0, y: 12 },
-                  show: { opacity: 1, y: 0 },
-                }}
-                transition={{ delay: 0.42, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
-              >
-                <PrimaryButton
-                  href="/form"
-                  className="min-h-14 min-w-0 px-8 py-4 text-[0.78rem] uppercase tracking-[0.18em] shadow-[0_18px_40px_rgba(255,255,255,0.14),0_18px_42px_rgba(0,0,0,0.22)] sm:min-w-56 sm:px-8 sm:py-4 sm:text-[0.8rem] sm:tracking-[0.18em]"
-                >
-                  {dictionary.home.cta}
-                </PrimaryButton>
-              </motion.div>
               <motion.a
                 href="#empieza"
-                className="pt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-ivory/70 sm:hidden"
+                className="absolute bottom-20 left-1/2 -translate-x-1/2 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#fffaf0]/58 sm:bottom-24"
                 variants={{
                   hidden: { opacity: 0, y: 12 },
                   show: { opacity: 1, y: 0 },
@@ -311,7 +296,21 @@ export function HomePage({ moonStatus }: HomePageProps) {
             </motion.div>
           </div>
 
-          <div className="relative z-10 border-t border-black/10 pt-8 pb-3 sm:py-4">
+          <motion.div
+            className="absolute inset-x-4 bottom-8 z-20 flex justify-center sm:bottom-10"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.42, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <PrimaryButton
+              href="/form"
+              className="min-h-14 min-w-0 px-9 py-4 text-[0.78rem] uppercase tracking-[0.18em] shadow-[0_18px_44px_rgba(215,189,106,0.22),0_18px_42px_rgba(0,0,0,0.28)] sm:min-w-64 sm:px-10 sm:py-4 sm:text-[0.8rem]"
+            >
+              {dictionary.home.cta}
+            </PrimaryButton>
+          </motion.div>
+
+          <div id="empieza" className="relative z-10 mt-6 border-t border-black/10 pt-8 pb-3 sm:mt-10 sm:py-4">
             <div className="space-y-4 sm:hidden">
               <motion.section
                 initial={{ opacity: 0, y: 18 }}
@@ -337,7 +336,6 @@ export function HomePage({ moonStatus }: HomePageProps) {
               </motion.section>
 
               <motion.section
-                id="empieza"
                 initial={{ opacity: 0, y: 18 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.2 }}
