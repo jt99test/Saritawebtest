@@ -62,19 +62,14 @@ export function AtmosphericBackground({ variant }: AtmosphericBackgroundProps) {
         />
         <div
           aria-hidden="true"
-          className="sarita-zodiac-field pointer-events-none absolute inset-0 overflow-hidden"
+          className="sarita-page-orbit-field pointer-events-none absolute inset-0 overflow-hidden"
         >
-          <span>♈</span>
-          <span>♉</span>
-          <span>♊</span>
-          <span>♋</span>
-          <span>♌</span>
-          <span>♍</span>
-          <span>♎</span>
-          <span>♏</span>
+          <span />
+          <span />
+          <span />
         </div>
         <DriftLayer
-          className="pointer-events-none absolute inset-[-6%] bg-cover bg-center opacity-[0.06] saturate-[0.6] contrast-[0.86]"
+          className="pointer-events-none absolute inset-[-6%] bg-cover bg-center opacity-[0.08] saturate-[0.78] contrast-[0.92]"
           style={{ backgroundImage: `url("${nebulaTextureUrl}")` }}
           animate={{
             scale: [1.03, 1.08, 1.04, 1.03],
@@ -89,7 +84,7 @@ export function AtmosphericBackground({ variant }: AtmosphericBackgroundProps) {
           }}
         />
         <DriftLayer
-          className="pointer-events-none absolute inset-0 opacity-[0.1] mix-blend-multiply"
+          className="pointer-events-none absolute inset-0 opacity-[0.13] mix-blend-multiply"
           style={starfieldStyle}
           animate={{
             opacity: [0.06, 0.09, 0.07],
@@ -104,10 +99,10 @@ export function AtmosphericBackground({ variant }: AtmosphericBackgroundProps) {
           }}
         />
         <DriftLayer
-          className="pointer-events-none absolute inset-0 mix-blend-multiply"
+          className="pointer-events-none absolute inset-0 mix-blend-screen"
           style={{
             backgroundImage:
-              "radial-gradient(circle at 72% 24%, rgba(255,246,210,0.76) 0, rgba(255,246,210,0.58) 1.2px, rgba(181,163,110,0.22) 2.4px, transparent 5px)",
+              "radial-gradient(circle at 72% 24%, rgba(255,246,210,0.82) 0, rgba(255,246,210,0.58) 1.2px, rgba(181,163,110,0.22) 2.4px, transparent 5px)",
           }}
           animate={{
             opacity: [0.08, 0.18, 0.1],
