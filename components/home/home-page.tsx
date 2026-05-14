@@ -132,14 +132,14 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <span className="sarita-solar-planet bottom-28 right-24 h-3 w-3 bg-[#c06fb1] text-[#c06fb1]" />
           </div>
         </div>
-        <div className="pointer-events-none absolute inset-x-0 top-[72svh] -z-10 h-[34svh] bg-gradient-to-b from-transparent via-[#756d72]/18 to-[#f5f0e6]" />
+        <div className="sarita-hero-haze pointer-events-none absolute inset-x-0 top-[70svh] -z-10 h-[36svh]" />
 
-        <Container className="relative flex min-h-screen flex-col px-4 pb-5 pt-4 sm:pb-10 sm:pt-6">
-          <div className="sarita-night-nav flex items-center justify-between rounded-full px-3 py-2.5 backdrop-blur-md sm:hidden">
+        <Container className="relative flex min-h-screen flex-col px-4 pb-5 pt-[calc(env(safe-area-inset-top)+1rem)] sm:pb-10 sm:pt-6">
+          <div className="sarita-mobile-constellation-header flex items-center justify-between sm:hidden">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="flex h-10 w-10 items-center justify-center font-serif text-2xl text-ivory"
+              className="sarita-floating-mark flex h-11 w-11 items-center justify-center rounded-full font-serif text-[1.7rem] text-[#fffaf0]"
               aria-label="Menu"
             >
               S
@@ -147,7 +147,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="sarita-night-pill ml-auto flex h-10 w-10 items-center justify-center rounded-full text-lg"
+              className="sarita-night-pill ml-auto mr-1 flex h-11 w-11 items-center justify-center rounded-full text-lg"
               aria-label={dictionary.common.account}
             >
               ♙
@@ -310,7 +310,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             </motion.div>
           </div>
 
-          <div id="empieza" className="relative z-10 mt-6 border-t border-black/10 pt-8 pb-3 sm:mt-10 sm:py-4">
+          <div id="empieza" className="sarita-after-hero relative z-10 -mx-4 mt-6 px-4 pt-8 pb-3 sm:mx-0 sm:mt-10 sm:px-0 sm:py-4">
             <div className="space-y-4 sm:hidden">
               <motion.section
                 initial={{ opacity: 0, y: 18 }}
@@ -373,7 +373,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
               </motion.section>
             </div>
 
-            <div id="lecturas" className="mt-8 sm:mt-0">
+            <div id="lecturas" className="sarita-feature-band -mx-4 mt-8 px-4 pt-7 pb-2 sm:mx-0 sm:mt-0 sm:px-0 sm:pt-0">
               <div className="mb-4 flex items-end justify-between sm:hidden">
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">{dictionary.home.eyebrow}</p>
@@ -391,10 +391,10 @@ export function HomePage({ moonStatus }: HomePageProps) {
                   >
                     <Link
                       href={feature.href}
-                      className="group grid min-h-16 min-w-0 grid-cols-[2.5rem_1fr] items-center gap-x-3 overflow-hidden rounded-[1.7rem] border border-black/16 bg-[linear-gradient(180deg,rgba(255,250,240,0.84),rgba(255,250,240,0.72))] px-4 py-4 text-left shadow-[0_16px_38px_rgba(30,26,46,0.17)] backdrop-blur-sm transition hover:border-dusty-gold/45 hover:bg-white sm:block sm:min-h-0 sm:border-l sm:border-t-0 sm:border-r-0 sm:border-b-0 sm:rounded-none sm:bg-transparent sm:px-4 sm:py-2 sm:shadow-none sm:backdrop-blur-0"
+                      className="sarita-feature-card group grid min-h-16 min-w-0 grid-cols-[2.5rem_1fr] items-center gap-x-3 overflow-hidden rounded-[1.45rem] px-4 py-4 text-left backdrop-blur-sm transition sm:block sm:min-h-0 sm:border-l sm:border-t-0 sm:border-r-0 sm:border-b-0 sm:rounded-none sm:bg-transparent sm:px-4 sm:py-2 sm:shadow-none sm:backdrop-blur-0"
                     >
                       <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-dusty-gold/55 to-transparent sm:hidden" />
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full border border-dusty-gold/25 bg-white/54 text-[1.35rem] leading-none text-[#5c4a24] sm:mb-3 sm:h-auto sm:w-auto sm:rounded-none sm:border-0 sm:bg-transparent sm:text-2xl">
+                      <span className="sarita-feature-icon flex h-10 w-10 items-center justify-center rounded-full text-[1.35rem] leading-none text-[#5c4a24] sm:mb-3 sm:h-auto sm:w-auto sm:rounded-none sm:border-0 sm:bg-transparent sm:text-2xl sm:shadow-none">
                         {FEATURE_SYMBOLS[features.indexOf(feature)] ?? "\u263d"}
                       </span>
                       <span className="min-w-0">
