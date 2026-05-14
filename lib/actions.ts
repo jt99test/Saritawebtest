@@ -231,6 +231,7 @@ export async function calculateSolarReturnAction(input: {
   city?: string;
   lat?: number;
   lng?: number;
+  timezone?: string;
 }) {
   const access = await getReadingAccess();
   if (!access || access.plan !== "avanzado") {
@@ -247,6 +248,7 @@ export async function calculateSolarReturnAction(input: {
   const year = Math.max(1901, Math.min(2100, input.targetYear));
   const lat = input.lat ?? Number(input.natalChart.event.latitude.match(/[\d.]+/)?.[0] ?? 0);
   const lng = input.lng ?? Number(input.natalChart.event.longitude.match(/[\d.]+/)?.[0] ?? 0);
+  const timezone = input.timezone ?? input.request?.selectedLocation?.timezone ?? input.natalChart.event.timezoneIdentifier ?? "UTC";
   const [birthYear, birthMonth, birthDay] = (input.request?.birthDate ?? "")
     .split("-")
     .map((part) => Number(part));
@@ -257,6 +259,7 @@ export async function calculateSolarReturnAction(input: {
     lng,
     birthMonth || 6,
     birthDay || 30,
+    timezone,
   );
 
   chart.event.name = input.natalChart.event.name;

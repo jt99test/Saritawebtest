@@ -426,6 +426,7 @@ export async function calculateSolarReturn(
   lng: number,
   birthMonth = 6,
   birthDay = 30,
+  displayTimezone = "UTC",
 ): Promise<NatalChartData> {
   if (targetYear < 1901 || targetYear > 2100) {
     throw new Error("Año de revolución solar fuera de rango");
@@ -463,7 +464,7 @@ export async function calculateSolarReturn(
   const julianDayUt = (low + high) / 2;
   const returnDate = estimate.plus({ days: julianDayUt - estimateJd });
 
-  return calculateNatalChart({
+  const chart = await calculateNatalChart({
     name: `RS ${targetYear}`,
     birthDate: returnDate.toISODate() ?? `${targetYear}-01-01`,
     birthTime: returnDate.toFormat("HH:mm"),
@@ -475,4 +476,8 @@ export async function calculateSolarReturn(
     julianDayUt,
     solarReturnYear: targetYear,
   });
+  chart.meta.solarReturnDateTime = returnDate.toISO({ suppressMilliseconds: true }) ?? undefined;
+  chart.meta.solarReturnTimezone = displayTimezone;
+
+  return chart;
 }

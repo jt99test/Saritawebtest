@@ -12,9 +12,10 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData, SignId } from "@/lib/chart";
-import { getHouseArea, getSignLabel } from "@/lib/chart-labels";
+import { getAspectLabel, getHouseArea, getPointLabel, getSignLabel } from "@/lib/chart-labels";
 import { promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
+import { calculateSynastryAspects } from "@/lib/synastry";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -114,6 +115,14 @@ function buildContext(natal: NatalChartData, rs: NatalChartData, locale?: string
   const angulars = rs.points
     .filter((point) => [1, 4, 7, 10].includes(point.house) && ["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn"].includes(point.id))
     .map((point) => `${getSignLabel(point.sign, locale)} in house ${point.house}`);
+  const rsAspects = rs.aspects
+    .slice()
+    .sort((left, right) => left.orb - right.orb)
+    .slice(0, 8)
+    .map((aspect) => `${getPointLabel(aspect.from, locale)} ${getAspectLabel(aspect.type, locale)} ${getPointLabel(aspect.to, locale)} (orb ${aspect.orb}°)`);
+  const natalSolarAspects = calculateSynastryAspects(natal, rs)
+    .slice(0, 10)
+    .map((aspect) => `${getPointLabel(aspect.pointB, locale)} RS ${getAspectLabel(aspect.type, locale)} ${getPointLabel(aspect.pointA, locale)} natal (orb ${aspect.orb}°)`);
 
   return [
     `Persona: ${natal.event.name}`,
@@ -127,6 +136,8 @@ function buildContext(natal: NatalChartData, rs: NatalChartData, locale?: string
     rsMars ? `Solar Return Mars: ${signLabel(rsMars.sign, locale)}, house ${rsMars.house}` : null,
     rsVenus ? `Solar Return Venus: ${signLabel(rsVenus.sign, locale)}, house ${rsVenus.house}` : null,
     angulars.length ? `Angulares RS: ${angulars.join(", ")}` : null,
+    rsAspects.length ? `Aspectos principales RS: ${rsAspects.join("; ")}` : null,
+    natalSolarAspects.length ? `Aspectos RS a carta natal: ${natalSolarAspects.join("; ")}` : null,
     "",
     "CARTA NATAL:",
     natalSun ? `Natal Sun: ${signLabel(natalSun.sign, locale)}, house ${natalSun.house}` : null,

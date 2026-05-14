@@ -375,7 +375,15 @@
       "wheelFocus": "En foco",
       "wheelAllDescription": "Mostrando la Revolución Solar completa para leer el año entero.",
       "wheelFocusDescription": "Mostrando {count} puntos de la Revolución Solar: Sol, Luna y planetas en casas angulares.",
-      "yearLabel": "Año"
+      "yearLabel": "Año",
+      "exactMomentLabel": "Momento exacto",
+      "locationLabel": "Lugar de cálculo",
+      "aspectCountLabel": "Aspectos",
+      "aspectCountValue": "{solar} de RS · {natal} con natal",
+      "solarAspectsTitle": "Aspectos de la Revolución Solar",
+      "natalAspectsTitle": "Aspectos RS con carta natal",
+      "noSolarAspects": "No hay aspectos principales registrados dentro de esta Revolución Solar.",
+      "noNatalAspects": "No hay aspectos principales registrados entre la Revolución Solar y la carta natal."
     },
     "synastryPage": {
       "eyebrow": "sinastría",

@@ -375,7 +375,15 @@
       "wheelFocus": "In focus",
       "wheelAllDescription": "Mostra la Rivoluzione Solare completa per leggere tutto l'anno.",
       "wheelFocusDescription": "Mostra {count} punti della Rivoluzione Solare: Sole, Luna e pianeti nelle case angolari.",
-      "yearLabel": "Anno"
+      "yearLabel": "Anno",
+      "exactMomentLabel": "Momento esatto",
+      "locationLabel": "Luogo di calcolo",
+      "aspectCountLabel": "Aspetti",
+      "aspectCountValue": "{solar} RS · {natal} con natale",
+      "solarAspectsTitle": "Aspetti della Rivoluzione Solare",
+      "natalAspectsTitle": "Aspetti RS con carta natale",
+      "noSolarAspects": "Non ci sono aspetti principali registrati dentro questa Rivoluzione Solare.",
+      "noNatalAspects": "Non ci sono aspetti principali registrati tra Rivoluzione Solare e carta natale."
     },
     "synastryPage": {
       "eyebrow": "sinastria",

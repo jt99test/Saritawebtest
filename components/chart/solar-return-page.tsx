@@ -8,13 +8,14 @@ import { LocationAutocomplete } from "@/components/form/location-autocomplete";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { calculateSolarReturnAction } from "@/lib/actions";
-import type { ChartPointId, NatalChartData } from "@/lib/chart";
+import type { Aspect, ChartPointId, NatalChartData } from "@/lib/chart";
 import { hashNatalChart } from "@/lib/chart-hash";
 import type { FormValues } from "@/lib/chart-session";
 import type { PlaceSuggestion } from "@/lib/geocoding";
 import type { Dictionary } from "@/lib/i18n";
 import { getCachedPremiumReading, setCachedPremiumReading } from "@/lib/premium-reading-cache";
 import { normalizeReadingText } from "@/lib/reading-text";
+import { calculateSynastryAspects, type SynastryAspect } from "@/lib/synastry";
 
 type SolarReturnPageProps = {
   natalChart: NatalChartData;
@@ -74,6 +75,60 @@ function cleanJsonPayload(rawPayload: string) {
   }
 
   return withoutFence;
+}
+
+function formatSolarReturnMoment(chart: NatalChartData, locale: string) {
+  const iso = chart.meta.solarReturnDateTime;
+  const timezone = chart.meta.solarReturnTimezone || chart.event.timezoneIdentifier || "UTC";
+  if (!iso) return chart.event.dateLabel;
+
+  try {
+    return new Intl.DateTimeFormat(locale === "en" || locale === "it" ? locale : "es", {
+      dateStyle: "long",
+      timeStyle: "short",
+      timeZone: timezone,
+    }).format(new Date(iso));
+  } catch {
+    return chart.event.dateLabel;
+  }
+}
+
+function SolarAspectRows({
+  title,
+  empty,
+  aspects,
+  dictionary,
+}: {
+  title: string;
+  empty: string;
+  aspects: Array<Aspect | SynastryAspect>;
+  dictionary: Dictionary;
+}) {
+  return (
+    <section className="border border-black/10 bg-white p-5">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">{title}</p>
+      {aspects.length ? (
+        <div className="mt-3 divide-y divide-black/10">
+          {aspects.slice(0, 8).map((aspect) => {
+            const from = "from" in aspect ? aspect.from : aspect.pointA;
+            const to = "to" in aspect ? aspect.to : aspect.pointB;
+            const key = "id" in aspect ? aspect.id : `${from}-${to}-${aspect.type}`;
+
+            return (
+              <div key={key} className="grid grid-cols-[minmax(0,1fr)_auto] gap-4 py-3">
+                <p className="min-w-0 text-sm leading-6 text-ivory">
+                  {dictionary.result.points[from]} {dictionary.result.aspectTypes[aspect.type].toLowerCase()} {dictionary.result.points[to]}
+                </p>
+                <span className="text-sm font-semibold text-[#5c4a24]">{aspect.orb.toFixed(1)}°</span>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <p className="mt-3 text-sm leading-6 text-[#3a3048]">{empty}</p>
+      )}
+    </section>
+  );
 }
 
 function normalizeSolarData(data: SolarData): SolarData {
@@ -165,6 +220,14 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
         .map((point) => point.id),
     )];
   }, [solarChart]);
+  const solarReturnAspects = useMemo(
+    () => solarChart ? [...solarChart.aspects].sort((left, right) => left.orb - right.orb) : [],
+    [solarChart],
+  );
+  const natalSolarAspects = useMemo(
+    () => solarChart ? calculateSynastryAspects(natalChart, solarChart) : [],
+    [natalChart, solarChart],
+  );
   const solarCacheKey = useMemo(() => {
     const locationKey = selectedLocation
       ? `${selectedLocation.lat.toFixed(4)},${selectedLocation.lng.toFixed(4)}`
@@ -246,6 +309,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
         city,
         lat: selectedLocation?.lat,
         lng: selectedLocation?.lng,
+        timezone: selectedLocation?.timezone,
       });
 
       if (result.ok) {
@@ -331,6 +395,32 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
           focusCount={solarFocusIds.length}
           copy={solarCopy}
         />
+        <div className="mx-auto mb-6 grid max-w-5xl gap-3 border-y border-black/10 py-4 sm:grid-cols-3">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+              {solarCopy.exactMomentLabel}
+            </p>
+            <p className="mt-1 font-serif text-[20px] leading-snug text-ivory">
+              {formatSolarReturnMoment(solarChart, locale)}
+            </p>
+          </div>
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+              {solarCopy.locationLabel}
+            </p>
+            <p className="mt-1 text-sm leading-6 text-[#3a3048]">{solarChart.event.locationLabel}</p>
+          </div>
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+              {solarCopy.aspectCountLabel}
+            </p>
+            <p className="mt-1 text-sm leading-6 text-[#3a3048]">
+              {solarCopy.aspectCountValue
+                .replace("{solar}", String(solarReturnAspects.length))
+                .replace("{natal}", String(natalSolarAspects.length))}
+            </p>
+          </div>
+        </div>
         <BiWheelChart
           innerChart={natalChart}
           outerChart={solarChart}
@@ -339,6 +429,9 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
           variant="solar-return"
           innerPointIds={solarWheelMode === "focus" ? solarFocusIds : undefined}
           outerPointIds={solarWheelMode === "focus" ? solarFocusIds : undefined}
+          interAspects={natalSolarAspects}
+          showOuterAspects
+          showInterAspects
           onInnerPlanetSelect={(id) => setBiWheelSelected({ id, ring: "inner" })}
           onOuterPlanetSelect={(id) => setBiWheelSelected({ id, ring: "outer" })}
         />
@@ -407,6 +500,23 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
               ) : null}
             </article>
           ) : null}
+        </div>
+
+        <div className="mx-auto mt-12 max-w-5xl">
+          <div className="grid gap-4 lg:grid-cols-2">
+            <SolarAspectRows
+              title={solarCopy.solarAspectsTitle}
+              empty={solarCopy.noSolarAspects}
+              aspects={solarReturnAspects}
+              dictionary={dictionary}
+            />
+            <SolarAspectRows
+              title={solarCopy.natalAspectsTitle}
+              empty={solarCopy.noNatalAspects}
+              aspects={natalSolarAspects}
+              dictionary={dictionary}
+            />
+          </div>
         </div>
 
         <div className="mx-auto mt-12 max-w-5xl">

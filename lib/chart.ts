@@ -102,6 +102,8 @@ export type ChartMeta = {
   descendant: number;
   ic: number;
   solarReturnYear?: number;
+  solarReturnDateTime?: string;
+  solarReturnTimezone?: string;
 };
 
 export type NatalChartData = {

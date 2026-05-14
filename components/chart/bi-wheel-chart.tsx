@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 
 import type { ChartPoint, ChartPointId, NatalChartData } from "@/lib/chart";
 import { getAugmentedChartPoints, normalizeLongitude, zodiacSigns } from "@/lib/chart";
+import type { SynastryAspect } from "@/lib/synastry";
 
 export type BiWheelVariant = "solar-return" | "synastry";
 
@@ -15,6 +16,9 @@ type BiWheelChartProps = {
   variant?: BiWheelVariant;
   innerPointIds?: ChartPointId[];
   outerPointIds?: ChartPointId[];
+  interAspects?: SynastryAspect[];
+  showOuterAspects?: boolean;
+  showInterAspects?: boolean;
   onInnerPlanetSelect?: (pointId: ChartPointId) => void;
   onOuterPlanetSelect?: (pointId: ChartPointId) => void;
 };
@@ -349,6 +353,9 @@ export function BiWheelChart({
   variant = "solar-return",
   innerPointIds,
   outerPointIds,
+  interAspects = [],
+  showOuterAspects = false,
+  showInterAspects = false,
   onInnerPlanetSelect,
   onOuterPlanetSelect,
 }: BiWheelChartProps) {
@@ -474,6 +481,45 @@ export function BiWheelChart({
             const end = pointAtRadius(172, to.longitude, ascendant);
             return <line key={aspect.id} x1={start.x} y1={start.y} x2={end.x} y2={end.y} stroke={aspectStroke(aspect.type)} strokeWidth="1.1" />;
           })}
+          {showOuterAspects ? outerChart?.aspects.slice(0, 32).map((aspect) => {
+            const from = outerPoints.find((point) => point.id === aspect.from);
+            const to = outerPoints.find((point) => point.id === aspect.to);
+            if (!from || !to) return null;
+            const start = pointAtRadius(334, from.longitude, ascendant);
+            const end = pointAtRadius(334, to.longitude, ascendant);
+            return (
+              <line
+                key={`outer-${aspect.id}`}
+                x1={start.x}
+                y1={start.y}
+                x2={end.x}
+                y2={end.y}
+                stroke={aspectStroke(aspect.type)}
+                strokeWidth="1"
+                strokeOpacity="0.78"
+              />
+            );
+          }) : null}
+          {showInterAspects ? interAspects.slice(0, 36).map((aspect) => {
+            const from = innerPoints.find((point) => point.id === aspect.pointA);
+            const to = outerPoints.find((point) => point.id === aspect.pointB);
+            if (!from || !to) return null;
+            const start = pointAtRadius(204, from.longitude, ascendant);
+            const end = pointAtRadius(OUTER_SEP_R - 8, to.longitude, ascendant);
+            return (
+              <line
+                key={`inter-${aspect.pointA}-${aspect.pointB}-${aspect.type}`}
+                x1={start.x}
+                y1={start.y}
+                x2={end.x}
+                y2={end.y}
+                stroke={aspectStroke(aspect.type)}
+                strokeWidth="0.9"
+                strokeDasharray="3 5"
+                strokeOpacity="0.62"
+              />
+            );
+          }) : null}
           <circle cx={CENTER} cy={CENTER} r="5" fill="rgba(30,26,46,0.62)" filter="url(#bw-glow)" />
 
           {innerPoints.map((point) => {

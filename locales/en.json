@@ -375,7 +375,15 @@
       "wheelFocus": "In focus",
       "wheelAllDescription": "Showing the full Solar Return to read the whole year.",
       "wheelFocusDescription": "Showing {count} Solar Return points: Sun, Moon, and planets in angular houses.",
-      "yearLabel": "Year"
+      "yearLabel": "Year",
+      "exactMomentLabel": "Exact moment",
+      "locationLabel": "Calculation place",
+      "aspectCountLabel": "Aspects",
+      "aspectCountValue": "{solar} SR · {natal} with natal",
+      "solarAspectsTitle": "Solar Return aspects",
+      "natalAspectsTitle": "SR aspects to natal chart",
+      "noSolarAspects": "No major aspects are recorded inside this Solar Return.",
+      "noNatalAspects": "No major aspects are recorded between the Solar Return and the natal chart."
     },
     "synastryPage": {
       "eyebrow": "synastry",
