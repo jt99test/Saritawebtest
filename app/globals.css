@@ -269,32 +269,36 @@ h6 {
   color: #1e1a2e;
 }
 
+.sarita-home-atmosphere {
+  background:
+    radial-gradient(circle at 52% 22rem, rgba(116, 111, 188, 0.26), transparent 30rem),
+    radial-gradient(circle at 18% 92svh, rgba(117, 83, 100, 0.22), transparent 24rem),
+    radial-gradient(circle at 76% 118svh, rgba(215, 189, 106, 0.14), transparent 20rem),
+    linear-gradient(
+      180deg,
+      #080813 0,
+      #111126 42svh,
+      #292640 78svh,
+      #685f69 108svh,
+      #d7cec0 132svh,
+      #f5f0e6 160svh,
+      #f5f0e6 100%
+    );
+}
+
 .sarita-solar-system {
   background:
     radial-gradient(circle at 50% 48%, rgba(245, 230, 188, 0.2), transparent 9rem),
     radial-gradient(circle at 52% 56%, rgba(245, 240, 230, 0.16), transparent 20rem),
     radial-gradient(circle at 72% 36%, rgba(94, 100, 180, 0.24), transparent 24rem),
-    radial-gradient(circle at 20% 74%, rgba(111, 90, 42, 0.18), transparent 22rem),
-    linear-gradient(180deg, rgba(10, 9, 24, 0.96), rgba(29, 21, 46, 0.92) 58%, rgba(74, 48, 68, 0.7) 100%);
-}
-
-.sarita-hero-haze {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(215, 189, 106, 0.11), transparent 18rem),
-    linear-gradient(180deg, transparent 0%, rgba(45, 30, 54, 0.32) 44%, rgba(245, 240, 230, 0.86) 100%);
-}
-
-.sarita-after-hero {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(32, 22, 55, 0.34), transparent 24rem),
-    linear-gradient(180deg, rgba(35, 26, 50, 0.5), rgba(245, 240, 230, 0) 18rem);
+    radial-gradient(circle at 20% 74%, rgba(111, 90, 42, 0.14), transparent 22rem);
 }
 
 .sarita-feature-band {
   background:
-    radial-gradient(circle at 84% 2%, rgba(215, 189, 106, 0.12), transparent 15rem),
-    radial-gradient(circle at 0% 18%, rgba(38, 28, 62, 0.18), transparent 18rem),
-    linear-gradient(180deg, rgba(245, 240, 230, 0.28), rgba(245, 240, 230, 0.92) 5rem, rgba(245, 240, 230, 0) 100%);
+    radial-gradient(circle at 50% 0%, rgba(255, 250, 240, 0.38), transparent 11rem),
+    radial-gradient(circle at 84% 8%, rgba(215, 189, 106, 0.12), transparent 15rem),
+    radial-gradient(circle at 0% 18%, rgba(38, 28, 62, 0.08), transparent 18rem);
 }
 
 .sarita-feature-card {

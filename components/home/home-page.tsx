@@ -112,7 +112,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
   const revealTransition = { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const };
 
   return (
-    <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950 sm:pb-0">
+    <main className="sarita-home-atmosphere premium-noise relative isolate min-h-screen overflow-hidden sm:pb-0">
       <AtmosphericBackground variant="page" />
 
       <section className="relative isolate min-h-screen overflow-hidden">
@@ -132,8 +132,6 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <span className="sarita-solar-planet bottom-28 right-24 h-3 w-3 bg-[#c06fb1] text-[#c06fb1]" />
           </div>
         </div>
-        <div className="sarita-hero-haze pointer-events-none absolute inset-x-0 top-[70svh] -z-10 h-[36svh]" />
-
         <Container className="relative flex min-h-screen flex-col px-4 pb-5 pt-[calc(env(safe-area-inset-top)+1rem)] sm:pb-10 sm:pt-6">
           <div className="sarita-mobile-constellation-header flex items-center justify-between sm:hidden">
             <button
@@ -310,7 +308,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             </motion.div>
           </div>
 
-          <div id="empieza" className="sarita-after-hero relative z-10 -mx-4 mt-6 px-4 pt-8 pb-3 sm:mx-0 sm:mt-10 sm:px-0 sm:py-4">
+          <div id="empieza" className="relative z-10 -mx-4 mt-6 px-4 pt-8 pb-3 sm:mx-0 sm:mt-10 sm:px-0 sm:py-4">
             <div className="space-y-4 sm:hidden">
               <motion.section
                 initial={{ opacity: 0, y: 18 }}
