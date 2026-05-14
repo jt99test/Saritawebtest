@@ -6,7 +6,6 @@ import {
   aiGenerationStatusResponse,
   getAiGenerationStatus,
   getCachedAiReading,
-  markAiReadingGenerationFailed,
   reserveAiReadingGeneration,
   setCachedAiReading,
   validateReadingGenerationAccess,
@@ -15,7 +14,7 @@ import type { ChartPointId, NatalChartData, SignId } from "@/lib/chart";
 import { getAspectLabel, getPointLabel, getSignLabel } from "@/lib/chart-labels";
 import { promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { genderPromptInstruction, genderPromptInstructionForSubject, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
-import type { SynastryAspect } from "@/lib/synastry";
+import { compatibilityLabel, type SynastryAspect } from "@/lib/synastry";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -27,6 +26,8 @@ type SynastryPayload = {
   compatibilityDescription: string;
   layers: Record<"fisico" | "sexual" | "emocional" | "mental" | "profesional" | "evolutivo", string>;
 };
+
+type SynastryLayerId = keyof SynastryPayload["layers"];
 
 const SYNASTRY_READING_TOOL: Tool = {
   name: "synastry_reading",
@@ -211,6 +212,122 @@ function buildContext(chartA: NatalChartData, chartB: NatalChartData, partnerNam
   ].join("\n");
 }
 
+function fallbackCopy(locale?: string) {
+  if (locale === "en") {
+    return {
+      unavailable: "The detailed reading could not be generated, so this is a chart-based synthesis from the strongest aspects.",
+      layers: {
+        fisico: "Physical",
+        sexual: "Sexual",
+        emocional: "Emotional",
+        mental: "Mental",
+        profesional: "Professional",
+        evolutivo: "Evolutionary",
+      },
+      flow: "There is a usable point of ease here; let this be a place where the bond can breathe.",
+      tension: "This layer asks for clear timing and direct language because the chemistry can become reactive.",
+      blend: "This layer mixes attraction and friction, so it works best when both people name what is happening early.",
+    };
+  }
+
+  if (locale === "it") {
+    return {
+      unavailable: "La lettura dettagliata non e stata generata, quindi questa e una sintesi dagli aspetti piu forti.",
+      layers: {
+        fisico: "Fisico",
+        sexual: "Sessuale",
+        emocional: "Emotivo",
+        mental: "Mentale",
+        profesional: "Professionale",
+        evolutivo: "Evolutivo",
+      },
+      flow: "Qui c'e un punto di facilita concreta; puo diventare una zona di respiro nel legame.",
+      tension: "Questo livello chiede tempi chiari e parole dirette, perche la chimica puo diventare reattiva.",
+      blend: "Questo livello mescola attrazione e frizione, quindi funziona meglio quando entrambi nominano subito cio che succede.",
+    };
+  }
+
+  return {
+    unavailable: "La lectura detallada no pudo generarse, asi que esta es una sintesis desde los aspectos mas fuertes.",
+    layers: {
+      fisico: "Fisico",
+      sexual: "Sexual",
+      emocional: "Emocional",
+      mental: "Mental",
+      profesional: "Profesional",
+      evolutivo: "Evolutivo",
+    },
+    flow: "Hay un punto de facilidad concreta aqui; conviene usarlo como zona de descanso dentro del vinculo.",
+    tension: "Esta capa pide tiempos claros y palabras directas, porque la quimica puede volverse reactiva.",
+    blend: "Esta capa mezcla atraccion y friccion, asi que funciona mejor cuando ambos nombran pronto lo que esta pasando.",
+  };
+}
+
+function aspectSummary(aspect: SynastryAspect, locale?: string) {
+  return `${pl(aspect.pointA, locale)} ${getAspectLabel(aspect.type, locale)} ${pl(aspect.pointB, locale)}`;
+}
+
+function layerFallback(
+  aspects: SynastryAspect[],
+  layer: SynastryLayerId,
+  points: ChartPointId[],
+  locale?: string,
+) {
+  const copy = fallbackCopy(locale);
+  const pointSet = new Set(points);
+  const selected = aspects
+    .filter((aspect) => pointSet.has(aspect.pointA) || pointSet.has(aspect.pointB))
+    .slice(0, 3);
+
+  if (!selected.length) {
+    return `${copy.layers[layer]}: No hay aspectos fuertes en esta capa. Conviene mirar las otras areas del vinculo para ver donde la relacion se activa con mas claridad.`;
+  }
+
+  const hasTension = selected.some((aspect) => aspect.quality === "tense");
+  const hasHarmony = selected.some((aspect) => aspect.quality === "harmonious");
+  const emphasis = hasTension && hasHarmony ? copy.blend : hasTension ? copy.tension : copy.flow;
+  return `${copy.layers[layer]}: ${selected.map((aspect) => aspectSummary(aspect, locale)).join(" / ")}. ${emphasis}`;
+}
+
+function buildFallbackPayload(chartA: NatalChartData, partnerName: string, aspects: SynastryAspect[], locale?: string): SynastryPayload {
+  const compatibility = compatibilityLabel(aspects, locale);
+  const copy = fallbackCopy(locale);
+  const top = aspects.slice(0, 3).map((aspect) => aspectSummary(aspect, locale));
+  const topText = top.length ? top.join(" / ") : "pocos aspectos exactos";
+  const reading = `${copy.unavailable} ${chartA.event.name} y ${partnerName} tienen como foco ${topText}. ${compatibility.description}`;
+
+  return {
+    reading,
+    compatibilityLabel: compatibility.label,
+    compatibilityDescription: `${compatibility.description} ${copy.unavailable}`,
+    layers: {
+      fisico: layerFallback(aspects, "fisico", ["venus", "mars", "sun", "moon"], locale),
+      sexual: layerFallback(aspects, "sexual", ["venus", "mars", "pluto", "moon"], locale),
+      emocional: layerFallback(aspects, "emocional", ["moon", "venus", "neptune"], locale),
+      mental: layerFallback(aspects, "mental", ["mercury", "jupiter", "uranus"], locale),
+      profesional: layerFallback(aspects, "profesional", ["sun", "mercury", "jupiter", "saturn", "mars"], locale),
+      evolutivo: layerFallback(aspects, "evolutivo", ["northNode", "saturn", "pluto", "uranus", "neptune"], locale),
+    },
+  };
+}
+
+function fallbackResponse(payload: SynastryPayload) {
+  const data = {
+    compatibilityLabel: payload.compatibilityLabel,
+    compatibilityDescription: payload.compatibilityDescription,
+    layers: payload.layers,
+    fallback: true,
+  };
+
+  return new Response(`${payload.reading}\n\n${SARITA_DATA_MARKER}\n${JSON.stringify(data)}`, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-cache",
+      "X-Content-Type-Options": "nosniff",
+    },
+  });
+}
+
 export async function POST(request: Request) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -343,28 +460,12 @@ ${firstText}`,
     }
   } catch (error) {
     console.error("Synastry reading JSON generation failed", error);
-    await markAiReadingGenerationFailed({
-      supabase,
-      user,
-      readingId,
-      scope: "synastry",
-      itemKey,
-      locale,
-    });
-    return new Response("Synastry reading JSON could not be parsed", { status: 502 });
+    return fallbackResponse(buildFallbackPayload(chartA, partnerName, aspects, locale));
   }
 
   if (!parsed || !isSynastryPayload(parsed)) {
     console.error("Synastry reading JSON shape invalid", parsed);
-    await markAiReadingGenerationFailed({
-      supabase,
-      user,
-      readingId,
-      scope: "synastry",
-      itemKey,
-      locale,
-    });
-    return new Response("Synastry reading JSON shape invalid", { status: 502 });
+    return fallbackResponse(buildFallbackPayload(chartA, partnerName, aspects, locale));
   }
 
   const data = {

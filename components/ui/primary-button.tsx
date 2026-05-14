@@ -25,7 +25,7 @@ const variants = {
   solid:
     "border border-black/15 bg-[linear-gradient(180deg,#ffffff,#eee7d9)] text-ivory shadow-[0_10px_28px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.72)] hover:brightness-[1.03]",
   ghostGold:
-    "border border-dusty-gold/60 bg-[linear-gradient(180deg,rgba(138,122,78,0.1),rgba(138,122,78,0.04))] text-ivory shadow-[0_10px_28px_rgba(0,0,0,0.1)] hover:border-dusty-gold hover:bg-[linear-gradient(180deg,rgba(138,122,78,0.16),rgba(138,122,78,0.06))] hover:text-ivory",
+    "border border-dusty-gold/60 bg-[linear-gradient(180deg,rgba(255,250,240,0.94),rgba(238,231,217,0.9))] text-[#1e1a2e] shadow-[0_10px_28px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.7)] hover:border-dusty-gold hover:brightness-[1.03]",
 } as const;
 
 export function PrimaryButton(props: PrimaryButtonProps) {
