@@ -135,11 +135,11 @@ export function HomePage({ moonStatus }: HomePageProps) {
         <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 hidden h-[34vh] bg-gradient-to-t from-cosmic-950 via-cosmic-950/72 to-transparent sm:block" />
 
         <Container className="relative flex min-h-[86svh] flex-col px-4 pb-5 pt-4 sm:min-h-screen sm:pb-10 sm:pt-6">
-          <div className="grid grid-cols-[2.5rem_1fr_2.5rem] items-center rounded-full border border-white/10 bg-[#fffaf0]/16 px-3 py-2.5 text-ivory shadow-[0_12px_34px_rgba(0,0,0,0.18)] backdrop-blur-md sm:hidden">
+          <div className="flex items-center justify-between rounded-full border border-white/10 bg-[#fffaf0]/16 px-3 py-2.5 text-ivory shadow-[0_12px_34px_rgba(0,0,0,0.18)] backdrop-blur-md sm:hidden">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="flex h-10 w-10 items-center justify-center justify-self-start font-serif text-2xl text-ivory"
+              className="flex h-10 w-10 items-center justify-center font-serif text-2xl text-ivory"
               aria-label="Menu"
             >
               S
@@ -147,7 +147,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="flex h-10 w-10 translate-x-1 items-center justify-center justify-self-end rounded-full border border-white/18 bg-white/10 text-lg text-ivory"
+              className="ml-auto flex h-10 w-10 translate-x-2 items-center justify-center rounded-full border border-white/18 bg-white/10 text-lg text-ivory"
               aria-label={dictionary.common.account}
             >
               ♙

@@ -28,7 +28,7 @@ function LunarMedallion({ isNewMoon, active, label }: { isNewMoon: boolean; acti
   return (
     <span
       className={[
-        "relative block aspect-square w-full overflow-visible rounded-full transition duration-[400ms] ease-out",
+        "relative mx-auto block aspect-square w-[88%] overflow-hidden rounded-full transition duration-[400ms] ease-out",
         active
           ? "drop-shadow-[0_0_24px_rgba(232,197,71,0.35)] lg:drop-shadow-[0_0_32px_rgba(232,197,71,0.35)]"
           : "drop-shadow-none group-hover:drop-shadow-[0_0_20px_rgba(232,197,71,0.18)]",
@@ -36,10 +36,10 @@ function LunarMedallion({ isNewMoon, active, label }: { isNewMoon: boolean; acti
       aria-label={label}
       role="img"
     >
-      <span className="absolute inset-0 rounded-full border border-dusty-gold/35 bg-[radial-gradient(circle_at_34%_28%,rgba(255,250,240,0.18),rgba(232,197,71,0.08)_36%,rgba(10,12,20,0.58)_68%,rgba(10,12,20,0.9))] shadow-[inset_0_0_30px_rgba(255,250,240,0.08),0_18px_44px_rgba(0,0,0,0.18)]" />
+      <span className="absolute inset-0 rounded-full border border-dusty-gold/35 bg-[radial-gradient(circle_at_34%_28%,rgba(255,250,240,0.18),rgba(232,197,71,0.08)_36%,rgba(10,12,20,0.58)_68%,rgba(10,12,20,0.9))] shadow-[inset_0_0_30px_rgba(255,250,240,0.08)]" />
       <span className="absolute inset-[9%] rounded-full border border-white/10" />
       <span className="absolute inset-[16%] rounded-full border border-dusty-gold/18" />
-      <span className="absolute inset-[23%] rounded-full bg-[radial-gradient(circle_at_35%_28%,rgba(255,250,240,0.94),rgba(216,194,122,0.8)_38%,rgba(92,74,36,0.55)_64%,rgba(15,14,24,0.96)_100%)] shadow-[inset_-12px_-16px_24px_rgba(10,12,20,0.38),inset_7px_7px_16px_rgba(255,255,255,0.14)]">
+      <span className="absolute inset-[22%] rounded-full bg-[radial-gradient(circle_at_35%_28%,rgba(255,250,240,0.94),rgba(216,194,122,0.8)_38%,rgba(92,74,36,0.55)_64%,rgba(15,14,24,0.96)_100%)] shadow-[inset_-12px_-16px_24px_rgba(10,12,20,0.38),inset_7px_7px_16px_rgba(255,255,255,0.14)]">
         {isNewMoon ? (
           <span className="absolute inset-[7%] rounded-full bg-[radial-gradient(circle_at_42%_36%,rgba(45,43,58,0.96),rgba(10,12,20,0.98)_64%,rgba(0,0,0,1))] shadow-[inset_9px_8px_24px_rgba(255,250,240,0.05),0_0_18px_rgba(216,194,122,0.1)]" />
         ) : (
@@ -55,9 +55,9 @@ function LunarMedallion({ isNewMoon, active, label }: { isNewMoon: boolean; acti
             key={tick}
             className={[
               "absolute left-1/2 top-1/2 h-[1px] origin-left rounded-full bg-dusty-gold/40",
-              tick % 6 === 0 ? "w-[10%]" : tick % 3 === 0 ? "w-[7%]" : "w-[4%]",
+              tick % 6 === 0 ? "w-[8%]" : tick % 3 === 0 ? "w-[6%]" : "w-[3.5%]",
             ].join(" ")}
-            style={{ transform: `rotate(${tick * 15}deg) translateX(43%)` }}
+            style={{ transform: `rotate(${tick * 15}deg) translateX(39%)` }}
           />
         ))}
       </span>
