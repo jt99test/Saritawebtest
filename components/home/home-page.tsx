@@ -116,7 +116,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
       <AtmosphericBackground variant="page" />
 
       <section className="relative isolate min-h-screen overflow-hidden">
-        <div className="sarita-solar-system pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="sarita-solar-system pointer-events-none absolute inset-x-0 top-0 -z-10 h-[105svh] overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,250,240,0.08),transparent_22rem),radial-gradient(circle_at_74%_56%,rgba(80,93,196,0.18),transparent_18rem)]" />
           <div className="absolute left-1/2 top-[47%] h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_32%_28%,#fff4b0,#d8a83d_44%,rgba(216,168,61,0.16)_68%,transparent_72%)] shadow-[0_0_50px_rgba(215,189,106,0.42),0_0_120px_rgba(122,75,255,0.18)] sm:h-28 sm:w-28" />
           <div className="sarita-solar-orbit h-[15rem] w-[15rem] sm:h-[23rem] sm:w-[23rem]">
@@ -132,7 +132,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <span className="sarita-solar-planet bottom-28 right-24 h-3 w-3 bg-[#c06fb1] text-[#c06fb1]" />
           </div>
         </div>
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[34vh] bg-gradient-to-t from-[#f5f0e6] via-[#d8d1c6]/42 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-[72svh] -z-10 h-[34svh] bg-gradient-to-b from-transparent via-[#756d72]/18 to-[#f5f0e6]" />
 
         <Container className="relative flex min-h-screen flex-col px-4 pb-5 pt-4 sm:pb-10 sm:pt-6">
           <div className="sarita-night-nav flex items-center justify-between rounded-full px-3 py-2.5 backdrop-blur-md sm:hidden">
