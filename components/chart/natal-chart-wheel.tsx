@@ -1290,11 +1290,16 @@ export function ChartLayerRail() {
       onClick: toggleDegrees,
     },
   ];
+  const swipeHintLabel =
+    locale === "en" ? "Swipe to see more" : locale === "it" ? "Scorri per vedere di piu" : "Desliza para ver mas";
 
   return (
     <div className="mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col overflow-hidden border-y border-black/10 bg-transparent py-3 sm:max-w-[34rem] sm:border sm:border-black/12 sm:bg-white/85 sm:p-4 sm:shadow-[0_8px_24px_rgba(0,0,0,0.08)] lg:mx-0 lg:w-auto lg:min-w-[12rem]">
       <p className="mb-3 text-center font-serif text-[14px] italic lowercase tracking-[0.15em] text-[#5c4a24] lg:text-left">
         {dictionary.result.toggles.view}
+      </p>
+      <p className="mb-2 text-center text-[10px] font-medium uppercase tracking-[0.2em] text-[#8a7a4e] sm:hidden">
+        {swipeHintLabel} {"\u2192"}
       </p>
       <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] sm:grid sm:grid-cols-2 sm:gap-x-3 sm:gap-y-3 sm:overflow-visible sm:pb-0 lg:flex lg:flex-col lg:gap-3 [&::-webkit-scrollbar]:hidden">
         {controls.map((control) => (

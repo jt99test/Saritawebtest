@@ -147,7 +147,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="flex h-10 w-10 items-center justify-center justify-self-end rounded-full border border-white/18 bg-white/10 text-lg text-ivory"
+              className="flex h-10 w-10 translate-x-1 items-center justify-center justify-self-end rounded-full border border-white/18 bg-white/10 text-lg text-ivory"
               aria-label={dictionary.common.account}
             >
               ♙
