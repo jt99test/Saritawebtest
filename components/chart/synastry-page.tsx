@@ -21,7 +21,7 @@ import type { Dictionary } from "@/lib/i18n";
 import { getCachedPremiumReading, setCachedPremiumReading } from "@/lib/premium-reading-cache";
 import { normalizeReadingText, splitReading } from "@/lib/reading-text";
 import type { ReadingGender } from "@/lib/reading-gender";
-import { calculateSynastryAspects, compatibilityLabel, type SynastryAspect } from "@/lib/synastry";
+import { calculateSynastryAspects, type SynastryAspect } from "@/lib/synastry";
 
 type SynastryPageProps = {
   natalChart: NatalChartData;
@@ -34,7 +34,6 @@ type SynastryData = {
   compatibilityLabel?: string;
   compatibilityDescription?: string;
   layers?: Record<string, string>;
-  fallback?: boolean;
 };
 
 const SARITA_DATA_MARKER = "__SARITA_DATA__";
@@ -208,23 +207,9 @@ function layerReading(
     .filter((aspect) => personalPoints.has(aspect.pointA) || personalPoints.has(aspect.pointB))
     .slice(0, 2);
 
-  const title = dictionary.result.synastryPage.layerTitles[layer.id];
+  if (!selected.length) return "";
 
-  if (!selected.length) return `${title}: No hay aspectos fuertes en esta capa. Mira las otras areas para encontrar donde el vinculo se activa con mas claridad.`;
-
-  const strongest = selected.map((aspect) => {
-    const aspectName = dictionary.result.aspectTypes[aspect.type];
-    return `${pointLabel(aspect.pointA, dictionary)} ${aspectName} ${pointLabel(aspect.pointB, dictionary)}`;
-  });
-  const hasTension = selected.some((aspect) => aspect.quality === "tense");
-  const hasHarmony = selected.some((aspect) => aspect.quality === "harmonious");
-  const emphasis = hasTension && hasHarmony
-    ? "Hay mezcla: algo fluye con naturalidad y algo pide mas conciencia, sobre todo cuando se repiten habitos automaticos."
-    : hasTension
-      ? "Esta capa trae intensidad y diferencia de ritmos; funciona mejor cuando se habla claro antes de reaccionar."
-      : "Esta capa tiene apoyo y facilidad; conviene usarla como un punto de descanso dentro de la relacion.";
-
-  return `${title}: ${strongest.join(" / ")}. ${emphasis}`;
+  return "";
 }
 
 function cleanJsonPayload(rawPayload: string) {
@@ -249,7 +234,6 @@ function normalizeSynastryData(data: SynastryData): SynastryData {
     layers: data.layers
       ? Object.fromEntries(Object.entries(data.layers).map(([key, value]) => [key, normalizeReadingText(value)]))
       : undefined,
-    fallback: data.fallback === true,
   };
 }
 
@@ -306,14 +290,11 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
     () => readingChartB ? calculateSynastryAspects(readingChartA, readingChartB) : [],
     [readingChartA, readingChartB],
   );
-  const fallbackCompatibility = useMemo(() => compatibilityLabel(aspects, locale), [aspects, locale]);
-  const compatibilityTitle = synastryData.compatibilityLabel ?? fallbackCompatibility.label;
-  const compatibilityDescription = synastryData.compatibilityDescription ?? fallbackCompatibility.description;
   const readingUnavailableMessage = locale === "en"
-    ? "The detailed reading could not load right now. I am showing the chart-based synthesis while it retries later."
+    ? "The detailed reading could not load right now."
     : locale === "it"
-      ? "La lettura dettagliata non e disponibile ora. Ti mostro una sintesi basata sugli aspetti, e potrai riprovare piu tardi."
-      : "La lectura detallada no pudo cargar ahora. Te muestro una sintesis basada en los aspectos mientras puedes volver a intentar luego.";
+      ? "La lettura dettagliata non e disponibile ora."
+      : "La lectura detallada no pudo cargar ahora.";
   const hasAiCompatibility = Boolean(synastryData.compatibilityLabel && synastryData.compatibilityDescription);
 
   useEffect(() => {
@@ -438,9 +419,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
           try {
             const parsedData = normalizeSynastryData(JSON.parse(jsonPayload) as SynastryData);
             setSynastryData(parsedData);
-            if (!parsedData.fallback) {
-              setCachedPremiumReading(readingSubjectHash, cacheKey, parsedData);
-            }
+            setCachedPremiumReading(readingSubjectHash, cacheKey, parsedData);
           } catch {
             setSynastryReadingError(readingUnavailableMessage);
             // JSON parse failed — synastryData stays empty until a valid payload arrives
@@ -499,8 +478,8 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
       <section className="py-10">
         <div className="mx-auto max-w-3xl text-center">
           <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">{synastryCopy.eyebrow}</p>
-          {compatibilityTitle ? (
-            <h2 className="mt-2 break-words font-serif text-[28px] leading-tight text-[#1e1a2e] sm:text-[48px]">{compatibilityTitle}</h2>
+          {synastryData.compatibilityLabel ? (
+            <h2 className="mt-2 break-words font-serif text-[28px] leading-tight text-[#1e1a2e] sm:text-[48px]">{synastryData.compatibilityLabel}</h2>
           ) : (
             <div className="mx-auto mt-4 h-10 w-72 animate-pulse rounded bg-black/8" />
           )}
@@ -564,23 +543,22 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
               {synastryCopy.bondEyebrow}
             </p>
-            {isLoadingReading && !hasAiCompatibility && !compatibilityDescription ? (
+            {isLoadingReading && !hasAiCompatibility ? (
               <div className="mt-3 animate-pulse space-y-2">
                 <div className="h-6 w-3/4 rounded bg-black/8" />
                 <div className="h-3 w-full rounded bg-black/6" />
                 <div className="h-3 w-5/6 rounded bg-black/6" />
               </div>
-            ) : compatibilityDescription ? (
+            ) : synastryReadingError && !hasAiCompatibility ? (
+              <p className="mt-3 text-sm leading-7 text-red-700">{synastryReadingError}</p>
+            ) : hasAiCompatibility ? (
               <>
                 <h3 className="mt-2 break-words font-serif text-[21px] leading-snug text-[#1e1a2e] sm:text-[22px]">
-                  {compatibilityTitle}
+                  {synastryData.compatibilityLabel}
                 </h3>
                 <p className="mt-3 text-sm leading-7 text-[#3a3048]">
-                  {compatibilityDescription}
+                  {synastryData.compatibilityDescription}
                 </p>
-                {synastryReadingError && !hasAiCompatibility ? (
-                  <p className="mt-4 text-xs leading-5 text-[#8a7a4e]">{synastryReadingError}</p>
-                ) : null}
               </>
             ) : null}
           </article>
@@ -621,6 +599,8 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
                       <div className="h-3 w-full rounded bg-black/6" />
                       <div className="h-3 w-5/6 rounded bg-black/6" />
                     </div>
+                  ) : synastryReadingError && !layerText ? (
+                    <p className="mt-3 text-sm leading-7 text-red-700">{synastryReadingError}</p>
                   ) : (
                     <>
                       {headline ? (
