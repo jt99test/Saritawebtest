@@ -163,21 +163,21 @@ h6 {
 @keyframes sarita-shooting-star {
   0% {
     opacity: 0;
-    transform: translate3d(-16vw, -8vh, 0) rotate(-18deg);
+    transform: translate3d(108vw, -8vh, 0);
   }
 
-  6% {
+  8% {
     opacity: 1;
   }
 
   18% {
-    opacity: 0.96;
+    opacity: 1;
   }
 
-  32%,
+  34%,
   100% {
     opacity: 0;
-    transform: translate3d(116vw, 38vh, 0) rotate(-18deg);
+    transform: translate3d(-14vw, 42vh, 0);
   }
 }
 
@@ -438,11 +438,7 @@ h6 {
 }
 
 .sarita-chart-night-field {
-  background:
-    radial-gradient(circle at 50% 20rem, rgba(124, 191, 255, 0.2), transparent 11rem),
-    radial-gradient(circle at 78% 12rem, rgba(0, 102, 255, 0.2), transparent 19rem),
-    radial-gradient(circle at 18% 26rem, rgba(0, 46, 160, 0.18), transparent 20rem),
-    linear-gradient(180deg, rgba(3, 8, 20, 0.98), rgba(7, 20, 55, 0.95) 44%, rgba(6, 19, 49, 0.86) 78%, rgba(3, 8, 20, 0.42) 100%);
+  background: transparent;
 }
 
 .sarita-chart-stage {
@@ -473,20 +469,12 @@ h6 {
 }
 
 .sarita-reading-panel {
-  background:
-    linear-gradient(120deg, rgba(245, 215, 130, 0.26), rgba(245, 215, 130, 0.06) 28%, rgba(124, 191, 255, 0.1) 100%) border-box,
-    radial-gradient(circle at 12% 0%, rgba(0, 102, 255, 0.16), transparent 16rem),
-    radial-gradient(circle at 88% 8%, rgba(245, 215, 130, 0.1), transparent 14rem),
-    linear-gradient(180deg, rgba(7, 20, 55, 0.96), rgba(3, 8, 20, 0.98)) padding-box;
-  border: 1px solid transparent;
-  border-radius: 2rem;
-  box-shadow:
-    0 28px 80px rgba(0, 0, 0, 0.28),
-    0 0 56px rgba(0, 102, 255, 0.18),
-    0 0 48px rgba(245, 215, 130, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
   color: #fffaf0;
-  padding: 1.5rem 1rem 2rem;
+  padding: 0;
 }
 
 .sarita-reading-panel h2,
@@ -503,11 +491,16 @@ h6 {
 }
 
 .bg-white,
-[class*="bg-white/"],
-[class*="bg-[#fffaf0"],
-[class*="bg-[#f8f"],
-[class*="bg-[#f5f0e6"],
-[class*="bg-[#eee7d9"] {
+.bg-white\/60,
+.bg-white\/62,
+.bg-white\/70,
+.bg-white\/74,
+.bg-white\/85,
+[class~="bg-[#fffaf0]"],
+[class~="bg-[#f8f2e8]/82"],
+[class~="bg-[#f8f4eb]/42"],
+[class~="bg-[#f5f0e6]"],
+[class~="bg-[#eee7d9]"] {
   background:
     radial-gradient(circle at 12% 0%, rgba(124, 191, 255, 0.1), transparent 14rem),
     linear-gradient(180deg, rgba(7, 20, 55, 0.98), rgba(3, 8, 20, 0.99)) padding-box !important;
@@ -560,10 +553,15 @@ h6 {
   color: var(--sarita-gold) !important;
 }
 
-.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class*="bg-white"],
-.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class*="bg-[#f8f2e8"],
-.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class*="bg-[#f8f4eb"],
-.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class*="bg-[#fbf7ef"] {
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white,
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/60,
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/62,
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/70,
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/74,
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/85,
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class~="bg-[#f8f2e8]/82"],
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class~="bg-[#f8f4eb]/42"],
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class~="bg-[#fbf7ef]"] {
   background:
     radial-gradient(circle at 12% 0%, rgba(124, 191, 255, 0.1), transparent 14rem),
     linear-gradient(180deg, rgba(7, 20, 55, 0.98), rgba(3, 8, 20, 0.99)) padding-box !important;
@@ -576,16 +574,21 @@ h6 {
   color: #fffaf0;
 }
 
-.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class*="bg-white"] :is(h2, h3, h4, p, li, span),
-.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class*="bg-[#f8f2e8"] :is(h2, h3, h4, p, li, span),
-.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class*="bg-[#f8f4eb"] :is(h2, h3, h4, p, li, span),
-.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class*="bg-[#fbf7ef"] :is(h2, h3, h4, p, li, span) {
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white :is(h2, h3, h4, p, li, span),
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/60 :is(h2, h3, h4, p, li, span),
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/62 :is(h2, h3, h4, p, li, span),
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/70 :is(h2, h3, h4, p, li, span),
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/74 :is(h2, h3, h4, p, li, span),
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/85 :is(h2, h3, h4, p, li, span),
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class~="bg-[#f8f2e8]/82"] :is(h2, h3, h4, p, li, span),
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class~="bg-[#f8f4eb]/42"] :is(h2, h3, h4, p, li, span),
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class~="bg-[#fbf7ef]"] :is(h2, h3, h4, p, li, span) {
   color: inherit;
 }
 
 @media (min-width: 640px) {
   .sarita-reading-panel {
-    padding: 2rem;
+    padding: 0;
   }
 }
 
@@ -708,31 +711,43 @@ h6 {
 
 .sarita-starfield span {
   animation: sarita-shooting-star 8.5s linear infinite;
-  background: linear-gradient(90deg, transparent, rgba(255, 250, 240, 1), rgba(124, 191, 255, 0.92), transparent);
+  background: radial-gradient(circle, rgba(255, 250, 240, 1) 0 28%, rgba(124, 191, 255, 0.85) 48%, transparent 72%);
   border-radius: 9999px;
   box-shadow:
-    0 0 12px rgba(255, 250, 240, 0.95),
-    0 0 26px rgba(124, 191, 255, 0.62);
-  height: 1px;
+    0 0 10px rgba(255, 250, 240, 1),
+    0 0 24px rgba(124, 191, 255, 0.72);
+  height: 5px;
   left: 0;
   opacity: 0;
   position: absolute;
   top: 12%;
-  width: 9rem;
+  width: 5px;
+}
+
+.sarita-starfield span::after {
+  background: linear-gradient(90deg, rgba(124, 191, 255, 0), rgba(255, 250, 240, 0.95));
+  border-radius: 9999px;
+  box-shadow: 0 0 10px rgba(124, 191, 255, 0.42);
+  content: "";
+  height: 1px;
+  position: absolute;
+  right: 3px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-15deg);
+  transform-origin: right center;
+  width: 4.75rem;
 }
 
 .sarita-starfield span:nth-child(2) {
   animation-delay: 3.4s;
   animation-duration: 10.5s;
   top: 34%;
-  width: 7rem;
 }
 
 .sarita-starfield span:nth-child(3) {
   animation-delay: 6.8s;
   animation-duration: 12s;
   top: 58%;
-  width: 11rem;
 }
 
 .sarita-section-label {
