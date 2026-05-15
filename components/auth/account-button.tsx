@@ -165,10 +165,10 @@ export function AccountButton({ compact = false, tone = "light" }: AccountButton
 
   const compactClassName = tone === "night"
     ? "sarita-night-pill flex h-10 w-10 items-center justify-center rounded-full text-lg transition"
-    : "flex h-10 w-10 items-center justify-center rounded-full border border-black/10 bg-[#fffaf0]/70 text-lg text-[#1e1a2e] transition hover:text-[#5c4a24]";
+    : "sarita-night-pill flex h-10 w-10 items-center justify-center rounded-full text-lg transition";
   const textClassName = tone === "night"
-    ? "max-w-[6.8rem] truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[#fffaf0]/84 transition hover:text-[#d7bd6a] min-[430px]:text-xs min-[430px]:tracking-[0.2em]"
-    : "max-w-[6.8rem] truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[#1e1a2e] transition hover:text-[#5c4a24] min-[430px]:text-xs min-[430px]:tracking-[0.2em]";
+    ? "max-w-[6.8rem] truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[#d7e7ff]/84 transition hover:text-[#f5d782] min-[430px]:text-xs min-[430px]:tracking-[0.2em]"
+    : "max-w-[6.8rem] truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[#d7e7ff]/84 transition hover:text-[#f5d782] min-[430px]:text-xs min-[430px]:tracking-[0.2em]";
 
   if (!user) {
     return (
@@ -217,21 +217,21 @@ export function AccountButton({ compact = false, tone = "light" }: AccountButton
           <Link
             href="/form"
             onClick={closeMenu}
-            className="block w-full border-b border-black/10 py-2 pb-3 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24] transition hover:text-[#1e1a2e]"
+            className="block w-full border-b border-[#d7e7ff]/12 py-2 pb-3 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#f5d782] transition hover:text-[#ffe7a3]"
           >
             {dictionary.common.newReading}
           </Link>
           <Link
             href="/lecturas"
             onClick={closeMenu}
-            className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-[#1e1a2e]"
+            className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#d7e7ff]/78 transition hover:text-[#f5d782]"
           >
             {dictionary.common.viewReadings}
           </Link>
           <Link
             href="/cuenta"
             onClick={closeMenu}
-            className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-[#1e1a2e]"
+            className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#d7e7ff]/78 transition hover:text-[#f5d782]"
           >
             {dictionary.nav.account}
           </Link>
@@ -239,7 +239,7 @@ export function AccountButton({ compact = false, tone = "light" }: AccountButton
             <Link
               href="/precios"
               onClick={closeMenu}
-              className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-[#1e1a2e]"
+              className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#d7e7ff]/78 transition hover:text-[#f5d782]"
             >
               {dictionary.nav.pricing}
             </Link>
@@ -248,7 +248,7 @@ export function AccountButton({ compact = false, tone = "light" }: AccountButton
               type="button"
               onClick={openBillingPortal}
               disabled={portalLoading}
-              className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-[#1e1a2e] disabled:cursor-wait disabled:opacity-50"
+              className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#d7e7ff]/78 transition hover:text-[#f5d782] disabled:cursor-wait disabled:opacity-50"
             >
               {portalLoading ? dictionary.paywall.checkoutLoading : dictionary.paywall.manageSubscription}
             </button>
@@ -256,7 +256,7 @@ export function AccountButton({ compact = false, tone = "light" }: AccountButton
           <Link
             href="/ayuda"
             onClick={closeMenu}
-            className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-[#1e1a2e]"
+            className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#d7e7ff]/78 transition hover:text-[#f5d782]"
           >
             {dictionary.nav.help}
           </Link>
@@ -264,7 +264,7 @@ export function AccountButton({ compact = false, tone = "light" }: AccountButton
             type="button"
             onClick={() => void signOut()}
             disabled={signingOut}
-            className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:text-[#1e1a2e] disabled:cursor-wait disabled:opacity-50"
+            className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#d7e7ff]/78 transition hover:text-[#f5d782] disabled:cursor-wait disabled:opacity-50"
           >
             {signingOut ? dictionary.auth.processing : dictionary.common.signOut}
           </button>

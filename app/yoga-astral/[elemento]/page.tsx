@@ -52,19 +52,19 @@ const ELEMENT_SIGN_GLYPHS: Record<Elemento, string[]> = {
 const ELEMENT_META: Record<Elemento, { emotional: string; badgeClass: string }> = {
   fuego: {
     emotional: "Mente",
-    badgeClass: "border-[#b66a4c]/30 bg-[#b66a4c]/10 text-[#793b2a]",
+    badgeClass: "border-[#f5d782]/38 bg-[#f5d782]/12 text-[#f5d782]",
   },
   tierra: {
     emotional: "Estructura",
-    badgeClass: "border-[#6f7f59]/30 bg-[#6f7f59]/10 text-[#435032]",
+    badgeClass: "border-[#d7e7ff]/28 bg-[#d7e7ff]/8 text-[#d7e7ff]",
   },
   agua: {
     emotional: "Mundo emocional",
-    badgeClass: "border-[#5f8390]/30 bg-[#5f8390]/10 text-[#36515c]",
+    badgeClass: "border-[#7cbfff]/36 bg-[#0066ff]/12 text-[#7cbfff]",
   },
   aire: {
     emotional: "Extroversión",
-    badgeClass: "border-[#7971a7]/30 bg-[#7971a7]/10 text-[#514a78]",
+    badgeClass: "border-[#d7e7ff]/24 bg-[#071437]/72 text-[#d7e7ff]",
   },
 };
 

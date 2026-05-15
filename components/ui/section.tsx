@@ -18,9 +18,9 @@ export function Section({
 }: SectionProps) {
   const toneClassName =
     tone === "dark"
-      ? "premium-noise overflow-hidden bg-[#13111c] text-[#f5f0e6] shadow-[0_18px_52px_rgba(0,0,0,0.18)]"
+      ? "premium-noise overflow-hidden bg-[#071437] text-[#d7e7ff] shadow-[0_18px_52px_rgba(0,0,0,0.24),0_0_34px_rgba(0,102,255,0.1)]"
       : tone === "tinted"
-        ? "premium-noise overflow-hidden border border-dusty-gold/16 bg-[#f8f3ea] text-[#1e1a2e] shadow-[0_14px_40px_rgba(30,26,46,0.08),inset_0_1px_0_rgba(255,255,255,0.75)]"
+        ? "premium-noise overflow-hidden border border-[#f5d782]/20 bg-[#071437]/88 text-[#d7e7ff] shadow-[0_14px_40px_rgba(0,0,0,0.18),0_0_30px_rgba(0,102,255,0.1),inset_0_1px_0_rgba(255,250,240,0.12)]"
       : "";
 
   return (

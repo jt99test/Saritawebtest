@@ -149,7 +149,7 @@ export function AuthModal() {
   }
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[#1e1a2e]/35 px-4 backdrop-blur-[10px]">
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[#030814]/72 px-4 backdrop-blur-[10px]">
       <button
         type="button"
         className="absolute inset-0 cursor-default"
@@ -157,17 +157,17 @@ export function AuthModal() {
         onClick={closeModal}
       />
 
-      <div className="relative w-full max-w-[430px] border border-black/10 bg-cosmic-950 px-6 py-6 shadow-[0_28px_90px_rgba(30,26,46,0.22)]">
+      <div className="relative w-full max-w-[430px] border border-[#f5d782]/28 bg-[#071437]/96 px-6 py-6 text-[#d7e7ff] shadow-[0_28px_90px_rgba(0,0,0,0.38),0_0_34px_rgba(0,102,255,0.14)]">
         <button
           type="button"
           onClick={closeModal}
-          className="absolute right-4 top-4 text-[18px] leading-none text-[#3a3048] transition hover:text-[#5c4a24]"
+          className="absolute right-4 top-4 text-[18px] leading-none text-[#d7e7ff]/72 transition hover:text-[#f5d782]"
           aria-label={dictionary.common.close}
         >
           ×
         </button>
 
-        <div className="mb-6 flex border-b border-black/10">
+        <div className="mb-6 flex border-b border-[#d7e7ff]/14">
           {[
             { id: "sign-up", label: dictionary.auth.signUp },
             { id: "sign-in", label: dictionary.auth.signIn },
@@ -182,8 +182,8 @@ export function AuthModal() {
               className={[
                 "border-b px-4 pb-3 pt-1 text-[12px] font-semibold uppercase tracking-[0.2em] transition",
                 mode === tab.id
-                  ? "border-dusty-gold text-dusty-gold"
-                  : "border-transparent text-[#3a3048] hover:text-[#5c4a24]",
+                  ? "border-[#f5d782] text-[#f5d782]"
+                  : "border-transparent text-[#d7e7ff]/72 hover:text-[#f5d782]",
               ].join(" ")}
             >
               {tab.label}
@@ -195,7 +195,7 @@ export function AuthModal() {
           type="button"
           onClick={() => void handleGoogleAuth()}
           disabled={pending}
-          className="flex w-full items-center justify-center gap-3 border border-black/10 bg-white px-4 py-3 text-sm text-[#3a3048] transition hover:bg-black/[0.02] disabled:cursor-wait disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-3 border border-[#d7e7ff]/16 bg-[#061331]/82 px-4 py-3 text-sm text-[#d7e7ff] transition hover:border-[#f5d782]/35 disabled:cursor-wait disabled:opacity-50"
         >
           <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
             <path fill="#4285F4" d="M21.6 12.23c0-.74-.07-1.45-.19-2.13H12v4.03h5.38a4.6 4.6 0 0 1-1.99 3.02v2.51h3.23c1.89-1.74 2.98-4.3 2.98-7.43Z" />
@@ -207,14 +207,14 @@ export function AuthModal() {
         </button>
 
         <div className="my-4 flex items-center gap-3">
-          <div className="flex-1 border-t border-black/10" />
-          <span className="text-[12px] uppercase tracking-[0.2em] text-[#3a3048]">{dictionary.auth.or}</span>
-          <div className="flex-1 border-t border-black/10" />
+          <div className="flex-1 border-t border-[#d7e7ff]/14" />
+          <span className="text-[12px] uppercase tracking-[0.2em] text-[#d7e7ff]/62">{dictionary.auth.or}</span>
+          <div className="flex-1 border-t border-[#d7e7ff]/14" />
         </div>
 
         <form className="space-y-4" onSubmit={handleEmailAuth}>
           <label className="block">
-            <span className="mb-2 block text-[12px] font-semibold uppercase tracking-[0.22em] text-[#3a3048]">
+            <span className="mb-2 block text-[12px] font-semibold uppercase tracking-[0.22em] text-[#d7e7ff]/72">
               {dictionary.auth.email}
             </span>
             <input
@@ -222,7 +222,7 @@ export function AuthModal() {
               required
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              className="w-full border border-black/15 bg-white px-4 py-3 text-sm text-ivory outline-none transition placeholder:text-[#3a3048]/55 focus:border-dusty-gold/55"
+              className="w-full border border-[#d7e7ff]/18 bg-[#030814]/54 px-4 py-3 text-sm text-[#fffaf0] outline-none transition placeholder:text-[#d7e7ff]/45 focus:border-[#f5d782]/55"
               placeholder={dictionary.auth.emailPlaceholder}
             />
           </label>
@@ -232,14 +232,14 @@ export function AuthModal() {
               type="button"
               onClick={() => void handlePasswordReset()}
               disabled={pending}
-              className="-mt-1 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:text-dusty-gold disabled:cursor-wait disabled:opacity-50"
+              className="-mt-1 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#f5d782] transition hover:text-[#ffe7a3] disabled:cursor-wait disabled:opacity-50"
             >
               {dictionary.auth.forgotPassword}
             </button>
           ) : null}
 
           <label className="block">
-            <span className="mb-2 block text-[12px] font-semibold uppercase tracking-[0.22em] text-[#3a3048]">
+            <span className="mb-2 block text-[12px] font-semibold uppercase tracking-[0.22em] text-[#d7e7ff]/72">
               {dictionary.auth.password}
             </span>
             <input
@@ -248,13 +248,13 @@ export function AuthModal() {
               minLength={6}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="w-full border border-black/15 bg-white px-4 py-3 text-sm text-ivory outline-none transition placeholder:text-[#3a3048]/55 focus:border-dusty-gold/55"
+              className="w-full border border-[#d7e7ff]/18 bg-[#030814]/54 px-4 py-3 text-sm text-[#fffaf0] outline-none transition placeholder:text-[#d7e7ff]/45 focus:border-[#f5d782]/55"
               placeholder={dictionary.auth.passwordPlaceholder}
             />
           </label>
 
           {message ? (
-            <p className="border-l border-dusty-gold/45 bg-white/55 py-2 pl-3 pr-2 text-sm leading-6 text-[#3a3048]">
+            <p className="border-l border-[#f5d782]/45 bg-[#f5d782]/8 py-2 pl-3 pr-2 text-sm leading-6 text-[#d7e7ff]">
               {message}
             </p>
           ) : null}
@@ -262,15 +262,15 @@ export function AuthModal() {
           <button
             type="submit"
             disabled={pending}
-            className="w-full border-t border-dusty-gold/20 pt-4 text-center text-[12px] font-semibold uppercase tracking-[0.22em] text-dusty-gold transition hover:opacity-70 disabled:cursor-wait disabled:opacity-50"
+            className="w-full border-t border-[#f5d782]/20 pt-4 text-center text-[12px] font-semibold uppercase tracking-[0.22em] text-[#f5d782] transition hover:text-[#ffe7a3] disabled:cursor-wait disabled:opacity-50"
           >
             {pending ? dictionary.auth.processing : mode === "sign-up" ? dictionary.auth.signUp : dictionary.auth.signIn}
           </button>
         </form>
 
-        <div className="mt-5 flex justify-center gap-4 border-t border-black/10 pt-4 text-[12px] uppercase tracking-[0.18em] text-[#3a3048]">
-          <a href="/privacidad" className="transition hover:text-dusty-gold">{dictionary.legal.privacy}</a>
-          <a href="/terminos" className="transition hover:text-dusty-gold">{dictionary.legal.terms}</a>
+        <div className="mt-5 flex justify-center gap-4 border-t border-[#d7e7ff]/14 pt-4 text-[12px] uppercase tracking-[0.18em] text-[#d7e7ff]/62">
+          <a href="/privacidad" className="transition hover:text-[#f5d782]">{dictionary.legal.privacy}</a>
+          <a href="/terminos" className="transition hover:text-[#f5d782]">{dictionary.legal.terms}</a>
         </div>
       </div>
     </div>

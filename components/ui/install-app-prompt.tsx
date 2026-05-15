@@ -145,26 +145,26 @@ export function InstallAppPrompt() {
   }
 
   return (
-    <div className="fixed inset-x-4 bottom-[7rem] z-[1100] mx-auto max-w-md border border-dusty-gold/30 bg-[#f8f4eb]/96 p-4 text-[#1e1a2e] shadow-[0_22px_70px_rgba(30,26,46,0.22)] backdrop-blur-md sm:bottom-6 sm:right-6 sm:left-auto sm:mx-0">
+    <div className="fixed inset-x-4 bottom-[7rem] z-[1100] mx-auto max-w-md border border-[#f5d782]/38 bg-[#071437]/94 p-4 text-[#d7e7ff] shadow-[0_22px_70px_rgba(0,0,0,0.34),0_0_34px_rgba(0,102,255,0.14)] backdrop-blur-md sm:bottom-6 sm:right-6 sm:left-auto sm:mx-0">
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-dusty-gold/35 bg-dusty-gold/12 font-serif text-lg text-[#5c4a24]">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-[#f5d782]/45 bg-[#f5d782]/14 font-serif text-lg text-[#f5d782]">
           S
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#f5d782]">
             {text.eyebrow}
           </p>
-          <h2 className="mt-1 font-serif text-xl leading-snug text-[#1e1a2e]">
+          <h2 className="mt-1 font-serif text-xl leading-snug text-[#fffaf0]">
             {text.title}
           </h2>
-          <p className="mt-2 text-sm leading-6 text-[#3a3048]">
+          <p className="mt-2 text-sm leading-6 text-[#d7e7ff]/72">
             {body}
           </p>
         </div>
         <button
           type="button"
           onClick={dismiss}
-          className="shrink-0 px-2 py-1 text-sm text-[#8a7a4e] transition hover:text-[#1e1a2e]"
+          className="shrink-0 px-2 py-1 text-sm text-[#f5d782] transition hover:text-[#ffe7a3]"
           aria-label={text.close}
         >
           ×
@@ -174,7 +174,7 @@ export function InstallAppPrompt() {
         <button
           type="button"
           onClick={dismiss}
-          className="border border-black/10 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#3a3048] transition hover:border-black/15 hover:text-[#1e1a2e]"
+          className="border border-[#d7e7ff]/18 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#d7e7ff] transition hover:border-[#f5d782]/45 hover:text-[#f5d782]"
         >
           {text.later}
         </button>
@@ -182,7 +182,7 @@ export function InstallAppPrompt() {
           <button
             type="button"
             onClick={installApp}
-            className="border border-dusty-gold/45 bg-dusty-gold/14 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24] transition hover:bg-dusty-gold/20"
+            className="border border-[#f5d782]/50 bg-[#f5d782]/14 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#f5d782] transition hover:bg-[#f5d782]/20"
           >
             {text.install}
           </button>

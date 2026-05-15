@@ -737,7 +737,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
           onSelect={(place: PlaceSuggestion) => setForm((current) => ({ ...current, birthCity: place.displayName, selectedLocation: place }))}
           dictionary={dictionary}
         />
-        {error ? <p className="text-sm text-amber-100/80">{error}</p> : null}
+        {error ? <p className="text-sm text-[#f5d782]/82">{error}</p> : null}
         <PrimaryButton type="button" onClick={savePartner} disabled={isPending || !form.name || !form.birthDate || !form.birthCity}>
           {isPending ? synastryCopy.saving : synastryCopy.saveAndCompare}
         </PrimaryButton>

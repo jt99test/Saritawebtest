@@ -115,18 +115,18 @@ export function HomePage({ moonStatus }: HomePageProps) {
       <section className="relative isolate min-h-screen overflow-hidden">
         <div className="sarita-solar-system pointer-events-none absolute inset-0 z-0 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,250,240,0.08),transparent_22rem),radial-gradient(circle_at_74%_56%,rgba(80,93,196,0.18),transparent_18rem)]" />
-          <div className="absolute left-1/2 top-[43%] h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_32%_28%,#fff4b0,#d8a83d_44%,rgba(216,168,61,0.16)_68%,transparent_72%)] shadow-[0_0_50px_rgba(215,189,106,0.42),0_0_120px_rgba(122,75,255,0.18)] sm:h-28 sm:w-28" />
+          <div className="absolute left-1/2 top-[43%] h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_32%_28%,#fff4b0,#f5d782_44%,rgba(245,215,130,0.16)_68%,transparent_72%)] shadow-[0_0_50px_rgba(245,215,130,0.42),0_0_120px_rgba(0,102,255,0.18)] sm:h-28 sm:w-28" />
           <div className="sarita-solar-orbit h-[15rem] w-[15rem] sm:h-[23rem] sm:w-[23rem]">
             <span className="sarita-solar-planet right-7 top-4 h-2.5 w-2.5 bg-[#fffaf0] text-[#fffaf0]" />
           </div>
           <div className="sarita-solar-orbit h-[23rem] w-[23rem] sm:h-[34rem] sm:w-[34rem]">
-            <span className="sarita-solar-planet bottom-10 left-12 h-3.5 w-3.5 bg-[#d7bd6a] text-[#d7bd6a]" />
+            <span className="sarita-solar-planet bottom-10 left-12 h-3.5 w-3.5 bg-[#f5d782] text-[#f5d782]" />
           </div>
           <div className="sarita-solar-orbit h-[32rem] w-[32rem] sm:h-[48rem] sm:w-[48rem]">
-            <span className="sarita-solar-planet right-16 top-20 h-5 w-5 bg-[#8b8dd8] text-[#8b8dd8]" />
+            <span className="sarita-solar-planet right-16 top-20 h-5 w-5 bg-[#7cbfff] text-[#7cbfff]" />
           </div>
           <div className="sarita-solar-orbit h-[42rem] w-[42rem] sm:h-[62rem] sm:w-[62rem]">
-            <span className="sarita-solar-planet bottom-28 right-24 h-3 w-3 bg-[#c06fb1] text-[#c06fb1]" />
+            <span className="sarita-solar-planet bottom-28 right-24 h-3 w-3 bg-[#0066ff] text-[#0066ff]" />
           </div>
         </div>
         <Container className="relative z-10 flex min-h-screen flex-col px-4 pb-5 pt-[calc(env(safe-area-inset-top)+1rem)] sm:pb-10 sm:pt-6">
@@ -157,13 +157,13 @@ export function HomePage({ moonStatus }: HomePageProps) {
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#8a7a4e]">{dictionary.brand.name}</p>
-                    <p className="mt-2 font-serif text-2xl text-[#1e1a2e]">{dictionary.home.subtitle}</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#f5d782]">{dictionary.brand.name}</p>
+                    <p className="mt-2 font-serif text-2xl text-[#fffaf0]">{dictionary.home.subtitle}</p>
                   </div>
                   <button
                     type="button"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="px-2 text-xl text-[#8a7a4e]"
+                    className="px-2 text-xl text-[#f5d782]"
                     aria-label={dictionary.common.close}
                   >
                     ×
@@ -184,7 +184,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                 <div className="mt-5 border-t border-black/10 pt-4">
                   {user ? (
                     <div className="grid gap-2">
-                      <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                      <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#f5d782]">
                         {dictionary.common.account}
                       </p>
                       <Link
@@ -216,7 +216,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <div className="min-w-0 flex-1 pt-2">
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="hidden h-px w-10 shrink-0 bg-gradient-to-r from-dusty-gold to-transparent min-[420px]:block sm:w-14" />
-                <p className="truncate text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d7bd6a] sm:text-[12px] sm:tracking-[0.32em]">
+                <p className="truncate text-[10px] font-semibold uppercase tracking-[0.18em] text-[#f5d782] sm:text-[12px] sm:tracking-[0.32em]">
                   {dictionary.home.eyebrow}
                 </p>
               </div>
@@ -225,7 +225,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <div className="ml-auto flex items-center gap-3 sm:gap-4">
               <Link
                 href="/precios"
-                className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-[#fffaf0]/84 transition hover:text-[#d7bd6a] sm:inline"
+                className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-[#fffaf0]/84 transition hover:text-[#f5d782] sm:inline"
               >
                 {dictionary.nav.pricing}
               </Link>
@@ -298,7 +298,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             >
               <PrimaryButton
                 href="/form"
-                className="min-h-14 min-w-0 px-9 py-4 text-[0.78rem] uppercase tracking-[0.18em] shadow-[0_18px_44px_rgba(215,189,106,0.22),0_18px_42px_rgba(0,0,0,0.28)] sm:min-w-64 sm:px-10 sm:py-4 sm:text-[0.8rem]"
+                className="min-h-14 min-w-0 px-9 py-4 text-[0.78rem] uppercase tracking-[0.18em] shadow-[0_18px_44px_rgba(245,215,130,0.22),0_18px_42px_rgba(0,0,0,0.28)] sm:min-w-64 sm:px-10 sm:py-4 sm:text-[0.8rem]"
               >
                 {dictionary.home.cta}
               </PrimaryButton>
@@ -323,7 +323,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                       {moonPhaseLabel} en {moonSignLabel}
                     </p>
                   </div>
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#d7bd6a]/35 bg-[radial-gradient(circle_at_30%_30%,rgba(255,250,240,0.18),rgba(215,189,106,0.12),rgba(7,7,19,0.68))] font-serif text-2xl text-[#d7bd6a] shadow-[0_0_24px_rgba(122,75,255,0.18)]">
+                  <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#f5d782]/35 bg-[radial-gradient(circle_at_30%_30%,rgba(255,250,240,0.18),rgba(245,215,130,0.12),rgba(7,20,55,0.68))] font-serif text-2xl text-[#f5d782] shadow-[0_0_24px_rgba(0,102,255,0.18)]">
                     ☾
                   </div>
                 </div>
@@ -351,9 +351,9 @@ export function HomePage({ moonStatus }: HomePageProps) {
                     >
                       <Link
                         href={item.href}
-                        className="grid grid-cols-[2.5rem_1fr] gap-x-3 rounded-[1.6rem] border border-[#d7bd6a]/32 bg-[#071437]/44 px-4 py-4 shadow-[0_0_28px_rgba(0,102,255,0.12),0_8px_22px_rgba(0,0,0,0.18)] transition hover:border-[#f5d782]/60 hover:bg-[#0a1f58]/54"
+                        className="grid grid-cols-[2.5rem_1fr] gap-x-3 rounded-[1.6rem] border border-[#f5d782]/32 bg-[#071437]/44 px-4 py-4 shadow-[0_0_28px_rgba(0,102,255,0.12),0_8px_22px_rgba(0,0,0,0.18)] transition hover:border-[#f5d782]/60 hover:bg-[#0a1f58]/54"
                       >
-                        <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#f5d782]/48 bg-[radial-gradient(circle_at_32%_24%,#fff7bf,rgba(215,189,106,0.82)_52%,rgba(5,19,49,0.4))] text-[11px] font-semibold uppercase tracking-[0.12em] text-[#1e1a2e] shadow-[0_0_20px_rgba(215,189,106,0.2)]">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#f5d782]/48 bg-[radial-gradient(circle_at_32%_24%,#fff7bf,rgba(245,215,130,0.82)_52%,rgba(5,19,49,0.4))] text-[11px] font-semibold uppercase tracking-[0.12em] text-[#030814] shadow-[0_0_20px_rgba(245,215,130,0.2)]">
                           0{index + 1}
                         </span>
                         <span className="min-w-0">
@@ -408,7 +408,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                 <button
                   type="button"
                   onClick={() => setShowAllFeatures((current) => !current)}
-                  className="border border-[#d7bd6a]/50 bg-[#071437]/54 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#f5d782] shadow-[0_0_24px_rgba(0,102,255,0.12)]"
+                  className="border border-[#f5d782]/50 bg-[#071437]/54 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#f5d782] shadow-[0_0_24px_rgba(0,102,255,0.12)]"
                 >
                   {showAllFeatures ? lessReadingsLabel : moreReadingsLabel}
                 </button>

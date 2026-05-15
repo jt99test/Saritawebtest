@@ -10,11 +10,11 @@ type AsanaVisualProps = {
 };
 
 const TONE_GLOW: Record<AsanaVisualTone, string> = {
-  fuego: "rgba(182,106,76,0.12)",
-  tierra: "rgba(111,127,89,0.1)",
-  agua: "rgba(95,131,144,0.1)",
-  aire: "rgba(121,113,167,0.1)",
-  neutral: "rgba(111,90,42,0.08)",
+  fuego: "rgba(245,215,130,0.18)",
+  tierra: "rgba(215,231,255,0.12)",
+  agua: "rgba(0,102,255,0.16)",
+  aire: "rgba(124,191,255,0.14)",
+  neutral: "rgba(245,215,130,0.1)",
 };
 
 export function AsanaVisual({
@@ -24,7 +24,7 @@ export function AsanaVisual({
   className = "",
 }: AsanaVisualProps) {
   const frameClassName =
-    `aspect-[3/4] w-full overflow-hidden rounded-[1.15rem] border border-black/10 bg-[#f5f0e6] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.44)] ${className}`.trim();
+    `aspect-[3/4] w-full overflow-hidden rounded-[1.15rem] border border-[#d7e7ff]/14 bg-[#071437] shadow-[0_0_28px_rgba(0,102,255,0.08),inset_0_1px_0_rgba(255,250,240,0.12)] ${className}`.trim();
   const imageAlt = asana.nameSanskrit === asana.nameSpanish
     ? asana.nameSpanish
     : `${asana.nameSanskrit} · ${asana.nameSpanish}`;
@@ -39,7 +39,7 @@ export function AsanaVisual({
           className="h-full w-full object-contain object-center opacity-[0.88] brightness-[1.22] contrast-[0.88] saturate-[0.78] sepia-[0.18]"
         />
         <div
-          className="pointer-events-none absolute inset-0 bg-[#f5f0e6]/20 mix-blend-screen"
+          className="pointer-events-none absolute inset-0 bg-[#7cbfff]/10 mix-blend-screen"
           style={{ backgroundImage: `radial-gradient(circle at 50% 34%, ${TONE_GLOW[tone]}, transparent 48%)` }}
         />
       </div>
@@ -50,7 +50,7 @@ export function AsanaVisual({
     <div
       className={`flex ${frameClassName} items-center justify-center px-6 text-center`}
       style={{
-        backgroundImage: `radial-gradient(circle at 50% 34%, ${TONE_GLOW[tone]}, transparent 46%), linear-gradient(180deg, rgba(255,250,240,0.92), rgba(245,240,230,0.62))`,
+        backgroundImage: `radial-gradient(circle at 50% 34%, ${TONE_GLOW[tone]}, transparent 46%), linear-gradient(180deg, rgba(7,20,55,0.92), rgba(3,8,20,0.72))`,
       }}
     >
       <div className="flex max-w-[15rem] flex-col items-center">
@@ -63,7 +63,7 @@ export function AsanaVisual({
         <p className="mt-5 font-serif text-2xl leading-tight text-ivory/88">
           {asana.nameSpanish}
         </p>
-        <p className="mt-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048]">
+        <p className="mt-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#d7e7ff]/66">
           {missingImageLabel}
         </p>
       </div>

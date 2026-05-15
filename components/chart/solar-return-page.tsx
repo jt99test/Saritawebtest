@@ -617,7 +617,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
           </div>
           <p className="mt-2 text-xs leading-5 text-[#3a3048]">{solarCopy.cityHint}</p>
         </div>
-        {error ? <p className="text-sm text-amber-100/80">{error}</p> : null}
+        {error ? <p className="text-sm text-[#f5d782]/82">{error}</p> : null}
         <PrimaryButton type="button" onClick={calculate} disabled={isPending}>
           {isPending ? solarCopy.calculating : solarCopy.viewYear.replace("{year}", String(targetYear))}
         </PrimaryButton>

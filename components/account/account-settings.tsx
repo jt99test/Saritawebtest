@@ -77,12 +77,12 @@ export function AccountSettings({ dictionary, email, confirmWord }: AccountSetti
         </div>
 
         {deleteExpanded ? (
-          <div className="mt-5 border border-rose-300/24 bg-rose-50/35 p-5">
+          <div className="mt-5 border border-[#f5d782]/28 bg-[#f5d782]/8 p-5 shadow-[0_0_28px_rgba(245,215,130,0.08)]">
             <p className="text-sm leading-6 text-[#3a3048]">{dictionary.account.deleteWarning}</p>
             <button
               type="button"
               onClick={() => setDeleteOpen(true)}
-              className="mt-4 border border-rose-300/45 px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-rose-950 transition hover:bg-rose-100/60"
+              className="mt-4 border border-[#f5d782]/45 px-5 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#f5d782] transition hover:bg-[#f5d782]/12"
             >
               {dictionary.account.deleteAccount}
             </button>
@@ -92,14 +92,14 @@ export function AccountSettings({ dictionary, email, confirmWord }: AccountSetti
 
       {deleteOpen ? (
         <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/72 px-4 backdrop-blur-[10px]">
-          <div className="w-full max-w-md border border-black/10 bg-cosmic-950 p-6 shadow-[0_28px_90px_rgba(0,0,0,0.58)]">
+          <div className="w-full max-w-md border border-[#f5d782]/28 bg-[#071437]/96 p-6 shadow-[0_28px_90px_rgba(0,0,0,0.58),0_0_34px_rgba(0,102,255,0.14)]">
             <h2 className="font-serif text-3xl text-ivory">{dictionary.account.deleteConfirmTitle}</h2>
             <p className="mt-3 text-sm leading-7 text-[#3a3048]">{dictionary.account.deleteConfirmBody}</p>
             <input
               value={confirmValue}
               onChange={(event) => setConfirmValue(event.target.value)}
               placeholder={dictionary.account.deleteConfirmPlaceholder}
-              className="mt-5 w-full border border-black/15 bg-cosmic-900 px-4 py-4 text-sm text-ivory outline-none transition placeholder:text-muted-ivory hover:border-black/25 focus:border-amber-300/45"
+              className="mt-5 w-full border border-[#d7e7ff]/16 bg-[#030814]/62 px-4 py-4 text-sm text-[#fffaf0] outline-none transition placeholder:text-[#d7e7ff]/45 hover:border-[#d7e7ff]/24 focus:border-[#f5d782]/50"
             />
             <div className="mt-5 flex flex-col gap-3 sm:flex-row">
               <button
@@ -113,7 +113,7 @@ export function AccountSettings({ dictionary, email, confirmWord }: AccountSetti
                 type="button"
                 onClick={deleteAccount}
                 disabled={pending || confirmValue !== confirmWord}
-                className="flex-1 border border-amber-300/30 bg-amber-300/10 px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-amber-100 transition hover:bg-amber-300/14 disabled:cursor-not-allowed disabled:opacity-40"
+                className="flex-1 border border-[#f5d782]/36 bg-[#f5d782]/12 px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#f5d782] transition hover:bg-[#f5d782]/18 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {dictionary.account.deleteButton}
               </button>

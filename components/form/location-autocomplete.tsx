@@ -147,15 +147,15 @@ export function LocationAutocomplete({
         aria-expanded={showDropdown}
         aria-controls={listId}
         aria-autocomplete="list"
-        className="min-h-[4.25rem] w-full appearance-none rounded-2xl border border-black/10 bg-white/70 px-5 py-4 text-[16px] leading-6 text-[#1e1a2e] shadow-[0_2px_8px_rgba(0,0,0,0.06)] outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-[#3a3048]/55 hover:border-black/15 focus:border-dusty-gold/50 focus:shadow-[0_0_0_3px_rgba(111,90,42,0.12)] disabled:opacity-50 sm:text-sm sm:placeholder:text-sm"
+        className="min-h-[4.25rem] w-full appearance-none rounded-2xl border border-[#d7e7ff]/16 bg-[#071437]/72 px-5 py-4 text-[16px] leading-6 text-[#fffaf0] shadow-[0_2px_10px_rgba(0,0,0,0.16),0_0_22px_rgba(0,102,255,0.08)] outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-[#d7e7ff]/45 hover:border-[#d7e7ff]/24 focus:border-[#f5d782]/55 focus:shadow-[0_0_0_3px_rgba(245,215,130,0.12)] disabled:opacity-50 sm:text-sm sm:placeholder:text-sm"
       />
 
       {selectedLocation ? (
-        <p className="mt-2 text-xs leading-5 text-[#5c4a24]">
+        <p className="mt-2 text-xs leading-5 text-[#f5d782]">
           {dictionary.form.locationStatus.selected}: {selectedLocation.displayName}
         </p>
       ) : (
-        <p className="mt-2 text-xs leading-5 text-[#3a3048]">{dictionary.form.locationStatus.hint}</p>
+        <p className="mt-2 text-xs leading-5 text-[#d7e7ff]/64">{dictionary.form.locationStatus.hint}</p>
       )}
 
       {showDropdown ? (
@@ -180,18 +180,18 @@ export function LocationAutocomplete({
                       onClick={() => handleSelect(suggestion)}
                       className={[
                         "flex w-full items-start justify-between gap-4 px-4 py-3 text-left transition",
-                        active ? "bg-black/[0.06]" : "hover:bg-black/[0.04]",
+                        active ? "bg-[#0066ff]/12" : "hover:bg-[#7cbfff]/8",
                       ].join(" ")}
                     >
                       <div>
                         <p className="text-sm text-ivory">{suggestion.displayName}</p>
-                        <p className="mt-1 text-xs text-[#3a3048]">
+                        <p className="mt-1 text-xs text-[#d7e7ff]/62">
                           {suggestion.city}
                           {suggestion.region ? ` · ${suggestion.region}` : ""}
                           {suggestion.country ? ` · ${suggestion.country}` : ""}
                         </p>
                       </div>
-                      <span className="mt-0.5 text-[12px] uppercase tracking-[0.22em] text-[#5c4a24]">
+                      <span className="mt-0.5 text-[12px] uppercase tracking-[0.22em] text-[#f5d782]">
                         {suggestion.timezone}
                       </span>
                     </button>

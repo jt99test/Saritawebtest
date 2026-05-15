@@ -42,7 +42,7 @@ export function LunationHeaderCard({
         <span>{dateLabel}</span>
       </p>
       {metadata.eclipse?.isEclipse ? (
-        <p className="mt-5 inline-flex border border-amber-300/28 bg-amber-300/[0.08] px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.22em] text-amber-200/82">
+        <p className="mt-5 inline-flex border border-[#f5d782]/32 bg-[#f5d782]/[0.08] px-4 py-3 text-[12px] font-semibold uppercase tracking-[0.22em] text-[#f5d782]/86">
           {metadata.eclipse.kind === "solar" ? dictionary.lunar.solarEclipse : dictionary.lunar.lunarEclipse}
         </p>
       ) : null}

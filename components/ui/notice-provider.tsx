@@ -50,10 +50,10 @@ export function NoticeProvider() {
 
   const toneClass =
     notice.tone === "success"
-      ? "border-emerald-300/35 bg-emerald-50 text-emerald-950"
+      ? "border-[#7cbfff]/40 bg-[#071437]/95 text-[#d7e7ff]"
       : notice.tone === "error"
-        ? "border-rose-300/40 bg-rose-50 text-rose-950"
-        : "border-dusty-gold/35 bg-[#f8f4eb] text-[#3a3048]";
+        ? "border-[#f5d782]/44 bg-[#071437]/95 text-[#fffaf0]"
+        : "border-[#f5d782]/35 bg-[#071437]/95 text-[#d7e7ff]";
 
   return (
     <div className="fixed left-1/2 top-4 z-[1200] w-[calc(100vw-2rem)] max-w-sm -translate-x-1/2 sm:left-auto sm:right-5 sm:translate-x-0">
@@ -61,7 +61,7 @@ export function NoticeProvider() {
         key={notice.id}
         role="status"
         aria-live="polite"
-        className={`border px-4 py-3 text-sm leading-6 shadow-[0_18px_54px_rgba(30,26,46,0.18)] backdrop-blur-md ${toneClass}`}
+        className={`border px-4 py-3 text-sm leading-6 shadow-[0_18px_54px_rgba(0,0,0,0.28),0_0_28px_rgba(0,102,255,0.12)] backdrop-blur-md ${toneClass}`}
       >
         {notice.message}
       </div>

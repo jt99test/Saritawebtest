@@ -454,15 +454,15 @@ function SolarReturnNote({ point, copy, locale }: { point: ChartPoint; copy: Ret
 
 function qualityLabel(quality: SynastryAspect["quality"], locale: string) {
   if (quality === "harmonious" && locale === "en") {
-    return { label: "Harmonious", className: "text-emerald-700" };
+    return { label: "Harmonious", className: "text-[#7cbfff]" };
   }
 
   if (quality === "harmonious" && locale === "it") {
-    return { label: "Armonico", className: "text-emerald-700" };
+    return { label: "Armonico", className: "text-[#7cbfff]" };
   }
 
   if (quality === "harmonious") {
-    return { label: "Armónico", className: "text-emerald-700" };
+    return { label: "Armónico", className: "text-[#7cbfff]" };
   }
 
   if (quality === "tense") {

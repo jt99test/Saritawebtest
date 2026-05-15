@@ -56,12 +56,12 @@ export function RoutineCompletionButton({
         className={[
           "inline-flex items-center justify-center gap-2 rounded-full border px-5 py-3 text-xs font-semibold uppercase tracking-[0.22em] transition",
           completed
-            ? "border-[#6f7f59]/45 bg-[#6f7f59]/16 text-[#435032] shadow-[0_10px_28px_rgba(67,80,50,0.12)]"
-            : "border-dusty-gold/35 bg-dusty-gold/12 text-[#5c4a24] hover:border-dusty-gold/55 hover:bg-dusty-gold/18",
+            ? "border-[#7cbfff]/45 bg-[#0066ff]/16 text-[#d7e7ff] shadow-[0_10px_28px_rgba(0,102,255,0.16)]"
+            : "border-[#f5d782]/35 bg-[#f5d782]/12 text-[#f5d782] hover:border-[#f5d782]/55 hover:bg-[#f5d782]/18",
         ].join(" ")}
       >
         {completed ? (
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#6f7f59] text-white">
+          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[#f5d782] text-[#030814]">
             <svg className="h-3.5 w-3.5" viewBox="0 0 16 16" fill="none" aria-hidden="true">
               <path d="M3.5 8.2 6.6 11 12.5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -70,7 +70,7 @@ export function RoutineCompletionButton({
         {completed ? copy.completed : copy.markComplete}
       </button>
       {completed ? (
-        <p className="text-xs leading-5 text-[#3a3048]">{copy.completedNote}</p>
+        <p className="text-xs leading-5 text-[#d7e7ff]/68">{copy.completedNote}</p>
       ) : null}
     </div>
   );

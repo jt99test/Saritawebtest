@@ -52,7 +52,7 @@ export function PricingPlans({ dictionary }: PricingPlansProps) {
 
   return (
     <>
-      <div className="mx-auto mt-7 inline-flex border border-black/10 bg-black/[0.05] p-1 sm:mt-8">
+      <div className="mx-auto mt-7 inline-flex border border-[#d7e7ff]/16 bg-[#030814]/44 p-1 shadow-[0_0_22px_rgba(0,102,255,0.1)] sm:mt-8">
         {(["monthly", "yearly"] as const).map((option) => (
           <button
             key={option}
@@ -60,7 +60,7 @@ export function PricingPlans({ dictionary }: PricingPlansProps) {
             onClick={() => setPeriod(option)}
             className={[
                 "px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] transition sm:px-5 sm:text-[12px] sm:tracking-[0.2em]",
-              period === option ? "bg-dusty-gold/18 text-dusty-gold" : "text-[#3a3048] hover:text-ivory",
+              period === option ? "bg-[#f5d782]/18 text-[#f5d782]" : "text-[#d7e7ff]/72 hover:text-[#fffaf0]",
             ].join(" ")}
           >
             {option === "monthly" ? dictionary.pricing.monthly : dictionary.pricing.yearly}
@@ -78,8 +78,8 @@ export function PricingPlans({ dictionary }: PricingPlansProps) {
               className={[
                 "border p-5 shadow-[0_4px_16px_rgba(0,0,0,0.2)] sm:p-6",
                 plan === "avanzado"
-                  ? "border-dusty-gold/40 bg-dusty-gold/[0.055] shadow-[0_8px_28px_rgba(181,163,110,0.08)]"
-                  : "border-black/10 bg-white",
+                  ? "border-[#f5d782]/42 bg-[#f5d782]/[0.06] shadow-[0_8px_28px_rgba(245,215,130,0.1)]"
+                  : "border-[#d7e7ff]/14 bg-[#061331]/82",
               ].join(" ")}
             >
               <h2 className="font-serif text-3xl text-ivory sm:text-4xl">
@@ -89,7 +89,7 @@ export function PricingPlans({ dictionary }: PricingPlansProps) {
                 {plan === "free" ? "€0" : PRICES[plan][period]}
               </p>
               {isPaid ? (
-                <p className="mt-2 text-sm text-[#3a3048]">
+                <p className="mt-2 text-sm text-[#d7e7ff]/72">
                   {period === "monthly" ? dictionary.paywall.perMonth : dictionary.paywall.perYear}
                 </p>
               ) : null}
@@ -120,7 +120,7 @@ export function PricingPlans({ dictionary }: PricingPlansProps) {
         <h2 className="font-serif text-2xl text-ivory sm:text-3xl">{dictionary.pricing.tableTitle}</h2>
         <table className="mt-5 w-full min-w-[680px] border-collapse text-sm">
           <thead>
-            <tr className="border-b border-black/10 text-left text-[12px] uppercase tracking-[0.18em] text-[#3a3048]">
+            <tr className="border-b border-[#d7e7ff]/14 text-left text-[12px] uppercase tracking-[0.18em] text-[#d7e7ff]/66">
               <th className="py-3 pr-4">{dictionary.result.completeChart.columns[1]}</th>
               {PLAN_IDS.map((plan) => (
                 <th key={plan} className="px-4 py-3 text-center">
@@ -131,10 +131,10 @@ export function PricingPlans({ dictionary }: PricingPlansProps) {
           </thead>
           <tbody>
             {dictionary.pricing.rows.map((row, rowIndex) => (
-              <tr key={row} className="border-b border-black/10 last:border-b-0">
+              <tr key={row} className="border-b border-[#d7e7ff]/12 last:border-b-0">
                 <td className="py-4 pr-4 text-ivory/78">{row}</td>
                 {PLAN_IDS.map((plan) => (
-                  <td key={plan} className="px-4 py-4 text-center text-[#5c4a24]">
+                  <td key={plan} className="px-4 py-4 text-center text-[#f5d782]">
                     {accessLabel(FEATURE_ACCESS[plan][rowIndex], dictionary)}
                   </td>
                 ))}

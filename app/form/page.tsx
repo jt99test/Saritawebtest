@@ -48,8 +48,8 @@ export default function FormPage() {
   }
 
   const inputClass =
-    "min-h-[4.25rem] w-full appearance-none rounded-2xl border border-black/10 bg-white/70 px-5 py-4 text-[16px] leading-6 text-[#1e1a2e] shadow-[0_2px_8px_rgba(0,0,0,0.06)] outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-[#3a3048]/55 hover:border-black/15 focus:border-dusty-gold/50 focus:shadow-[0_0_0_3px_rgba(111,90,42,0.12)] disabled:opacity-50 sm:text-sm sm:placeholder:text-sm [&::-webkit-date-and-time-value]:min-h-6 [&::-webkit-date-and-time-value]:text-left [&::-webkit-date-and-time-value]:text-[inherit]";
-  const labelClass = "mb-2 block text-xs uppercase tracking-[0.28em] text-[#3a3048]";
+    "min-h-[4.25rem] w-full appearance-none rounded-2xl border border-[#d7e7ff]/16 bg-[#071437]/72 px-5 py-4 text-[16px] leading-6 text-[#fffaf0] shadow-[0_2px_10px_rgba(0,0,0,0.16),0_0_22px_rgba(0,102,255,0.08)] outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-[#d7e7ff]/45 hover:border-[#d7e7ff]/24 focus:border-[#f5d782]/55 focus:shadow-[0_0_0_3px_rgba(245,215,130,0.12)] disabled:opacity-50 sm:text-sm sm:placeholder:text-sm [&::-webkit-date-and-time-value]:min-h-6 [&::-webkit-date-and-time-value]:text-left [&::-webkit-date-and-time-value]:text-[inherit]";
+  const labelClass = "mb-2 block text-xs uppercase tracking-[0.28em] text-[#d7e7ff]/72";
 
   return (
     <main className="relative isolate min-h-screen overflow-hidden bg-cosmic-950">
@@ -195,8 +195,8 @@ export default function FormPage() {
 
       {confirmOpen ? (
         <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/32 px-4 backdrop-blur-sm">
-          <div className="w-full max-w-lg border border-dusty-gold/24 bg-[#fffaf0] p-6 text-[#1e1a2e] shadow-[0_24px_80px_rgba(30,26,46,0.22)] sm:p-7">
-            <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
+          <div className="w-full max-w-lg border border-[#f5d782]/30 bg-[#071437]/96 p-6 text-[#d7e7ff] shadow-[0_24px_80px_rgba(0,0,0,0.36),0_0_34px_rgba(0,102,255,0.14)] sm:p-7">
+            <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#f5d782]">
               {dictionary.form.confirmEyebrow}
             </p>
             <h2 className="mt-2 font-serif text-[30px] leading-tight text-ivory">
@@ -207,22 +207,22 @@ export default function FormPage() {
             </p>
             <dl className="mt-5 grid gap-3 border-y border-black/10 py-4 text-sm">
               <div className="grid grid-cols-[0.8fr_1.2fr] gap-3">
-                <dt className="text-[#5c4a24]">{dictionary.form.fields.name}</dt>
-                <dd className="text-right text-[#1e1a2e]">{values.name}</dd>
+                <dt className="text-[#f5d782]">{dictionary.form.fields.name}</dt>
+                <dd className="text-right text-[#fffaf0]">{values.name}</dd>
               </div>
               <div className="grid grid-cols-[0.8fr_1.2fr] gap-3">
-                <dt className="text-[#5c4a24]">{dictionary.form.fields.birthdate}</dt>
-                <dd className="text-right text-[#1e1a2e]">{values.birthDate}</dd>
+                <dt className="text-[#f5d782]">{dictionary.form.fields.birthdate}</dt>
+                <dd className="text-right text-[#fffaf0]">{values.birthDate}</dd>
               </div>
               <div className="grid grid-cols-[0.8fr_1.2fr] gap-3">
-                <dt className="text-[#5c4a24]">{dictionary.form.fields.birthtime}</dt>
-                <dd className="text-right text-[#1e1a2e]">
+                <dt className="text-[#f5d782]">{dictionary.form.fields.birthtime}</dt>
+                <dd className="text-right text-[#fffaf0]">
                   {values.birthTimeUnknown ? dictionary.form.birthTimeUnknown.label : values.birthTime}
                 </dd>
               </div>
               <div className="grid grid-cols-[0.8fr_1.2fr] gap-3">
-                <dt className="text-[#5c4a24]">{dictionary.form.fields.location}</dt>
-                <dd className="text-right text-[#1e1a2e]">{values.selectedLocation?.displayName ?? values.location}</dd>
+                <dt className="text-[#f5d782]">{dictionary.form.fields.location}</dt>
+                <dd className="text-right text-[#fffaf0]">{values.selectedLocation?.displayName ?? values.location}</dd>
               </div>
             </dl>
             <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">

@@ -27,11 +27,11 @@ export function CookieBanner() {
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-black/10 bg-cosmic-950/96 px-4 py-4 backdrop-blur-md">
-      <div className="mx-auto flex max-w-5xl flex-col gap-3 text-sm text-[#3a3048] sm:flex-row sm:items-center sm:justify-between">
+    <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[#f5d782]/22 bg-[#071437]/96 px-4 py-4 shadow-[0_-18px_54px_rgba(0,0,0,0.28)] backdrop-blur-md">
+      <div className="mx-auto flex max-w-5xl flex-col gap-3 text-sm text-[#d7e7ff]/72 sm:flex-row sm:items-center sm:justify-between">
         <p>
           {dictionary.legal.cookieMessage}{" "}
-          <Link href="/privacidad" className="text-[#5c4a24] underline underline-offset-4">
+          <Link href="/privacidad" className="text-[#f5d782] underline underline-offset-4">
             {dictionary.legal.cookiePrivacy}
           </Link>
         </p>
@@ -39,14 +39,14 @@ export function CookieBanner() {
           <button
             type="button"
             onClick={() => saveConsent("declined")}
-            className="border border-black/10 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#3a3048] transition hover:border-black/15 hover:text-ivory"
+            className="border border-[#d7e7ff]/18 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#d7e7ff] transition hover:border-[#f5d782]/45 hover:text-[#f5d782]"
           >
             {dictionary.legal.cookieDecline}
           </button>
           <button
             type="button"
             onClick={() => saveConsent("accepted")}
-            className="border border-dusty-gold/35 bg-dusty-gold/12 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-dusty-gold transition hover:bg-dusty-gold/18"
+            className="border border-[#f5d782]/40 bg-[#f5d782]/12 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#f5d782] transition hover:bg-[#f5d782]/18"
           >
             {dictionary.legal.cookieAccept}
           </button>
