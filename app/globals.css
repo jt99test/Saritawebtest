@@ -587,18 +587,15 @@ h6 {
 
 .sarita-solar-system {
   background:
-    radial-gradient(circle at 50% 48%, rgba(245, 215, 130, 0.32), transparent 8rem),
-    radial-gradient(circle at 52% 56%, rgba(124, 191, 255, 0.22), transparent 19rem),
-    radial-gradient(circle at 72% 36%, rgba(0, 102, 255, 0.34), transparent 24rem),
-    radial-gradient(circle at 20% 74%, rgba(0, 46, 160, 0.28), transparent 24rem),
+    radial-gradient(circle at 50% 38%, rgba(245, 215, 130, 0.32), transparent 8rem),
+    radial-gradient(circle at 52% 46%, rgba(124, 191, 255, 0.22), transparent 19rem),
+    radial-gradient(circle at 72% 30%, rgba(0, 102, 255, 0.34), transparent 24rem),
+    radial-gradient(circle at 20% 68%, rgba(0, 46, 160, 0.28), transparent 24rem),
     linear-gradient(180deg, rgba(4, 7, 17, 0.98), rgba(5, 19, 49, 0.96) 48%, rgba(6, 28, 79, 0.76) 78%, rgba(3, 18, 56, 0.62) 100%);
 }
 
 .sarita-feature-band {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(124, 191, 255, 0.2), transparent 14rem),
-    radial-gradient(circle at 84% 8%, rgba(245, 215, 130, 0.14), transparent 15rem),
-    radial-gradient(circle at 0% 18%, rgba(0, 102, 255, 0.24), transparent 18rem);
+  background: transparent;
 }
 
 .sarita-feature-card {
@@ -649,7 +646,7 @@ h6 {
     inset 0 0 28px rgba(124, 191, 255, 0.09);
   left: 50%;
   position: absolute;
-  top: 43%;
+  top: 37%;
   transform: translate(-50%, -50%);
 }
 

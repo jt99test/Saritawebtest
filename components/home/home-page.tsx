@@ -114,8 +114,8 @@ export function HomePage({ moonStatus }: HomePageProps) {
     <main className="sarita-home-atmosphere premium-noise relative isolate min-h-screen overflow-hidden sm:pb-0">
       <section className="relative isolate min-h-screen overflow-hidden">
         <div className="sarita-solar-system pointer-events-none absolute inset-0 z-0 overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,250,240,0.08),transparent_22rem),radial-gradient(circle_at_74%_56%,rgba(80,93,196,0.18),transparent_18rem)]" />
-          <div className="absolute left-1/2 top-[43%] h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_32%_28%,#fff4b0,#f5d782_44%,rgba(245,215,130,0.16)_68%,transparent_72%)] shadow-[0_0_50px_rgba(245,215,130,0.42),0_0_120px_rgba(0,102,255,0.18)] sm:h-28 sm:w-28" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_14%,rgba(255,250,240,0.08),transparent_22rem),radial-gradient(circle_at_74%_48%,rgba(80,93,196,0.18),transparent_18rem)]" />
+          <div className="absolute left-1/2 top-[37%] h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_32%_28%,#fff4b0,#f5d782_44%,rgba(245,215,130,0.16)_68%,transparent_72%)] shadow-[0_0_50px_rgba(245,215,130,0.42),0_0_120px_rgba(0,102,255,0.18)] sm:h-28 sm:w-28" />
           <div className="sarita-solar-orbit h-[15rem] w-[15rem] sm:h-[23rem] sm:w-[23rem]">
             <span className="sarita-solar-planet right-7 top-4 h-2.5 w-2.5 bg-[#fffaf0] text-[#fffaf0]" />
           </div>
@@ -368,7 +368,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
               </motion.section>
             </div>
 
-            <div id="lecturas" className="sarita-feature-band -mx-4 mt-8 px-4 pt-7 pb-2 sm:mx-0 sm:mt-0 sm:px-0 sm:pt-0">
+            <div id="lecturas" className="sarita-feature-band -mx-4 mt-0 px-4 pt-12 pb-2 sm:mx-0 sm:mt-0 sm:px-0 sm:pt-0">
               <div className="mb-4 flex items-end justify-between sm:hidden">
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#f5d782]">{dictionary.home.eyebrow}</p>
