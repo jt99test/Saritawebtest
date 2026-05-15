@@ -538,7 +538,7 @@ export function NatalChartExperience({
           </section>
 
           {!panelOpen && !selectedPointId ? (
-            <div className="mt-12 space-y-0 lg:mt-16">
+            <div className="sarita-reading-panel mt-12 space-y-0 lg:mt-16">
               <ChartBalanceSection chart={chart} dictionary={dictionary} />
               <ChartGeneralReading chart={chart} dictionary={dictionary} readingId={readingId} gender={request?.gender || undefined} />
             </div>

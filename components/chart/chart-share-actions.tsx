@@ -169,7 +169,7 @@ export function ChartShareActions({ chart, dictionary, plan }: ChartShareActions
           type="button"
           onClick={() => void shareChart()}
           disabled={pending}
-          className="w-full border border-black/20 bg-transparent px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-ivory transition hover:bg-black/[0.05] disabled:opacity-50 sm:w-auto sm:text-[12px] sm:tracking-[0.18em]"
+          className="w-full border border-[#fffaf0]/22 bg-[#fffaf0]/[0.02] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#fffaf0] transition hover:border-[#7cbfff]/40 hover:bg-[#7cbfff]/10 disabled:opacity-50 sm:w-auto sm:text-[12px] sm:tracking-[0.18em]"
         >
           {pending ? dictionary.chart.creatingLink : dictionary.chart.share}
         </button>
@@ -178,7 +178,7 @@ export function ChartShareActions({ chart, dictionary, plan }: ChartShareActions
           onClick={downloadChart}
           disabled={!canDownload}
           title={!canDownload ? dictionary.chart.downloadLockedTooltip : undefined}
-          className="w-full border border-black/20 bg-transparent px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-ivory transition hover:bg-black/[0.05] disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto sm:text-[12px] sm:tracking-[0.18em]"
+          className="w-full border border-[#fffaf0]/22 bg-[#fffaf0]/[0.02] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#fffaf0] transition hover:border-[#7cbfff]/40 hover:bg-[#7cbfff]/10 disabled:cursor-not-allowed disabled:opacity-45 sm:w-auto sm:text-[12px] sm:tracking-[0.18em]"
         >
           {!canDownload ? "🔒 " : ""}
           {dictionary.chart.download}
