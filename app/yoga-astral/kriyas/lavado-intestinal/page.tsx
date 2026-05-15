@@ -52,32 +52,32 @@ export default async function LavadoIntestinalPage() {
           <div className="mb-4 flex items-center justify-between gap-4 pt-2 sm:mb-6">
             <Link
               href="/yoga-astral"
-              className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-ivory sm:text-xs sm:tracking-[0.28em]"
+              className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#d7e7ff]/72 transition hover:text-ivory sm:text-xs sm:tracking-[0.28em]"
             >
               {dictionary.form.back}
             </Link>
           </div>
 
           <div className="space-y-8 pb-10 sm:space-y-10">
-            <PremiumCard className="overflow-hidden border-black/10 bg-white/88 p-5 shadow-[0_18px_48px_rgba(30,26,46,0.08)] sm:p-7">
+            <PremiumCard className="overflow-hidden border-[#d7e7ff]/14 bg-[#061331]/42 p-5 shadow-[0_20px_54px_rgba(0,0,0,0.28),0_0_36px_rgba(0,102,255,0.1)] sm:p-7">
               <div className="px-2 py-5 sm:px-8 sm:py-10">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#3a3048]">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#f5d782]">
                   {lavadoCopy.eyebrow}
                 </p>
                 <h1 className="mt-3 font-serif text-[38px] leading-tight text-ivory sm:mt-4 sm:text-6xl">
                   {lavadoIntestinal.title}
                 </h1>
-                <p className="mt-4 max-w-3xl text-sm leading-7 text-[#3a3048] sm:text-base sm:leading-8">
+                <p className="mt-4 max-w-3xl text-sm leading-7 text-[#e8f3ff]/82 sm:text-base sm:leading-8">
                   {lavadoCopy.subtitle}
                 </p>
               </div>
             </PremiumCard>
 
-            <section className="rounded-[1.2rem] border border-dusty-gold/24 bg-[#f8f4eb] p-5 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)] sm:p-6">
-              <p className="text-[12px] font-semibold uppercase tracking-[0.26em] text-[#6f5a2a]">
+            <section className="rounded-[1.2rem] border border-[#f5d782]/24 bg-[#030814]/52 p-5 text-[#e8f3ff]/82 shadow-[0_0_24px_rgba(0,102,255,0.1),inset_0_0_0_1px_rgba(255,250,240,0.06)] sm:p-6">
+              <p className="text-[12px] font-semibold uppercase tracking-[0.26em] text-[#f5d782]">
                 {lavadoCopy.importantPrecaution}
               </p>
-              <p className="mt-3 max-w-4xl text-sm leading-7 text-[#3a3048]">
+              <p className="mt-3 max-w-4xl text-sm leading-7 text-[#e8f3ff]/82">
                 {lavadoIntestinal.precautions}
               </p>
             </section>
@@ -87,7 +87,7 @@ export default async function LavadoIntestinalPage() {
                 <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
                   {dictionary.paywall.lavado.gateTitle}
                 </p>
-                <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-[#3a3048]">
+                <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-[#e8f3ff]/82">
                   {dictionary.paywall.lavado.gateBody}
                 </p>
                 <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -108,9 +108,9 @@ export default async function LavadoIntestinalPage() {
 
             {hasAccess ? (
               <>
-            <PremiumCard className="border-black/10 bg-white/70 px-5 py-8 shadow-[0_12px_34px_rgba(30,26,46,0.06)] sm:px-7 sm:py-10">
+            <PremiumCard className="border-[#d7e7ff]/14 bg-[#061331]/36 px-5 py-8 shadow-[0_18px_54px_rgba(0,0,0,0.26),0_0_34px_rgba(0,102,255,0.12)] sm:px-7 sm:py-10">
               <h2 className="font-serif text-3xl text-ivory">{lavadoCopy.preparation}</h2>
-              <p className="mt-4 max-w-4xl text-sm leading-7 text-[#3a3048]">
+              <p className="mt-4 max-w-4xl text-sm leading-7 text-[#e8f3ff]/82">
                 {lavadoIntestinal.preparation}
               </p>
             </PremiumCard>
@@ -120,12 +120,12 @@ export default async function LavadoIntestinalPage() {
               <ol className="grid gap-4">
                 {lavadoIntestinal.protocol.map((step, index) => (
                   <li key={step}>
-                    <PremiumCard className="rounded-[1.1rem] border-black/10 bg-white/74 p-5 shadow-[0_10px_28px_rgba(30,26,46,0.05)]">
+                    <PremiumCard className="rounded-[1.1rem] border-[#d7e7ff]/12 bg-[#061331]/36 p-5 shadow-[0_14px_38px_rgba(0,0,0,0.2),0_0_24px_rgba(0,102,255,0.08)]">
                       <div className="flex gap-4">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-dusty-gold/28 bg-dusty-gold/10 font-serif text-lg text-[#5c4a24]">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-dusty-gold/28 bg-dusty-gold/10 font-serif text-lg text-[#f5d782]">
                           {index + 1}
                         </span>
-                        <p className="pt-1 text-sm leading-7 text-[#3a3048]">{step}</p>
+                        <p className="pt-1 text-sm leading-7 text-[#e8f3ff]/82">{step}</p>
                       </div>
                     </PremiumCard>
                   </li>
@@ -141,10 +141,10 @@ export default async function LavadoIntestinalPage() {
 
                   return (
                     <li key={asana.slug}>
-                      <PremiumCard className="overflow-hidden border-black/10 bg-white/88 shadow-[0_16px_44px_rgba(30,26,46,0.08)]">
+                      <PremiumCard className="overflow-hidden border-[#d7e7ff]/14 bg-[#061331]/42 shadow-[0_20px_54px_rgba(0,0,0,0.28),0_0_36px_rgba(0,102,255,0.1)]">
                         <div className="grid gap-0 lg:grid-cols-[minmax(16rem,0.72fr)_minmax(0,1fr)]">
                           <div
-                            className={`border-b border-black/10 p-4 sm:p-5 lg:border-b-0 ${
+                            className={`border-b border-[#d7e7ff]/12 bg-[#071437]/68 p-4 sm:p-5 lg:border-b-0 ${
                               reverse ? "lg:order-2 lg:border-l" : "lg:border-r"
                             }`}
                           >
@@ -156,10 +156,10 @@ export default async function LavadoIntestinalPage() {
                           </div>
                           <div className="flex flex-col justify-center p-6 sm:p-8">
                             <div className="flex items-center gap-4">
-                              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-dusty-gold/28 bg-dusty-gold/10 font-serif text-xl text-[#5c4a24]">
+                              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-dusty-gold/28 bg-dusty-gold/10 font-serif text-xl text-[#f5d782]">
                                 {index + 1}
                               </span>
-                              <span className="rounded-full border border-dusty-gold/25 bg-dusty-gold/12 px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24]">
+                              <span className="rounded-full border border-dusty-gold/25 bg-dusty-gold/12 px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#f5d782]">
                                 {asana.duration}
                               </span>
                             </div>
@@ -167,21 +167,21 @@ export default async function LavadoIntestinalPage() {
                               {asana.nameSpanish}
                             </h3>
                             {asana.nameSanskrit !== asana.nameSpanish ? (
-                              <p className="mt-1 text-sm uppercase tracking-[0.2em] text-[#3a3048]">
+                              <p className="mt-1 text-sm uppercase tracking-[0.2em] text-[#d7e7ff]/66">
                                 {asana.nameSanskrit}
                               </p>
                             ) : null}
                             {asana.description ? (
-                              <p className="mt-5 text-sm leading-7 text-[#3a3048]">
+                              <p className="mt-5 text-sm leading-7 text-[#e8f3ff]/82">
                                 {asana.description}
                               </p>
                             ) : null}
                             {asana.warning ? (
-                              <div className="mt-5 rounded-[1rem] border border-dusty-gold/26 bg-[#f8f4eb] px-4 py-3 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]">
-                                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#6f5a2a]">
+                              <div className="mt-5 rounded-[1rem] border border-[#f5d782]/24 bg-[#030814]/52 px-4 py-3 text-[#e8f3ff]/82 shadow-[0_0_24px_rgba(0,102,255,0.1),inset_0_0_0_1px_rgba(255,250,240,0.06)]">
+                                <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-[#f5d782]">
                                   {lavadoCopy.precaution}
                                 </p>
-                                <p className="mt-2 text-sm leading-6 text-[#3a3048]">
+                                <p className="mt-2 text-sm leading-6 text-[#e8f3ff]/82">
                                   {asana.warning}
                                 </p>
                               </div>
@@ -204,26 +204,26 @@ export default async function LavadoIntestinalPage() {
               ].map(([label, value]) => (
                 <div
                   key={label}
-                  className="rounded-[1.1rem] border border-black/10 bg-white/74 p-5 shadow-[0_10px_28px_rgba(30,26,46,0.05)]"
+                  className="rounded-[1.1rem] border border-[#d7e7ff]/12 bg-[#061331]/36 p-5 shadow-[0_14px_38px_rgba(0,0,0,0.2),0_0_24px_rgba(0,102,255,0.08)]"
                 >
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.24em] text-[#3a3048]">
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.24em] text-[#f5d782]">
                     {label}
                   </p>
-                  <p className="mt-3 text-sm leading-7 text-[#3a3048]">{value}</p>
+                  <p className="mt-3 text-sm leading-7 text-[#e8f3ff]/82">{value}</p>
                 </div>
               ))}
             </section>
 
-            <section className="rounded-[1.2rem] border border-dusty-gold/20 bg-white/70 p-5 shadow-[0_10px_28px_rgba(30,26,46,0.05)] sm:p-7">
+            <section className="rounded-[1.2rem] border border-[#d7e7ff]/12 bg-[#061331]/36 p-5 shadow-[0_14px_38px_rgba(0,0,0,0.2),0_0_24px_rgba(0,102,255,0.08)] sm:p-7">
               <h2 className="font-serif text-3xl text-ivory">{lavadoCopy.precautions}</h2>
-              <p className="mt-4 max-w-4xl text-sm leading-7 text-[#3a3048]">
+              <p className="mt-4 max-w-4xl text-sm leading-7 text-[#e8f3ff]/82">
                 {lavadoIntestinal.precautions}
               </p>
             </section>
 
-            <section className="rounded-[1.2rem] border border-dusty-gold/20 bg-white/70 p-5 shadow-[0_10px_28px_rgba(30,26,46,0.05)] sm:p-7">
+            <section className="rounded-[1.2rem] border border-[#d7e7ff]/12 bg-[#061331]/36 p-5 shadow-[0_14px_38px_rgba(0,0,0,0.2),0_0_24px_rgba(0,102,255,0.08)] sm:p-7">
               <h2 className="font-serif text-3xl text-ivory">{lavadoCopy.benefits}</h2>
-              <div className="mt-4 max-w-4xl space-y-4 text-sm leading-7 text-[#3a3048]">
+              <div className="mt-4 max-w-4xl space-y-4 text-sm leading-7 text-[#e8f3ff]/82">
                 {lavadoIntestinal.benefits.split("\n\n").map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
                 ))}
@@ -232,28 +232,28 @@ export default async function LavadoIntestinalPage() {
 
             <section className="space-y-5">
               <SectionHeader>{lavadoCopy.dietTitle}</SectionHeader>
-              <p className="max-w-4xl text-sm leading-7 text-[#3a3048]">
+              <p className="max-w-4xl text-sm leading-7 text-[#e8f3ff]/82">
                 {lavadoIntestinal.threeDayDiet.description}
               </p>
               <div className="grid gap-5 lg:grid-cols-3">
                 {lavadoIntestinal.threeDayDiet.days.map((day) => (
                   <PremiumCard
                     key={day.day}
-                    className="border-black/10 bg-white/88 p-6 shadow-[0_14px_38px_rgba(30,26,46,0.07)]"
+                    className="border-[#d7e7ff]/14 bg-[#061331]/42 p-6 shadow-[0_20px_54px_rgba(0,0,0,0.28),0_0_36px_rgba(0,102,255,0.1)]"
                   >
                     <h3 className="font-serif text-3xl font-semibold text-ivory">
                       {lavadoCopy.day.replace("{day}", String(day.day))}
                     </h3>
                     <div className="mt-5 space-y-5">
                       {day.meals.map((meal) => (
-                        <div key={meal.type} className="border-t border-black/10 pt-4">
+                        <div key={meal.type} className="border-t border-[#d7e7ff]/12 pt-4">
                           <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-dusty-gold">
                             {meal.type}
                           </p>
-                          <p className="mt-2 text-sm leading-7 text-[#3a3048]">
+                          <p className="mt-2 text-sm leading-7 text-[#e8f3ff]/82">
                             {meal.primary}
                           </p>
-                          <p className="mt-2 text-sm leading-7 text-[#3a3048]">
+                          <p className="mt-2 text-sm leading-7 text-[#e8f3ff]/82">
                             {lavadoCopy.alternative.replace("{text}", meal.alternative)}
                           </p>
                         </div>
@@ -264,7 +264,7 @@ export default async function LavadoIntestinalPage() {
               </div>
             </section>
 
-            <footer className="border-t border-black/10 pt-6 text-center text-xs font-medium uppercase tracking-[0.24em] text-[#3a3048]">
+            <footer className="border-t border-[#d7e7ff]/12 pt-6 text-center text-xs font-medium uppercase tracking-[0.24em] text-[#d7e7ff]/68">
               {lavadoCopy.footer}
             </footer>
               </>

@@ -429,10 +429,14 @@ export function BiWheelChart({
                   y={label.y + 1}
                   textAnchor="middle"
                   dominantBaseline="central"
-                  className="font-serif text-[22px] font-semibold"
+                  className="font-serif text-[32px] font-bold"
                   fill={zodiacLabelFill(sign.element)}
-                  fillOpacity="0.58"
+                  fillOpacity="0.92"
                   fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
+                  stroke="rgba(255,253,248,0.86)"
+                  strokeWidth="1.15"
+                  paintOrder="stroke fill"
+                  style={{ filter: "drop-shadow(0 0 6px rgba(124,191,255,0.18))" }}
                 >
                   {SIGN_SYMBOLS[sign.id]}
                 </text>

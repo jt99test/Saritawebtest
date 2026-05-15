@@ -281,10 +281,14 @@ function SymbolicWheelFrame({ ascendant }: { ascendant: number }) {
             textAnchor="middle"
             dominantBaseline="central"
             fill="#061331"
-            fillOpacity="0.74"
-            fontSize="22"
-            fontWeight="600"
+            fillOpacity="0.92"
+            fontSize="32"
+            fontWeight="700"
             fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
+            stroke="rgba(255,253,248,0.86)"
+            strokeWidth="1.15"
+            paintOrder="stroke fill"
+            style={{ filter: "drop-shadow(0 0 6px rgba(124,191,255,0.18))" }}
           >
             {sign.glyph}
           </text>
