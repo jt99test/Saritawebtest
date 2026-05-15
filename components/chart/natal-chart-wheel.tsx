@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type TouchEvent } from "react";
 import { createPortal } from "react-dom";
 
 import {
@@ -118,6 +118,21 @@ function pointAngle(longitude: number, ascendant: number) {
 
 function round(value: number) {
   return Math.round(value * 100) / 100;
+}
+
+function clampViewerZoom(value: number) {
+  return Math.min(2.8, Math.max(1, Math.round(value * 100) / 100));
+}
+
+function getTouchDistance(touches: { item(index: number): { clientX: number; clientY: number } | null }) {
+  const first = touches.item(0);
+  const second = touches.item(1);
+
+  if (!first || !second) {
+    return null;
+  }
+
+  return Math.hypot(first.clientX - second.clientX, first.clientY - second.clientY);
 }
 
 function circularDistance(first: number, second: number) {
@@ -1371,6 +1386,8 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
   const [hoveredAspectVisualId, setHoveredAspectVisualId] = useState<string | null>(null);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [viewerZoom, setViewerZoom] = useState(1.45);
+  const pinchStartDistanceRef = useRef<number | null>(null);
+  const pinchStartZoomRef = useRef(viewerZoom);
 
   const ascendant = chart.meta.ascendant;
 
@@ -1443,6 +1460,53 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
     selectAspect(aspect);
   }
 
+  function setClampedViewerZoom(next: number | ((current: number) => number)) {
+    setViewerZoom((current) => clampViewerZoom(typeof next === "function" ? next(current) : next));
+  }
+
+  function handleViewerTouchStart(event: TouchEvent<HTMLDivElement>) {
+    if (event.touches.length !== 2) {
+      return;
+    }
+
+    const distance = getTouchDistance(event.touches);
+
+    if (!distance) {
+      return;
+    }
+
+    pinchStartDistanceRef.current = distance;
+    pinchStartZoomRef.current = viewerZoom;
+  }
+
+  function handleViewerTouchMove(event: TouchEvent<HTMLDivElement>) {
+    const startDistance = pinchStartDistanceRef.current;
+
+    if (event.touches.length !== 2 || !startDistance) {
+      return;
+    }
+
+    const distance = getTouchDistance(event.touches);
+
+    if (!distance) {
+      return;
+    }
+
+    event.preventDefault();
+    setClampedViewerZoom(pinchStartZoomRef.current * (distance / startDistance));
+  }
+
+  function handleViewerTouchEnd(event: TouchEvent<HTMLDivElement>) {
+    if (event.touches.length >= 2) {
+      const distance = getTouchDistance(event.touches);
+      pinchStartDistanceRef.current = distance;
+      pinchStartZoomRef.current = viewerZoom;
+      return;
+    }
+
+    pinchStartDistanceRef.current = null;
+  }
+
   const closeViewerLabel = locale === "en" ? "Close" : locale === "it" ? "Chiudi" : "Cerrar";
   const zoomInLabel = locale === "en" ? "Zoom in" : locale === "it" ? "Ingrandisci" : "Acercar";
   const zoomOutLabel = locale === "en" ? "Zoom out" : locale === "it" ? "Riduci" : "Alejar";
@@ -1464,7 +1528,7 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
               <div className="flex items-center gap-2 rounded-full border border-[#d7e7ff]/16 bg-[#061331]/72 p-1 shadow-[0_0_28px_rgba(0,102,255,0.16)]">
                 <button
                   type="button"
-                  onClick={() => setViewerZoom((current) => Math.max(1, Math.round((current - 0.18) * 100) / 100))}
+                  onClick={() => setClampedViewerZoom((current) => current - 0.18)}
                   className="flex h-9 w-9 items-center justify-center rounded-full text-lg text-[#e8f3ff]"
                   aria-label={zoomOutLabel}
                 >
@@ -1472,14 +1536,14 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setViewerZoom(1.45)}
+                  onClick={() => setClampedViewerZoom(1.45)}
                   className="h-9 rounded-full px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#f5d782]"
                 >
                   {resetZoomLabel}
                 </button>
                 <button
                   type="button"
-                  onClick={() => setViewerZoom((current) => Math.min(2.55, Math.round((current + 0.18) * 100) / 100))}
+                  onClick={() => setClampedViewerZoom((current) => current + 0.18)}
                   className="flex h-9 w-9 items-center justify-center rounded-full text-lg text-[#e8f3ff]"
                   aria-label={zoomInLabel}
                 >
@@ -1487,7 +1551,13 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
                 </button>
               </div>
             </div>
-            <div className="h-[calc(100svh-env(safe-area-inset-top)-3.7rem)] overflow-auto px-5 pb-[calc(env(safe-area-inset-bottom)+2rem)] pt-6 [-webkit-overflow-scrolling:touch]">
+            <div
+              className="h-[calc(100svh-env(safe-area-inset-top)-3.7rem)] overflow-auto px-5 pb-[calc(env(safe-area-inset-bottom)+2rem)] pt-6 [-webkit-overflow-scrolling:touch]"
+              onTouchStart={handleViewerTouchStart}
+              onTouchMove={handleViewerTouchMove}
+              onTouchEnd={handleViewerTouchEnd}
+              onTouchCancel={handleViewerTouchEnd}
+            >
               <div
                 className="mx-auto"
                 style={{
@@ -1508,6 +1578,7 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
       className={[
         "relative aspect-square w-[min(100%,calc(100vw-1.5rem))] max-w-[54rem] rounded-full bg-transparent drop-shadow-[0_18px_42px_rgba(30,26,46,0.18)] lg:w-[640px]",
         viewerMode ? "w-full max-w-none lg:w-full" : "",
+        !viewerMode ? "mb-14 sm:mb-16" : "",
       ].join(" ")}
     >
       {tooltip ? (
@@ -1596,7 +1667,7 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
         <button
           type="button"
           onClick={() => setViewerOpen(true)}
-          className="absolute bottom-1 left-1/2 z-20 -translate-x-1/2 rounded-full border border-[#f5d782]/30 bg-[#030814]/72 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#f5d782] shadow-[0_0_26px_rgba(0,102,255,0.2),0_0_22px_rgba(245,215,130,0.08)] backdrop-blur-md transition hover:border-[#f5d782]/55 sm:bottom-3"
+          className="absolute -bottom-12 left-1/2 z-20 -translate-x-1/2 rounded-full border border-[#f5d782]/30 bg-[#030814]/72 px-5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#f5d782] shadow-[0_0_26px_rgba(0,102,255,0.2),0_0_22px_rgba(245,215,130,0.08)] backdrop-blur-md transition hover:border-[#f5d782]/55 sm:-bottom-14"
         >
           {openViewerLabel}
         </button>
