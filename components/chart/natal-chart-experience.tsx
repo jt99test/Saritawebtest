@@ -233,31 +233,48 @@ export function NatalChartExperience({
   const sectionMenuOverlay =
     sectionMenuOpen && typeof document !== "undefined"
       ? createPortal(
-          <div className="fixed inset-0 z-[10000] bg-[#030814]/90 backdrop-blur-md" onClick={() => setSectionMenuOpen(false)}>
+          <div
+            className="fixed inset-0 z-[10000] overflow-y-auto bg-[radial-gradient(circle_at_54%_18%,rgba(0,102,255,0.22),transparent_22rem),radial-gradient(circle_at_18%_72%,rgba(124,191,255,0.11),transparent_16rem),linear-gradient(180deg,#030814_0%,#061331_48%,#071437_100%)] text-[#e8f3ff] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            role="dialog"
+            aria-modal="true"
+            onClick={() => setSectionMenuOpen(false)}
+          >
+            <div aria-hidden="true" className="sarita-bright-starfield pointer-events-none fixed inset-0">
+              <span />
+              <span />
+              <span />
+            </div>
+            <div aria-hidden="true" className="sarita-meteor-field pointer-events-none fixed inset-0">
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
+              <span />
+            </div>
             <div
-              className="fixed inset-x-3 bottom-3 z-[10001] max-h-[calc(100svh-2rem)] overflow-hidden rounded-[2rem] border border-[#f5d782]/28 bg-[#071437] p-4 text-[#d7e7ff] shadow-[0_28px_90px_rgba(0,0,0,0.5),0_0_42px_rgba(0,102,255,0.18)]"
+              className="relative z-[10001] min-h-svh px-6 pb-[calc(env(safe-area-inset-bottom)+7rem)] pt-[calc(env(safe-area-inset-top)+2.25rem)]"
               onClick={(event) => event.stopPropagation()}
             >
-              <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-[#f5d782]/28" />
-              <div className="mb-4 flex items-start justify-between gap-4">
+              <div className="mx-auto flex w-full max-w-[34rem] items-start justify-between gap-5 border-b border-[#d7e7ff]/12 pb-6">
                 <div>
                   <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#f5d782]">
                     {dictionary.result.readingContextLabel}
                   </p>
-                  <p className="mt-1 font-serif text-[27px] leading-none text-ivory">
+                  <p className="mt-2 font-serif text-[38px] leading-none text-[#fffdf8] drop-shadow-[0_0_14px_rgba(255,250,240,0.18)]">
                     {dictionary.result.primaryTabs[pageTab]}
                   </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSectionMenuOpen(false)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d7e7ff]/16 bg-[#030814]/54 text-[20px] leading-none text-[#f5d782]"
+                  className="sarita-floating-mark flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-[22px] leading-none text-[#f5d782]"
                   aria-label={dictionary.common.close}
                 >
                   {"\u00d7"}
                 </button>
               </div>
-              <div className="max-h-[calc(100svh-9rem)] space-y-1.5 overflow-y-auto pr-1 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
+              <div className="mx-auto mt-8 w-full max-w-[34rem] space-y-2">
                 {PAGE_TABS.map((tab) => {
                   const active = pageTab === tab;
                   const requiredPlan = TAB_REQUIREMENTS[tab];
@@ -274,25 +291,25 @@ export function NatalChartExperience({
                         }
                       }}
                       className={[
-                        "flex w-full items-center justify-between gap-3 rounded-[1.2rem] px-3.5 py-3.5 text-left transition",
+                        "group flex w-full items-center justify-between gap-4 rounded-[1.35rem] px-4 py-4 text-left transition",
                         active
-                          ? "border border-[#f5d782]/34 bg-[#f5d782]/10 text-[#f5d782] shadow-[0_0_20px_rgba(245,215,130,0.08)]"
-                          : "border border-transparent text-[#d7e7ff]/78 hover:bg-[#7cbfff]/8 hover:text-[#fffaf0]",
+                          ? "border border-[#f5d782]/42 bg-[linear-gradient(112deg,rgba(245,215,130,0.16),rgba(124,191,255,0.09)_42%,rgba(3,8,20,0.44))] text-[#f5d782] shadow-[0_0_26px_rgba(245,215,130,0.12),inset_0_0_0_1px_rgba(255,250,240,0.06)]"
+                          : "border border-[#d7e7ff]/10 bg-[#061331]/20 text-[#d7e7ff]/74 hover:border-[#7cbfff]/24 hover:bg-[#7cbfff]/8 hover:text-[#fffdf8]",
                       ].join(" ")}
                     >
-                      <span className="flex min-w-0 items-center gap-3.5">
+                      <span className="flex min-w-0 items-center gap-4">
                         <span
                           className={[
-                            "flex h-11 w-11 shrink-0 items-center justify-center rounded-full border text-[20px]",
+                            "flex h-14 w-14 shrink-0 items-center justify-center rounded-full border font-serif text-[23px] shadow-[0_0_18px_rgba(0,102,255,0.14)]",
                             active
-                              ? "border-[#f5d782]/32 bg-[#f5d782]/12 text-[#f5d782]"
-                              : "border-[#d7e7ff]/14 bg-[#030814]/38 text-[#d7e7ff]",
+                              ? "border-[#f5d782]/42 bg-[radial-gradient(circle_at_34%_24%,rgba(255,250,240,0.36),rgba(245,215,130,0.18)_46%,rgba(3,8,20,0.62)_100%)] text-[#f5d782]"
+                              : "border-[#d7e7ff]/12 bg-[#030814]/36 text-[#d7e7ff]/80 group-hover:border-[#7cbfff]/24",
                           ].join(" ")}
                         >
                           {TAB_ICONS[tab]}
                         </span>
                         <span className="min-w-0">
-                          <span className="block min-w-0 truncate text-[12px] font-semibold uppercase tracking-[0.16em]">
+                          <span className="block min-w-0 truncate text-[13px] font-semibold uppercase tracking-[0.18em]">
                             {dictionary.result.primaryTabs[tab]}
                           </span>
                           {locked && requiredPlan ? (
@@ -303,7 +320,7 @@ export function NatalChartExperience({
                         </span>
                       </span>
                       {active ? (
-                        <span className="text-[18px] text-[#f5d782]">{"\u2713"}</span>
+                        <span className="pr-2 text-[24px] text-[#f5d782] drop-shadow-[0_0_10px_rgba(245,215,130,0.38)]">{"\u2713"}</span>
                       ) : locked && requiredPlan ? (
                         <span className="flex h-9 w-9 items-center justify-center rounded-full border border-[#f5d782]/18 bg-[#f5d782]/8 text-[14px] text-[#f5d782]">
                           {"\ud83d\udd12"}
