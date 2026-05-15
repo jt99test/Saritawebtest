@@ -7,19 +7,6 @@ type AtmosphericBackgroundProps = {
   variant: "page" | "hero" | "heroGlow" | "divider" | "sectionDivider";
 };
 
-const nebulaTextureUrl = "/images/decorative/bg-nebula-texture.png";
-
-const starfieldStyle = {
-  backgroundImage: [
-    "radial-gradient(circle at 14% 18%, rgba(160,140,90,0.08) 0, rgba(160,140,90,0.08) 0.75px, transparent 1.45px)",
-    "radial-gradient(circle at 68% 30%, rgba(160,140,90,0.07) 0, rgba(160,140,90,0.07) 0.95px, transparent 1.7px)",
-    "radial-gradient(circle at 38% 74%, rgba(160,140,90,0.06) 0, rgba(160,140,90,0.06) 0.8px, transparent 1.5px)",
-    "radial-gradient(circle at 86% 64%, rgba(160,140,90,0.08) 0, rgba(160,140,90,0.08) 1px, transparent 1.8px)"
-  ].join(","),
-  backgroundSize: "380px 380px, 520px 520px, 460px 460px, 620px 620px",
-  backgroundPosition: "0 0, 70px 120px, 160px 40px, -60px 180px"
-} as const;
-
 function DriftLayer({
   className,
   animate,
@@ -68,53 +55,6 @@ export function AtmosphericBackground({ variant }: AtmosphericBackgroundProps) {
           <span />
           <span />
         </div>
-        <DriftLayer
-          className="pointer-events-none absolute inset-[-6%] bg-cover bg-center opacity-[0.035] saturate-[0.75] contrast-[0.9]"
-          style={{ backgroundImage: `url("${nebulaTextureUrl}")` }}
-          animate={{
-            scale: [1.03, 1.08, 1.04, 1.03],
-            x: [0, -18, 14, 0],
-            y: [0, -12, 10, 0]
-          }}
-          transition={{
-            duration: 56,
-            repeat: Number.POSITIVE_INFINITY,
-            repeatType: "mirror",
-            ease: "easeInOut"
-          }}
-        />
-        <DriftLayer
-          className="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-screen"
-          style={starfieldStyle}
-          animate={{
-            opacity: [0.06, 0.09, 0.07],
-            x: [0, 12, -8, 0],
-            y: [0, -8, 6, 0]
-          }}
-          transition={{
-            duration: 38,
-            repeat: Number.POSITIVE_INFINITY,
-            repeatType: "mirror",
-            ease: "easeInOut"
-          }}
-        />
-        <DriftLayer
-          className="pointer-events-none absolute inset-0 mix-blend-screen"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle at 72% 24%, rgba(255,246,210,0.82) 0, rgba(255,246,210,0.58) 1.2px, rgba(181,163,110,0.22) 2.4px, transparent 5px)",
-          }}
-          animate={{
-            opacity: [0.08, 0.18, 0.1],
-            scale: [1, 1.01, 1],
-          }}
-          transition={{
-            duration: 9,
-            repeat: Number.POSITIVE_INFINITY,
-            repeatType: "mirror",
-            ease: "easeInOut",
-          }}
-        />
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(7,7,19,0.34),rgba(16,13,34,0.18)_24rem,rgba(255,250,240,0)_62rem)]"
