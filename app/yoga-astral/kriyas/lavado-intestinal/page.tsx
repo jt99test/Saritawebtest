@@ -84,7 +84,7 @@ export default async function LavadoIntestinalPage() {
 
             {!hasAccess ? (
               <section className="mx-auto max-w-2xl border-y border-dusty-gold/18 py-10 text-center">
-                <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
+                <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#f5d782]">
                   {dictionary.paywall.lavado.gateTitle}
                 </p>
                 <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-[#e8f3ff]/82">

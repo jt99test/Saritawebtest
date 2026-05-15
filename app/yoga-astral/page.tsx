@@ -74,7 +74,7 @@ export default function YogaAstralRoutePage() {
           <div className="mb-4 flex items-center justify-between gap-4 pt-2 sm:mb-6">
             <Link
               href="/resultado"
-              className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-ivory sm:text-xs sm:tracking-[0.28em]"
+              className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#d7e7ff]/72 transition hover:text-ivory sm:text-xs sm:tracking-[0.28em]"
             >
               {dictionary.form.back}
             </Link>
@@ -87,25 +87,25 @@ export default function YogaAstralRoutePage() {
           ) : (
             <div className="flex flex-1 items-center justify-center">
               <div className="max-w-3xl text-center">
-                <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
+                <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#f5d782]">
                   {dictionary.yogaAstral.title}
                 </p>
                 <h1 className="mt-2 font-serif text-[38px] font-normal leading-tight text-ivory sm:text-[48px]">
                   {dictionary.standalonePages.needChartTitle}
                 </h1>
-                <p className="mx-auto mt-4 max-w-2xl font-serif text-[15px] italic leading-7 text-[#3a3048] sm:text-[17px] sm:leading-8">
+                <p className="mx-auto mt-4 max-w-2xl font-serif text-[15px] italic leading-7 text-[#e8f3ff]/82 sm:text-[17px] sm:leading-8">
                   {dictionary.standalonePages.needChartBody}
                 </p>
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
                   <Link
                     href="/form"
-                    className="font-serif text-[15px] text-[#5c4a24] transition hover:text-dusty-gold"
+                    className="font-serif text-[15px] text-[#f5d782] transition hover:text-dusty-gold"
                   >
                     {dictionary.standalonePages.goToForm}
                   </Link>
                   <Link
                     href="/resultado"
-                    className="font-serif text-[15px] text-[#3a3048] transition hover:text-ivory"
+                    className="font-serif text-[15px] text-[#d7e7ff]/72 transition hover:text-ivory"
                   >
                     {dictionary.standalonePages.backToResult}
                   </Link>
