@@ -163,21 +163,18 @@ h6 {
 @keyframes sarita-shooting-star {
   0% {
     opacity: 0;
-    transform: translate3d(108vw, -8vh, 0);
+    transform: translate3d(102vw, -7vh, 0) rotate(-26deg) scale(0.7);
   }
 
-  8% {
+  8%,
+  20% {
     opacity: 1;
   }
 
-  18% {
-    opacity: 1;
-  }
-
-  34%,
+  38%,
   100% {
     opacity: 0;
-    transform: translate3d(-14vw, 42vh, 0);
+    transform: translate3d(8vw, 38vh, 0) rotate(-26deg) scale(1);
   }
 }
 
@@ -711,31 +708,37 @@ h6 {
 
 .sarita-starfield span {
   animation: sarita-shooting-star 8.5s linear infinite;
-  background: radial-gradient(circle, rgba(255, 250, 240, 1) 0 28%, rgba(124, 191, 255, 0.85) 48%, transparent 72%);
-  border-radius: 9999px;
-  box-shadow:
-    0 0 10px rgba(255, 250, 240, 1),
-    0 0 24px rgba(124, 191, 255, 0.72);
-  height: 5px;
+  color: #fffaf0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  height: 1rem;
   left: 0;
+  line-height: 1;
   opacity: 0;
   position: absolute;
   top: 12%;
-  width: 5px;
+  width: 1rem;
+}
+
+.sarita-starfield span::before {
+  content: "✦";
+  filter:
+    drop-shadow(0 0 5px rgba(255, 250, 240, 1))
+    drop-shadow(0 0 14px rgba(124, 191, 255, 0.8));
+  position: absolute;
 }
 
 .sarita-starfield span::after {
-  background: linear-gradient(90deg, rgba(124, 191, 255, 0), rgba(255, 250, 240, 0.95));
+  background: linear-gradient(90deg, rgba(124, 191, 255, 0), rgba(255, 250, 240, 0.8));
   border-radius: 9999px;
   box-shadow: 0 0 10px rgba(124, 191, 255, 0.42);
   content: "";
   height: 1px;
+  left: 0.25rem;
   position: absolute;
-  right: 3px;
-  top: 50%;
-  transform: translateY(-50%) rotate(-15deg);
-  transform-origin: right center;
-  width: 4.75rem;
+  top: 0.47rem;
+  transform: translateX(-100%);
+  width: 2.4rem;
 }
 
 .sarita-starfield span:nth-child(2) {

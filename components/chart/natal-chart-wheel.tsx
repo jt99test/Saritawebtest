@@ -1296,7 +1296,7 @@ export function ChartLayerRail() {
     locale === "en" ? "Swipe to see more" : locale === "it" ? "Scorri per vedere di piu" : "Desliza para ver mas";
 
   return (
-    <div className="mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col overflow-hidden border-y border-black/10 bg-transparent py-3 sm:max-w-[34rem] sm:border sm:border-black/12 sm:bg-white/85 sm:p-4 sm:shadow-[0_8px_24px_rgba(0,0,0,0.08)] lg:mx-0 lg:w-auto lg:min-w-[12rem]">
+    <div className="mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col overflow-hidden bg-transparent py-3 sm:max-w-[34rem] sm:p-4 lg:mx-0 lg:w-auto lg:min-w-[12rem]">
       <p className="mb-3 text-center font-serif text-[14px] italic lowercase tracking-[0.15em] text-[#5c4a24] lg:text-left">
         {dictionary.result.toggles.view}
       </p>
@@ -1312,8 +1312,8 @@ export function ChartLayerRail() {
             className={[
               "flex min-h-10 shrink-0 items-center gap-2 border px-3 py-2 text-left transition focus-visible:outline-none sm:min-h-0 sm:min-w-0 sm:border-0 sm:px-0 sm:py-1 sm:gap-3",
               control.active
-                ? "border-[#5c4a24]/24 bg-[#5c4a24]/12 text-[#1e1a2e]"
-                : "border-black/10 bg-white/62 text-[#3a3048]",
+                ? "border-[#f5d782]/34 bg-[#f5d782]/10 text-[#fffaf0]"
+                : "border-[#d7e7ff]/16 bg-transparent text-[#d7e7ff]/72",
             ].join(" ")}
             aria-pressed={control.active}
             aria-label={control.label}
@@ -1330,7 +1330,7 @@ export function ChartLayerRail() {
             <span
               className={[
                 "whitespace-nowrap text-[11px] font-semibold uppercase leading-4 tracking-[0.12em] sm:min-w-0 sm:whitespace-normal sm:break-words sm:text-[13px] sm:normal-case sm:tracking-normal sm:leading-5",
-                control.active ? "text-[#1e1a2e] sm:text-ivory" : "text-[#3a3048]",
+                control.active ? "text-[#fffaf0]" : "text-[#d7e7ff]/72",
               ].join(" ")}
             >
               {control.label}

@@ -514,7 +514,7 @@ export function NatalChartExperience({
             <ChartShareActions chart={chart} dictionary={dictionary} plan={plan} />
 
             {!panelOpen && !selectedPointId ? (
-              <div className="mx-auto mt-8 max-w-3xl border-y border-dusty-gold/16 py-6 text-center">
+              <div className="mx-auto mt-8 max-w-3xl py-6 text-center">
                 <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#d7bd6a]">
                   {dictionary.yogaAstral.title}
                 </p>
