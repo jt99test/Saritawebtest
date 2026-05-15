@@ -160,6 +160,40 @@ h6 {
   }
 }
 
+@keyframes sarita-shooting-star {
+  0% {
+    opacity: 0;
+    transform: translate3d(-16vw, -8vh, 0) rotate(-18deg);
+  }
+
+  6% {
+    opacity: 1;
+  }
+
+  18% {
+    opacity: 0.96;
+  }
+
+  32%,
+  100% {
+    opacity: 0;
+    transform: translate3d(116vw, 38vh, 0) rotate(-18deg);
+  }
+}
+
+@keyframes sarita-star-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px rgba(255, 250, 240, 0.8));
+    opacity: 0.82;
+  }
+
+  45% {
+    filter: drop-shadow(0 0 10px rgba(255, 250, 240, 1)) drop-shadow(0 0 18px rgba(124, 191, 255, 0.7));
+    opacity: 1;
+  }
+}
+
 @keyframes sarita-orbit {
   from {
     transform: translate(-50%, -50%) rotate(0deg);
@@ -333,22 +367,20 @@ h6 {
 
 .sarita-page-atmosphere-layer {
   background:
-    radial-gradient(circle at 50% 20rem, rgba(0, 102, 255, 0.28), transparent 18rem),
-    radial-gradient(circle at 78% 16rem, rgba(124, 191, 255, 0.16), transparent 22rem),
-    radial-gradient(circle at 18% 42rem, rgba(0, 46, 160, 0.24), transparent 28rem),
-    radial-gradient(circle at 74% 68rem, rgba(245, 215, 130, 0.1), transparent 24rem),
-    linear-gradient(180deg, #030814 0, #061331 18rem, #071437 48rem, #051126 78rem, #030814 100%);
+    radial-gradient(circle at 50% 18rem, rgba(0, 102, 255, 0.22), transparent 20rem),
+    radial-gradient(circle at 80% 18rem, rgba(124, 191, 255, 0.12), transparent 24rem),
+    radial-gradient(circle at 18% 52rem, rgba(0, 46, 160, 0.18), transparent 28rem),
+    linear-gradient(180deg, #030814 0, #061331 24rem, #071437 100%);
 }
 
 .sarita-page-color-wash {
   animation: sarita-glow-breathe 12s ease-in-out infinite;
   background:
-    radial-gradient(circle at 50% 18rem, rgba(124, 191, 255, 0.24), transparent 12rem),
-    radial-gradient(circle at 82% 16rem, rgba(0, 102, 255, 0.22), transparent 15rem),
-    radial-gradient(circle at 16% 30rem, rgba(0, 46, 160, 0.18), transparent 18rem),
-    radial-gradient(circle at 70% 52rem, rgba(245, 215, 130, 0.12), transparent 20rem);
+    radial-gradient(circle at 50% 18rem, rgba(124, 191, 255, 0.16), transparent 12rem),
+    radial-gradient(circle at 82% 16rem, rgba(0, 102, 255, 0.14), transparent 16rem),
+    radial-gradient(circle at 70% 52rem, rgba(245, 215, 130, 0.08), transparent 20rem);
   mix-blend-mode: screen;
-  opacity: 0.8;
+  opacity: 0.42;
 }
 
 .sarita-page-orbit-field span {
@@ -383,19 +415,16 @@ h6 {
 
 .sarita-result-observatory .sarita-page-atmosphere-layer {
   background:
-    radial-gradient(circle at 50% 21rem, rgba(124, 191, 255, 0.2), transparent 12rem),
-    radial-gradient(circle at 88% 12rem, rgba(0, 102, 255, 0.22), transparent 20rem),
-    radial-gradient(circle at 18% 48rem, rgba(0, 46, 160, 0.18), transparent 24rem),
-    radial-gradient(circle at 68% 60rem, rgba(245, 215, 130, 0.1), transparent 22rem),
-    linear-gradient(180deg, #030814 0, #061331 20rem, #071437 52rem, #051126 84rem, #030814 100%);
+    radial-gradient(circle at 50% 20rem, rgba(124, 191, 255, 0.18), transparent 13rem),
+    radial-gradient(circle at 86% 14rem, rgba(0, 102, 255, 0.16), transparent 20rem),
+    radial-gradient(circle at 18% 50rem, rgba(0, 46, 160, 0.14), transparent 26rem),
+    linear-gradient(180deg, #030814 0, #061331 22rem, #071437 100%);
 }
 
 .sarita-result-observatory .sarita-page-color-wash {
   background:
-    radial-gradient(circle at 50% 24rem, rgba(124, 191, 255, 0.2), transparent 12rem),
-    radial-gradient(circle at 82% 17rem, rgba(0, 102, 255, 0.18), transparent 18rem),
-    radial-gradient(circle at 16% 30rem, rgba(0, 46, 160, 0.14), transparent 20rem),
-    radial-gradient(circle at 70% 58rem, rgba(245, 215, 130, 0.1), transparent 22rem);
+    radial-gradient(circle at 50% 24rem, rgba(124, 191, 255, 0.14), transparent 13rem),
+    radial-gradient(circle at 82% 17rem, rgba(0, 102, 255, 0.12), transparent 18rem);
 }
 
 .sarita-result-topbar {
@@ -480,9 +509,8 @@ h6 {
 [class*="bg-[#f5f0e6"],
 [class*="bg-[#eee7d9"] {
   background:
-    linear-gradient(120deg, rgba(245, 215, 130, 0.22), rgba(245, 215, 130, 0.05) 30%, rgba(124, 191, 255, 0.08) 100%) border-box,
-    radial-gradient(circle at 12% 0%, rgba(0, 102, 255, 0.12), transparent 14rem),
-    linear-gradient(180deg, rgba(7, 20, 55, 0.96), rgba(3, 8, 20, 0.98)) padding-box !important;
+    radial-gradient(circle at 12% 0%, rgba(124, 191, 255, 0.1), transparent 14rem),
+    linear-gradient(180deg, rgba(7, 20, 55, 0.98), rgba(3, 8, 20, 0.99)) padding-box !important;
   color: var(--sarita-ivory);
 }
 
@@ -537,10 +565,8 @@ h6 {
 .sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class*="bg-[#f8f4eb"],
 .sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class*="bg-[#fbf7ef"] {
   background:
-    linear-gradient(120deg, rgba(245, 215, 130, 0.24), rgba(245, 215, 130, 0.05) 30%, rgba(128, 174, 255, 0.08) 100%) border-box,
-    radial-gradient(circle at 12% 0%, rgba(0, 102, 255, 0.12), transparent 14rem),
-    radial-gradient(circle at 86% 4%, rgba(245, 215, 130, 0.08), transparent 13rem),
-    linear-gradient(180deg, rgba(7, 20, 55, 0.96), rgba(3, 8, 20, 0.98)) padding-box !important;
+    radial-gradient(circle at 12% 0%, rgba(124, 191, 255, 0.1), transparent 14rem),
+    linear-gradient(180deg, rgba(7, 20, 55, 0.98), rgba(3, 8, 20, 0.99)) padding-box !important;
   border-color: transparent !important;
   box-shadow:
     0 18px 48px rgba(0, 0, 0, 0.28),
@@ -565,28 +591,23 @@ h6 {
 
 .sarita-home-atmosphere {
   background:
-    radial-gradient(circle at 52% 20rem, rgba(0, 102, 255, 0.42), transparent 25rem),
-    radial-gradient(circle at 78% 18rem, rgba(95, 170, 255, 0.3), transparent 18rem),
-    radial-gradient(circle at 20% 58rem, rgba(0, 46, 160, 0.5), transparent 28rem),
-    radial-gradient(circle at 78% 92svh, rgba(245, 215, 130, 0.16), transparent 22rem),
-    radial-gradient(circle at 22% 132svh, rgba(0, 102, 255, 0.3), transparent 28rem),
+    radial-gradient(circle at 52% 18rem, rgba(0, 102, 255, 0.36), transparent 25rem),
+    radial-gradient(circle at 78% 16rem, rgba(95, 170, 255, 0.2), transparent 18rem),
+    radial-gradient(circle at 20% 58rem, rgba(0, 46, 160, 0.32), transparent 28rem),
     linear-gradient(
       180deg,
       #040711 0,
-      #051331 38svh,
-      #061c4f 78svh,
-      #031238 118svh,
-      #050914 100%
+      #061331 34svh,
+      #071437 100%
     );
 }
 
 .sarita-solar-system {
   background:
-    radial-gradient(circle at 50% 38%, rgba(245, 215, 130, 0.32), transparent 8rem),
-    radial-gradient(circle at 52% 46%, rgba(124, 191, 255, 0.22), transparent 19rem),
-    radial-gradient(circle at 72% 30%, rgba(0, 102, 255, 0.34), transparent 24rem),
-    radial-gradient(circle at 20% 68%, rgba(0, 46, 160, 0.28), transparent 24rem),
-    linear-gradient(180deg, rgba(4, 7, 17, 0.98), rgba(5, 19, 49, 0.96) 48%, rgba(6, 28, 79, 0.76) 78%, rgba(3, 18, 56, 0.62) 100%);
+    radial-gradient(circle at 50% 29%, rgba(245, 215, 130, 0.26), transparent 8rem),
+    radial-gradient(circle at 52% 36%, rgba(124, 191, 255, 0.18), transparent 18rem),
+    radial-gradient(circle at 72% 28%, rgba(0, 102, 255, 0.2), transparent 24rem),
+    linear-gradient(180deg, rgba(4, 7, 17, 0.98), rgba(5, 19, 49, 0.96) 42%, rgba(7, 20, 55, 0.86) 100%);
 }
 
 .sarita-feature-band {
@@ -641,7 +662,7 @@ h6 {
     inset 0 0 28px rgba(124, 191, 255, 0.09);
   left: 50%;
   position: absolute;
-  top: 37%;
+  top: 29%;
   transform: translate(-50%, -50%);
 }
 
@@ -665,6 +686,53 @@ h6 {
     0 0 18px currentColor,
     0 0 46px rgba(255, 250, 240, 0.1);
   position: absolute;
+}
+
+.sarita-starfield {
+  overflow: hidden;
+}
+
+.sarita-starfield::before {
+  animation: sarita-star-pulse 4.8s ease-in-out infinite;
+  background:
+    radial-gradient(circle, rgba(255, 250, 240, 1) 0 1px, transparent 1.6px) 7% 12% / 9rem 7rem,
+    radial-gradient(circle, rgba(255, 250, 240, 0.98) 0 1.2px, transparent 1.8px) 44% 18% / 13rem 9rem,
+    radial-gradient(circle, rgba(124, 191, 255, 1) 0 1px, transparent 1.7px) 72% 9% / 11rem 8rem,
+    radial-gradient(circle, rgba(255, 250, 240, 0.95) 0 0.9px, transparent 1.5px) 18% 62% / 12rem 10rem;
+  content: "";
+  inset: 0;
+  opacity: 0.9;
+  pointer-events: none;
+  position: absolute;
+}
+
+.sarita-starfield span {
+  animation: sarita-shooting-star 8.5s linear infinite;
+  background: linear-gradient(90deg, transparent, rgba(255, 250, 240, 1), rgba(124, 191, 255, 0.92), transparent);
+  border-radius: 9999px;
+  box-shadow:
+    0 0 12px rgba(255, 250, 240, 0.95),
+    0 0 26px rgba(124, 191, 255, 0.62);
+  height: 1px;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  top: 12%;
+  width: 9rem;
+}
+
+.sarita-starfield span:nth-child(2) {
+  animation-delay: 3.4s;
+  animation-duration: 10.5s;
+  top: 34%;
+  width: 7rem;
+}
+
+.sarita-starfield span:nth-child(3) {
+  animation-delay: 6.8s;
+  animation-duration: 12s;
+  top: 58%;
+  width: 11rem;
 }
 
 .sarita-section-label {

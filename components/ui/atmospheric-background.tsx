@@ -45,6 +45,14 @@ export function AtmosphericBackground({ variant }: AtmosphericBackgroundProps) {
         />
         <div
           aria-hidden="true"
+          className="sarita-starfield pointer-events-none absolute inset-0"
+        >
+          <span />
+          <span />
+          <span />
+        </div>
+        <div
+          aria-hidden="true"
           className="sarita-page-color-wash pointer-events-none absolute inset-0"
         />
         <div
@@ -57,11 +65,11 @@ export function AtmosphericBackground({ variant }: AtmosphericBackgroundProps) {
         </div>
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(7,7,19,0.34),rgba(16,13,34,0.18)_24rem,rgba(255,250,240,0)_62rem)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_18rem,rgba(124,191,255,0.08),transparent_22rem)]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(30,26,46,0.045),rgba(0,0,0,0)_48%,rgba(111,90,42,0.045))]"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(124,191,255,0.035),rgba(0,0,0,0)_48%,rgba(245,215,130,0.03))]"
         />
       </>
     );
