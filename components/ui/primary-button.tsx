@@ -23,7 +23,7 @@ const baseClassName =
 
 const variants = {
   solid:
-    "border border-[#f5d782]/60 bg-[linear-gradient(120deg,rgba(255,231,163,0.92),rgba(245,215,130,0.74)_42%,rgba(215,231,255,0.88))] text-[#030814] shadow-[0_10px_28px_rgba(0,0,0,0.22),0_0_28px_rgba(245,215,130,0.2),inset_0_1px_0_rgba(255,250,240,0.72)] hover:brightness-[1.06]",
+    "border border-[#fff0b8]/70 bg-[linear-gradient(120deg,#fff7d0,#f5d782_46%,#d7e7ff)] text-[#030814] shadow-[0_10px_28px_rgba(0,0,0,0.22),0_0_28px_rgba(245,215,130,0.2),inset_0_1px_0_rgba(255,250,240,0.72)] hover:brightness-[1.06]",
   ghostGold:
     "border border-[#f5d782]/48 bg-[linear-gradient(180deg,rgba(7,20,55,0.82),rgba(4,8,24,0.92))] text-[#f5d782] shadow-[0_10px_28px_rgba(0,0,0,0.2),0_0_24px_rgba(0,102,255,0.14),inset_0_1px_0_rgba(255,250,240,0.12)] hover:border-[#ffe7a3] hover:brightness-[1.08]",
 } as const;

@@ -298,7 +298,7 @@ h6 {
 
 .sarita-tab-active {
   background:
-    linear-gradient(180deg, rgba(255, 231, 163, 0.24), rgba(245, 215, 130, 0.1));
+    linear-gradient(180deg, rgba(7, 20, 55, 0.9), rgba(3, 8, 20, 0.84));
   border: 1px solid rgba(245, 215, 130, 0.54);
   color: var(--sarita-gold);
   box-shadow:
