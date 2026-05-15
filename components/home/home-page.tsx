@@ -351,9 +351,9 @@ export function HomePage({ moonStatus }: HomePageProps) {
                     >
                       <Link
                         href={item.href}
-                        className="grid grid-cols-[2.5rem_1fr] gap-x-3 rounded-[1.6rem] border border-[#d7d0ff]/14 bg-[#070713]/28 px-4 py-4 shadow-[0_8px_22px_rgba(0,0,0,0.14)] transition hover:border-[#d7bd6a]/40 hover:bg-[#fffaf0]/8"
+                        className="grid grid-cols-[2.5rem_1fr] gap-x-3 rounded-[1.6rem] border border-[#d7bd6a]/32 bg-[#071437]/44 px-4 py-4 shadow-[0_0_28px_rgba(0,102,255,0.12),0_8px_22px_rgba(0,0,0,0.18)] transition hover:border-[#f5d782]/60 hover:bg-[#0a1f58]/54"
                       >
-                        <span className="flex h-10 w-10 items-center justify-center rounded-full border border-dusty-gold/30 bg-white/58 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#5c4a24]">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-full border border-[#f5d782]/48 bg-[radial-gradient(circle_at_32%_24%,#fff7bf,rgba(215,189,106,0.82)_52%,rgba(5,19,49,0.4))] text-[11px] font-semibold uppercase tracking-[0.12em] text-[#1e1a2e] shadow-[0_0_20px_rgba(215,189,106,0.2)]">
                           0{index + 1}
                         </span>
                         <span className="min-w-0">
@@ -371,8 +371,8 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <div id="lecturas" className="sarita-feature-band -mx-4 mt-8 px-4 pt-7 pb-2 sm:mx-0 sm:mt-0 sm:px-0 sm:pt-0">
               <div className="mb-4 flex items-end justify-between sm:hidden">
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">{dictionary.home.eyebrow}</p>
-                  <h2 className="mt-2 font-serif text-[1.9rem] leading-[1.05] text-[#1e1a2e]">{dictionary.home.featuredTitle}</h2>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#d7bd6a]">{dictionary.home.eyebrow}</p>
+                  <h2 className="mt-2 font-serif text-[1.9rem] leading-[1.05] text-[#fffaf0] drop-shadow-[0_0_24px_rgba(0,102,255,0.2)]">{dictionary.home.featuredTitle}</h2>
                 </div>
               </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4 2xl:grid-cols-7">
@@ -389,14 +389,14 @@ export function HomePage({ moonStatus }: HomePageProps) {
                       className="sarita-feature-card group grid min-h-16 min-w-0 grid-cols-[2.5rem_1fr] items-center gap-x-3 overflow-hidden rounded-[1.45rem] px-4 py-4 text-left backdrop-blur-sm transition sm:block sm:min-h-0 sm:border-l sm:border-t-0 sm:border-r-0 sm:border-b-0 sm:rounded-none sm:bg-transparent sm:px-4 sm:py-2 sm:shadow-none sm:backdrop-blur-0"
                     >
                       <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-dusty-gold/55 to-transparent sm:hidden" />
-                      <span className="sarita-feature-icon flex h-10 w-10 items-center justify-center rounded-full text-[1.35rem] leading-none text-[#5c4a24] sm:mb-3 sm:h-auto sm:w-auto sm:rounded-none sm:border-0 sm:bg-transparent sm:text-2xl sm:shadow-none">
+                      <span className="sarita-feature-icon flex h-10 w-10 items-center justify-center rounded-full text-[1.35rem] leading-none text-[#1e1a2e] sm:mb-3 sm:h-auto sm:w-auto sm:rounded-none sm:border-0 sm:bg-transparent sm:text-2xl sm:text-[#d7bd6a] sm:shadow-none">
                         {FEATURE_SYMBOLS[index] ?? "\u263d"}
                       </span>
                       <span className="min-w-0">
-                        <span className="block text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-[#3a3048] transition group-hover:text-[#5c4a24] [overflow-wrap:normal] [word-break:normal] sm:text-[12px] sm:tracking-[0.18em] xl:tracking-[0.24em]">
+                        <span className="block text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-[#fffaf0] transition group-hover:text-[#f5d782] [overflow-wrap:normal] [word-break:normal] sm:text-[12px] sm:tracking-[0.18em] xl:tracking-[0.24em]">
                           {featureTitle(feature.title)}
                         </span>
-                        <span className="mt-1.5 block text-[12px] leading-[1.55] text-[#342b43] transition group-hover:text-[#342b43] sm:text-xs sm:leading-5">
+                        <span className="mt-1.5 block text-[12px] leading-[1.55] text-[#d7e7ff]/72 transition group-hover:text-[#fffaf0]/84 sm:text-xs sm:leading-5">
                           {feature.description}
                         </span>
                       </span>
@@ -408,15 +408,15 @@ export function HomePage({ moonStatus }: HomePageProps) {
                 <button
                   type="button"
                   onClick={() => setShowAllFeatures((current) => !current)}
-                  className="border border-black/10 bg-[#fffaf0]/70 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24]"
+                  className="border border-[#d7bd6a]/50 bg-[#071437]/54 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#f5d782] shadow-[0_0_24px_rgba(0,102,255,0.12)]"
                 >
                   {showAllFeatures ? lessReadingsLabel : moreReadingsLabel}
                 </button>
               </div>
             </div>
 
-            <div className="mt-20 flex flex-wrap justify-center gap-x-4 gap-y-2 text-[10px] uppercase tracking-[0.14em] text-[#3a3048] sm:mt-5 sm:gap-x-5 sm:text-[12px] sm:tracking-[0.18em]">
-              <span className="basis-full text-center text-[10px] tracking-[0.18em] text-[#8a7a4e] sm:hidden">© 2026 SARITA</span>
+            <div className="mt-20 flex flex-wrap justify-center gap-x-4 gap-y-2 text-[10px] uppercase tracking-[0.14em] text-[#fffaf0]/62 sm:mt-5 sm:gap-x-5 sm:text-[12px] sm:tracking-[0.18em]">
+              <span className="basis-full text-center text-[10px] tracking-[0.18em] text-[#d7bd6a] sm:hidden">© 2026 SARITA</span>
               <Link href="/precios" className="transition hover:text-dusty-gold">{dictionary.nav.pricing}</Link>
               <Link href="/ayuda" className="transition hover:text-dusty-gold">{dictionary.nav.help}</Link>
               <Link href="/privacidad" className="transition hover:text-dusty-gold">{dictionary.legal.privacy}</Link>
