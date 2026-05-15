@@ -8,11 +8,11 @@
   --sarita-blue-chrome: #082a78;
   --sarita-blue-electric: #0066ff;
   --sarita-blue-light: #7cbfff;
-  --sarita-silver: #d7e7ff;
-  --sarita-silver-muted: rgba(215, 231, 255, 0.72);
+  --sarita-silver: #e8f3ff;
+  --sarita-silver-muted: rgba(232, 243, 255, 0.88);
   --sarita-gold: #f5d782;
   --sarita-gold-soft: #ffe7a3;
-  --sarita-ivory: #fffaf0;
+  --sarita-ivory: #fffdf8;
 }
 
 @theme inline {
@@ -28,8 +28,8 @@
   --color-nebula-400: #0066ff;
   --color-dusty-gold: #f5d782;
   --color-silver-haze: #d7e7ff;
-  --color-ivory: #fffaf0;
-  --color-muted-ivory: #b8c8df;
+  --color-ivory: #fffdf8;
+  --color-muted-ivory: #d7e7ff;
   --color-overlay: #05070d;
   --color-chart-surface: #071437;
 }
@@ -462,12 +462,15 @@ h6 {
 }
 
 .sarita-result-observatory .sarita-chart-experience > section:not(.sarita-chart-stage) > .text-center h2 {
-  color: #fffaf0;
-  text-shadow: 0 0 34px rgba(124, 191, 255, 0.18);
+  color: var(--sarita-ivory);
+  text-shadow:
+    0 0 10px rgba(255, 253, 248, 0.28),
+    0 0 34px rgba(124, 191, 255, 0.28);
 }
 
 .sarita-result-observatory .sarita-chart-experience > section:not(.sarita-chart-stage) > .text-center p {
-  color: rgba(255, 250, 240, 0.72);
+  color: rgba(232, 243, 255, 0.88);
+  text-shadow: 0 0 18px rgba(124, 191, 255, 0.12);
 }
 
 .sarita-result-observatory .sarita-chart-experience > section:not(.sarita-chart-stage) > .text-center p:first-child {
@@ -489,7 +492,7 @@ h6 {
   border: 0;
   border-radius: 0;
   box-shadow: none;
-  color: #fffaf0;
+  color: var(--sarita-ivory);
   padding: 0;
 }
 
@@ -497,13 +500,17 @@ h6 {
 .sarita-reading-panel h3,
 .sarita-reading-panel em,
 .sarita-reading-panel [class*="text-ivory"] {
-  color: #fffaf0;
+  color: var(--sarita-ivory);
+  text-shadow:
+    0 0 10px rgba(255, 253, 248, 0.2),
+    0 0 28px rgba(124, 191, 255, 0.18);
 }
 
 .sarita-reading-panel p,
 .sarita-reading-panel li,
 .sarita-reading-panel [class*="text-[#3a3048]"] {
-  color: rgba(255, 250, 240, 0.72);
+  color: rgba(232, 243, 255, 0.88);
+  text-shadow: 0 0 16px rgba(124, 191, 255, 0.1);
 }
 
 .bg-white,
@@ -539,6 +546,16 @@ h6 {
 .text-\[\#3a3048\],
 .text-muted-ivory {
   color: var(--sarita-silver) !important;
+}
+
+.sarita-result-observatory :is(h1, h2, h3, .text-ivory) {
+  text-shadow:
+    0 0 10px rgba(255, 253, 248, 0.22),
+    0 0 30px rgba(124, 191, 255, 0.18);
+}
+
+.sarita-result-observatory :is(p, li, .text-muted-ivory, .text-\[\#3a3048\]) {
+  text-shadow: 0 0 14px rgba(124, 191, 255, 0.08);
 }
 
 .text-\[\#5c4a24\],

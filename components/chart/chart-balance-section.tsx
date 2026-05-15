@@ -26,10 +26,10 @@ const ELEMENT_ORDER: Element[] = ["fire", "earth", "air", "water"];
 const MODALITY_ORDER: Modality[] = ["cardinal", "fixed", "mutable"];
 
 const ELEMENT_COLORS: Record<Element, string> = {
-  fire: "#c97a8a",
-  earth: "#8a7a9c",
-  air: "#7a9ac9",
-  water: "#6b6ba8",
+  fire: "#ff5c92",
+  earth: "#f5d782",
+  air: "#56b2ff",
+  water: "#54f5dc",
 };
 
 type ChartBalanceSectionProps = {
@@ -139,13 +139,14 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
                     strokeWidth={active ? "46" : "40"}
                     opacity={active ? 0.94 : Math.min(0.82, Math.max(0.56, elementPercent / 35))}
                     className="transition-all duration-200"
+                    style={{ filter: active ? "drop-shadow(0 0 8px rgba(124,191,255,0.55))" : undefined }}
                   />
                   <text
                     x={labelPoint.x}
                     y={labelPoint.y - 4}
                     textAnchor="middle"
                     className="font-serif text-[12px] font-semibold"
-                    fill={active ? "#5c4a24" : "#1e1a2e"}
+                    fill={active ? "#fffdf8" : "#d7e7ff"}
                   >
                     {dictionary.result.elements[element]}
                   </text>
@@ -154,7 +155,7 @@ export function ChartBalanceSection({ chart, dictionary }: ChartBalanceSectionPr
                     y={labelPoint.y + 10}
                     textAnchor="middle"
                     className="font-serif text-[12px] font-semibold"
-                    fill={active ? "#5c4a24" : "#1e1a2e"}
+                    fill={active ? "#fffdf8" : "#d7e7ff"}
                   >
                     {elementPercent}%
                   </text>

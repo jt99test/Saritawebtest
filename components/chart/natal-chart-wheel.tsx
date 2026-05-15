@@ -41,12 +41,12 @@ const HOUSE_NUMBER_RADIUS = 208;
 const ASPECT_RADIUS = 134;
 
 const SYMBOLIC_ASPECT_COLORS: Record<AspectId, string> = {
-  conjunction: "rgba(232,197,71,0.95)",
-  opposition: "rgba(245,170,83,0.88)",
-  square: "rgba(229,93,128,0.86)",
-  trine: "rgba(100,155,255,0.86)",
-  sextile: "rgba(84,210,196,0.78)",
-  quincunx: "rgba(186,145,255,0.62)",
+  conjunction: "rgba(255,219,110,0.98)",
+  opposition: "rgba(255,166,74,0.94)",
+  square: "rgba(255,88,146,0.94)",
+  trine: "rgba(86,178,255,0.96)",
+  sextile: "rgba(84,245,220,0.9)",
+  quincunx: "rgba(190,150,255,0.82)",
 };
 
 const ASPECT_SYMBOLS: Record<AspectId, string> = {
@@ -180,10 +180,10 @@ function TickRing({
           y2={round(y2)}
           stroke={
             isLabelDegree
-              ? "rgba(30,26,46,0.38)"
+              ? "rgba(8,42,120,0.38)"
               : isFive
-                ? "rgba(30,26,46,0.24)"
-                : "rgba(30,26,46,0.12)"
+                ? "rgba(8,42,120,0.24)"
+                : "rgba(8,42,120,0.12)"
           }
           strokeWidth={isLabelDegree ? 0.9 : isFive ? 0.7 : 0.48}
         />,
@@ -199,13 +199,13 @@ function TickRing({
         const [labelX, labelY] = pointAtRadius(321, longitude + 1.2, ascendant);
         labels.push(
           <g key={`degree-label-${longitude}`}>
-            <circle cx={round(labelX)} cy={round(labelY)} r="8" fill="rgba(255,250,240,0.72)" />
+            <circle cx={round(labelX)} cy={round(labelY)} r="8" fill="rgba(255,253,248,0.82)" />
             <text
               x={round(labelX)}
               y={round(labelY)}
               textAnchor="middle"
               dominantBaseline="central"
-              fill="rgba(30,26,46,0.82)"
+              fill="rgba(6,19,49,0.86)"
               fontFamily="'Inter', sans-serif"
               fontSize="10.5"
               fontWeight="700"
@@ -229,10 +229,10 @@ function TickRing({
 
 function SymbolicWheelFrame({ ascendant }: { ascendant: number }) {
   const elementTints = {
-    fire: "rgba(209,118,118,0.14)",
-    earth: "rgba(216,194,122,0.1)",
-    air: "rgba(140,158,240,0.1)",
-    water: "rgba(110,170,190,0.12)",
+    fire: "rgba(255,105,145,0.14)",
+    earth: "rgba(245,215,130,0.12)",
+    air: "rgba(86,178,255,0.14)",
+    water: "rgba(84,245,220,0.12)",
   } as const;
 
   return (
@@ -242,17 +242,17 @@ function SymbolicWheelFrame({ ascendant }: { ascendant: number }) {
           key={`tint-${sign.id}`}
           d={describeRingSegment(ZODIAC_INNER, ZODIAC_OUTER, sign.start, sign.start + 30, ascendant)}
           fill={elementTints[sign.element]}
-          stroke="rgba(30,26,46,0.18)"
+          stroke="rgba(8,42,120,0.16)"
           strokeWidth="1"
         />
       ))}
 
-      <circle cx={CX} cy={CY} r={ZODIAC_OUTER + 2} fill="none" stroke="rgba(30,26,46,0.38)" strokeWidth="1.2" />
-      <circle cx={CX} cy={CY} r={ZODIAC_OUTER - 12} fill="none" stroke="rgba(30,26,46,0.14)" strokeWidth="0.7" />
-      <circle cx={CX} cy={CY} r={ZODIAC_INNER + 12} fill="none" stroke="rgba(30,26,46,0.14)" strokeWidth="0.7" />
-      <circle cx={CX} cy={CY} r={ZODIAC_INNER} fill="none" stroke="rgba(30,26,46,0.42)" strokeWidth="1.2" />
-      <circle cx={CX} cy={CY} r={HOUSE_OUTER} fill="none" stroke="rgba(30,26,46,0.12)" strokeWidth="0.9" />
-      <circle cx={CX} cy={CY} r={HOUSE_INNER} fill="none" stroke="rgba(30,26,46,0.1)" strokeWidth="0.8" />
+      <circle cx={CX} cy={CY} r={ZODIAC_OUTER + 2} fill="none" stroke="rgba(0,102,255,0.26)" strokeWidth="1.3" />
+      <circle cx={CX} cy={CY} r={ZODIAC_OUTER - 12} fill="none" stroke="rgba(245,215,130,0.24)" strokeWidth="0.8" />
+      <circle cx={CX} cy={CY} r={ZODIAC_INNER + 12} fill="none" stroke="rgba(124,191,255,0.18)" strokeWidth="0.8" />
+      <circle cx={CX} cy={CY} r={ZODIAC_INNER} fill="none" stroke="rgba(8,42,120,0.42)" strokeWidth="1.3" />
+      <circle cx={CX} cy={CY} r={HOUSE_OUTER} fill="none" stroke="rgba(8,42,120,0.16)" strokeWidth="0.9" />
+      <circle cx={CX} cy={CY} r={HOUSE_INNER} fill="none" stroke="rgba(8,42,120,0.12)" strokeWidth="0.8" />
 
       {zodiacSigns.map((sign) => {
         const [x, y] = pointAtRadius((ZODIAC_OUTER + ZODIAC_INNER) / 2, sign.start + 15, ascendant);
@@ -263,8 +263,8 @@ function SymbolicWheelFrame({ ascendant }: { ascendant: number }) {
             y={round(y)}
             textAnchor="middle"
             dominantBaseline="central"
-            fill="#1e1a2e"
-            fillOpacity="0.58"
+            fill="#061331"
+            fillOpacity="0.74"
             fontSize="22"
             fontWeight="600"
             fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
@@ -318,7 +318,7 @@ function HouseGeometry({ chart, ascendant }: { chart: NatalChartData; ascendant:
             y1={round(outerY)}
             x2={round(innerX)}
             y2={round(innerY)}
-            stroke="rgba(30,26,46,0.28)"
+            stroke="rgba(8,42,120,0.28)"
             strokeWidth={house.house === 1 || house.house === 4 || house.house === 7 || house.house === 10 ? 1.6 : 0.9}
           />
         );
@@ -337,7 +337,7 @@ function HouseGeometry({ chart, ascendant }: { chart: NatalChartData; ascendant:
             y={round(y)}
             textAnchor="middle"
             dominantBaseline="central"
-            fill="rgba(30,26,46,0.52)"
+            fill="rgba(6,19,49,0.66)"
             fontFamily="'Inter', sans-serif"
             fontSize="13"
             fontWeight="500"
@@ -371,7 +371,7 @@ function AxisLines({ chart, ascendant }: { chart: NatalChartData; ascendant: num
               y1={round(y1)}
               x2={round(x2)}
               y2={round(y2)}
-              stroke="rgba(30,26,46,0.72)"
+              stroke="rgba(6,19,49,0.74)"
               strokeWidth={axis.weight}
             />
             <g transform={`translate(${round(labelStartX)} ${round(labelStartY)})`}>
@@ -381,14 +381,15 @@ function AxisLines({ chart, ascendant }: { chart: NatalChartData; ascendant: num
                 width={40}
                 height={22}
                 rx={11}
-                fill="#fffaf0"
-                stroke="rgba(138,122,78,0.72)"
+                fill="#fffdf8"
+                stroke="rgba(0,102,255,0.28)"
                 strokeWidth="1"
+                filter="url(#planet-glow)"
               />
               <text
                 textAnchor="middle"
                 dominantBaseline="central"
-                fill="#1e1a2e"
+                fill="#061331"
                 fontFamily="'Spectral', serif"
                 fontSize="14"
                 fontWeight="700"
@@ -404,14 +405,15 @@ function AxisLines({ chart, ascendant }: { chart: NatalChartData; ascendant: num
                 width={40}
                 height={22}
                 rx={11}
-                fill="#fffaf0"
-                stroke="rgba(138,122,78,0.72)"
+                fill="#fffdf8"
+                stroke="rgba(0,102,255,0.28)"
                 strokeWidth="1"
+                filter="url(#planet-glow)"
               />
               <text
                 textAnchor="middle"
                 dominantBaseline="central"
-                fill="#1e1a2e"
+                fill="#061331"
                 fontFamily="'Spectral', serif"
                 fontSize="14"
                 fontWeight="700"
@@ -555,6 +557,7 @@ function SymbolicAspects({
               strokeWidth={strokeWidth}
               strokeDasharray={aspect.type === "quincunx" ? "2 3" : undefined}
               strokeLinecap="round"
+              filter={strokeOpacity > 0.18 ? "url(#aspect-neon-glow)" : undefined}
             />
             <text
               x={round(mx)}
@@ -565,6 +568,7 @@ function SymbolicAspects({
               fillOpacity={strokeOpacity * 1.2 > 1 ? 1 : strokeOpacity * 1.2}
               fontSize="11"
               fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', serif"
+              filter={strokeOpacity > 0.18 ? "url(#aspect-neon-glow)" : undefined}
             >
               {ASPECT_SYMBOLS[aspect.type]}
             </text>
@@ -1164,7 +1168,7 @@ function ClearPlanetLayer({
                 y1={round(layout.connectorY1)}
                 x2={round(layout.connectorX2)}
                 y2={round(layout.connectorY2)}
-                stroke="rgba(30,26,46,0.18)"
+                stroke="rgba(0,102,255,0.22)"
                 strokeWidth={0.55}
                 strokeLinecap="round"
               />
@@ -1175,10 +1179,11 @@ function ClearPlanetLayer({
                 cx={round(layout.glyphX)}
                 cy={round(layout.glyphY)}
                 r={29}
-                fill="rgba(232,197,71,0.08)"
-                stroke={point.color}
-                strokeOpacity="0.55"
+                fill="rgba(0,102,255,0.08)"
+                stroke="rgba(245,215,130,0.7)"
+                strokeOpacity="0.8"
                 strokeWidth={1.2}
+                filter="url(#planet-hover-glow)"
               />
             ) : null}
 
@@ -1186,9 +1191,10 @@ function ClearPlanetLayer({
               cx={round(layout.glyphX)}
               cy={round(layout.glyphY)}
               r={20}
-              fill="#fffaf0"
-              stroke="rgba(138,122,78,0.42)"
-              strokeWidth={0.8}
+              fill="rgba(255,253,248,0.96)"
+              stroke="rgba(0,102,255,0.24)"
+              strokeWidth={0.9}
+              filter="url(#planet-glow)"
             />
 
             <text
@@ -1201,8 +1207,8 @@ function ClearPlanetLayer({
               fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
               fontSize="27"
               fontWeight="700"
-              stroke="#fffaf0"
-              strokeWidth={1.6}
+              stroke="#fffdf8"
+              strokeWidth={1.8}
               paintOrder="stroke fill"
               style={{ filter: glow }}
             >
@@ -1215,12 +1221,12 @@ function ClearPlanetLayer({
                 y={round(layout.labelY)}
                 textAnchor={layout.labelAnchor}
                 dominantBaseline="central"
-                fill="#1e1a2e"
+                fill="#061331"
                 fontFamily="'Inter', sans-serif"
                 fontSize="10.5"
                 fontWeight="700"
                 letterSpacing="0.01em"
-                stroke="#fffaf0"
+                stroke="#fffdf8"
                 strokeWidth={2}
                 paintOrder="stroke fill"
               >
@@ -1234,11 +1240,11 @@ function ClearPlanetLayer({
                 y={round(layout.retrogradeY)}
                 textAnchor={layout.labelAnchor}
                 dominantBaseline="central"
-                fill="#8a7a4e"
+                fill="#082a78"
                 fontFamily="'Spectral', serif"
                 fontSize="10"
                 fontWeight="600"
-                stroke="#fffaf0"
+                stroke="#fffdf8"
                 strokeWidth={1.8}
                 paintOrder="stroke fill"
               >
@@ -1440,19 +1446,26 @@ export function NatalChartWheel({ chart }: Props) {
             <stop offset="100%" stopColor="rgba(30,26,46,0.06)" />
           </radialGradient>
           <radialGradient id="chart-surface-bg" cx="50%" cy="45%" r="56%">
-            <stop offset="0%" stopColor="#f5f0e6" />
-            <stop offset="68%" stopColor="#ede7d9" />
-            <stop offset="100%" stopColor="#ddd6c6" />
+            <stop offset="0%" stopColor="#fffdf8" />
+            <stop offset="52%" stopColor="#f4f7ff" />
+            <stop offset="100%" stopColor="#dce8f8" />
           </radialGradient>
-          <filter id="planet-glow">
-            <feGaussianBlur stdDeviation="1.6" result="blur" />
+          <filter id="planet-glow" x="-80%" y="-80%" width="260%" height="260%">
+            <feGaussianBlur stdDeviation="2.6" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
             </feMerge>
           </filter>
-          <filter id="planet-hover-glow">
-            <feGaussianBlur stdDeviation="3.2" result="blur" />
+          <filter id="planet-hover-glow" x="-100%" y="-100%" width="300%" height="300%">
+            <feGaussianBlur stdDeviation="4.6" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="aspect-neon-glow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="2.2" result="blur" />
             <feMerge>
               <feMergeNode in="blur" />
               <feMergeNode in="SourceGraphic" />
@@ -1461,8 +1474,8 @@ export function NatalChartWheel({ chart }: Props) {
         </defs>
 
         <>
-            <circle cx={CX} cy={CY} r={CX - 8} fill="url(#chart-surface-bg)" stroke="rgba(30,26,46,0.16)" strokeWidth="1.2" />
-            <circle cx={CX} cy={CY} r={CX - 22} fill="none" stroke="rgba(138,122,78,0.1)" strokeWidth="10" />
+            <circle cx={CX} cy={CY} r={CX - 8} fill="url(#chart-surface-bg)" stroke="rgba(124,191,255,0.26)" strokeWidth="1.4" filter="url(#planet-glow)" />
+            <circle cx={CX} cy={CY} r={CX - 22} fill="none" stroke="rgba(245,215,130,0.15)" strokeWidth="10" />
             <circle cx={CX} cy={CY} r={ZODIAC_INNER} fill="url(#wheel-bg)" />
             <SymbolicWheelFrame ascendant={ascendant} />
             <TickRing ascendant={ascendant} showDegrees={showDegrees} points={displayPoints} />

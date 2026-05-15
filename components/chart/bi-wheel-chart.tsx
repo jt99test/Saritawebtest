@@ -89,24 +89,24 @@ const POINT_SYMBOLS: Record<ChartPointId, string> = {
 
 const VARIANTS = {
   "solar-return": {
-    primary: "#8f7b45",
-    muted: "rgba(105,91,52,0.94)",
-    ring: "rgba(143,123,69,0.46)",
-    bg: "rgba(143,123,69,0.1)",
+    primary: "#f5d782",
+    muted: "rgba(232,243,255,0.9)",
+    ring: "rgba(245,215,130,0.5)",
+    bg: "rgba(0,102,255,0.12)",
   },
   synastry: {
-    primary: "#8f7b45",
-    muted: "rgba(105,91,52,0.94)",
-    ring: "rgba(143,123,69,0.46)",
-    bg: "rgba(143,123,69,0.1)",
+    primary: "#f5d782",
+    muted: "rgba(232,243,255,0.9)",
+    ring: "rgba(245,215,130,0.5)",
+    bg: "rgba(0,102,255,0.12)",
   },
 } as const;
 
 const ELEMENT_TINTS = {
-  fire: "rgba(209,118,118,0.14)",
-  earth: "rgba(216,194,122,0.1)",
-  air: "rgba(140,158,240,0.1)",
-  water: "rgba(110,170,190,0.12)",
+  fire: "rgba(255,105,145,0.14)",
+  earth: "rgba(245,215,130,0.12)",
+  air: "rgba(86,178,255,0.14)",
+  water: "rgba(84,245,220,0.12)",
 } as const;
 
 function pointAngle(longitude: number, ascendant: number) {
@@ -150,7 +150,7 @@ function midpointLongitude(start: number, end: number) {
 }
 
 function zodiacLabelFill(element: (typeof zodiacSigns)[number]["element"]) {
-  return "#1e1a2e";
+  return "#061331";
 }
 
 function visiblePoints(chart: NatalChartData) {
@@ -168,12 +168,12 @@ function degreeLabel(point: ChartPoint) {
 }
 
 function aspectStroke(type: string) {
-  if (type === "trine") return "rgba(100,155,255,0.72)";
-  if (type === "sextile") return "rgba(84,210,196,0.68)";
-  if (type === "square") return "rgba(229,93,128,0.72)";
-  if (type === "opposition") return "rgba(245,170,83,0.72)";
-  if (type === "quincunx") return "rgba(186,145,255,0.6)";
-  return "rgba(232,197,71,0.78)";
+  if (type === "trine") return "rgba(86,178,255,0.95)";
+  if (type === "sextile") return "rgba(84,245,220,0.88)";
+  if (type === "square") return "rgba(255,88,146,0.9)";
+  if (type === "opposition") return "rgba(255,166,74,0.9)";
+  if (type === "quincunx") return "rgba(190,150,255,0.78)";
+  return "rgba(255,219,110,0.94)";
 }
 
 function DegreeTickRing({ ascendant }: { ascendant: number }) {
@@ -385,9 +385,9 @@ export function BiWheelChart({
             <stop offset="100%" stopColor="rgba(30,26,46,0.02)" />
           </radialGradient>
           <radialGradient id="bw-surface-bg" cx="50%" cy="45%" r="56%">
-            <stop offset="0%" stopColor="#f5f0e6" />
-            <stop offset="68%" stopColor="#ede7d9" />
-            <stop offset="100%" stopColor="#ddd6c6" />
+            <stop offset="0%" stopColor="#fffdf8" />
+            <stop offset="52%" stopColor="#f4f7ff" />
+            <stop offset="100%" stopColor="#dce8f8" />
           </radialGradient>
           <filter id="bw-soft-halo" x="-80%" y="-80%" width="260%" height="260%">
             <feGaussianBlur stdDeviation="3.5" result="blur" />
@@ -396,10 +396,11 @@ export function BiWheelChart({
           <filter id="bw-glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="2.2" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
           <filter id="bw-hover-glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4.4" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
           <filter id="bw-outer-glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+          <filter id="bw-aspect-neon" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="2.2" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
         </defs>
 
-        <circle cx={CENTER} cy={CENTER} r="412" fill="url(#bw-surface-bg)" stroke="rgba(30,26,46,0.18)" strokeWidth="1.3" />
-        <circle cx={CENTER} cy={CENTER} r="398" fill="none" stroke="rgba(143,123,69,0.13)" strokeWidth="10" />
+        <circle cx={CENTER} cy={CENTER} r="412" fill="url(#bw-surface-bg)" stroke="rgba(124,191,255,0.26)" strokeWidth="1.4" filter="url(#bw-glow)" />
+        <circle cx={CENTER} cy={CENTER} r="398" fill="none" stroke="rgba(245,215,130,0.15)" strokeWidth="10" />
         <circle cx={CENTER} cy={CENTER} r="420" fill="url(#bw-field-glow)" />
         <circle cx={CENTER} cy={CENTER} r="392" fill="none" stroke="rgba(30,26,46,0.06)" strokeWidth="16" filter="url(#bw-soft-halo)" />
         {outerChart ? (
@@ -420,7 +421,7 @@ export function BiWheelChart({
                 <path
                   d={describeRingSegment(sign.start, sign.start + 30, ZODIAC_INNER_R, ZODIAC_OUTER_R, ascendant)}
                   fill={ELEMENT_TINTS[sign.element]}
-                  stroke="rgba(30,26,46,0.18)"
+                  stroke="rgba(8,42,120,0.16)"
                   strokeWidth="1"
                 />
                 <text
@@ -438,10 +439,10 @@ export function BiWheelChart({
               </g>
             );
           })}
-          <circle cx={CENTER} cy={CENTER} r={ZODIAC_OUTER_R + 2} fill="none" stroke="rgba(30,26,46,0.38)" strokeWidth="1.2" />
-          <circle cx={CENTER} cy={CENTER} r={ZODIAC_OUTER_R - 12} fill="none" stroke="rgba(30,26,46,0.14)" strokeWidth="0.7" />
-          <circle cx={CENTER} cy={CENTER} r={ZODIAC_INNER_R + 12} fill="none" stroke="rgba(30,26,46,0.14)" strokeWidth="0.7" />
-          <circle cx={CENTER} cy={CENTER} r={ZODIAC_INNER_R} fill="none" stroke="rgba(30,26,46,0.42)" strokeWidth="1.2" />
+          <circle cx={CENTER} cy={CENTER} r={ZODIAC_OUTER_R + 2} fill="none" stroke="rgba(0,102,255,0.26)" strokeWidth="1.3" />
+          <circle cx={CENTER} cy={CENTER} r={ZODIAC_OUTER_R - 12} fill="none" stroke="rgba(245,215,130,0.24)" strokeWidth="0.8" />
+          <circle cx={CENTER} cy={CENTER} r={ZODIAC_INNER_R + 12} fill="none" stroke="rgba(124,191,255,0.18)" strokeWidth="0.8" />
+          <circle cx={CENTER} cy={CENTER} r={ZODIAC_INNER_R} fill="none" stroke="rgba(8,42,120,0.42)" strokeWidth="1.3" />
           <DegreeTickRing ascendant={ascendant} />
           {innerChart.houses.map((house) => {
             const lineStart = pointAtRadius(ZODIAC_INNER_R, house.longitude, ascendant);
@@ -493,6 +494,7 @@ export function BiWheelChart({
                 y2={end.y}
                 stroke={aspectStroke(aspect.type)}
                 strokeWidth="1.1"
+                filter="url(#bw-aspect-neon)"
               />
             );
           })}
@@ -514,6 +516,7 @@ export function BiWheelChart({
                 stroke={aspectStroke(aspect.type)}
                 strokeWidth="1"
                 strokeOpacity="0.78"
+                filter="url(#bw-aspect-neon)"
               />
             );
           }) : null}
@@ -536,6 +539,7 @@ export function BiWheelChart({
                 strokeWidth="0.9"
                 strokeDasharray="3 5"
                 strokeOpacity="0.62"
+                filter="url(#bw-aspect-neon)"
               />
             );
           }) : null}
@@ -564,7 +568,7 @@ export function BiWheelChart({
                 {active ? (
                   <circle cx={position.x} cy={position.y} r="29" fill="rgba(232,197,71,0.08)" stroke={point.color} strokeOpacity="0.55" strokeWidth="1.2" />
                 ) : null}
-                <circle cx={position.x} cy={position.y} r="20" fill="#fffaf0" stroke="rgba(138,122,78,0.42)" strokeWidth="0.8" filter="url(#bw-glow)" />
+                <circle cx={position.x} cy={position.y} r="20" fill="rgba(255,253,248,0.96)" stroke="rgba(0,102,255,0.24)" strokeWidth="0.9" filter="url(#bw-glow)" />
                 <text
                   x={position.x}
                   y={position.y + 1}
@@ -574,8 +578,8 @@ export function BiWheelChart({
                   fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
                   fontSize="27"
                   fontWeight="700"
-                  stroke="#fffaf0"
-                  strokeWidth="1.6"
+                  stroke="#fffdf8"
+                  strokeWidth="1.8"
                   paintOrder="stroke fill"
                   style={{ filter: active ? "url(#bw-hover-glow)" : "url(#bw-glow)" }}
                 >
@@ -608,11 +612,11 @@ export function BiWheelChart({
               className="cursor-pointer outline-none"
               style={{ outline: "none" }}
             >
-              <line x1={tickStart.x} y1={tickStart.y} x2={tickEnd.x} y2={tickEnd.y} stroke={active ? colors.primary : "rgba(30,26,46,0.18)"} strokeWidth={active ? "1.4" : "0.7"} strokeLinecap="round" />
+              <line x1={tickStart.x} y1={tickStart.y} x2={tickEnd.x} y2={tickEnd.y} stroke={active ? colors.primary : "rgba(0,102,255,0.22)"} strokeWidth={active ? "1.4" : "0.7"} strokeLinecap="round" />
               {active ? (
                 <circle cx={position.x} cy={position.y} r="28" fill="rgba(232,197,71,0.08)" stroke={colors.primary} strokeOpacity="0.55" strokeWidth="1.1" />
               ) : null}
-              <circle cx={position.x} cy={position.y} r="20" fill="#fffaf0" stroke="rgba(138,122,78,0.42)" strokeWidth="0.8" filter="url(#bw-glow)" />
+              <circle cx={position.x} cy={position.y} r="20" fill="rgba(255,253,248,0.96)" stroke="rgba(0,102,255,0.24)" strokeWidth="0.9" filter="url(#bw-glow)" />
               <text
                 x={position.x}
                 y={position.y + 1}
@@ -622,8 +626,8 @@ export function BiWheelChart({
                 fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
                 fontSize="27"
                 fontWeight="700"
-                stroke="#fffaf0"
-                strokeWidth="1.6"
+                stroke="#fffdf8"
+                strokeWidth="1.8"
                 paintOrder="stroke fill"
                 style={{ filter: active ? "url(#bw-outer-glow)" : "url(#bw-glow)" }}
               >
