@@ -160,21 +160,28 @@ h6 {
   }
 }
 
-@keyframes sarita-shooting-star {
+@keyframes sarita-meteor-fall {
   0% {
     opacity: 0;
-    transform: translate3d(102vw, -7vh, 0) rotate(-26deg) scale(0.7);
+    transform: translate3d(0, 0, 0) rotate(var(--meteor-angle, 18deg)) scale(0.62);
   }
 
-  8%,
-  20% {
+  5% {
+    opacity: 0;
+  }
+
+  12% {
     opacity: 1;
   }
 
-  38%,
+  22% {
+    opacity: 0.92;
+  }
+
+  42%,
   100% {
     opacity: 0;
-    transform: translate3d(8vw, 38vh, 0) rotate(-26deg) scale(1);
+    transform: translate3d(var(--meteor-dx, 38vw), var(--meteor-dy, 22vh), 0) rotate(var(--meteor-angle, 18deg)) scale(1);
   }
 }
 
@@ -240,23 +247,24 @@ h6 {
 
 .sarita-cosmic-shell {
   background:
-    radial-gradient(circle at 80% 8%, rgba(81, 70, 156, 0.42), transparent 34rem),
-    radial-gradient(circle at 6% 34%, rgba(150, 70, 168, 0.24), transparent 26rem),
-    linear-gradient(180deg, #070713 0%, #0c0820 42%, #070611 100%);
+    radial-gradient(circle at 52% 18rem, rgba(0, 102, 255, 0.34), transparent 24rem),
+    radial-gradient(circle at 78% 16rem, rgba(95, 170, 255, 0.18), transparent 19rem),
+    radial-gradient(circle at 20% 58rem, rgba(0, 46, 160, 0.3), transparent 28rem),
+    linear-gradient(180deg, #040711 0%, #061331 44%, #071437 100%);
   color: #fffaf0;
 }
 
 .sarita-premium-card {
   background:
-    linear-gradient(120deg, rgba(245, 215, 130, 0.28), rgba(245, 215, 130, 0.06) 24%, rgba(124, 191, 255, 0.1) 100%) border-box,
-    radial-gradient(circle at 16% 0%, rgba(0, 102, 255, 0.16), transparent 14rem),
-    radial-gradient(circle at 84% 8%, rgba(245, 215, 130, 0.08), transparent 12rem),
+    linear-gradient(120deg, rgba(245, 215, 130, 0.34), rgba(215, 231, 255, 0.16) 34%, rgba(0, 102, 255, 0.22) 100%) border-box,
+    radial-gradient(circle at 14% 0%, rgba(124, 191, 255, 0.2), transparent 14rem),
+    radial-gradient(circle at 86% 8%, rgba(245, 215, 130, 0.12), transparent 12rem),
     linear-gradient(180deg, rgba(7, 20, 55, 0.96), rgba(3, 8, 20, 0.98)) padding-box;
   border-color: transparent;
   box-shadow:
     0 24px 62px rgba(0, 0, 0, 0.32),
-    0 0 42px rgba(0, 102, 255, 0.14),
-    0 0 46px rgba(245, 215, 130, 0.1),
+    0 0 42px rgba(0, 102, 255, 0.18),
+    0 0 46px rgba(245, 215, 130, 0.13),
     inset 0 1px 0 rgba(255, 250, 240, 0.14);
   color: var(--sarita-ivory);
 }
@@ -364,10 +372,10 @@ h6 {
 
 .sarita-page-atmosphere-layer {
   background:
-    radial-gradient(circle at 50% 18rem, rgba(0, 102, 255, 0.22), transparent 20rem),
-    radial-gradient(circle at 80% 18rem, rgba(124, 191, 255, 0.12), transparent 24rem),
-    radial-gradient(circle at 18% 52rem, rgba(0, 46, 160, 0.18), transparent 28rem),
-    linear-gradient(180deg, #030814 0, #061331 24rem, #071437 100%);
+    radial-gradient(circle at 52% 18rem, rgba(0, 102, 255, 0.34), transparent 24rem),
+    radial-gradient(circle at 78% 16rem, rgba(95, 170, 255, 0.18), transparent 19rem),
+    radial-gradient(circle at 20% 58rem, rgba(0, 46, 160, 0.3), transparent 28rem),
+    linear-gradient(180deg, #040711 0, #061331 34rem, #071437 100%);
 }
 
 .sarita-page-color-wash {
@@ -378,6 +386,11 @@ h6 {
     radial-gradient(circle at 70% 52rem, rgba(245, 215, 130, 0.08), transparent 20rem);
   mix-blend-mode: screen;
   opacity: 0.42;
+}
+
+.sarita-result-observatory .sarita-page-color-wash,
+.sarita-result-observatory .sarita-page-orbit-field {
+  display: none;
 }
 
 .sarita-page-orbit-field span {
@@ -410,28 +423,24 @@ h6 {
   width: 72rem;
 }
 
-.sarita-result-observatory .sarita-page-atmosphere-layer {
-  background:
-    radial-gradient(circle at 50% 20rem, rgba(124, 191, 255, 0.18), transparent 13rem),
-    radial-gradient(circle at 86% 14rem, rgba(0, 102, 255, 0.16), transparent 20rem),
-    radial-gradient(circle at 18% 50rem, rgba(0, 46, 160, 0.14), transparent 26rem),
-    linear-gradient(180deg, #030814 0, #061331 22rem, #071437 100%);
-}
-
-.sarita-result-observatory .sarita-page-color-wash {
-  background:
-    radial-gradient(circle at 50% 24rem, rgba(124, 191, 255, 0.14), transparent 13rem),
-    radial-gradient(circle at 82% 17rem, rgba(0, 102, 255, 0.12), transparent 18rem);
-}
-
 .sarita-result-topbar {
   background:
-    radial-gradient(circle at 50% 0%, rgba(215, 189, 106, 0.1), transparent 18rem),
-    linear-gradient(180deg, rgba(7, 7, 19, 0.86), rgba(14, 12, 32, 0.74));
-  border-color: rgba(255, 250, 240, 0.12);
+    radial-gradient(circle at 52% 0%, rgba(245, 215, 130, 0.13), transparent 18rem),
+    radial-gradient(circle at 86% 0%, rgba(124, 191, 255, 0.12), transparent 11rem),
+    linear-gradient(180deg, rgba(4, 7, 17, 0.92), rgba(6, 19, 49, 0.78));
+  border-color: rgba(215, 231, 255, 0.14);
   box-shadow:
     0 12px 34px rgba(0, 0, 0, 0.24),
+    0 0 32px rgba(0, 102, 255, 0.08),
     inset 0 1px 0 rgba(255, 250, 240, 0.08);
+}
+
+.sarita-result-observatory {
+  background:
+    radial-gradient(circle at 52% 18rem, rgba(0, 102, 255, 0.34), transparent 24rem),
+    radial-gradient(circle at 78% 16rem, rgba(95, 170, 255, 0.18), transparent 19rem),
+    radial-gradient(circle at 20% 58rem, rgba(0, 46, 160, 0.3), transparent 28rem),
+    linear-gradient(180deg, #040711 0, #061331 34rem, #071437 100%) !important;
 }
 
 .sarita-chart-night-field {
@@ -440,6 +449,16 @@ h6 {
 
 .sarita-chart-stage {
   position: relative;
+}
+
+.sarita-result-observatory .sarita-chart-experience {
+  background: transparent;
+}
+
+.sarita-result-observatory .sarita-reading-panel > section {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 
 .sarita-result-observatory .sarita-chart-experience > section:not(.sarita-chart-stage) > .text-center h2 {
@@ -493,6 +512,9 @@ h6 {
 .bg-white\/70,
 .bg-white\/74,
 .bg-white\/85,
+.bg-white\/88,
+.bg-white\/90,
+.bg-white\/95,
 [class~="bg-[#fffaf0]"],
 [class~="bg-[#f8f2e8]/82"],
 [class~="bg-[#f8f4eb]/42"],
@@ -556,6 +578,9 @@ h6 {
 .sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/70,
 .sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/74,
 .sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/85,
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/88,
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/90,
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/95,
 .sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class~="bg-[#f8f2e8]/82"],
 .sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class~="bg-[#f8f4eb]/42"],
 .sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class~="bg-[#fbf7ef]"] {
@@ -577,6 +602,9 @@ h6 {
 .sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/70 :is(h2, h3, h4, p, li, span),
 .sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/74 :is(h2, h3, h4, p, li, span),
 .sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/85 :is(h2, h3, h4, p, li, span),
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/88 :is(h2, h3, h4, p, li, span),
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/90 :is(h2, h3, h4, p, li, span),
+.sarita-result-observatory .sarita-chart-experience :is(article, section, div, button).bg-white\/95 :is(h2, h3, h4, p, li, span),
 .sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class~="bg-[#f8f2e8]/82"] :is(h2, h3, h4, p, li, span),
 .sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class~="bg-[#f8f4eb]/42"] :is(h2, h3, h4, p, li, span),
 .sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class~="bg-[#fbf7ef]"] :is(h2, h3, h4, p, li, span) {
@@ -604,9 +632,9 @@ h6 {
 
 .sarita-solar-system {
   background:
-    radial-gradient(circle at 50% 29%, rgba(245, 215, 130, 0.26), transparent 8rem),
-    radial-gradient(circle at 52% 36%, rgba(124, 191, 255, 0.18), transparent 18rem),
-    radial-gradient(circle at 72% 28%, rgba(0, 102, 255, 0.2), transparent 24rem),
+    radial-gradient(circle at 50% 23%, rgba(245, 215, 130, 0.26), transparent 8rem),
+    radial-gradient(circle at 52% 31%, rgba(124, 191, 255, 0.18), transparent 18rem),
+    radial-gradient(circle at 72% 24%, rgba(0, 102, 255, 0.2), transparent 24rem),
     linear-gradient(180deg, rgba(4, 7, 17, 0.98), rgba(5, 19, 49, 0.96) 42%, rgba(7, 20, 55, 0.86) 100%);
 }
 
@@ -662,7 +690,7 @@ h6 {
     inset 0 0 28px rgba(124, 191, 255, 0.09);
   left: 50%;
   position: absolute;
-  top: 29%;
+  top: 23%;
   transform: translate(-50%, -50%);
 }
 
@@ -751,6 +779,152 @@ h6 {
   animation-delay: 6.8s;
   animation-duration: 12s;
   top: 58%;
+}
+
+.sarita-starfield span {
+  display: none;
+}
+
+.sarita-bright-starfield span {
+  border-radius: 9999px;
+  box-shadow:
+    0 0 8px rgba(255, 250, 240, 0.94),
+    0 0 18px rgba(124, 191, 255, 0.56);
+  height: 3px;
+  position: absolute;
+  width: 3px;
+}
+
+.sarita-bright-starfield span:nth-child(1) {
+  background: #fffaf0;
+  left: 23%;
+  top: 19%;
+}
+
+.sarita-bright-starfield span:nth-child(2) {
+  background: #7cbfff;
+  left: 69%;
+  top: 35%;
+}
+
+.sarita-bright-starfield span:nth-child(3) {
+  background: #fffaf0;
+  left: 52%;
+  top: 74%;
+}
+
+.sarita-meteor-field {
+  overflow: hidden;
+}
+
+.sarita-meteor-field span {
+  --meteor-angle: 19deg;
+  --meteor-dx: 38vw;
+  --meteor-dy: 22vh;
+  animation: sarita-meteor-fall var(--meteor-duration, 8.8s) cubic-bezier(0.16, 0.82, 0.2, 1) infinite;
+  animation-delay: var(--meteor-delay, 0s);
+  height: 0.75rem;
+  left: var(--meteor-left, 8%);
+  opacity: 0;
+  position: absolute;
+  top: var(--meteor-top, 12%);
+  transform-origin: right center;
+  width: 3.4rem;
+}
+
+.sarita-meteor-field span::before {
+  background: linear-gradient(90deg, transparent, rgba(124, 191, 255, 0.16), rgba(255, 250, 240, 0.92));
+  border-radius: 9999px;
+  box-shadow:
+    0 0 10px rgba(124, 191, 255, 0.32),
+    0 0 18px rgba(255, 250, 240, 0.2);
+  content: "";
+  height: 1px;
+  position: absolute;
+  right: 0.18rem;
+  top: calc(50% - 0.5px);
+  width: 3rem;
+}
+
+.sarita-meteor-field span::after {
+  background: #fffaf0;
+  border-radius: 9999px;
+  box-shadow:
+    0 0 8px rgba(255, 250, 240, 1),
+    0 0 18px rgba(124, 191, 255, 0.92),
+    0 0 30px rgba(245, 215, 130, 0.22);
+  content: "";
+  height: 5px;
+  position: absolute;
+  right: 0;
+  top: calc(50% - 2.5px);
+  width: 5px;
+}
+
+.sarita-meteor-field span:nth-child(1) {
+  --meteor-delay: 1.1s;
+  --meteor-duration: 9.5s;
+  --meteor-left: 6%;
+  --meteor-top: 13%;
+}
+
+.sarita-meteor-field span:nth-child(2) {
+  --meteor-delay: 5.9s;
+  --meteor-duration: 12.5s;
+  --meteor-dx: 46vw;
+  --meteor-dy: 18vh;
+  --meteor-left: 18%;
+  --meteor-top: 35%;
+}
+
+.sarita-meteor-field span:nth-child(3) {
+  --meteor-angle: 24deg;
+  --meteor-delay: 10.2s;
+  --meteor-duration: 14s;
+  --meteor-dx: 52vw;
+  --meteor-dy: 28vh;
+  --meteor-left: 0%;
+  --meteor-top: 52%;
+}
+
+.sarita-meteor-field span:nth-child(4) {
+  --meteor-angle: 15deg;
+  --meteor-delay: 15.8s;
+  --meteor-duration: 11.5s;
+  --meteor-dx: 34vw;
+  --meteor-dy: 14vh;
+  --meteor-left: 42%;
+  --meteor-top: 21%;
+}
+
+.sarita-meteor-field span:nth-child(5) {
+  --meteor-angle: 28deg;
+  --meteor-delay: 22s;
+  --meteor-duration: 15.5s;
+  --meteor-dx: 44vw;
+  --meteor-dy: 32vh;
+  --meteor-left: 10%;
+  --meteor-top: 72%;
+}
+
+.sarita-meteor-field span:nth-child(6) {
+  --meteor-angle: 20deg;
+  --meteor-delay: 29s;
+  --meteor-duration: 13s;
+  --meteor-dx: 32vw;
+  --meteor-dy: 20vh;
+  --meteor-left: 56%;
+  --meteor-top: 62%;
+}
+
+.sarita-meteor-field span:nth-child(7) {
+  --meteor-angle: 17deg;
+  --meteor-delay: 36s;
+  --meteor-duration: 16s;
+  --meteor-dx: 40vw;
+  --meteor-dy: 19vh;
+  --meteor-left: 28%;
+  --meteor-top: 6%;
 }
 
 .sarita-section-label {

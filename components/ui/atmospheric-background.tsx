@@ -46,6 +46,22 @@ export function AtmosphericBackground({ variant }: AtmosphericBackgroundProps) {
         <div
           aria-hidden="true"
           className="sarita-starfield pointer-events-none absolute inset-0"
+        />
+        <div
+          aria-hidden="true"
+          className="sarita-meteor-field pointer-events-none absolute inset-0"
+        >
+          <span />
+          <span />
+          <span />
+          <span />
+          <span />
+          <span />
+          <span />
+        </div>
+        <div
+          aria-hidden="true"
+          className="sarita-bright-starfield pointer-events-none absolute inset-0"
         >
           <span />
           <span />
