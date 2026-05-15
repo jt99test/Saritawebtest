@@ -91,7 +91,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
     });
   }
 
-  const featuredItems = showAllFeatures ? features : features.slice(0, 3);
+  const mobileFeaturedItems = showAllFeatures ? features : features.slice(0, 3);
   const moonCopy = dictionary.home.currentMoon;
   const startHereCopy = dictionary.home.startHere;
   const moonPhaseLabel = moonCopy.phases[moonStatus.phase];
@@ -227,7 +227,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             </div>
           ) : null}
 
-          <div className="sarita-night-nav hidden items-center justify-between gap-3 rounded-[1.4rem] px-3 py-2.5 backdrop-blur-md sm:flex sm:gap-6 sm:rounded-full sm:px-5 sm:py-3">
+          <div className="sarita-night-nav mx-auto hidden w-full max-w-[75rem] items-center justify-between gap-3 rounded-[1.4rem] px-3 py-2.5 backdrop-blur-md sm:flex sm:gap-6 sm:rounded-full sm:px-5 sm:py-3">
             <div className="min-w-0 flex-1 pt-2">
               <div className="flex items-center gap-3 sm:gap-4">
                 <div className="hidden h-px w-10 shrink-0 bg-gradient-to-r from-dusty-gold to-transparent min-[420px]:block sm:w-14" />
@@ -383,15 +383,21 @@ export function HomePage({ moonStatus }: HomePageProps) {
               </motion.section>
             </div>
 
-            <div id="lecturas" className="sarita-feature-band -mx-4 mt-0 px-4 pt-12 pb-2 sm:mx-0 sm:mt-0 sm:px-0 sm:pt-0">
+            <div id="lecturas" className="sarita-feature-band -mx-4 mt-0 px-4 pt-12 pb-2 sm:mx-auto sm:mt-0 sm:w-full sm:max-w-6xl sm:px-0 sm:pt-4 sm:pb-8">
               <div className="mb-4 flex items-end justify-between sm:hidden">
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#f5d782]">{dictionary.home.eyebrow}</p>
                   <h2 className="mt-2 font-serif text-[1.9rem] leading-[1.05] text-[#fffaf0] drop-shadow-[0_0_24px_rgba(0,102,255,0.2)]">{dictionary.home.featuredTitle}</h2>
                 </div>
               </div>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-3 lg:grid-cols-4 2xl:grid-cols-7">
-                {featuredItems.map((feature, index) => (
+              <div className="mb-7 hidden text-center sm:block">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#f5d782]">{dictionary.home.eyebrow}</p>
+                <h2 className="mt-2 font-serif text-4xl leading-none text-[#fffaf0] drop-shadow-[0_0_24px_rgba(0,102,255,0.2)] lg:text-5xl">
+                  {dictionary.home.featuredTitle}
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:hidden">
+                {mobileFeaturedItems.map((feature, index) => (
                   <motion.div
                     key={`${feature.href}-${index}`}
                     initial={{ opacity: 0, y: 12 }}
@@ -401,17 +407,47 @@ export function HomePage({ moonStatus }: HomePageProps) {
                   >
                     <Link
                       href={feature.href}
-                      className="sarita-feature-card group grid min-h-16 min-w-0 grid-cols-[2.5rem_1fr] items-center gap-x-3 overflow-hidden rounded-[1.45rem] px-4 py-4 text-left backdrop-blur-sm transition sm:block sm:min-h-0 sm:border-l sm:border-t-0 sm:border-r-0 sm:border-b-0 sm:rounded-none sm:bg-transparent sm:px-4 sm:py-2 sm:shadow-none sm:backdrop-blur-0"
+                      className="sarita-feature-card group grid min-h-16 min-w-0 grid-cols-[2.5rem_1fr] items-center gap-x-3 overflow-hidden rounded-[1.45rem] px-4 py-4 text-left backdrop-blur-sm transition"
                     >
-                      <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-dusty-gold/55 to-transparent sm:hidden" />
-                      <span className="sarita-feature-icon flex h-10 w-10 items-center justify-center rounded-full text-[1.35rem] leading-none text-[#030814] sm:mb-3 sm:h-auto sm:w-auto sm:rounded-none sm:border-0 sm:bg-transparent sm:text-2xl sm:text-[#f5d782] sm:shadow-none">
+                      <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-dusty-gold/55 to-transparent" />
+                      <span className="sarita-feature-icon flex h-10 w-10 items-center justify-center rounded-full text-[1.35rem] leading-none text-[#030814]">
                         {FEATURE_SYMBOLS[index] ?? "\u263d"}
                       </span>
                       <span className="min-w-0">
-                        <span className="block text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-[#fffaf0] transition group-hover:text-[#f5d782] [overflow-wrap:normal] [word-break:normal] sm:text-[12px] sm:tracking-[0.18em] xl:tracking-[0.24em]">
+                        <span className="block text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-[#fffaf0] transition group-hover:text-[#f5d782] [overflow-wrap:normal] [word-break:normal]">
                           {featureTitle(feature.title)}
                         </span>
-                        <span className="mt-1.5 block text-[12px] leading-[1.55] text-[#d7e7ff]/72 transition group-hover:text-[#fffaf0]/84 sm:text-xs sm:leading-5">
+                        <span className="mt-1.5 block text-[12px] leading-[1.55] text-[#d7e7ff]/72 transition group-hover:text-[#fffaf0]/84">
+                          {feature.description}
+                        </span>
+                      </span>
+                    </Link>
+                  </motion.div>
+                  ))}
+                </div>
+              <div className="hidden gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-7">
+                {features.map((feature, index) => (
+                  <motion.div
+                    key={`${feature.href}-${index}`}
+                    className="h-full min-w-0"
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.35 }}
+                    transition={{ ...revealTransition, delay: 0.04 * index }}
+                  >
+                    <Link
+                      href={feature.href}
+                      className="sarita-feature-card group relative grid h-full min-h-[9.5rem] min-w-0 grid-rows-[auto_1fr] overflow-hidden rounded-[1.4rem] px-4 py-4 text-center backdrop-blur-sm transition lg:min-h-[10.5rem]"
+                    >
+                      <span className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-dusty-gold/55 to-transparent" />
+                      <span className="sarita-feature-icon mx-auto flex h-11 w-11 items-center justify-center rounded-full text-[1.35rem] leading-none text-[#030814]">
+                        {FEATURE_SYMBOLS[index] ?? "\u263d"}
+                      </span>
+                      <span className="mt-3 flex min-w-0 flex-col items-center">
+                        <span className="block max-w-full text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-[#fffaf0] transition group-hover:text-[#f5d782] xl:tracking-[0.18em]">
+                          {featureTitle(feature.title)}
+                        </span>
+                        <span className="mt-2 block text-xs leading-5 text-[#d7e7ff]/72 transition group-hover:text-[#fffaf0]/84">
                           {feature.description}
                         </span>
                       </span>
