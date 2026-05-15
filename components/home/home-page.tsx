@@ -129,8 +129,8 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <span />
             <span />
           </div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_14%,rgba(255,250,240,0.08),transparent_22rem),radial-gradient(circle_at_74%_48%,rgba(80,93,196,0.18),transparent_18rem)]" />
-          <div className="absolute left-1/2 top-[23%] h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_32%_28%,#fff4b0,#f5d782_44%,rgba(245,215,130,0.16)_68%,transparent_72%)] shadow-[0_0_50px_rgba(245,215,130,0.42),0_0_120px_rgba(0,102,255,0.18)] sm:h-28 sm:w-28" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_24%,rgba(255,250,240,0.08),transparent_22rem),radial-gradient(circle_at_74%_52%,rgba(80,93,196,0.18),transparent_18rem)]" />
+          <div className="absolute left-1/2 top-[31%] h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_32%_28%,#fff4b0,#f5d782_44%,rgba(245,215,130,0.16)_68%,transparent_72%)] shadow-[0_0_50px_rgba(245,215,130,0.42),0_0_120px_rgba(0,102,255,0.18)] sm:top-[35%] sm:h-28 sm:w-28" />
           <div className="sarita-solar-orbit h-[15rem] w-[15rem] sm:h-[23rem] sm:w-[23rem]">
             <span className="sarita-solar-planet right-7 top-4 h-2.5 w-2.5 bg-[#fffaf0] text-[#fffaf0]" />
           </div>
@@ -228,19 +228,12 @@ export function HomePage({ moonStatus }: HomePageProps) {
           ) : null}
 
           <div className="sarita-night-nav mx-auto hidden w-full max-w-[75rem] grid-cols-[1fr_auto_1fr] items-center gap-5 rounded-full px-6 py-3.5 backdrop-blur-md sm:grid">
-            <Link href="/" className="flex min-w-0 items-center gap-4 justify-self-start">
-              <span className="sarita-floating-mark flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-serif text-[1.45rem] leading-none text-[#fffaf0]">
-                S
-              </span>
-              <span className="min-w-0">
-                <span className="block truncate text-[10px] font-semibold uppercase tracking-[0.28em] text-[#f5d782]">
-                  {dictionary.home.eyebrow}
-                </span>
-                <span className="mt-1 block truncate font-serif text-lg leading-none text-[#fffaf0]">
-                  {dictionary.brand.name}
-                </span>
-              </span>
-            </Link>
+            <div className="flex min-w-0 items-center gap-4 justify-self-start">
+              <span className="h-px w-14 shrink-0 bg-gradient-to-r from-dusty-gold to-transparent" />
+              <p className="truncate text-[10px] font-semibold uppercase tracking-[0.28em] text-[#f5d782]">
+                {dictionary.home.eyebrow}
+              </p>
+            </div>
 
             <div className="hidden items-center justify-center gap-6 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#fffaf0]/74 lg:flex">
               <Link href="/form" className="transition hover:text-[#f5d782]">
