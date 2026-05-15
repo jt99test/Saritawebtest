@@ -111,13 +111,13 @@ export function YogaAstralPage({ chart, dictionary, locale }: YogaAstralPageProp
 
       <section className="space-y-5">
         <SectionHeader>{copy.sequence} · {routine.monthKey}</SectionHeader>
-        <div className="sticky top-0 z-10 -mx-4 mb-6 border-y border-dusty-gold/16 bg-[#f5f0e6]/94 px-4 py-3 shadow-[0_12px_34px_rgba(30,26,46,0.08)] backdrop-blur-md sm:-mx-6 sm:px-6">
-          <div className="flex items-center justify-between text-[12px] uppercase tracking-[0.18em] text-[#3a3048]">
+        <div className="sticky top-0 z-10 -mx-4 mb-6 border-y border-[#d7e7ff]/14 bg-[#030814]/86 px-4 py-3 shadow-[0_16px_42px_rgba(0,0,0,0.28),0_0_28px_rgba(0,102,255,0.12)] backdrop-blur-md sm:-mx-6 sm:px-6">
+          <div className="flex items-center justify-between text-[12px] uppercase tracking-[0.18em] text-[#fffdf8]/84">
             <span>{routine.secondary || routine.accent ? copy.combinedRoutine : copy.personalizedRoutine}</span>
             <span>{routine.asanas.length} {copy.asanas}</span>
           </div>
-          <div className="mt-2 h-0.5 w-full bg-black/8">
-            <div className="h-full bg-dusty-gold/60" style={{ width: "100%" }} />
+          <div className="mt-2 h-px w-full bg-[#d7e7ff]/12">
+            <div className="h-full bg-[#f5d782] shadow-[0_0_12px_rgba(245,215,130,0.34)]" style={{ width: "100%" }} />
           </div>
         </div>
 
@@ -127,9 +127,9 @@ export function YogaAstralPage({ chart, dictionary, locale }: YogaAstralPageProp
             const reverse = index % 2 === 1;
             return (
               <li key={`${asana.element}-${asana.slug}-${index}`}>
-                <PremiumCard className="overflow-hidden border-black/10 bg-white/88 shadow-[0_16px_44px_rgba(30,26,46,0.08)]">
+                <PremiumCard className="overflow-hidden border-[#d7e7ff]/14 bg-[#061331]/42 shadow-[0_20px_54px_rgba(0,0,0,0.28),0_0_36px_rgba(0,102,255,0.1)]">
                   <div className="grid gap-0 lg:grid-cols-[minmax(16rem,0.78fr)_minmax(0,1fr)]">
-                    <div className={`border-b border-black/10 bg-[#f8f4eb]/70 p-4 sm:p-5 lg:border-b-0 ${reverse ? "lg:order-2 lg:border-l" : "lg:border-r"}`}>
+                    <div className={`border-b border-[#d7e7ff]/12 bg-[#071437]/68 p-4 sm:p-5 lg:border-b-0 ${reverse ? "lg:order-2 lg:border-l" : "lg:border-r"}`}>
                       <AsanaVisual
                         asana={asana}
                         tone={asana.element}
@@ -157,8 +157,8 @@ export function YogaAstralPage({ chart, dictionary, locale }: YogaAstralPageProp
                       <p className="mt-5 text-sm leading-7 text-[#3a3048]">
                         {asana.description}
                       </p>
-                      <div className="mt-5 rounded-[1rem] border border-dusty-gold/26 bg-[#f8f4eb] p-4 text-sm leading-7 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]">
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6f5a2a]">
+                      <div className="mt-5 rounded-[1rem] border border-[#f5d782]/24 bg-[#030814]/52 p-4 text-sm leading-7 text-[#e8f3ff]/82 shadow-[0_0_24px_rgba(0,102,255,0.1),inset_0_0_0_1px_rgba(255,250,240,0.06)]">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#f5d782]">
                           {copy.precaution}
                         </p>
                         <p className="mt-2">{asana.warning}</p>

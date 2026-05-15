@@ -124,22 +124,36 @@ function WorldMap({
       viewBox={`0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`}
       role="img"
       aria-label={copy.mapAria}
-      className="aspect-[1.35/1] w-full bg-[#f6f0e4] sm:aspect-[2/1]"
+      className="aspect-[1.35/1] w-full bg-[#061331] sm:aspect-[2/1]"
     >
       <defs>
         <pattern id="acg-grid" width="50" height="50" patternUnits="userSpaceOnUse">
-          <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(58,48,72,0.1)" strokeWidth="1" />
+          <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(215,231,255,0.08)" strokeWidth="1" />
         </pattern>
         <linearGradient id="acg-ocean" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0%" stopColor="#fbf6eb" />
-          <stop offset="100%" stopColor="#eee3cf" />
+          <stop offset="0%" stopColor="#071437" />
+          <stop offset="48%" stopColor="#082a78" />
+          <stop offset="100%" stopColor="#030814" />
         </linearGradient>
+        <radialGradient id="acg-ocean-glow" cx="50%" cy="38%" r="62%">
+          <stop offset="0%" stopColor="rgba(124,191,255,0.24)" />
+          <stop offset="62%" stopColor="rgba(0,102,255,0.08)" />
+          <stop offset="100%" stopColor="rgba(3,8,20,0)" />
+        </radialGradient>
+        <filter id="acg-line-glow" x="-8%" y="-18%" width="116%" height="136%">
+          <feGaussianBlur stdDeviation="1.5" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
       </defs>
       <rect width={MAP_WIDTH} height={MAP_HEIGHT} fill="url(#acg-ocean)" />
+      <rect width={MAP_WIDTH} height={MAP_HEIGHT} fill="url(#acg-ocean-glow)" />
       <rect width={MAP_WIDTH} height={MAP_HEIGHT} fill="url(#acg-grid)" opacity="0.55" />
-      <path d={mapPath(graticule()) ?? ""} fill="none" stroke="rgba(58,48,72,0.09)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-      <path d={mapPath(landFeature) ?? ""} fill="rgba(138,122,78,0.24)" stroke="rgba(92,74,36,0.38)" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
-      <path d={mapPath(countryMesh) ?? ""} fill="none" stroke="rgba(92,74,36,0.14)" strokeWidth="0.7" vectorEffect="non-scaling-stroke" />
+      <path d={mapPath(graticule()) ?? ""} fill="none" stroke="rgba(215,231,255,0.09)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+      <path d={mapPath(landFeature) ?? ""} fill="rgba(215,231,255,0.13)" stroke="rgba(245,215,130,0.32)" strokeWidth="1.2" vectorEffect="non-scaling-stroke" />
+      <path d={mapPath(countryMesh) ?? ""} fill="none" stroke="rgba(215,231,255,0.16)" strokeWidth="0.7" vectorEffect="non-scaling-stroke" />
       {lines.map((line) => (
         <g key={line.id}>
           {astrocartographySegments(line).map((segment, index) => (
@@ -151,6 +165,7 @@ function WorldMap({
               strokeWidth={selectedLineId === line.id ? 4 : 2.15}
               strokeOpacity={selectedLineId && selectedLineId !== line.id ? 0.28 : 0.82}
               strokeDasharray={line.angle === "IC" || line.angle === "DC" ? "7 5" : undefined}
+              filter={selectedLineId === line.id ? "url(#acg-line-glow)" : undefined}
               onClick={() => onLineSelect(line.id)}
               className="cursor-pointer transition"
             />
@@ -159,8 +174,9 @@ function WorldMap({
       ))}
       {selectedPoint ? (
         <g>
-          <circle cx={selectedPoint.x} cy={selectedPoint.y} r="11" fill="rgba(58,48,72,0.16)" />
-          <circle cx={selectedPoint.x} cy={selectedPoint.y} r="5" fill="#3a3048" stroke="#f6f0e4" strokeWidth="2" />
+          <circle cx={selectedPoint.x} cy={selectedPoint.y} r="15" fill="rgba(245,215,130,0.12)" />
+          <circle cx={selectedPoint.x} cy={selectedPoint.y} r="8" fill="rgba(255,250,240,0.18)" stroke="rgba(245,215,130,0.72)" strokeWidth="2" />
+          <circle cx={selectedPoint.x} cy={selectedPoint.y} r="3.5" fill="#fffdf8" />
         </g>
       ) : null}
     </svg>
@@ -308,9 +324,9 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
         </p>
       </div>
 
-      <div className="mt-8 rounded-[1.9rem] border border-dusty-gold/14 bg-[#f8f2e8]/82 p-3 shadow-[0_14px_38px_rgba(30,26,46,0.06),inset_0_1px_0_rgba(255,255,255,0.75)] sm:p-4">
-        <div className="min-w-0 overflow-hidden rounded-[1.45rem] border border-black/10 bg-white shadow-[0_16px_40px_rgba(0,0,0,0.1)]">
-          <div className="border-b border-black/10 p-4">
+      <div className="mt-8 rounded-[1.9rem] border border-[#d7e7ff]/14 bg-[#061331]/36 p-3 shadow-[0_18px_54px_rgba(0,0,0,0.28),0_0_40px_rgba(0,102,255,0.12),inset_0_1px_0_rgba(255,250,240,0.12)] sm:p-4">
+        <div className="min-w-0 overflow-hidden rounded-[1.45rem] border border-[#d7e7ff]/14 bg-[#030814]/54 shadow-[0_16px_40px_rgba(0,0,0,0.22)]">
+          <div className="border-b border-[#d7e7ff]/12 p-4">
             <LocationAutocomplete
               value={city}
               selectedLocation={selectedLocation}
