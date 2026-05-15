@@ -707,8 +707,16 @@ h6 {
 
 @media (min-width: 640px) {
   .sarita-feature-icon {
-    background: transparent;
-    box-shadow: none;
+    background:
+      radial-gradient(circle at 50% 46%, rgba(245, 215, 130, 0.18), transparent 62%);
+    border-color: rgba(245, 215, 130, 0.2);
+    box-shadow:
+      0 0 28px rgba(245, 215, 130, 0.12),
+      inset 0 1px 0 rgba(255, 250, 240, 0.1);
+    color: var(--sarita-gold);
+    text-shadow:
+      0 0 12px rgba(245, 215, 130, 0.5),
+      0 0 24px rgba(124, 191, 255, 0.2);
   }
 }
 

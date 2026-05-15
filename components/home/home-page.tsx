@@ -227,23 +227,34 @@ export function HomePage({ moonStatus }: HomePageProps) {
             </div>
           ) : null}
 
-          <div className="sarita-night-nav mx-auto hidden w-full max-w-[75rem] items-center justify-between gap-3 rounded-[1.4rem] px-3 py-2.5 backdrop-blur-md sm:flex sm:gap-6 sm:rounded-full sm:px-5 sm:py-3">
-            <div className="min-w-0 flex-1 pt-2">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="hidden h-px w-10 shrink-0 bg-gradient-to-r from-dusty-gold to-transparent min-[420px]:block sm:w-14" />
-                <p className="truncate text-[10px] font-semibold uppercase tracking-[0.18em] text-[#f5d782] sm:text-[12px] sm:tracking-[0.32em]">
+          <div className="sarita-night-nav mx-auto hidden w-full max-w-[75rem] grid-cols-[1fr_auto_1fr] items-center gap-5 rounded-full px-6 py-3.5 backdrop-blur-md sm:grid">
+            <Link href="/" className="flex min-w-0 items-center gap-4 justify-self-start">
+              <span className="sarita-floating-mark flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-serif text-[1.45rem] leading-none text-[#fffaf0]">
+                S
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-[10px] font-semibold uppercase tracking-[0.28em] text-[#f5d782]">
                   {dictionary.home.eyebrow}
-                </p>
-              </div>
-            </div>
+                </span>
+                <span className="mt-1 block truncate font-serif text-lg leading-none text-[#fffaf0]">
+                  {dictionary.brand.name}
+                </span>
+              </span>
+            </Link>
 
-            <div className="ml-auto flex items-center gap-3 sm:gap-4">
-              <Link
-                href="/precios"
-                className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-[#fffaf0]/84 transition hover:text-[#f5d782] sm:inline"
-              >
+            <div className="hidden items-center justify-center gap-6 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#fffaf0]/74 lg:flex">
+              <Link href="/form" className="transition hover:text-[#f5d782]">
+                {dictionary.common.newReading}
+              </Link>
+              <Link href="#lecturas" className="transition hover:text-[#f5d782]">
+                {dictionary.common.viewReadings}
+              </Link>
+              <Link href="/precios" className="transition hover:text-[#f5d782]">
                 {dictionary.nav.pricing}
               </Link>
+            </div>
+
+            <div className="ml-auto flex items-center gap-3 justify-self-end sm:gap-4">
               <AccountButton tone="night" />
               <LanguageSelector
                 dictionary={dictionary}
@@ -254,7 +265,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             </div>
           </div>
 
-          <div className="relative z-10 mx-auto flex min-h-[calc(100svh-6.5rem)] w-full max-w-5xl items-center justify-center pb-40 pt-8 text-center sm:min-h-[calc(100svh-8.5rem)] sm:pb-44 sm:pt-12">
+          <div className="relative z-10 mx-auto flex min-h-[calc(100svh-6.5rem)] w-full max-w-5xl items-center justify-center pb-40 pt-8 text-center sm:min-h-[calc(100svh-10.5rem)] sm:pb-32 sm:pt-8">
             <motion.div
               className="mx-auto flex w-full max-w-[42rem] flex-col items-center gap-4 sm:gap-6"
               initial="hidden"
@@ -293,7 +304,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
 
               <motion.a
                 href="#empieza"
-                className="absolute bottom-24 left-1/2 -translate-x-1/2 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#fffaf0]/58 sm:bottom-28"
+                className="absolute bottom-24 left-1/2 -translate-x-1/2 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#fffaf0]/58 sm:bottom-20"
                 variants={{
                   hidden: { opacity: 0, y: 12 },
                   show: { opacity: 1, y: 0 },
@@ -306,7 +317,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             </motion.div>
 
             <motion.div
-              className="absolute inset-x-0 bottom-8 z-20 flex justify-center sm:bottom-10"
+              className="absolute inset-x-0 bottom-8 z-20 flex justify-center sm:bottom-4"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.42, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
@@ -320,7 +331,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             </motion.div>
           </div>
 
-          <div id="empieza" className="relative z-10 -mx-4 mt-6 px-4 pt-8 pb-3 sm:mx-0 sm:mt-10 sm:px-0 sm:py-4">
+          <div id="empieza" className="relative z-10 -mx-4 mt-6 px-4 pt-8 pb-3 sm:mx-0 sm:mt-0 sm:px-0 sm:py-4">
             <div className="space-y-4 sm:hidden">
               <motion.section
                 initial={{ opacity: 0, y: 18 }}
@@ -383,14 +394,14 @@ export function HomePage({ moonStatus }: HomePageProps) {
               </motion.section>
             </div>
 
-            <div id="lecturas" className="sarita-feature-band -mx-4 mt-0 px-4 pt-12 pb-2 sm:mx-auto sm:mt-0 sm:w-full sm:max-w-6xl sm:px-0 sm:pt-4 sm:pb-8">
+            <div id="lecturas" className="sarita-feature-band -mx-4 mt-0 px-4 pt-12 pb-2 sm:mx-auto sm:mt-0 sm:w-full sm:max-w-[76rem] sm:px-0 sm:pt-2 sm:pb-8">
               <div className="mb-4 flex items-end justify-between sm:hidden">
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#f5d782]">{dictionary.home.eyebrow}</p>
                   <h2 className="mt-2 font-serif text-[1.9rem] leading-[1.05] text-[#fffaf0] drop-shadow-[0_0_24px_rgba(0,102,255,0.2)]">{dictionary.home.featuredTitle}</h2>
                 </div>
               </div>
-              <div className="mb-7 hidden text-center sm:block">
+              <div className="mb-8 hidden text-center sm:block">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#f5d782]">{dictionary.home.eyebrow}</p>
                 <h2 className="mt-2 font-serif text-4xl leading-none text-[#fffaf0] drop-shadow-[0_0_24px_rgba(0,102,255,0.2)] lg:text-5xl">
                   {dictionary.home.featuredTitle}
@@ -425,7 +436,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                   </motion.div>
                   ))}
                 </div>
-              <div className="hidden gap-3 sm:grid sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-7">
+              <div className="hidden gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
                 {features.map((feature, index) => (
                   <motion.div
                     key={`${feature.href}-${index}`}
@@ -437,17 +448,17 @@ export function HomePage({ moonStatus }: HomePageProps) {
                   >
                     <Link
                       href={feature.href}
-                      className="sarita-feature-card group relative grid h-full min-h-[9.5rem] min-w-0 grid-rows-[auto_1fr] overflow-hidden rounded-[1.4rem] px-4 py-4 text-center backdrop-blur-sm transition lg:min-h-[10.5rem]"
+                      className="sarita-feature-card group relative grid h-full min-h-[11rem] min-w-0 grid-rows-[auto_1fr] overflow-hidden rounded-[1.2rem] px-4 py-5 text-center backdrop-blur-sm transition lg:min-h-[11.75rem]"
                     >
                       <span className="pointer-events-none absolute inset-x-4 top-0 h-px bg-gradient-to-r from-transparent via-dusty-gold/55 to-transparent" />
-                      <span className="sarita-feature-icon mx-auto flex h-11 w-11 items-center justify-center rounded-full text-[1.35rem] leading-none text-[#030814]">
+                      <span className="sarita-feature-icon mx-auto flex h-14 w-14 items-center justify-center rounded-full text-[1.65rem] leading-none text-[#030814]">
                         {FEATURE_SYMBOLS[index] ?? "\u263d"}
                       </span>
-                      <span className="mt-3 flex min-w-0 flex-col items-center">
-                        <span className="block max-w-full text-[11px] font-semibold uppercase leading-4 tracking-[0.14em] text-[#fffaf0] transition group-hover:text-[#f5d782] xl:tracking-[0.18em]">
+                      <span className="mt-4 flex min-w-0 flex-col items-center">
+                        <span className="block max-w-full text-[11px] font-semibold uppercase leading-4 tracking-[0.13em] text-[#fffaf0] transition group-hover:text-[#f5d782]">
                           {featureTitle(feature.title)}
                         </span>
-                        <span className="mt-2 block text-xs leading-5 text-[#d7e7ff]/72 transition group-hover:text-[#fffaf0]/84">
+                        <span className="mt-2.5 block text-xs leading-5 text-[#d7e7ff]/72 transition group-hover:text-[#fffaf0]/84">
                           {feature.description}
                         </span>
                       </span>
