@@ -113,7 +113,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
   return (
     <main className="sarita-home-atmosphere premium-noise relative isolate min-h-screen overflow-hidden sm:pb-0">
       <section className="relative isolate min-h-screen overflow-hidden">
-        <div className="sarita-solar-system pointer-events-none absolute inset-x-0 top-0 z-0 h-[118svh] overflow-hidden">
+        <div className="sarita-solar-system pointer-events-none absolute inset-0 z-0 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_18%,rgba(255,250,240,0.08),transparent_22rem),radial-gradient(circle_at_74%_56%,rgba(80,93,196,0.18),transparent_18rem)]" />
           <div className="absolute left-1/2 top-[43%] h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle_at_32%_28%,#fff4b0,#d8a83d_44%,rgba(216,168,61,0.16)_68%,transparent_72%)] shadow-[0_0_50px_rgba(215,189,106,0.42),0_0_120px_rgba(122,75,255,0.18)] sm:h-28 sm:w-28" />
           <div className="sarita-solar-orbit h-[15rem] w-[15rem] sm:h-[23rem] sm:w-[23rem]">
@@ -319,7 +319,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                 <div className="mt-3 flex items-start justify-between gap-4">
                   <div>
                     <h2 className="font-serif text-[1.9rem] leading-[1.02] text-[#fffaf0]">{moonCopy.title}</h2>
-                    <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#d7bd6a]">
+                    <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#f5d782]">
                       {moonPhaseLabel} en {moonSignLabel}
                     </p>
                   </div>
@@ -359,7 +359,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                         <span className="min-w-0">
                           <span className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-[#fffaf0]/78">{item.title}</span>
                           <span className="mt-2 block text-[13px] leading-[1.65] text-[#fffaf0]/64">{item.description}</span>
-                          <span className="mt-3 inline-block text-[11px] font-semibold uppercase tracking-[0.16em] text-[#d7bd6a]">{item.cta}</span>
+                          <span className="mt-3 inline-block text-[11px] font-semibold uppercase tracking-[0.16em] text-[#f5d782]">{item.cta}</span>
                         </span>
                       </Link>
                     </motion.div>
@@ -371,7 +371,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <div id="lecturas" className="sarita-feature-band -mx-4 mt-8 px-4 pt-7 pb-2 sm:mx-0 sm:mt-0 sm:px-0 sm:pt-0">
               <div className="mb-4 flex items-end justify-between sm:hidden">
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#d7bd6a]">{dictionary.home.eyebrow}</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#f5d782]">{dictionary.home.eyebrow}</p>
                   <h2 className="mt-2 font-serif text-[1.9rem] leading-[1.05] text-[#fffaf0] drop-shadow-[0_0_24px_rgba(0,102,255,0.2)]">{dictionary.home.featuredTitle}</h2>
                 </div>
               </div>
@@ -389,7 +389,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                       className="sarita-feature-card group grid min-h-16 min-w-0 grid-cols-[2.5rem_1fr] items-center gap-x-3 overflow-hidden rounded-[1.45rem] px-4 py-4 text-left backdrop-blur-sm transition sm:block sm:min-h-0 sm:border-l sm:border-t-0 sm:border-r-0 sm:border-b-0 sm:rounded-none sm:bg-transparent sm:px-4 sm:py-2 sm:shadow-none sm:backdrop-blur-0"
                     >
                       <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-dusty-gold/55 to-transparent sm:hidden" />
-                      <span className="sarita-feature-icon flex h-10 w-10 items-center justify-center rounded-full text-[1.35rem] leading-none text-[#1e1a2e] sm:mb-3 sm:h-auto sm:w-auto sm:rounded-none sm:border-0 sm:bg-transparent sm:text-2xl sm:text-[#d7bd6a] sm:shadow-none">
+                      <span className="sarita-feature-icon flex h-10 w-10 items-center justify-center rounded-full text-[1.35rem] leading-none text-[#1e1a2e] sm:mb-3 sm:h-auto sm:w-auto sm:rounded-none sm:border-0 sm:bg-transparent sm:text-2xl sm:text-[#f5d782] sm:shadow-none">
                         {FEATURE_SYMBOLS[index] ?? "\u263d"}
                       </span>
                       <span className="min-w-0">
@@ -416,7 +416,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             </div>
 
             <div className="mt-20 flex flex-wrap justify-center gap-x-4 gap-y-2 text-[10px] uppercase tracking-[0.14em] text-[#fffaf0]/62 sm:mt-5 sm:gap-x-5 sm:text-[12px] sm:tracking-[0.18em]">
-              <span className="basis-full text-center text-[10px] tracking-[0.18em] text-[#d7bd6a] sm:hidden">© 2026 SARITA</span>
+              <span className="basis-full text-center text-[10px] tracking-[0.18em] text-[#f5d782] sm:hidden">© 2026 SARITA</span>
               <Link href="/precios" className="transition hover:text-dusty-gold">{dictionary.nav.pricing}</Link>
               <Link href="/ayuda" className="transition hover:text-dusty-gold">{dictionary.nav.help}</Link>
               <Link href="/privacidad" className="transition hover:text-dusty-gold">{dictionary.legal.privacy}</Link>
