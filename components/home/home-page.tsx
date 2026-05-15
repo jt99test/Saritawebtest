@@ -260,7 +260,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
 
           <div className="relative z-10 mx-auto flex min-h-[calc(100svh-6.5rem)] w-full max-w-5xl items-center justify-center pb-40 pt-8 text-center sm:min-h-[calc(100svh-10.5rem)] sm:pb-32 sm:pt-8">
             <motion.div
-              className="mx-auto flex w-full max-w-[42rem] flex-col items-center gap-4 sm:gap-6"
+              className="mx-auto mb-14 flex w-full max-w-[42rem] flex-col items-center gap-4 sm:mb-0 sm:gap-6"
               initial="hidden"
               animate="show"
               variants={{ hidden: {}, show: {} }}

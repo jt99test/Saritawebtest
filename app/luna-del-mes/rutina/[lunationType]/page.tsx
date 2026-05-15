@@ -168,7 +168,7 @@ export default function LunarYogaRoutinePage() {
       <section className="relative py-4 sm:py-8">
         <Container className="relative">
           <div className="mb-4 flex items-center justify-between gap-4 pt-2 sm:mb-6">
-            <Link href="/luna-del-mes" className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-ivory sm:text-xs sm:tracking-[0.28em]">
+            <Link href="/luna-del-mes" className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#d7e7ff]/72 transition hover:text-ivory sm:text-xs sm:tracking-[0.28em]">
               {dictionary.form.back} · {dictionary.result.primaryTabs.moon}
             </Link>
           </div>
@@ -176,27 +176,27 @@ export default function LunarYogaRoutinePage() {
           {!result?.chart ? (
             <div className="flex min-h-[70vh] items-center justify-center text-center">
               <div>
-                <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#5c4a24]">{lunarCopy.lunarRoutineEyebrow}</p>
+                <p className="font-serif text-[13px] italic lowercase tracking-[0.15em] text-[#f5d782]">{lunarCopy.lunarRoutineEyebrow}</p>
                 <h1 className="mt-2 font-serif text-[38px] leading-tight text-ivory sm:text-[48px]">{dictionary.standalonePages.needChartTitle}</h1>
-                <p className="mx-auto mt-4 max-w-2xl font-serif text-[15px] italic leading-7 text-[#3a3048] sm:text-[17px] sm:leading-8">
+                <p className="mx-auto mt-4 max-w-2xl font-serif text-[15px] italic leading-7 text-[#e8f3ff]/82 sm:text-[17px] sm:leading-8">
                   {dictionary.standalonePages.needChartBody}
                 </p>
               </div>
             </div>
           ) : error ? (
             <div className="flex min-h-[60vh] items-center justify-center text-center">
-              <p className="font-serif text-[17px] italic leading-8 text-[#3a3048]">{error}</p>
+              <p className="font-serif text-[17px] italic leading-8 text-[#e8f3ff]/82">{error}</p>
             </div>
           ) : metadata && routine ? (
             <div className="space-y-8 pb-10 sm:space-y-10">
               <header className="border-t border-[rgba(181,163,110,0.15)] pt-6 sm:pt-8">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#3a3048]">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.3em] text-[#f5d782]">
                   {getLunationLabel(lunationType, dictionary)} · {signLabel} · {dateLabel}
                 </p>
                 <h1 className="mt-3 font-serif text-[38px] leading-tight text-ivory sm:mt-4 sm:text-6xl">
                   {routineTitle(routine, yogaCopy.elementLabels, yogaCopy.elementTitle)}
                 </h1>
-                <p className="mt-6 max-w-3xl text-sm leading-7 text-[#3a3048]">
+                <p className="mt-6 max-w-3xl text-sm leading-7 text-[#e8f3ff]/82">
                   {lunarCopy.lunarRoutineIntro}
                 </p>
               </header>
@@ -208,13 +208,13 @@ export default function LunarYogaRoutinePage() {
                   </h2>
                   <div className="mt-3 h-0.5 w-10 rounded-full bg-dusty-gold/70" />
                 </div>
-                <div className="sticky top-0 z-10 -mx-4 mb-6 border-y border-dusty-gold/16 bg-[#f5f0e6]/94 px-4 py-3 shadow-[0_12px_34px_rgba(30,26,46,0.08)] backdrop-blur-md sm:-mx-6 sm:px-6">
-                  <div className="flex items-center justify-between text-[12px] uppercase tracking-[0.18em] text-[#3a3048]">
+                <div className="sticky top-0 z-10 -mx-4 mb-6 border-y border-[#d7e7ff]/14 bg-[#030814]/86 px-4 py-3 shadow-[0_16px_42px_rgba(0,0,0,0.28),0_0_28px_rgba(0,102,255,0.12)] backdrop-blur-md sm:-mx-6 sm:px-6">
+                  <div className="flex items-center justify-between text-[12px] uppercase tracking-[0.18em] text-[#fffdf8]/84">
                     <span>{lunarCopy.lunarRoutineBasedOnTransits}</span>
                     <span>{routine.asanas.length} {yogaCopy.asanas}</span>
                   </div>
-                  <div className="mt-2 h-0.5 w-full bg-black/8">
-                    <div className="h-full bg-dusty-gold/60" style={{ width: "100%" }} />
+                  <div className="mt-2 h-px w-full bg-[#d7e7ff]/12">
+                    <div className="h-full bg-[#f5d782] shadow-[0_0_12px_rgba(245,215,130,0.34)]" style={{ width: "100%" }} />
                   </div>
                 </div>
 
@@ -224,9 +224,9 @@ export default function LunarYogaRoutinePage() {
                     const reverse = index % 2 === 1;
                     return (
                       <li key={`${asana.element}-${asana.slug}-${index}`}>
-                        <PremiumCard className="overflow-hidden border-black/10 bg-white/88 shadow-[0_16px_44px_rgba(30,26,46,0.08)]">
+                        <PremiumCard className="overflow-hidden border-[#d7e7ff]/14 bg-[#061331]/42 shadow-[0_20px_54px_rgba(0,0,0,0.28),0_0_36px_rgba(0,102,255,0.1)]">
                           <div className="grid gap-0 lg:grid-cols-[minmax(16rem,0.78fr)_minmax(0,1fr)]">
-                            <div className={`border-b border-black/10 bg-[#f8f4eb]/70 p-4 sm:p-5 lg:border-b-0 ${reverse ? "lg:order-2 lg:border-l" : "lg:border-r"}`}>
+                            <div className={`border-b border-[#d7e7ff]/12 bg-[#071437]/68 p-4 sm:p-5 lg:border-b-0 ${reverse ? "lg:order-2 lg:border-l" : "lg:border-r"}`}>
                               <AsanaVisual
                                 asana={asana}
                                 tone={asana.element}
@@ -235,27 +235,27 @@ export default function LunarYogaRoutinePage() {
                             </div>
                             <div className="flex flex-col justify-center p-6 sm:p-8">
                               <div className="flex flex-wrap items-center gap-3">
-                                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-dusty-gold/28 bg-dusty-gold/10 font-serif text-xl text-[#5c4a24]">
+                                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-dusty-gold/28 bg-dusty-gold/10 font-serif text-xl text-[#f5d782]">
                                   {index + 1}
                                 </span>
                                 <span className={`rounded-full border px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] ${ELEMENT_META[asana.element].badgeClass}`}>
                                   {yogaCopy.elementLabels[asana.element]}
                                 </span>
-                                <span className="rounded-full border border-dusty-gold/25 bg-dusty-gold/12 px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#5c4a24]">
+                                <span className="rounded-full border border-dusty-gold/25 bg-dusty-gold/12 px-3.5 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#f5d782]">
                                   {asana.duration}
                                 </span>
                               </div>
                               <h3 className="mt-5 font-serif text-2xl leading-tight text-ivory sm:text-3xl">{asana.nameSpanish}</h3>
                               {asana.nameSanskrit !== asana.nameSpanish ? (
-                                <p className="mt-1 text-sm uppercase tracking-[0.2em] text-[#3a3048]">
+                                <p className="mt-1 text-sm uppercase tracking-[0.2em] text-[#d7e7ff]/66">
                                   {asana.nameSanskrit}
                                 </p>
                               ) : null}
-                              <p className="mt-5 text-sm leading-7 text-[#3a3048]">
+                              <p className="mt-5 text-sm leading-7 text-[#e8f3ff]/82">
                                 {asana.description}
                               </p>
-                              <div className="mt-5 rounded-[1rem] border border-dusty-gold/26 bg-[#f8f4eb] p-4 text-sm leading-7 text-[#3a3048] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.58)]">
-                                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#6f5a2a]">
+                              <div className="mt-5 rounded-[1rem] border border-[#f5d782]/24 bg-[#030814]/52 p-4 text-sm leading-7 text-[#e8f3ff]/82 shadow-[0_0_24px_rgba(0,102,255,0.1),inset_0_0_0_1px_rgba(255,250,240,0.06)]">
+                                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#f5d782]">
                                   {yogaCopy.precaution}
                                 </p>
                                 <p className="mt-2">{asana.warning}</p>
@@ -269,8 +269,8 @@ export default function LunarYogaRoutinePage() {
                 </ol>
               </section>
 
-              <footer className="flex flex-col items-start justify-between gap-4 border-t border-black/10 pt-6 sm:flex-row sm:items-center">
-                <Link href="/luna-del-mes" className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-ivory sm:text-xs sm:tracking-[0.24em]">
+              <footer className="flex flex-col items-start justify-between gap-4 border-t border-[#d7e7ff]/12 pt-6 sm:flex-row sm:items-center">
+                <Link href="/luna-del-mes" className="text-[10px] font-medium uppercase tracking-[0.18em] text-[#d7e7ff]/72 transition hover:text-ivory sm:text-xs sm:tracking-[0.24em]">
                   {dictionary.form.back} · {dictionary.result.primaryTabs.moon}
                 </Link>
                 <RoutineCompletionButton storageKey={`sarita:yoga:lunar:${routine.monthKey}:${routine.id}:completed`} />
@@ -278,7 +278,7 @@ export default function LunarYogaRoutinePage() {
             </div>
           ) : (
             <div className="flex min-h-[60vh] items-center justify-center text-center">
-              <p className="font-serif text-[17px] italic leading-8 text-[#3a3048]">{yogaCopy.loadingTitle}</p>
+              <p className="font-serif text-[17px] italic leading-8 text-[#e8f3ff]/82">{yogaCopy.loadingTitle}</p>
             </div>
           )}
         </Container>
