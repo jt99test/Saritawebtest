@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { DateTime } from "luxon";
 
 import type { Dictionary, Locale } from "@/lib/i18n";
@@ -228,61 +229,34 @@ export function NatalChartExperience({
     });
   }, [pageTab]);
 
-  return (
-    <div className="sarita-chart-experience relative isolate mx-auto w-full min-w-0 max-w-[880px] px-3 pb-16 pt-3 sm:px-6 sm:pb-20 sm:pt-4 lg:max-w-[1180px] lg:px-8">
-      <div aria-hidden="true" className="sarita-chart-night-field pointer-events-none absolute inset-x-[-1rem] top-0 -z-10 h-[78rem] sm:inset-x-[-2rem] lg:inset-x-[-4rem]" />
-      <div className="relative z-10 space-y-3">
-        <div className="relative md:hidden">
-          <button
-            type="button"
-            onClick={() => setSectionMenuOpen(true)}
-            className="flex w-full items-center justify-between rounded-[1.35rem] border border-[#f5d782]/24 bg-[#071437]/92 px-4 py-3.5 text-left shadow-[0_12px_30px_rgba(0,0,0,0.24),0_0_24px_rgba(0,102,255,0.12),inset_0_1px_0_rgba(255,250,240,0.12)]"
-            aria-haspopup="dialog"
-            aria-expanded={sectionMenuOpen}
-          >
-            <span className="flex min-w-0 items-center gap-3.5">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#f5d782]/26 bg-[#f5d782]/12 text-[20px] text-[#f5d782] shadow-[0_0_18px_rgba(245,215,130,0.1)]">
-                {TAB_ICONS[pageTab]}
-              </span>
-              <span className="min-w-0">
-                <span className="block text-[10px] font-medium uppercase tracking-[0.22em] text-[#f5d782]">
-                  {dictionary.result.readingContextLabel}
-                </span>
-                <span className="mt-1 block min-w-0 truncate text-[13px] font-semibold uppercase tracking-[0.16em] text-[#fffaf0]">
-                  {dictionary.result.primaryTabs[pageTab]}
-                </span>
-              </span>
-            </span>
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#d7e7ff]/14 bg-[#030814]/44 text-[15px] text-[#f5d782]">
-              {"\u2304"}
-            </span>
-          </button>
-          {sectionMenuOpen ? (
-            <div className="fixed inset-0 z-[5000] bg-[#030814]/86 backdrop-blur-md" onClick={() => setSectionMenuOpen(false)}>
-              <div
-                className="fixed inset-x-3 bottom-3 z-[5001] rounded-[2rem] border border-[#f5d782]/28 bg-[#071437] p-4 text-[#d7e7ff] shadow-[0_28px_90px_rgba(0,0,0,0.5),0_0_42px_rgba(0,102,255,0.18)]"
-                onClick={(event) => event.stopPropagation()}
-              >
-                <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-[#f5d782]/28" />
-                <div className="mb-4 flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#f5d782]">
-                      {dictionary.result.readingContextLabel}
-                    </p>
-                    <p className="mt-1 font-serif text-[27px] leading-none text-ivory">
-                      {dictionary.result.primaryTabs[pageTab]}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setSectionMenuOpen(false)}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d7e7ff]/16 bg-[#030814]/54 text-[20px] leading-none text-[#f5d782]"
-                    aria-label={dictionary.common.close}
-                  >
-                    {"\u00d7"}
-                  </button>
+  const sectionMenuOverlay =
+    sectionMenuOpen && typeof document !== "undefined"
+      ? createPortal(
+          <div className="fixed inset-0 z-[10000] bg-[#030814]/90 backdrop-blur-md" onClick={() => setSectionMenuOpen(false)}>
+            <div
+              className="fixed inset-x-3 bottom-3 z-[10001] max-h-[calc(100svh-2rem)] overflow-hidden rounded-[2rem] border border-[#f5d782]/28 bg-[#071437] p-4 text-[#d7e7ff] shadow-[0_28px_90px_rgba(0,0,0,0.5),0_0_42px_rgba(0,102,255,0.18)]"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-[#f5d782]/28" />
+              <div className="mb-4 flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#f5d782]">
+                    {dictionary.result.readingContextLabel}
+                  </p>
+                  <p className="mt-1 font-serif text-[27px] leading-none text-ivory">
+                    {dictionary.result.primaryTabs[pageTab]}
+                  </p>
                 </div>
-                <div className="space-y-1.5">
+                <button
+                  type="button"
+                  onClick={() => setSectionMenuOpen(false)}
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d7e7ff]/16 bg-[#030814]/54 text-[20px] leading-none text-[#f5d782]"
+                  aria-label={dictionary.common.close}
+                >
+                  {"\u00d7"}
+                </button>
+              </div>
+              <div className="max-h-[calc(100svh-9rem)] space-y-1.5 overflow-y-auto pr-1 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] [&::-webkit-scrollbar]:hidden">
                 {PAGE_TABS.map((tab) => {
                   const active = pageTab === tab;
                   const requiredPlan = TAB_REQUIREMENTS[tab];
@@ -337,10 +311,43 @@ export function NatalChartExperience({
                     </button>
                   );
                 })}
-                </div>
               </div>
             </div>
-          ) : null}
+          </div>,
+          document.body,
+        )
+      : null;
+
+  return (
+    <>
+    <div className="sarita-chart-experience relative isolate mx-auto w-full min-w-0 max-w-[880px] px-3 pb-16 pt-3 sm:px-6 sm:pb-20 sm:pt-4 lg:max-w-[1180px] lg:px-8">
+      <div aria-hidden="true" className="sarita-chart-night-field pointer-events-none absolute inset-x-[-1rem] top-0 -z-10 h-[78rem] sm:inset-x-[-2rem] lg:inset-x-[-4rem]" />
+      <div className="relative z-10 space-y-3">
+        <div className="relative md:hidden">
+          <button
+            type="button"
+            onClick={() => setSectionMenuOpen(true)}
+            className="flex w-full items-center justify-between rounded-[1.35rem] border border-[#f5d782]/24 bg-[#071437]/92 px-4 py-3.5 text-left shadow-[0_12px_30px_rgba(0,0,0,0.24),0_0_24px_rgba(0,102,255,0.12),inset_0_1px_0_rgba(255,250,240,0.12)]"
+            aria-haspopup="dialog"
+            aria-expanded={sectionMenuOpen}
+          >
+            <span className="flex min-w-0 items-center gap-3.5">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#f5d782]/26 bg-[#f5d782]/12 text-[20px] text-[#f5d782] shadow-[0_0_18px_rgba(245,215,130,0.1)]">
+                {TAB_ICONS[pageTab]}
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[10px] font-medium uppercase tracking-[0.22em] text-[#f5d782]">
+                  {dictionary.result.readingContextLabel}
+                </span>
+                <span className="mt-1 block min-w-0 truncate text-[13px] font-semibold uppercase tracking-[0.16em] text-[#fffaf0]">
+                  {dictionary.result.primaryTabs[pageTab]}
+                </span>
+              </span>
+            </span>
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#d7e7ff]/14 bg-[#030814]/44 text-[15px] text-[#f5d782]">
+              {"\u2304"}
+            </span>
+          </button>
         </div>
         <div className="relative">
         <div className="mb-2 flex flex-col gap-1 border-b border-dusty-gold/14 pb-3 sm:flex-row sm:items-end sm:justify-between">
@@ -575,5 +582,7 @@ export function NatalChartExperience({
         requiredPlan={pricingRequiredPlan}
       />
     </div>
+    {sectionMenuOverlay}
+    </>
   );
 }

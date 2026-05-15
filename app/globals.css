@@ -217,10 +217,10 @@ h6 {
 
 .sarita-premium-card {
   background:
-    linear-gradient(120deg, rgba(255, 231, 163, 0.44), rgba(245, 215, 130, 0.08) 20%, rgba(255, 250, 240, 0.18) 44%, rgba(124, 191, 255, 0.16) 100%) border-box,
-    radial-gradient(circle at 16% 0%, rgba(0, 102, 255, 0.24), transparent 14rem),
-    radial-gradient(circle at 84% 8%, rgba(245, 215, 130, 0.12), transparent 12rem),
-    linear-gradient(180deg, rgba(7, 20, 55, 0.86), rgba(4, 8, 24, 0.92)) padding-box;
+    linear-gradient(120deg, rgba(245, 215, 130, 0.28), rgba(245, 215, 130, 0.06) 24%, rgba(124, 191, 255, 0.1) 100%) border-box,
+    radial-gradient(circle at 16% 0%, rgba(0, 102, 255, 0.16), transparent 14rem),
+    radial-gradient(circle at 84% 8%, rgba(245, 215, 130, 0.08), transparent 12rem),
+    linear-gradient(180deg, rgba(7, 20, 55, 0.96), rgba(3, 8, 20, 0.98)) padding-box;
   border-color: transparent;
   box-shadow:
     0 24px 62px rgba(0, 0, 0, 0.32),
@@ -232,10 +232,10 @@ h6 {
 
 .sarita-glass-panel {
   background:
-    linear-gradient(112deg, rgba(255, 231, 163, 0.42), rgba(245, 215, 130, 0.1) 18%, rgba(255, 250, 240, 0.24) 42%, rgba(245, 215, 130, 0.1) 64%, rgba(128, 174, 255, 0.16) 100%) border-box,
-    radial-gradient(circle at 74% 0%, rgba(245, 215, 130, 0.2), transparent 15rem),
-    radial-gradient(circle at 18% 16%, rgba(12, 95, 255, 0.24), transparent 18rem),
-    linear-gradient(180deg, rgba(7, 20, 55, 0.82), rgba(4, 8, 24, 0.9)) padding-box;
+    linear-gradient(112deg, rgba(245, 215, 130, 0.24), rgba(245, 215, 130, 0.06) 28%, rgba(128, 174, 255, 0.1) 100%) border-box,
+    radial-gradient(circle at 74% 0%, rgba(245, 215, 130, 0.12), transparent 15rem),
+    radial-gradient(circle at 18% 16%, rgba(12, 95, 255, 0.16), transparent 18rem),
+    linear-gradient(180deg, rgba(7, 20, 55, 0.96), rgba(3, 8, 20, 0.98)) padding-box;
   border: 1px solid transparent;
   box-shadow:
     0 24px 80px rgba(0, 0, 0, 0.42),
@@ -333,24 +333,22 @@ h6 {
 
 .sarita-page-atmosphere-layer {
   background:
-    radial-gradient(ellipse at 50% 22rem, rgba(255, 250, 240, 0.88) 0, rgba(245, 240, 230, 0.64) 14rem, rgba(245, 240, 230, 0.2) 25rem, transparent 38rem),
-    radial-gradient(ellipse at 50% 58rem, rgba(255, 250, 240, 0.7) 0, rgba(245, 240, 230, 0.52) 18rem, rgba(245, 240, 230, 0.18) 34rem, transparent 50rem),
-    radial-gradient(circle at 14% 7rem, rgba(82, 72, 146, 0.48), transparent 20rem),
-    radial-gradient(circle at 88% 10rem, rgba(122, 75, 255, 0.3), transparent 18rem),
-    radial-gradient(circle at 68% 34rem, rgba(215, 189, 106, 0.26), transparent 22rem),
-    radial-gradient(circle at 12% 48rem, rgba(86, 112, 202, 0.2), transparent 24rem),
-    linear-gradient(180deg, #070713 0, #0e0c20 12rem, #19142c 28rem, #2c243e 46rem, #5a5260 68rem, #d2c8ba 92rem, #f5f0e6 118rem, #ede7d9 100%);
+    radial-gradient(circle at 50% 20rem, rgba(0, 102, 255, 0.28), transparent 18rem),
+    radial-gradient(circle at 78% 16rem, rgba(124, 191, 255, 0.16), transparent 22rem),
+    radial-gradient(circle at 18% 42rem, rgba(0, 46, 160, 0.24), transparent 28rem),
+    radial-gradient(circle at 74% 68rem, rgba(245, 215, 130, 0.1), transparent 24rem),
+    linear-gradient(180deg, #030814 0, #061331 18rem, #071437 48rem, #051126 78rem, #030814 100%);
 }
 
 .sarita-page-color-wash {
   animation: sarita-glow-breathe 12s ease-in-out infinite;
   background:
-    radial-gradient(circle at 50% 18rem, rgba(215, 189, 106, 0.46), transparent 9rem),
-    radial-gradient(circle at 82% 16rem, rgba(122, 75, 255, 0.38), transparent 14rem),
-    radial-gradient(circle at 16% 30rem, rgba(86, 112, 202, 0.3), transparent 16rem),
-    radial-gradient(circle at 70% 52rem, rgba(215, 189, 106, 0.26), transparent 18rem),
-    radial-gradient(circle at 42% 72rem, rgba(255, 250, 240, 0.34), transparent 18rem);
+    radial-gradient(circle at 50% 18rem, rgba(124, 191, 255, 0.24), transparent 12rem),
+    radial-gradient(circle at 82% 16rem, rgba(0, 102, 255, 0.22), transparent 15rem),
+    radial-gradient(circle at 16% 30rem, rgba(0, 46, 160, 0.18), transparent 18rem),
+    radial-gradient(circle at 70% 52rem, rgba(245, 215, 130, 0.12), transparent 20rem);
   mix-blend-mode: screen;
+  opacity: 0.8;
 }
 
 .sarita-page-orbit-field span {
@@ -385,21 +383,19 @@ h6 {
 
 .sarita-result-observatory .sarita-page-atmosphere-layer {
   background:
-    radial-gradient(circle at 50% 21rem, rgba(124, 191, 255, 0.28), transparent 10rem),
-    radial-gradient(ellipse at 50% 32rem, rgba(255, 250, 240, 0.1), transparent 32rem),
-    radial-gradient(circle at 18% 10rem, rgba(82, 72, 146, 0.46), transparent 20rem),
-    radial-gradient(circle at 88% 12rem, rgba(63, 112, 214, 0.42), transparent 20rem),
-    radial-gradient(circle at 18% 48rem, rgba(86, 112, 202, 0.22), transparent 24rem),
-    radial-gradient(circle at 68% 60rem, rgba(215, 189, 106, 0.15), transparent 22rem),
-    linear-gradient(180deg, #070713 0, #0a0d1c 20rem, #0b1328 44rem, #0d1023 80rem, #080812 100%);
+    radial-gradient(circle at 50% 21rem, rgba(124, 191, 255, 0.2), transparent 12rem),
+    radial-gradient(circle at 88% 12rem, rgba(0, 102, 255, 0.22), transparent 20rem),
+    radial-gradient(circle at 18% 48rem, rgba(0, 46, 160, 0.18), transparent 24rem),
+    radial-gradient(circle at 68% 60rem, rgba(245, 215, 130, 0.1), transparent 22rem),
+    linear-gradient(180deg, #030814 0, #061331 20rem, #071437 52rem, #051126 84rem, #030814 100%);
 }
 
 .sarita-result-observatory .sarita-page-color-wash {
   background:
-    radial-gradient(circle at 50% 24rem, rgba(124, 191, 255, 0.34), transparent 11rem),
-    radial-gradient(circle at 82% 17rem, rgba(63, 112, 214, 0.38), transparent 16rem),
-    radial-gradient(circle at 16% 30rem, rgba(122, 75, 255, 0.2), transparent 18rem),
-    radial-gradient(circle at 70% 58rem, rgba(215, 189, 106, 0.16), transparent 20rem);
+    radial-gradient(circle at 50% 24rem, rgba(124, 191, 255, 0.2), transparent 12rem),
+    radial-gradient(circle at 82% 17rem, rgba(0, 102, 255, 0.18), transparent 18rem),
+    radial-gradient(circle at 16% 30rem, rgba(0, 46, 160, 0.14), transparent 20rem),
+    radial-gradient(circle at 70% 58rem, rgba(245, 215, 130, 0.1), transparent 22rem);
 }
 
 .sarita-result-topbar {
@@ -414,11 +410,10 @@ h6 {
 
 .sarita-chart-night-field {
   background:
-    radial-gradient(circle at 50% 20rem, rgba(124, 191, 255, 0.26), transparent 10rem),
-    radial-gradient(circle at 50% 28rem, rgba(255, 250, 240, 0.09), transparent 22rem),
-    radial-gradient(circle at 78% 12rem, rgba(63, 112, 214, 0.36), transparent 18rem),
-    radial-gradient(circle at 18% 26rem, rgba(122, 75, 255, 0.2), transparent 20rem),
-    linear-gradient(180deg, rgba(7, 7, 19, 0.96), rgba(8, 13, 30, 0.92) 42%, rgba(9, 18, 38, 0.78) 76%, rgba(7, 7, 19, 0.34) 100%);
+    radial-gradient(circle at 50% 20rem, rgba(124, 191, 255, 0.2), transparent 11rem),
+    radial-gradient(circle at 78% 12rem, rgba(0, 102, 255, 0.2), transparent 19rem),
+    radial-gradient(circle at 18% 26rem, rgba(0, 46, 160, 0.18), transparent 20rem),
+    linear-gradient(180deg, rgba(3, 8, 20, 0.98), rgba(7, 20, 55, 0.95) 44%, rgba(6, 19, 49, 0.86) 78%, rgba(3, 8, 20, 0.42) 100%);
 }
 
 .sarita-chart-stage {
@@ -450,10 +445,10 @@ h6 {
 
 .sarita-reading-panel {
   background:
-    linear-gradient(120deg, rgba(255, 231, 163, 0.52), rgba(245, 215, 130, 0.12) 18%, rgba(255, 250, 240, 0.24) 42%, rgba(245, 215, 130, 0.1) 64%, rgba(128, 174, 255, 0.18) 100%) border-box,
-    radial-gradient(circle at 12% 0%, rgba(0, 102, 255, 0.28), transparent 16rem),
-    radial-gradient(circle at 88% 8%, rgba(245, 215, 130, 0.16), transparent 14rem),
-    linear-gradient(180deg, rgba(7, 20, 55, 0.86), rgba(4, 8, 24, 0.92)) padding-box;
+    linear-gradient(120deg, rgba(245, 215, 130, 0.26), rgba(245, 215, 130, 0.06) 28%, rgba(124, 191, 255, 0.1) 100%) border-box,
+    radial-gradient(circle at 12% 0%, rgba(0, 102, 255, 0.16), transparent 16rem),
+    radial-gradient(circle at 88% 8%, rgba(245, 215, 130, 0.1), transparent 14rem),
+    linear-gradient(180deg, rgba(7, 20, 55, 0.96), rgba(3, 8, 20, 0.98)) padding-box;
   border: 1px solid transparent;
   border-radius: 2rem;
   box-shadow:
@@ -485,9 +480,9 @@ h6 {
 [class*="bg-[#f5f0e6"],
 [class*="bg-[#eee7d9"] {
   background:
-    linear-gradient(120deg, rgba(255, 231, 163, 0.34), rgba(245, 215, 130, 0.07) 22%, rgba(255, 250, 240, 0.14) 44%, rgba(124, 191, 255, 0.14) 100%) border-box,
-    radial-gradient(circle at 12% 0%, rgba(0, 102, 255, 0.18), transparent 14rem),
-    linear-gradient(180deg, rgba(7, 20, 55, 0.86), rgba(4, 8, 24, 0.92)) padding-box !important;
+    linear-gradient(120deg, rgba(245, 215, 130, 0.22), rgba(245, 215, 130, 0.05) 30%, rgba(124, 191, 255, 0.08) 100%) border-box,
+    radial-gradient(circle at 12% 0%, rgba(0, 102, 255, 0.12), transparent 14rem),
+    linear-gradient(180deg, rgba(7, 20, 55, 0.96), rgba(3, 8, 20, 0.98)) padding-box !important;
   color: var(--sarita-ivory);
 }
 
@@ -542,10 +537,10 @@ h6 {
 .sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class*="bg-[#f8f4eb"],
 .sarita-result-observatory .sarita-chart-experience :is(article, section, div, button)[class*="bg-[#fbf7ef"] {
   background:
-    linear-gradient(120deg, rgba(255, 231, 163, 0.42), rgba(245, 215, 130, 0.08) 22%, rgba(255, 250, 240, 0.18) 44%, rgba(128, 174, 255, 0.16) 100%) border-box,
-    radial-gradient(circle at 12% 0%, rgba(0, 102, 255, 0.2), transparent 14rem),
-    radial-gradient(circle at 86% 4%, rgba(245, 215, 130, 0.12), transparent 13rem),
-    linear-gradient(180deg, rgba(7, 20, 55, 0.82), rgba(4, 8, 24, 0.9)) padding-box !important;
+    linear-gradient(120deg, rgba(245, 215, 130, 0.24), rgba(245, 215, 130, 0.05) 30%, rgba(128, 174, 255, 0.08) 100%) border-box,
+    radial-gradient(circle at 12% 0%, rgba(0, 102, 255, 0.12), transparent 14rem),
+    radial-gradient(circle at 86% 4%, rgba(245, 215, 130, 0.08), transparent 13rem),
+    linear-gradient(180deg, rgba(7, 20, 55, 0.96), rgba(3, 8, 20, 0.98)) padding-box !important;
   border-color: transparent !important;
   box-shadow:
     0 18px 48px rgba(0, 0, 0, 0.28),
