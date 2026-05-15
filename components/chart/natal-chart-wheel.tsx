@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 
 import {
   getAugmentedChartPoints,
@@ -17,6 +18,7 @@ import { useChartStore } from "@/components/chart/chart-store";
 
 type Props = {
   chart: NatalChartData;
+  viewerMode?: boolean;
 };
 
 type TooltipState = {
@@ -1348,7 +1350,7 @@ export function ChartLayerRail() {
   );
 }
 
-export function NatalChartWheel({ chart }: Props) {
+export function NatalChartWheel({ chart, viewerMode = false }: Props) {
   const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
   const {
@@ -1367,6 +1369,8 @@ export function NatalChartWheel({ chart }: Props) {
   const [hoveredPointId, setHoveredPointId] = useState<ChartPointId | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
   const [hoveredAspectVisualId, setHoveredAspectVisualId] = useState<string | null>(null);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [viewerZoom, setViewerZoom] = useState(1.45);
 
   const ascendant = chart.meta.ascendant;
 
@@ -1407,6 +1411,18 @@ export function NatalChartWheel({ chart }: Props) {
     [chart.aspects, pointsById, showAspects, showMinorAspects],
   );
 
+  useEffect(() => {
+    if (!viewerOpen || viewerMode) {
+      return undefined;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [viewerOpen, viewerMode]);
+
   function handleSelect(pointId: ChartPointId) {
     selectPoint(pointId);
     openPanel();
@@ -1427,8 +1443,73 @@ export function NatalChartWheel({ chart }: Props) {
     selectAspect(aspect);
   }
 
+  const closeViewerLabel = locale === "en" ? "Close" : locale === "it" ? "Chiudi" : "Cerrar";
+  const zoomInLabel = locale === "en" ? "Zoom in" : locale === "it" ? "Ingrandisci" : "Acercar";
+  const zoomOutLabel = locale === "en" ? "Zoom out" : locale === "it" ? "Riduci" : "Alejar";
+  const resetZoomLabel = locale === "en" ? "Reset" : locale === "it" ? "Ripristina" : "Reset";
+  const openViewerLabel = locale === "en" ? "Open chart viewer" : locale === "it" ? "Apri carta" : "Ampliar carta";
+  const viewer =
+    !viewerMode && viewerOpen && typeof document !== "undefined"
+      ? createPortal(
+          <div className="fixed inset-0 z-[10050] bg-[#030814]/96 text-[#fffdf8] backdrop-blur-xl">
+            <div className="flex h-[calc(env(safe-area-inset-top)+3.7rem)] items-end justify-between px-4 pb-3">
+              <button
+                type="button"
+                onClick={() => setViewerOpen(false)}
+                className="sarita-floating-mark flex h-11 w-11 items-center justify-center rounded-full text-2xl"
+                aria-label={closeViewerLabel}
+              >
+                {"\u00d7"}
+              </button>
+              <div className="flex items-center gap-2 rounded-full border border-[#d7e7ff]/16 bg-[#061331]/72 p-1 shadow-[0_0_28px_rgba(0,102,255,0.16)]">
+                <button
+                  type="button"
+                  onClick={() => setViewerZoom((current) => Math.max(1, Math.round((current - 0.18) * 100) / 100))}
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-lg text-[#e8f3ff]"
+                  aria-label={zoomOutLabel}
+                >
+                  -
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewerZoom(1.45)}
+                  className="h-9 rounded-full px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#f5d782]"
+                >
+                  {resetZoomLabel}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewerZoom((current) => Math.min(2.55, Math.round((current + 0.18) * 100) / 100))}
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-lg text-[#e8f3ff]"
+                  aria-label={zoomInLabel}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <div className="h-[calc(100svh-env(safe-area-inset-top)-3.7rem)] overflow-auto px-5 pb-[calc(env(safe-area-inset-bottom)+2rem)] pt-6 [-webkit-overflow-scrolling:touch]">
+              <div
+                className="mx-auto"
+                style={{
+                  width: `${Math.round(88 * viewerZoom)}vmin`,
+                  minWidth: `${Math.round(88 * viewerZoom)}vmin`,
+                }}
+              >
+                <NatalChartWheel chart={chart} viewerMode />
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )
+      : null;
+
   return (
-    <div className="relative aspect-square w-[min(100%,calc(100vw-1.5rem))] max-w-[54rem] rounded-full bg-transparent drop-shadow-[0_18px_42px_rgba(30,26,46,0.18)] lg:w-[640px]">
+    <div
+      className={[
+        "relative aspect-square w-[min(100%,calc(100vw-1.5rem))] max-w-[54rem] rounded-full bg-transparent drop-shadow-[0_18px_42px_rgba(30,26,46,0.18)] lg:w-[640px]",
+        viewerMode ? "w-full max-w-none lg:w-full" : "",
+      ].join(" ")}
+    >
       {tooltip ? (
         <div
           className="pointer-events-none absolute z-30 hidden -translate-x-1/2 -translate-y-[calc(100%+0.85rem)] rounded-2xl border border-dusty-gold/45 bg-[#fffaf0] px-3 py-2 text-xs font-semibold leading-6 text-[#1e1a2e] shadow-[0_18px_45px_rgba(0,0,0,0.28)] md:block"
@@ -1511,6 +1592,16 @@ export function NatalChartWheel({ chart }: Props) {
             />
         </>
       </svg>
+      {!viewerMode ? (
+        <button
+          type="button"
+          onClick={() => setViewerOpen(true)}
+          className="absolute bottom-1 left-1/2 z-20 -translate-x-1/2 rounded-full border border-[#f5d782]/30 bg-[#030814]/72 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#f5d782] shadow-[0_0_26px_rgba(0,102,255,0.2),0_0_22px_rgba(245,215,130,0.08)] backdrop-blur-md transition hover:border-[#f5d782]/55 sm:bottom-3"
+        >
+          {openViewerLabel}
+        </button>
+      ) : null}
+      {viewer}
     </div>
   );
 }

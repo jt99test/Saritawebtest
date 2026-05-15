@@ -39,6 +39,7 @@ type NatalChartExperienceProps = {
 type PageTabId = "natal" | "moon" | "yoga" | "complete" | "solarReturn" | "synastry" | "astrocartography";
 
 const PAGE_TABS: PageTabId[] = ["natal", "moon", "yoga", "complete", "solarReturn", "synastry", "astrocartography"];
+const MOBILE_PRIMARY_TABS: PageTabId[] = ["natal", "moon", "yoga", "complete"];
 
 const TAB_REQUIREMENTS: Partial<Record<PageTabId, PaidPlan>> = {
   moon: "pro",
@@ -320,35 +321,9 @@ export function NatalChartExperience({
 
   return (
     <>
-    <div className="sarita-chart-experience relative isolate mx-auto w-full min-w-0 max-w-[880px] px-3 pb-16 pt-3 sm:px-6 sm:pb-20 sm:pt-4 lg:max-w-[1180px] lg:px-8">
+    <div className="sarita-chart-experience relative isolate mx-auto w-full min-w-0 max-w-[880px] px-3 pb-28 pt-0 sm:px-6 sm:pb-20 sm:pt-4 lg:max-w-[1180px] lg:px-8">
       <div aria-hidden="true" className="sarita-chart-night-field pointer-events-none absolute inset-x-[-1rem] top-0 -z-10 h-[78rem] sm:inset-x-[-2rem] lg:inset-x-[-4rem]" />
       <div className="relative z-10 space-y-3">
-        <div className="relative md:hidden">
-          <button
-            type="button"
-            onClick={() => setSectionMenuOpen(true)}
-            className="flex w-full items-center justify-between rounded-[1.35rem] border border-[#f5d782]/24 bg-[#071437]/92 px-4 py-3.5 text-left shadow-[0_12px_30px_rgba(0,0,0,0.24),0_0_24px_rgba(0,102,255,0.12),inset_0_1px_0_rgba(255,250,240,0.12)]"
-            aria-haspopup="dialog"
-            aria-expanded={sectionMenuOpen}
-          >
-            <span className="flex min-w-0 items-center gap-3.5">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[#f5d782]/26 bg-[#f5d782]/12 text-[20px] text-[#f5d782] shadow-[0_0_18px_rgba(245,215,130,0.1)]">
-                {TAB_ICONS[pageTab]}
-              </span>
-              <span className="min-w-0">
-                <span className="block text-[10px] font-medium uppercase tracking-[0.22em] text-[#f5d782]">
-                  {dictionary.result.readingContextLabel}
-                </span>
-                <span className="mt-1 block min-w-0 truncate text-[13px] font-semibold uppercase tracking-[0.16em] text-[#fffaf0]">
-                  {dictionary.result.primaryTabs[pageTab]}
-                </span>
-              </span>
-            </span>
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#d7e7ff]/14 bg-[#030814]/44 text-[15px] text-[#f5d782]">
-              {"\u2304"}
-            </span>
-          </button>
-        </div>
         <div className="relative">
         <div className="mb-2 flex flex-col gap-1 border-b border-dusty-gold/14 pb-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
@@ -575,6 +550,58 @@ export function NatalChartExperience({
       {pageTab === "astrocartography" && !activeTabLocked ? (
         <AstrocartographyPage chart={chart} request={request} dictionary={dictionary} readingId={readingId} gender={request?.gender || undefined} />
       ) : null}
+
+      <div className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+0.55rem)] z-[80] md:hidden">
+        <nav className="sarita-mobile-tabbar grid grid-cols-5 items-center gap-1 rounded-[1.5rem] border border-[#d7e7ff]/16 px-1.5 py-1.5 shadow-[0_18px_60px_rgba(0,0,0,0.42),0_0_34px_rgba(0,102,255,0.18)] backdrop-blur-xl">
+          {MOBILE_PRIMARY_TABS.map((tab) => {
+            const active = pageTab === tab;
+            const requiredPlan = TAB_REQUIREMENTS[tab];
+            const locked = !planLoading && !hasPlanAccess(plan, requiredPlan);
+            return (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => {
+                  setPageTab(tab);
+                  if (locked && requiredPlan) {
+                    openPricing(requiredPlan);
+                  }
+                }}
+                className={[
+                  "flex min-w-0 flex-col items-center justify-center gap-1 rounded-[1.05rem] px-1 py-2 transition",
+                  active
+                    ? "bg-[#f5d782]/12 text-[#f5d782] shadow-[inset_0_0_0_1px_rgba(245,215,130,0.24),0_0_18px_rgba(245,215,130,0.08)]"
+                    : "text-[#e8f3ff]/72",
+                ].join(" ")}
+                aria-label={dictionary.result.primaryTabs[tab]}
+              >
+                <span className="font-serif text-[19px] leading-none">{TAB_ICONS[tab]}</span>
+                <span className="max-w-full truncate text-[8.5px] font-semibold uppercase leading-none tracking-[0.08em]">
+                  {dictionary.result.primaryTabs[tab]}
+                </span>
+              </button>
+            );
+          })}
+          <button
+            type="button"
+            onClick={() => setSectionMenuOpen(true)}
+            className={[
+              "flex min-w-0 flex-col items-center justify-center gap-1 rounded-[1.05rem] px-1 py-2 transition",
+              MOBILE_PRIMARY_TABS.includes(pageTab)
+                ? "text-[#e8f3ff]/72"
+                : "bg-[#f5d782]/12 text-[#f5d782] shadow-[inset_0_0_0_1px_rgba(245,215,130,0.24),0_0_18px_rgba(245,215,130,0.08)]",
+            ].join(" ")}
+            aria-haspopup="dialog"
+            aria-expanded={sectionMenuOpen}
+            aria-label="Mas"
+          >
+            <span className="text-[18px] leading-none">{"\u22ef"}</span>
+            <span className="max-w-full truncate text-[8.5px] font-semibold uppercase leading-none tracking-[0.08em]">
+              Mas
+            </span>
+          </button>
+        </nav>
+      </div>
 
       <PricingModal
         open={pricingOpen}

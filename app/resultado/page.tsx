@@ -89,7 +89,7 @@ function ResultPageContent() {
       <AtmosphericBackground variant="page" />
 
       <section className="relative min-h-[100svh] py-4 sm:min-h-screen sm:py-6">
-        <Container className="relative flex min-h-[100svh] flex-col pt-12 sm:min-h-screen sm:pt-14">
+        <Container className="relative flex min-h-[100svh] flex-col pt-[calc(env(safe-area-inset-top)+3.1rem)] sm:min-h-screen sm:pt-14">
           {banner ? (
             <div className="mb-4 flex items-center justify-between gap-4 border border-dusty-gold/20 bg-dusty-gold/10 px-4 py-3 text-sm text-ivory/78">
               <span>{banner === "success" ? dictionary.paywall.successBanner : dictionary.paywall.cancelBanner}</span>
@@ -103,18 +103,18 @@ function ResultPageContent() {
             </div>
           ) : null}
 
-          <div className="sarita-result-topbar fixed inset-x-0 top-0 z-[60] border-b backdrop-blur-xl">
-            <div className="mx-auto grid min-h-12 max-w-[1180px] grid-cols-[2.5rem_1fr_2.5rem] items-center gap-2 px-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-4 sm:px-6 lg:px-8">
+          <div className="sarita-result-topbar fixed inset-x-0 top-0 z-[60] backdrop-blur-xl">
+            <div className="mx-auto grid min-h-[calc(env(safe-area-inset-top)+3.25rem)] max-w-[1180px] grid-cols-[2.75rem_1fr_2.75rem] items-end gap-2 px-4 pb-2.5 sm:min-h-12 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-4 sm:px-6 sm:pb-0 lg:px-8">
             <Link
               href="/"
-              className="flex h-10 w-10 items-center justify-center justify-self-start overflow-hidden text-2xl leading-none text-[#fffaf0]/82 transition hover:text-[#d7bd6a] sm:h-auto sm:w-auto sm:truncate sm:text-xs sm:font-medium sm:uppercase sm:tracking-[0.24em]"
+              className="sarita-floating-mark flex h-11 w-11 items-center justify-center justify-self-start overflow-hidden rounded-full text-2xl leading-none text-[#fffdf8] transition hover:text-[#f5d782] sm:h-auto sm:w-auto sm:truncate sm:rounded-none sm:border-0 sm:bg-transparent sm:text-xs sm:font-medium sm:uppercase sm:tracking-[0.24em] sm:shadow-none"
               aria-label={dictionary.result.back}
             >
               <span className="sm:hidden">{"\u2039"}</span>
               <span className="hidden sm:inline">{"\u2190"} {dictionary.result.back}</span>
             </Link>
 
-            <p className="justify-self-center font-serif text-[15px] uppercase tracking-[0.28em] text-[#d7bd6a] sm:text-[12px] sm:font-semibold sm:tracking-[0.22em]">
+            <p className="justify-self-center font-serif text-[15px] uppercase tracking-[0.28em] text-[#f5d782] sm:text-[12px] sm:font-semibold sm:tracking-[0.22em]">
               <span className="sm:hidden">{dictionary.brand.name}</span>
               <span className="hidden sm:inline">{result?.saved ? dictionary.standalonePages.savedReading : ""}</span>
             </p>
