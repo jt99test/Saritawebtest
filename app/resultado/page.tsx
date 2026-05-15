@@ -85,7 +85,7 @@ function ResultPageContent() {
   }, [checkoutStatus]);
 
   return (
-    <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
+    <main className="sarita-result-observatory premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
       <AtmosphericBackground variant="page" />
 
       <section className="relative min-h-[100svh] py-4 sm:min-h-screen sm:py-6">
@@ -103,26 +103,26 @@ function ResultPageContent() {
             </div>
           ) : null}
 
-          <div className="fixed inset-x-0 top-0 z-[60] border-b border-black/10 bg-cosmic-950/92 backdrop-blur-xl">
+          <div className="sarita-result-topbar fixed inset-x-0 top-0 z-[60] border-b backdrop-blur-xl">
             <div className="mx-auto grid min-h-12 max-w-[1180px] grid-cols-[2.5rem_1fr_2.5rem] items-center gap-2 px-3 sm:grid-cols-[1fr_auto_1fr] sm:gap-4 sm:px-6 lg:px-8">
             <Link
               href="/"
-              className="flex h-10 w-10 items-center justify-center justify-self-start overflow-hidden text-2xl leading-none text-[#3a3048] transition hover:text-ivory sm:h-auto sm:w-auto sm:truncate sm:text-xs sm:font-medium sm:uppercase sm:tracking-[0.24em]"
+              className="flex h-10 w-10 items-center justify-center justify-self-start overflow-hidden text-2xl leading-none text-[#fffaf0]/82 transition hover:text-[#d7bd6a] sm:h-auto sm:w-auto sm:truncate sm:text-xs sm:font-medium sm:uppercase sm:tracking-[0.24em]"
               aria-label={dictionary.result.back}
             >
               <span className="sm:hidden">{"\u2039"}</span>
               <span className="hidden sm:inline">{"\u2190"} {dictionary.result.back}</span>
             </Link>
 
-            <p className="justify-self-center font-serif text-[15px] uppercase tracking-[0.28em] text-[#5c4a24] sm:text-[12px] sm:font-semibold sm:tracking-[0.22em]">
+            <p className="justify-self-center font-serif text-[15px] uppercase tracking-[0.28em] text-[#d7bd6a] sm:text-[12px] sm:font-semibold sm:tracking-[0.22em]">
               <span className="sm:hidden">{dictionary.brand.name}</span>
               <span className="hidden sm:inline">{result?.saved ? dictionary.standalonePages.savedReading : ""}</span>
             </p>
 
-            <div className="flex min-w-0 items-center gap-2 justify-self-end sm:gap-4 sm:border-l sm:border-black/15 sm:pl-4">
+            <div className="flex min-w-0 items-center gap-2 justify-self-end sm:gap-4 sm:border-l sm:border-[#fffaf0]/14 sm:pl-4">
               <Link
                 href="/form"
-                className="hidden text-right text-[10px] font-medium uppercase tracking-[0.16em] text-[#3a3048] transition hover:text-ivory/80 min-[430px]:inline sm:text-xs sm:tracking-[0.24em]"
+                className="hidden text-right text-[10px] font-medium uppercase tracking-[0.16em] text-[#fffaf0]/72 transition hover:text-[#d7bd6a] min-[430px]:inline sm:text-xs sm:tracking-[0.24em]"
               >
                 {dictionary.form.back}
               </Link>

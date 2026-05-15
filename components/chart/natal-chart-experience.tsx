@@ -229,8 +229,9 @@ export function NatalChartExperience({
   }, [pageTab]);
 
   return (
-    <div className="relative mx-auto w-full min-w-0 max-w-[880px] px-3 pb-16 pt-3 sm:px-6 sm:pb-20 sm:pt-4 lg:max-w-[1180px] lg:px-8">
-      <div className="space-y-3">
+    <div className="sarita-chart-experience relative isolate mx-auto w-full min-w-0 max-w-[880px] px-3 pb-16 pt-3 sm:px-6 sm:pb-20 sm:pt-4 lg:max-w-[1180px] lg:px-8">
+      <div aria-hidden="true" className="sarita-chart-night-field pointer-events-none absolute inset-x-[-1rem] top-0 -z-10 h-[78rem] sm:inset-x-[-2rem] lg:inset-x-[-4rem]" />
+      <div className="relative z-10 space-y-3">
         <div className="relative md:hidden">
           <button
             type="button"
@@ -344,14 +345,14 @@ export function NatalChartExperience({
         <div className="relative">
         <div className="mb-2 flex flex-col gap-1 border-b border-dusty-gold/14 pb-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#5c4a24]">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#d7bd6a]">
               {dictionary.result.readingContextLabel}
             </p>
-            <p className="mt-1 font-serif text-[19px] leading-6 text-ivory sm:truncate sm:text-[18px]">
+            <p className="mt-1 font-serif text-[19px] leading-6 text-[#fffaf0] sm:truncate sm:text-[18px]">
               {stickyTitle}
             </p>
           </div>
-          <p className="text-[11px] font-semibold uppercase leading-5 tracking-[0.14em] text-[#3a3048] sm:max-w-[48%] sm:truncate sm:text-right sm:tracking-[0.18em]">
+          <p className="text-[11px] font-semibold uppercase leading-5 tracking-[0.14em] text-[#fffaf0]/70 sm:max-w-[48%] sm:truncate sm:text-right sm:tracking-[0.18em]">
             {dictionary.result.primaryTabs[pageTab]}{headerSubtitle ? ` · ${headerSubtitle}` : ""}
           </p>
         </div>
@@ -449,12 +450,12 @@ export function NatalChartExperience({
       {pageTab === "natal" && !activeTabLocked ? (
         <>
           <div className="mx-auto mt-7 max-w-2xl text-center sm:mt-8">
-            <p className="text-[13px] leading-6 text-[#3a3048] sm:text-sm sm:leading-7">
+            <p className="text-[13px] leading-6 text-[#fffaf0]/74 sm:text-sm sm:leading-7">
               {dictionary.result.chartHeader.intro}
             </p>
           </div>
 
-          <section className="pt-8">
+          <section className="sarita-chart-stage pt-8">
             <div className="flex flex-wrap items-center justify-center gap-3">
               {isMock ? (
                 <div className="rounded-full border border-dusty-gold/18 bg-dusty-gold/8 px-4 py-2 text-xs uppercase tracking-[0.24em] text-[#5c4a24]">
@@ -467,10 +468,10 @@ export function NatalChartExperience({
               <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-dusty-gold">
                 {dictionary.result.chartHeader.eyebrow}
               </p>
-              <h1 className={`mx-auto -mt-1 max-w-full whitespace-nowrap font-serif font-normal leading-none text-ivory [overflow-wrap:normal] [word-break:normal] ${titleNameClass}`}>
+              <h1 className={`mx-auto -mt-1 max-w-full whitespace-nowrap font-serif font-normal leading-none text-[#fffaf0] [overflow-wrap:normal] [word-break:normal] ${titleNameClass}`}>
                 {firstName}
               </h1>
-              <p className="mt-4 font-serif text-[14px] italic text-[#3a3048]">
+              <p className="mt-4 font-serif text-[14px] italic text-[#fffaf0]/72">
                 {headerSubtitle}
               </p>
             </div>
@@ -481,10 +482,10 @@ export function NatalChartExperience({
                   <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-dusty-gold">
                     {dictionary.result.chartHeader.eyebrow}
                   </p>
-                  <h1 className={`-mt-1 ml-auto max-w-[360px] whitespace-nowrap font-serif font-normal leading-none text-ivory [overflow-wrap:normal] [word-break:normal] ${titleNameClass}`}>
+                  <h1 className={`-mt-1 ml-auto max-w-[360px] whitespace-nowrap font-serif font-normal leading-none text-[#fffaf0] [overflow-wrap:normal] [word-break:normal] ${titleNameClass}`}>
                     {firstName}
                   </h1>
-                  <p className="ml-auto mt-4 max-w-[260px] font-serif text-[15px] italic leading-6 text-[#3a3048]">
+                  <p className="ml-auto mt-4 max-w-[260px] font-serif text-[15px] italic leading-6 text-[#fffaf0]/72">
                     {headerSubtitle}
                   </p>
                 </div>
@@ -499,7 +500,7 @@ export function NatalChartExperience({
             </div>
 
             {!panelOpen && !selectedPointId ? (
-              <p className="mt-3 text-center font-serif text-[13px] italic text-[#3a3048]">
+              <p className="mt-3 text-center font-serif text-[13px] italic text-[#fffaf0]/68">
                 {dictionary.result.chartHeader.selectPlanet}
               </p>
             ) : null}
@@ -507,10 +508,10 @@ export function NatalChartExperience({
 
             {!panelOpen && !selectedPointId ? (
               <div className="mx-auto mt-8 max-w-3xl border-y border-dusty-gold/16 py-6 text-center">
-                <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
+                <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#d7bd6a]">
                   {dictionary.yogaAstral.title}
                 </p>
-                <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-[#3a3048]">
+                <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-[#fffaf0]/70">
                   {dictionary.yogaAstral.intro}
                 </p>
                 {!planLoading && !hasPlanAccess(plan, "pro") ? (

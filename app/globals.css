@@ -360,6 +360,59 @@ h6 {
   width: 72rem;
 }
 
+.sarita-result-observatory .sarita-page-atmosphere-layer {
+  background:
+    radial-gradient(circle at 50% 21rem, rgba(215, 189, 106, 0.2), transparent 8rem),
+    radial-gradient(ellipse at 50% 32rem, rgba(255, 250, 240, 0.28), transparent 32rem),
+    radial-gradient(circle at 18% 10rem, rgba(82, 72, 146, 0.48), transparent 20rem),
+    radial-gradient(circle at 88% 12rem, rgba(122, 75, 255, 0.34), transparent 19rem),
+    radial-gradient(circle at 18% 48rem, rgba(86, 112, 202, 0.2), transparent 22rem),
+    linear-gradient(180deg, #070713 0, #0e0c20 18rem, #1b162e 36rem, #332943 58rem, #6a6068 82rem, #ded4c5 112rem, #f5f0e6 140rem, #ede7d9 100%);
+}
+
+.sarita-result-observatory .sarita-page-color-wash {
+  background:
+    radial-gradient(circle at 50% 24rem, rgba(215, 189, 106, 0.52), transparent 10rem),
+    radial-gradient(circle at 82% 17rem, rgba(122, 75, 255, 0.42), transparent 15rem),
+    radial-gradient(circle at 16% 30rem, rgba(86, 112, 202, 0.34), transparent 16rem),
+    radial-gradient(circle at 70% 58rem, rgba(215, 189, 106, 0.24), transparent 18rem);
+}
+
+.sarita-result-topbar {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(215, 189, 106, 0.1), transparent 18rem),
+    linear-gradient(180deg, rgba(7, 7, 19, 0.86), rgba(14, 12, 32, 0.74));
+  border-color: rgba(255, 250, 240, 0.12);
+  box-shadow:
+    0 12px 34px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 250, 240, 0.08);
+}
+
+.sarita-chart-night-field {
+  background:
+    radial-gradient(circle at 50% 20rem, rgba(215, 189, 106, 0.2), transparent 8rem),
+    radial-gradient(circle at 50% 28rem, rgba(255, 250, 240, 0.13), transparent 22rem),
+    radial-gradient(circle at 78% 12rem, rgba(122, 75, 255, 0.26), transparent 18rem),
+    radial-gradient(circle at 18% 26rem, rgba(86, 112, 202, 0.18), transparent 20rem),
+    linear-gradient(180deg, rgba(7, 7, 19, 0.92), rgba(18, 14, 39, 0.88) 42%, rgba(46, 36, 61, 0.62) 72%, rgba(245, 240, 230, 0) 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 72%, rgba(0, 0, 0, 0.62) 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 72%, rgba(0, 0, 0, 0.62) 88%, transparent 100%);
+}
+
+.sarita-chart-stage {
+  position: relative;
+}
+
+.sarita-natal-chart::before {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 250, 240, 0.48), rgba(215, 189, 106, 0.2) 28%, rgba(122, 75, 255, 0.16) 52%, transparent 68%);
+  content: "";
+  inset: -12%;
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+}
+
 .sarita-home-atmosphere {
   background:
     radial-gradient(circle at 52% 22rem, rgba(116, 111, 188, 0.2), transparent 30rem),
