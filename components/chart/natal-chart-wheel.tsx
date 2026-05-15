@@ -1323,7 +1323,7 @@ export function ChartLayerRail() {
     locale === "en" ? "Swipe to see more" : locale === "it" ? "Scorri per vedere di piu" : "Desliza para ver mas";
 
   return (
-    <div className="mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col overflow-hidden bg-transparent py-3 sm:max-w-[34rem] sm:p-4 lg:mx-0 lg:w-auto lg:min-w-[12rem]">
+    <div className="sarita-chart-layer-rail mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col overflow-hidden bg-transparent py-3 sm:max-w-[34rem] sm:p-4 lg:mx-0 lg:w-auto lg:min-w-[12rem]">
       <p className="mb-3 text-center font-serif text-[14px] italic lowercase tracking-[0.15em] text-[#5c4a24] lg:text-left">
         {dictionary.result.toggles.view}
       </p>

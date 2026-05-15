@@ -449,6 +449,38 @@ h6 {
   backdrop-filter: blur(16px);
 }
 
+@media (min-width: 640px) {
+  .sarita-result-topbar .sarita-result-float-control {
+    backdrop-filter: none;
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    color: rgba(255, 250, 240, 0.72);
+    text-shadow:
+      0 0 12px rgba(255, 250, 240, 0.16),
+      0 0 22px rgba(124, 191, 255, 0.12);
+  }
+
+  .sarita-result-topbar .sarita-result-float-control:hover {
+    color: var(--sarita-gold);
+  }
+
+  .sarita-chart-layer-rail button {
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .sarita-chart-layer-rail button[aria-pressed="true"] {
+    color: var(--sarita-ivory);
+    text-shadow: 0 0 14px rgba(255, 250, 240, 0.18);
+  }
+
+  .sarita-chart-layer-rail button[aria-pressed="true"] span:last-child {
+    color: var(--sarita-ivory);
+  }
+}
+
 .sarita-result-observatory {
   background:
     radial-gradient(circle at 52% 18rem, rgba(0, 102, 255, 0.34), transparent 24rem),
