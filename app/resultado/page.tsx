@@ -103,23 +103,23 @@ function ResultPageContent() {
             </div>
           ) : null}
 
-          <div className="sarita-result-topbar fixed inset-x-0 top-0 z-[60] backdrop-blur-xl">
-            <div className="mx-auto grid min-h-[calc(env(safe-area-inset-top)+3.25rem)] max-w-[1180px] grid-cols-[2.75rem_1fr_2.75rem] items-end gap-2 px-4 pb-2.5 sm:min-h-12 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-4 sm:px-6 sm:pb-0 lg:px-8">
+          <div className="sarita-result-topbar pointer-events-none fixed inset-x-0 top-0 z-[60]">
+            <div className="mx-auto grid min-h-[calc(env(safe-area-inset-top)+4rem)] max-w-[1180px] grid-cols-[2.75rem_1fr_2.75rem] items-end gap-2 px-5 pb-3 sm:min-h-14 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-4 sm:px-6 sm:pb-0 lg:px-8">
             <Link
               href="/"
-              className="sarita-floating-mark flex h-11 w-11 items-center justify-center justify-self-start overflow-hidden rounded-full text-2xl leading-none text-[#fffdf8] transition hover:text-[#f5d782] sm:h-auto sm:w-auto sm:truncate sm:rounded-none sm:border-0 sm:bg-transparent sm:text-xs sm:font-medium sm:uppercase sm:tracking-[0.24em] sm:shadow-none"
+              className="sarita-result-float-control pointer-events-auto flex h-10 w-10 items-center justify-center justify-self-start overflow-hidden rounded-full text-[1.6rem] leading-none text-[#fffdf8] transition hover:text-[#f5d782] sm:h-auto sm:w-auto sm:truncate sm:rounded-none sm:border-0 sm:bg-transparent sm:text-xs sm:font-medium sm:uppercase sm:tracking-[0.24em] sm:shadow-none"
               aria-label={dictionary.result.back}
             >
               <span className="sm:hidden">{"\u2039"}</span>
               <span className="hidden sm:inline">{"\u2190"} {dictionary.result.back}</span>
             </Link>
 
-            <p className="justify-self-center font-serif text-[15px] uppercase tracking-[0.28em] text-[#f5d782] sm:text-[12px] sm:font-semibold sm:tracking-[0.22em]">
+            <p className="pointer-events-none justify-self-center font-serif text-[15px] uppercase tracking-[0.28em] text-[#f5d782] [text-shadow:0_0_16px_rgba(245,215,130,0.22),0_0_30px_rgba(124,191,255,0.18)] sm:text-[12px] sm:font-semibold sm:tracking-[0.22em]">
               <span className="sm:hidden">{dictionary.brand.name}</span>
               <span className="hidden sm:inline">{result?.saved ? dictionary.standalonePages.savedReading : ""}</span>
             </p>
 
-            <div className="flex min-w-0 items-center gap-2 justify-self-end sm:gap-4 sm:border-l sm:border-[#fffaf0]/14 sm:pl-4">
+            <div className="pointer-events-auto flex min-w-0 items-center gap-2 justify-self-end sm:gap-4 sm:border-l sm:border-[#fffaf0]/14 sm:pl-4">
               <Link
                 href="/form"
                 className="hidden text-right text-[10px] font-medium uppercase tracking-[0.16em] text-[#fffaf0]/72 transition hover:text-[#d7bd6a] min-[430px]:inline sm:text-xs sm:tracking-[0.24em]"

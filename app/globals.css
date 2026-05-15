@@ -431,13 +431,22 @@ h6 {
 }
 
 .sarita-result-topbar {
-  background:
-    radial-gradient(circle at 50% 0%, rgba(245, 215, 130, 0.12), transparent 15rem),
-    linear-gradient(180deg, rgba(4, 7, 17, 0.78), rgba(4, 7, 17, 0.28) 68%, transparent);
+  background: transparent;
   border-color: transparent;
+  box-shadow: none;
+}
+
+.sarita-result-float-control {
+  background:
+    radial-gradient(circle at 32% 22%, rgba(255, 253, 248, 0.18), transparent 58%),
+    radial-gradient(circle at 70% 78%, rgba(124, 191, 255, 0.22), transparent 62%),
+    linear-gradient(180deg, rgba(255, 253, 248, 0.1), rgba(4, 7, 17, 0.42));
+  border: 1px solid rgba(215, 231, 255, 0.18);
   box-shadow:
-    0 12px 34px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 250, 240, 0.08);
+    0 12px 32px rgba(0, 0, 0, 0.18),
+    0 0 24px rgba(124, 191, 255, 0.12),
+    inset 0 1px 0 rgba(255, 253, 248, 0.18);
+  backdrop-filter: blur(16px);
 }
 
 .sarita-result-observatory {
