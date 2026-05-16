@@ -483,6 +483,16 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
           ) : (
             <div className="mx-auto mt-4 h-10 w-72 animate-pulse rounded bg-black/8" />
           )}
+          <div className="mt-5 hidden justify-center sm:flex">
+            <PrimaryButton
+              type="button"
+              variant="ghostGold"
+              className="px-5 py-3 text-[12px] uppercase tracking-[0.2em]"
+              onClick={() => setSelectedPartner(null)}
+            >
+              {synastryCopy.compareAnother}
+            </PrimaryButton>
+          </div>
         </div>
         <div className="mt-8">
           <WheelModeToggle

@@ -28,7 +28,6 @@ const INNER_ZODIAC_R = 372;
 const ZODIAC_OUTER_R = 402;
 const ZODIAC_INNER_R = 344;
 const INNER_PLANET_R = 286;
-const INNER_LABEL_R = 316;
 const OUTER_SEP_R = 343;
 const OUTER_PLANET_R = 414;
 const OUTER_LABEL_R = 432;
@@ -53,19 +52,19 @@ const DRAWABLE_IDS = new Set<ChartPointId>([
 ]);
 
 const SIGN_SYMBOLS = {
-  aries: "\u2648",
-  taurus: "\u2649",
-  gemini: "\u264a",
-  cancer: "\u264b",
-  leo: "\u264c",
-  virgo: "\u264d",
-  libra: "\u264e",
-  scorpio: "\u264f",
-  Sagittarius: "\u2650",
-  sagittarius: "\u2650",
-  capricorn: "\u2651",
-  aquarius: "\u2652",
-  pisces: "\u2653",
+  aries: "\u2648\ufe0e",
+  taurus: "\u2649\ufe0e",
+  gemini: "\u264a\ufe0e",
+  cancer: "\u264b\ufe0e",
+  leo: "\u264c\ufe0e",
+  virgo: "\u264d\ufe0e",
+  libra: "\u264e\ufe0e",
+  scorpio: "\u264f\ufe0e",
+  Sagittarius: "\u2650\ufe0e",
+  sagittarius: "\u2650\ufe0e",
+  capricorn: "\u2651\ufe0e",
+  aquarius: "\u2652\ufe0e",
+  pisces: "\u2653\ufe0e",
 } as const;
 
 const POINT_SYMBOLS: Record<ChartPointId, string> = {
@@ -371,9 +370,12 @@ export function BiWheelChart({
   const outerPoints = useMemo(() => outerChart ? filterPoints(visiblePoints(outerChart), outerPointIds) : [], [outerChart, outerPointIds]);
   const ascendant = innerChart.meta.ascendant;
   const outerActive = hoveredOuter || selectedOuter;
-  const activePoint = [...innerPoints, ...outerPoints].find(
-    (point) => point.id === (hoveredInner ?? hoveredOuter),
-  );
+  const activeInner = hoveredInner ?? selectedInner;
+  const activeOuter = hoveredOuter ?? selectedOuter;
+  const hasAspectFocus = Boolean(activeInner || activeOuter);
+  const activePoint = activeInner
+    ? innerPoints.find((point) => point.id === activeInner)
+    : outerPoints.find((point) => point.id === activeOuter);
 
   return (
     <div className="relative mx-auto w-[min(100%,calc(100vw-1.5rem))] max-w-[860px]">
@@ -432,7 +434,7 @@ export function BiWheelChart({
                   className="font-serif text-[32px] font-bold"
                   fill={zodiacLabelFill(sign.element)}
                   fillOpacity="0.92"
-                  fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
+                  fontFamily="'Times New Roman', Georgia, 'Noto Serif', serif"
                   stroke="rgba(255,253,248,0.86)"
                   strokeWidth="1.15"
                   paintOrder="stroke fill"
@@ -485,6 +487,8 @@ export function BiWheelChart({
             const from = innerPoints.find((point) => point.id === aspect.from);
             const to = innerPoints.find((point) => point.id === aspect.to);
             if (!from || !to) return null;
+            const focused = activeInner ? aspect.from === activeInner || aspect.to === activeInner : !hasAspectFocus;
+            const opacity = hasAspectFocus ? (focused ? 0.96 : 0.07) : 0.42;
             const start = pointAtRadius(172, from.longitude, ascendant);
             const end = pointAtRadius(172, to.longitude, ascendant);
             return (
@@ -497,8 +501,9 @@ export function BiWheelChart({
                 x2={end.x}
                 y2={end.y}
                 stroke={aspectStroke(aspect.type)}
-                strokeWidth="1.1"
-                filter="url(#bw-aspect-neon)"
+                strokeWidth={focused ? "1.85" : "0.75"}
+                strokeOpacity={opacity}
+                filter={focused ? "url(#bw-aspect-neon)" : undefined}
               />
             );
           })}
@@ -506,6 +511,8 @@ export function BiWheelChart({
             const from = outerPoints.find((point) => point.id === aspect.from);
             const to = outerPoints.find((point) => point.id === aspect.to);
             if (!from || !to) return null;
+            const focused = activeOuter ? aspect.from === activeOuter || aspect.to === activeOuter : !hasAspectFocus;
+            const opacity = hasAspectFocus ? (focused ? 0.9 : 0.06) : 0.26;
             const start = pointAtRadius(334, from.longitude, ascendant);
             const end = pointAtRadius(334, to.longitude, ascendant);
             return (
@@ -518,9 +525,9 @@ export function BiWheelChart({
                 x2={end.x}
                 y2={end.y}
                 stroke={aspectStroke(aspect.type)}
-                strokeWidth="1"
-                strokeOpacity="0.78"
-                filter="url(#bw-aspect-neon)"
+                strokeWidth={focused ? "1.55" : "0.7"}
+                strokeOpacity={opacity}
+                filter={focused ? "url(#bw-aspect-neon)" : undefined}
               />
             );
           }) : null}
@@ -528,6 +535,11 @@ export function BiWheelChart({
             const from = innerPoints.find((point) => point.id === aspect.pointA);
             const to = outerPoints.find((point) => point.id === aspect.pointB);
             if (!from || !to) return null;
+            const focused = Boolean(
+              (activeInner && aspect.pointA === activeInner) ||
+              (activeOuter && aspect.pointB === activeOuter),
+            );
+            const opacity = hasAspectFocus ? (focused ? 0.92 : 0.05) : 0.3;
             const start = pointAtRadius(204, from.longitude, ascendant);
             const end = pointAtRadius(OUTER_SEP_R - 8, to.longitude, ascendant);
             return (
@@ -540,10 +552,10 @@ export function BiWheelChart({
                 x2={end.x}
                 y2={end.y}
                 stroke={aspectStroke(aspect.type)}
-                strokeWidth="0.9"
+                strokeWidth={focused ? "1.45" : "0.65"}
                 strokeDasharray="3 5"
-                strokeOpacity="0.62"
-                filter="url(#bw-aspect-neon)"
+                strokeOpacity={opacity}
+                filter={focused ? "url(#bw-aspect-neon)" : undefined}
               />
             );
           }) : null}
@@ -552,7 +564,6 @@ export function BiWheelChart({
           {innerPoints.map((point) => {
             const active = hoveredInner === point.id || selectedInner === point.id;
             const position = pointAtRadius(INNER_PLANET_R, point.longitude, ascendant);
-            const label = pointAtRadius(INNER_LABEL_R, point.longitude, ascendant);
             return (
               <g
                 key={point.id}
@@ -589,7 +600,6 @@ export function BiWheelChart({
                 >
                   {POINT_SYMBOLS[point.id]}
                 </text>
-                {active ? <text x={label.x} y={label.y} textAnchor="middle" className="text-[12px] font-semibold" fill="#1e1a2e">{degreeLabel(point)}</text> : null}
               </g>
             );
           })}
@@ -600,7 +610,6 @@ export function BiWheelChart({
           const tickStart = pointAtRadius(OUTER_SEP_R + 3, point.longitude, ascendant);
           const tickEnd = pointAtRadius(OUTER_PLANET_R - 21, point.longitude, ascendant);
           const position = pointAtRadius(OUTER_PLANET_R, point.longitude, ascendant);
-          const label = pointAtRadius(OUTER_LABEL_R, point.longitude, ascendant);
           return (
             <g
               key={point.id}
@@ -637,7 +646,6 @@ export function BiWheelChart({
               >
                 {POINT_SYMBOLS[point.id]}
               </text>
-              {active ? <text x={label.x} y={label.y} textAnchor="middle" className="text-[12px] font-semibold" fill={colors.primary}>{degreeLabel(point)}</text> : null}
             </g>
           );
         })}
@@ -651,24 +659,25 @@ export function BiWheelChart({
 
       </svg>
 
-      <div className="mx-auto mt-8 flex flex-wrap items-center justify-center gap-3 px-4">
-        <span className="inline-flex max-w-[min(22rem,86vw)] items-center justify-center gap-2 rounded-full border border-black/12 bg-white px-4 py-2 text-center text-[12px] font-semibold uppercase tracking-[0.2em] text-ivory shadow-[0_8px_24px_rgba(0,0,0,0.08)] [overflow-wrap:normal] [word-break:normal]">
-          <span className="h-2.5 w-2.5 rounded-full bg-ivory" />
+      {activePoint ? (
+        <div className="pointer-events-none mx-auto mt-5 flex w-fit max-w-[min(24rem,88vw)] items-center justify-center gap-2 rounded-full border border-[#f5d782]/35 bg-[#061331]/75 px-4 py-2 text-center text-[12px] font-semibold uppercase tracking-[0.18em] text-[#fffaf0] shadow-[0_16px_42px_rgba(0,0,0,0.24)] backdrop-blur-md">
+          <span className="font-serif text-base leading-none text-[#f5d782]">{POINT_SYMBOLS[activePoint.id]}</span>
+          <span>{degreeLabel(activePoint)}</span>
+        </div>
+      ) : null}
+
+      <div className="mx-auto mt-5 flex flex-wrap items-center justify-center gap-3 px-4">
+        <span className="inline-flex max-w-[min(22rem,86vw)] items-center justify-center gap-2 rounded-full border border-[#d7e7ff]/16 bg-[#061331]/60 px-4 py-2 text-center text-[12px] font-semibold uppercase tracking-[0.2em] text-[#fffaf0] shadow-[0_8px_24px_rgba(0,0,0,0.12)] backdrop-blur-md [overflow-wrap:normal] [word-break:normal]">
+          <span className="h-2.5 w-2.5 rounded-full bg-[#fffaf0]" />
           {innerLabel}
         </span>
         {outerChart ? (
-          <span className="inline-flex max-w-[min(22rem,86vw)] items-center justify-center gap-2 rounded-full border border-black/12 bg-white px-4 py-2 text-center text-[12px] font-semibold uppercase tracking-[0.2em] text-ivory shadow-[0_8px_24px_rgba(0,0,0,0.08)] [overflow-wrap:normal] [word-break:normal]">
+          <span className="inline-flex max-w-[min(22rem,86vw)] items-center justify-center gap-2 rounded-full border border-[#d7e7ff]/16 bg-[#061331]/60 px-4 py-2 text-center text-[12px] font-semibold uppercase tracking-[0.2em] text-[#fffaf0] shadow-[0_8px_24px_rgba(0,0,0,0.12)] backdrop-blur-md [overflow-wrap:normal] [word-break:normal]">
             <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: colors.primary }} />
             {outerLabel}
           </span>
         ) : null}
       </div>
-
-      {activePoint ? (
-        <div className="pointer-events-none absolute left-1/2 top-6 -translate-x-1/2 rounded-2xl border border-dusty-gold/45 bg-[#fffaf0] px-4 py-2 text-center shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
-          <p className="font-serif text-lg font-semibold text-ivory">{activePoint.glyph} {degreeLabel(activePoint)}</p>
-        </div>
-      ) : null}
     </div>
   );
 }
