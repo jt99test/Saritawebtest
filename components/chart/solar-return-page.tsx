@@ -202,6 +202,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
   const [biWheelSelected, setBiWheelSelected] = useState<{ id: ChartPointId; ring: "inner" | "outer" } | null>(null);
   const [solarWheelMode, setSolarWheelMode] = useState<SolarWheelMode>("all");
   const [chartHash, setChartHash] = useState<string | null>(null);
+  const [isChoosingSolarReturn, setIsChoosingSolarReturn] = useState(false);
   const [isPending, startTransition] = useTransition();
   const aiCacheHash = chartHash ? (readingId ? `reading:${readingId}:${chartHash}` : chartHash) : null;
   const yearOptions = useMemo(
@@ -274,7 +275,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
   }, [natalChart]);
 
   useEffect(() => {
-    if (!aiCacheHash || solarChart) return;
+    if (!aiCacheHash || solarChart || isChoosingSolarReturn) return;
     const cachedReading = getCachedPremiumReading<CachedSolarReturnReading>(aiCacheHash, solarCacheKey);
     if (!cachedReading) return;
 
@@ -284,10 +285,11 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
     setReadingError(null);
     setSelectedCardKey("theme");
     setIsLoadingReading(false);
-  }, [aiCacheHash, solarCacheKey, solarChart]);
+  }, [aiCacheHash, isChoosingSolarReturn, solarCacheKey, solarChart]);
 
   function calculate() {
     setError(null);
+    setIsChoosingSolarReturn(false);
     if (aiCacheHash) {
       const cachedReading = getCachedPremiumReading<CachedSolarReturnReading>(aiCacheHash, solarCacheKey);
       if (cachedReading) {
@@ -556,7 +558,16 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
             type="button"
             variant="ghostGold"
             className="mt-6 px-5 py-3 text-[12px] uppercase tracking-[0.2em]"
-            onClick={() => setSolarChart(null)}
+            onClick={() => {
+              setIsChoosingSolarReturn(true);
+              setSolarChart(null);
+              setSolarData({});
+              setAiReading("");
+              setReadingError(null);
+              setSelectedCardKey("theme");
+              setIsLoadingReading(false);
+              setBiWheelSelected(null);
+            }}
           >
             {solarCopy.changeYear}
           </PrimaryButton>

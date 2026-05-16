@@ -98,8 +98,8 @@ function CompatibilityRing({ aspects, dictionary }: { aspects: SynastryAspect[];
       <circle cx="85" cy="85" r={radius} fill="none" stroke="rgba(130,146,214,0.88)" strokeWidth="16" strokeDasharray={`${harmoniousLength} ${circumference}`} transform="rotate(-90 85 85)" />
       <circle cx="85" cy="85" r={radius} fill="none" stroke="rgba(245,190,105,0.78)" strokeWidth="16" strokeDasharray={`${tenseLength} ${circumference}`} strokeDashoffset={-harmoniousLength} transform="rotate(-90 85 85)" />
       <circle cx="85" cy="85" r={radius} fill="none" stroke="rgba(181,163,110,0.78)" strokeWidth="16" strokeDasharray={`${neutralLength} ${circumference}`} strokeDashoffset={-(harmoniousLength + tenseLength)} transform="rotate(-90 85 85)" />
-      <text x="85" y="80" textAnchor="middle" className="font-serif text-[22px]" fill="#1e1a2e">{aspects.length}</text>
-      <text x="85" y="101" textAnchor="middle" className="text-[12px] uppercase tracking-[0.16em]" fill="#3a3048">{dictionary.result.synastryPage.aspectsCount}</text>
+      <text x="85" y="79" textAnchor="middle" className="font-serif text-[23px]" fill="#fffaf0" stroke="rgba(0,0,0,0.28)" strokeWidth="0.35" paintOrder="stroke fill">{aspects.length}</text>
+      <text x="85" y="101" textAnchor="middle" className="text-[12px] uppercase tracking-[0.16em]" fill="rgba(215,231,255,0.74)">{dictionary.result.synastryPage.aspectsCount}</text>
     </svg>
   );
 }
