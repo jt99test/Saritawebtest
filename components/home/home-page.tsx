@@ -22,6 +22,13 @@ type HomePageProps = {
 };
 
 const FEATURE_SYMBOLS = ["\u263d", "\u2609", "\u2644", "\u260c", "\u2609", "\u26ad", "\u2641"] as const;
+const INTRO_VIDEO_URL = "https://www.loom.com/share/6b4a02e4b2a0405f9d764cd77d36d594";
+
+function introHelpLabel(locale: Locale) {
+  if (locale === "en") return "First time here? See how SARITA works";
+  if (locale === "it") return "Prima volta qui? Guarda come funziona SARITA";
+  return "¿Primera vez aquí? Mira cómo funciona SARITA";
+}
 
 export function HomePage({ moonStatus }: HomePageProps) {
   const locale = useStoredLocale();
@@ -310,7 +317,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             </motion.div>
 
             <motion.div
-              className="absolute inset-x-0 bottom-8 z-20 flex justify-center sm:bottom-4"
+              className="absolute inset-x-0 bottom-6 z-20 flex flex-col items-center justify-center gap-3 sm:bottom-4"
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.42, duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
@@ -321,6 +328,14 @@ export function HomePage({ moonStatus }: HomePageProps) {
               >
                 {dictionary.home.cta}
               </PrimaryButton>
+              <a
+                href={INTRO_VIDEO_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d7e7ff]/68 transition hover:text-[#f5d782] sm:text-[11px]"
+              >
+                {introHelpLabel(locale)}
+              </a>
             </motion.div>
           </div>
 
