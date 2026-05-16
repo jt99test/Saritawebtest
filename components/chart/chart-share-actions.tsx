@@ -120,38 +120,46 @@ export function ChartShareActions({ chart, dictionary, plan }: ChartShareActions
     const subtitle = [chart.event.dateLabel, chart.event.locationLabel].filter(Boolean).join("   ·   ");
     const wheelMarkup = new XMLSerializer().serializeToString(clone);
     const source = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2000" viewBox="0 0 1600 2000" preserveAspectRatio="xMidYMin meet" style="display:block;width:100%;height:auto;background:#f5f0e6;" role="img" aria-label="${escapeXml(dictionary.chart.shareTitle)} - ${escapeXml(chart.event.name)}">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2000" viewBox="0 0 1600 2000" preserveAspectRatio="xMidYMin meet" style="display:block;width:100%;height:auto;background:#030814;" role="img" aria-label="${escapeXml(dictionary.chart.shareTitle)} - ${escapeXml(chart.event.name)}">
   <defs>
     <radialGradient id="sarita-export-bg" cx="50%" cy="34%" r="68%">
-      <stop offset="0%" stop-color="#fffaf0"/>
-      <stop offset="58%" stop-color="#f5f0e6"/>
-      <stop offset="100%" stop-color="#ddd6c6"/>
+      <stop offset="0%" stop-color="#123b75"/>
+      <stop offset="48%" stop-color="#061331"/>
+      <stop offset="100%" stop-color="#030814"/>
+    </radialGradient>
+    <radialGradient id="sarita-export-halo" cx="50%" cy="43%" r="32%">
+      <stop offset="0%" stop-color="#7cbfff" stop-opacity="0.26"/>
+      <stop offset="58%" stop-color="#0066ff" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#0066ff" stop-opacity="0"/>
     </radialGradient>
     <filter id="sarita-export-shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="28" stdDeviation="34" flood-color="#1e1a2e" flood-opacity="0.18"/>
+      <feDropShadow dx="0" dy="28" stdDeviation="34" flood-color="#000000" flood-opacity="0.42"/>
     </filter>
   </defs>
   <rect width="1600" height="2000" fill="url(#sarita-export-bg)"/>
-  <g opacity="0.15">
+  <rect width="1600" height="2000" fill="url(#sarita-export-halo)"/>
+  <g opacity="0.82">
     <circle cx="210" cy="230" r="2.4" fill="#ffffff"/>
     <circle cx="410" cy="160" r="2" fill="#ffffff"/>
+    <circle cx="620" cy="250" r="1.7" fill="#7cbfff"/>
     <circle cx="1180" cy="220" r="2.5" fill="#ffffff"/>
     <circle cx="1370" cy="420" r="1.8" fill="#ffffff"/>
     <circle cx="230" cy="930" r="2.2" fill="#ffffff"/>
+    <circle cx="1260" cy="820" r="1.8" fill="#7cbfff"/>
     <circle cx="1320" cy="1050" r="2" fill="#ffffff"/>
     <circle cx="520" cy="1600" r="1.8" fill="#ffffff"/>
     <circle cx="1090" cy="1690" r="2.4" fill="#ffffff"/>
   </g>
-  <text x="800" y="190" text-anchor="middle" fill="#5c4a24" font-family="Georgia, 'Times New Roman', serif" font-size="24" font-style="italic" letter-spacing="8">${escapeXml(dictionary.chart.shareTitle.toLowerCase())}</text>
-  <text x="800" y="285" text-anchor="middle" fill="#1e1a2e" font-family="Georgia, 'Times New Roman', serif" font-size="86">${escapeXml(chart.event.name)}</text>
-  <text x="800" y="360" text-anchor="middle" fill="#3a3048" font-family="Arial, sans-serif" font-size="20" font-weight="700" letter-spacing="6">${escapeXml(summary.toUpperCase())}</text>
-  <text x="800" y="410" text-anchor="middle" fill="#3a3048" font-family="Arial, sans-serif" font-size="20" letter-spacing="2">${escapeXml(subtitle)}</text>
+  <text x="800" y="190" text-anchor="middle" fill="#f5d782" font-family="Georgia, 'Times New Roman', serif" font-size="24" font-style="italic" letter-spacing="8">${escapeXml(dictionary.chart.shareTitle.toLowerCase())}</text>
+  <text x="800" y="285" text-anchor="middle" fill="#fffaf0" font-family="Georgia, 'Times New Roman', serif" font-size="86">${escapeXml(chart.event.name)}</text>
+  <text x="800" y="360" text-anchor="middle" fill="#d7e7ff" font-family="Arial, sans-serif" font-size="20" font-weight="700" letter-spacing="6">${escapeXml(summary.toUpperCase())}</text>
+  <text x="800" y="410" text-anchor="middle" fill="#d7e7ff" fill-opacity="0.78" font-family="Arial, sans-serif" font-size="20" letter-spacing="2">${escapeXml(subtitle)}</text>
   <g filter="url(#sarita-export-shadow)">
     ${wheelMarkup}
   </g>
-  <line x1="540" y1="1546" x2="1060" y2="1546" stroke="#6f5a2a" stroke-opacity="0.22"/>
-  <text x="800" y="1615" text-anchor="middle" fill="#5c4a24" font-family="Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="7">${escapeXml(dictionary.chart.createCta.toUpperCase())}</text>
-  <text x="800" y="1665" text-anchor="middle" fill="#3a3048" font-family="Arial, sans-serif" font-size="17" letter-spacing="2">saritaastrology.com</text>
+  <line x1="540" y1="1546" x2="1060" y2="1546" stroke="#f5d782" stroke-opacity="0.28"/>
+  <text x="800" y="1615" text-anchor="middle" fill="#f5d782" font-family="Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="7">${escapeXml(dictionary.chart.createCta.toUpperCase())}</text>
+  <text x="800" y="1665" text-anchor="middle" fill="#d7e7ff" fill-opacity="0.78" font-family="Arial, sans-serif" font-size="17" letter-spacing="2">saritaastrology.com</text>
 </svg>`;
     const blob = new Blob([source], { type: "image/svg+xml" });
     const url = URL.createObjectURL(blob);
