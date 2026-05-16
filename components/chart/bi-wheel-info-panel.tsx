@@ -124,7 +124,7 @@ function panelCopy(locale: string) {
 
 function SectionLabel({ children }: { children: string }) {
   return (
-    <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8a7a4e]">
+    <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#f5d782]">
       {children}
     </p>
   );
@@ -144,9 +144,9 @@ function panelSectionLabels(locale: string) {
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-4 border-b border-black/10 py-2.5 last:border-b-0">
-      <dt className="text-[13px] text-[#3a3048]">{label}</dt>
-      <dd className="text-right text-[13px] text-ivory/88">{value}</dd>
+    <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-4 border-b border-[#d7e7ff]/10 py-2.5 last:border-b-0">
+      <dt className="text-[13px] text-[#d7e7ff]/66">{label}</dt>
+      <dd className="text-right text-[13px] text-[#fffaf0]/88">{value}</dd>
     </div>
   );
 }
@@ -413,7 +413,7 @@ function TransitRows({
 
   if (!rows.length) {
     return (
-      <p className="text-[13px] text-[#3a3048]">
+      <p className="text-[13px] text-[#d7e7ff]/66">
         {ring === "inner" ? copy.noNatalTransits : copy.noTransitAspects}
       </p>
     );
@@ -430,10 +430,10 @@ function TransitRows({
         return (
           <div
             key={`${transit.transitingPlanet}-${transit.natalPlanet}-${transit.aspectType}`}
-            className="flex items-center justify-between gap-4 border-b border-black/[0.06] py-2.5 last:border-b-0"
+            className="flex items-center justify-between gap-4 border-b border-[#d7e7ff]/10 py-2.5 last:border-b-0"
           >
-            <p className="text-[13px] text-ivory">{rowLabel}</p>
-            <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#5c4a24]">
+            <p className="text-[13px] text-[#fffaf0]/86">{rowLabel}</p>
+            <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-[#f5d782]">
               {transit.orb.toFixed(1)}°
             </span>
           </div>
@@ -446,7 +446,7 @@ function TransitRows({
 function SolarReturnNote({ point, copy, locale }: { point: ChartPoint; copy: ReturnType<typeof panelCopy>; locale: string }) {
   const angular = point.house === 1 || point.house === 4 || point.house === 7 || point.house === 10;
   return (
-    <p className={angular ? "text-[13px] italic text-[#5c4a24]" : "text-[13px] italic text-[#3a3048]"}>
+    <p className={angular ? "text-[13px] italic text-[#f5d782]" : "text-[13px] italic text-[#d7e7ff]/66"}>
       {angular ? copy.angularHouse : getHouseArea(point.house, locale)}
     </p>
   );
@@ -505,7 +505,7 @@ function SynastryRows({
     .slice(0, 3);
 
   if (!rows.length) {
-    return <p className="text-[13px] text-[#3a3048]">{copy.noSynastryAspects}</p>;
+    return <p className="text-[13px] text-[#d7e7ff]/66">{copy.noSynastryAspects}</p>;
   }
 
   return (
@@ -516,9 +516,9 @@ function SynastryRows({
         return (
           <div
             key={`${aspect.pointA}-${aspect.pointB}-${aspect.type}`}
-            className="flex items-center justify-between gap-4 border-b border-black/[0.06] py-2.5 last:border-b-0"
+            className="flex items-center justify-between gap-4 border-b border-[#d7e7ff]/10 py-2.5 last:border-b-0"
           >
-            <p className="text-[13px] text-ivory">
+            <p className="text-[13px] text-[#fffaf0]/86">
               {getAspectLabel(aspect.type, locale)} {getPointLabel(otherPoint, locale)} · {aspect.orb.toFixed(1)}°
             </p>
             <span className={`text-[11px] font-semibold uppercase tracking-[0.14em] ${badge.className}`}>
@@ -603,10 +603,10 @@ export function BiWheelInfoPanel({
           exit={isDesktop ? { x: "100%", opacity: 0.92 } : { y: "100%", opacity: 0.92 }}
           transition={{ type: "spring", damping: 28, stiffness: 240 }}
           className={[
-            "fixed z-40 overflow-y-auto border-black/10 bg-cosmic-950/97 backdrop-blur-[12px]",
+            "fixed z-40 overflow-y-auto border-[#d7e7ff]/12 bg-[#061331]/95 backdrop-blur-[16px]",
             isDesktop
-              ? "right-4 top-[104px] h-[calc(100vh-120px)] w-[360px] rounded-[1.4rem] border shadow-[-18px_18px_70px_rgba(0,0,0,0.16)]"
-              : "inset-x-0 bottom-0 h-[min(76svh,calc(100svh-4.5rem))] rounded-t-[1.5rem] border-t pb-[env(safe-area-inset-bottom)] shadow-[0_-24px_90px_rgba(0,0,0,0.18)]",
+              ? "right-4 top-[104px] h-[calc(100vh-120px)] w-[360px] rounded-[1.4rem] border shadow-[-18px_18px_70px_rgba(0,0,0,0.28)]"
+              : "inset-x-0 bottom-0 h-[min(76svh,calc(100svh-4.5rem))] rounded-t-[1.5rem] border-t pb-[env(safe-area-inset-bottom)] shadow-[0_-24px_90px_rgba(0,0,0,0.32)]",
           ].join(" ")}
           role="dialog"
           aria-label={dictionary.result.points[selectedId]}
@@ -614,7 +614,7 @@ export function BiWheelInfoPanel({
           <div ref={panelRef} className="p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f5d782]">
                   {ringLabel(variant, ring, copy, innerName, outerName)}
                 </p>
                 <div className="mt-2 flex items-center gap-3">
@@ -625,7 +625,7 @@ export function BiWheelInfoPanel({
                     <h3 className="font-serif text-[22px] leading-none text-ivory">
                       {dictionary.result.points[selectedId]}
                     </h3>
-                    <p className="mt-1.5 text-[13px] leading-6 text-[#3a3048]">
+                    <p className="mt-1.5 text-[13px] leading-6 text-[#d7e7ff]/66">
                       {getSignLabel(point.sign, locale)} · {dictionary.result.transitPage.housePrefix} {point.house} · {getHouseArea(point.house, locale)}
                     </p>
                   </div>
@@ -634,7 +634,7 @@ export function BiWheelInfoPanel({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-full border border-black/10 bg-white/70 p-2.5 text-[#3a3048] transition hover:border-black/15 hover:bg-white hover:text-ivory"
+                className="rounded-full border border-[#d7e7ff]/16 bg-[#d7e7ff]/8 p-2.5 text-[#fffaf0]/70 transition hover:border-[#f5d782]/45 hover:bg-[#f5d782]/10 hover:text-[#fffaf0]"
                 aria-label={sectionCopy.close}
               >
                 <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
@@ -643,16 +643,16 @@ export function BiWheelInfoPanel({
               </button>
             </div>
 
-            <div className="mt-5 space-y-5 border-t border-black/[0.07] pt-5">
-              <section className="rounded-[1.45rem] border border-black/10 bg-white p-4">
+            <div className="mt-5 space-y-5 border-t border-[#d7e7ff]/10 pt-5">
+              <section className="rounded-[1.45rem] border border-[#d7e7ff]/12 bg-[#d7e7ff]/7 p-4">
                 <SectionLabel>{sectionCopy.reading}</SectionLabel>
-                <p className="mt-3 text-sm leading-7 text-[#3a3048]">{reading}</p>
+                <p className="mt-3 text-sm leading-7 text-[#fffaf0]/78">{reading}</p>
               </section>
 
-              <section className="rounded-[1.45rem] border border-black/10 bg-white p-4">
+              <section className="rounded-[1.45rem] border border-[#d7e7ff]/12 bg-[#d7e7ff]/7 p-4">
                 <SectionLabel>{sectionCopy.essence}</SectionLabel>
                 {signMeta ? (
-                  <ul className="mt-3 space-y-2 text-sm leading-7 text-[#3a3048]">
+                  <ul className="mt-3 space-y-2 text-sm leading-7 text-[#fffaf0]/78">
                     <li className="flex gap-2">
                       <span className="mt-3 h-1.5 w-1.5 rounded-full bg-ivory/35" />
                       <span>{getSignLabel(point.sign, locale)}{" \u00b7 "}{dictionary.result.elements[signMeta.element]}</span>
@@ -669,7 +669,7 @@ export function BiWheelInfoPanel({
                 ) : null}
               </section>
 
-              <section className="rounded-[1.45rem] border border-black/10 bg-white p-4">
+              <section className="rounded-[1.45rem] border border-[#d7e7ff]/12 bg-[#d7e7ff]/7 p-4">
                 <SectionLabel>{sectionCopy.data}</SectionLabel>
                 {position && signMeta ? (
                   <dl className="mt-3">
@@ -688,7 +688,7 @@ export function BiWheelInfoPanel({
                 ) : null}
               </section>
 
-              <section className="rounded-[1.45rem] border border-black/10 bg-white p-4">
+              <section className="rounded-[1.45rem] border border-[#d7e7ff]/12 bg-[#d7e7ff]/7 p-4">
                 <SectionLabel>{sectionCopy.connections}</SectionLabel>
                 <div className="mt-3">
               {variant === "transits" ? (

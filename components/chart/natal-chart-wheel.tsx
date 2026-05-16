@@ -1461,7 +1461,7 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
   }
 
   function handleAspectClick(aspect: Aspect) {
-    selectAspect(aspect);
+    selectAspect(selectedAspect?.id === aspect.id ? null : aspect);
   }
 
   function setClampedViewerZoom(next: number | ((current: number) => number)) {

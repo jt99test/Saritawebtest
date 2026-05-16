@@ -34,11 +34,11 @@ export function AspectDetailPanel({ chart }: Props) {
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 px-4"
         >
-          <div className="relative w-[min(520px,calc(100vw-2rem))] rounded-[1rem] border border-dusty-gold/28 bg-[#fffaf0]/95 px-5 py-5 text-[#1e1a2e] shadow-[0_18px_50px_rgba(30,26,46,0.2)] backdrop-blur-[14px] sm:px-6">
+          <div className="relative w-[min(520px,calc(100vw-2rem))] rounded-[1rem] border border-[#f5d782]/24 bg-[#061331]/92 px-5 py-5 text-[#fffaf0] shadow-[0_18px_58px_rgba(0,0,0,0.42)] backdrop-blur-[18px] sm:px-6">
             <button
               type="button"
               onClick={() => selectAspect(null)}
-              className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center border border-black/10 bg-white/60 text-[15px] leading-none text-[#3a3048] transition hover:border-dusty-gold/40 hover:bg-white hover:text-[#5c4a24]"
+              className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center border border-[#d7e7ff]/16 bg-[#d7e7ff]/8 text-[15px] leading-none text-[#fffaf0]/70 transition hover:border-[#f5d782]/45 hover:bg-[#f5d782]/10 hover:text-[#fffaf0]"
               aria-label={dictionary.common.close}
             >
               x
@@ -47,27 +47,27 @@ export function AspectDetailPanel({ chart }: Props) {
             <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 sm:gap-6">
               <div className="flex min-w-0 flex-col gap-0.5">
                 <span
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-white/74 font-serif text-[1.5rem] leading-none shadow-[inset_0_0_0_1px_rgba(255,255,255,0.55)]"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#d7e7ff]/18 bg-[#fffaf0]/92 font-serif text-[1.5rem] leading-none shadow-[0_0_22px_rgba(124,191,255,0.16)]"
                   style={{ color: fromPoint.color }}
                 >
                   {fromPoint.glyph}
                 </span>
-                <span className="mt-2 truncate font-serif text-[15px] leading-none text-[#1e1a2e]">
+                <span className="mt-2 truncate font-serif text-[15px] leading-none text-[#fffaf0]">
                   {dictionary.result.points[fromPoint.id]}
                 </span>
-                <span className="mt-1 truncate text-[12px] text-[#3a3048]">
+                <span className="mt-1 truncate text-[12px] text-[#d7e7ff]/68">
                   {dictionary.result.signs[fromPoint.sign]} {"\u00b7"} {housePrefix} {fromPoint.house}
                 </span>
               </div>
 
               <div className="flex min-w-0 flex-col items-center gap-1.5">
-                <span className="font-serif text-[1.6rem] leading-none text-[#5c4a24]">
+                <span className="font-serif text-[1.6rem] leading-none text-[#f5d782]">
                   {dictionary.result.aspectSymbols[selectedAspect.type]}
                 </span>
-                <span className="max-w-[8rem] truncate text-center text-[12px] font-semibold uppercase tracking-[0.18em] text-[#3a3048]">
+                <span className="max-w-[8rem] truncate text-center text-[12px] font-semibold uppercase tracking-[0.18em] text-[#fffaf0]/80">
                   {dictionary.result.aspectTypes[selectedAspect.type]}
                 </span>
-                <span className="border border-dusty-gold/24 bg-dusty-gold/10 px-2.5 py-1 text-[12px] font-semibold text-[#5c4a24]">
+                <span className="border border-[#f5d782]/30 bg-[#f5d782]/10 px-2.5 py-1 text-[12px] font-semibold text-[#f5d782]">
                   {selectedAspect.orb.toFixed(1)}
                   {"\u00b0"}
                 </span>
@@ -75,15 +75,15 @@ export function AspectDetailPanel({ chart }: Props) {
 
               <div className="flex min-w-0 flex-col items-end gap-0.5 text-right">
                 <span
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-white/74 font-serif text-[1.5rem] leading-none shadow-[inset_0_0_0_1px_rgba(255,255,255,0.55)]"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[#d7e7ff]/18 bg-[#fffaf0]/92 font-serif text-[1.5rem] leading-none shadow-[0_0_22px_rgba(124,191,255,0.16)]"
                   style={{ color: toPoint.color }}
                 >
                   {toPoint.glyph}
                 </span>
-                <span className="mt-2 truncate font-serif text-[15px] leading-none text-[#1e1a2e]">
+                <span className="mt-2 truncate font-serif text-[15px] leading-none text-[#fffaf0]">
                   {dictionary.result.points[toPoint.id]}
                 </span>
-                <span className="mt-1 truncate text-[12px] text-[#3a3048]">
+                <span className="mt-1 truncate text-[12px] text-[#d7e7ff]/68">
                   {dictionary.result.signs[toPoint.sign]} {"\u00b7"} {housePrefix} {toPoint.house}
                 </span>
               </div>
