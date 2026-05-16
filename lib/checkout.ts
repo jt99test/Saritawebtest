@@ -1,9 +1,10 @@
 "use client";
 
-import type { PriceKey } from "@/lib/stripe";
+import type { PriceKey } from "@/lib/billing";
 
 export async function startCheckout(priceKey: PriceKey) {
-  const response = await fetch("/api/stripe/checkout", {
+  const endpoint = priceKey === "lavado" ? "/api/stripe/checkout" : "/api/whop/checkout";
+  const response = await fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ priceKey }),

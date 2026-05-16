@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
-import type { BillingPeriod, PaidPlan } from "@/lib/stripe";
+import type { BillingPeriod, PaidPlan } from "@/lib/billing";
 
 type PlanState = {
   plan: "free" | PaidPlan;

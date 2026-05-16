@@ -25,7 +25,7 @@ import { SynastryPage } from "@/components/chart/synastry-page";
 import { LunaDelMesPage } from "@/components/lunar/luna-del-mes-page";
 import { YogaAstralPage } from "@/components/yoga/yoga-astral-page";
 import { usePlan } from "@/lib/use-plan";
-import type { PaidPlan } from "@/lib/stripe";
+import type { PaidPlan } from "@/lib/billing";
 
 type NatalChartExperienceProps = {
   chart: NatalChartData;

@@ -6,7 +6,7 @@ import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { startCheckout } from "@/lib/checkout";
 import { dictionaries } from "@/lib/i18n";
-import type { PaidPlan, PriceKey } from "@/lib/stripe";
+import type { PaidPlan, PriceKey } from "@/lib/billing";
 
 type PricingModalProps = {
   open: boolean;

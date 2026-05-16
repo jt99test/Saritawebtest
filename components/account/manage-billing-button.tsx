@@ -10,7 +10,7 @@ export function ManageBillingButton({ dictionary }: { dictionary: Dictionary }) 
 
   async function openPortal() {
     setLoading(true);
-    const response = await fetch("/api/stripe/portal", { method: "POST" }).catch(() => null);
+    const response = await fetch("/api/whop/portal", { method: "POST" }).catch(() => null);
     if (!response?.ok) {
       setLoading(false);
       return;

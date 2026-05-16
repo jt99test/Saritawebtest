@@ -9,7 +9,6 @@ import { Container } from "@/components/ui/container";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { defaultLocale, dictionaries, isLocale, LOCALE_STORAGE_KEY } from "@/lib/i18n";
-import { stripe } from "@/lib/stripe";
 
 async function getLocaleDictionary() {
   const cookieStore = await cookies();
@@ -31,7 +30,7 @@ export default async function AccountPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("plan,billing_period,stripe_customer_id,stripe_subscription_id,email")
+    .select("plan,billing_period,whop_current_period_end,email")
     .eq("id", user.id)
     .maybeSingle();
   const plan = profile?.plan ?? "free";
@@ -39,18 +38,12 @@ export default async function AccountPage() {
     plan === "pro" ? dictionary.paywall.proName : plan === "avanzado" ? dictionary.paywall.avanzadoName : dictionary.pricing.free;
   let renewalDate = dictionary.account.noRenewalDate;
 
-  if (profile?.stripe_subscription_id) {
-    try {
-      const subscription = await stripe.subscriptions.retrieve(profile.stripe_subscription_id);
-      const periodEnd = subscription.items.data[0]?.current_period_end;
-      if (periodEnd) {
-        renewalDate = new Intl.DateTimeFormat(locale, {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        }).format(new Date(periodEnd * 1000));
-      }
-    } catch {}
+  if (profile?.whop_current_period_end) {
+    renewalDate = new Intl.DateTimeFormat(locale, {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(new Date(profile.whop_current_period_end));
   }
 
   return (

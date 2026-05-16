@@ -146,7 +146,7 @@ export function AccountButton({ compact = false, tone = "light" }: AccountButton
 
   async function openBillingPortal() {
     setPortalLoading(true);
-    const response = await fetch("/api/stripe/portal", { method: "POST" }).catch(() => null);
+    const response = await fetch("/api/whop/portal", { method: "POST" }).catch(() => null);
     if (!response?.ok) {
       setPortalLoading(false);
       return;

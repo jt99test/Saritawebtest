@@ -1,5 +1,9 @@
 import Stripe from "stripe";
 
+import type { BillingPeriod, PaidPlan, PriceKey } from "@/lib/billing";
+
+export type { BillingPeriod, PaidPlan, PriceKey } from "@/lib/billing";
+
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 
 if (!stripeSecretKey) {
@@ -14,11 +18,7 @@ export const PRICE_MAP = {
   avanzado_monthly: process.env.STRIPE_PRICE_AVANZADO_MONTHLY,
   avanzado_yearly: process.env.STRIPE_PRICE_AVANZADO_YEARLY,
   lavado: process.env.STRIPE_PRICE_LAVADO,
-} as const;
-
-export type PriceKey = keyof typeof PRICE_MAP;
-export type PaidPlan = "pro" | "avanzado";
-export type BillingPeriod = "monthly" | "yearly";
+} as const satisfies Record<PriceKey, string | undefined>;
 
 export function planFromPriceId(priceId: string): { plan: PaidPlan; billing_period: BillingPeriod } | null {
   if (priceId === PRICE_MAP.pro_monthly) {

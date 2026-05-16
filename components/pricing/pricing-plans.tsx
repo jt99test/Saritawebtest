@@ -6,7 +6,7 @@ import { PrimaryButton } from "@/components/ui/primary-button";
 import { startCheckout } from "@/lib/checkout";
 import type { Dictionary } from "@/lib/i18n";
 import { PLAN_LIMITS } from "@/lib/reading-limits";
-import type { PaidPlan, PriceKey } from "@/lib/stripe";
+import type { PaidPlan, PriceKey } from "@/lib/billing";
 
 const PRICES = {
   pro: { monthly: "€14.99", yearly: "€119.99" },
