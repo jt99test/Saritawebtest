@@ -24,13 +24,13 @@ type BiWheelChartProps = {
 };
 
 const CENTER = 430;
-const INNER_ZODIAC_R = 372;
 const ZODIAC_OUTER_R = 402;
 const ZODIAC_INNER_R = 344;
-const INNER_PLANET_R = 286;
+const INNER_PLANET_LABEL_R = 320;
 const OUTER_SEP_R = 343;
 const OUTER_PLANET_R = 414;
 const OUTER_LABEL_R = 432;
+const HOUSE_OUTER_R = 252;
 const HOUSE_INNER_R = 168;
 const DRAWABLE_IDS = new Set<ChartPointId>([
   "sun",
@@ -152,6 +152,11 @@ function zodiacLabelFill(element: (typeof zodiacSigns)[number]["element"]) {
   return "#061331";
 }
 
+function circularDistance(left: number, right: number) {
+  const diff = Math.abs(normalizeLongitude(left) - normalizeLongitude(right));
+  return Math.min(diff, 360 - diff);
+}
+
 function visiblePoints(chart: NatalChartData) {
   return getAugmentedChartPoints(chart).filter((point) => DRAWABLE_IDS.has(point.id));
 }
@@ -173,6 +178,61 @@ function aspectStroke(type: string) {
   if (type === "opposition") return "rgba(255,166,74,0.9)";
   if (type === "quincunx") return "rgba(190,150,255,0.78)";
   return "rgba(255,219,110,0.94)";
+}
+
+function planetLayouts(points: ChartPoint[], ascendant: number) {
+  const clusters: ChartPoint[][] = [];
+  const sortedPoints = [...points].sort((left, right) => left.longitude - right.longitude);
+  let currentCluster: ChartPoint[] = [];
+
+  for (const point of sortedPoints) {
+    const previous = currentCluster[currentCluster.length - 1];
+
+    if (!previous || circularDistance(previous.longitude, point.longitude) <= 5) {
+      currentCluster.push(point);
+      continue;
+    }
+
+    clusters.push(currentCluster);
+    currentCluster = [point];
+  }
+
+  if (currentCluster.length) {
+    const firstCluster = clusters[0]?.[0];
+    const lastCluster = currentCluster[currentCluster.length - 1];
+
+    if (clusters.length > 0 && firstCluster && lastCluster && circularDistance(firstCluster.longitude, lastCluster.longitude) <= 5) {
+      clusters[0] = [...currentCluster, ...clusters[0]];
+    } else {
+      clusters.push(currentCluster);
+    }
+  }
+
+  const layouts = new Map<ChartPointId, { x: number; y: number; connectorStart: { x: number; y: number }; hasConnector: boolean }>();
+
+  clusters.forEach((cluster) => {
+    const sortedCluster = [...cluster].sort((left, right) => left.longitude - right.longitude);
+    const clusterCenter = sortedCluster.reduce((sum, point) => sum + point.longitude, 0) / sortedCluster.length;
+
+    sortedCluster.forEach((point, index) => {
+      const angle = (pointAngle(clusterCenter, ascendant) * Math.PI) / 180;
+      const tangentX = -Math.sin(angle);
+      const tangentY = Math.cos(angle);
+      const centeredIndex = index - (sortedCluster.length - 1) / 2;
+      const tangentOffset = sortedCluster.length > 1 ? centeredIndex * 34 : 0;
+      const stackPull = Math.abs(centeredIndex) * 4;
+      const base = pointAtRadius(INNER_PLANET_LABEL_R + 8 - stackPull, clusterCenter, ascendant);
+
+      layouts.set(point.id, {
+        x: base.x + tangentX * tangentOffset,
+        y: base.y + tangentY * tangentOffset,
+        connectorStart: pointAtRadius(INNER_PLANET_LABEL_R + 2, point.longitude, ascendant),
+        hasConnector: sortedCluster.length > 1 || Math.abs(point.longitude - clusterCenter) > 1,
+      });
+    });
+  });
+
+  return layouts;
 }
 
 function DegreeTickRing({ ascendant }: { ascendant: number }) {
@@ -369,6 +429,7 @@ export function BiWheelChart({
   const innerPoints = useMemo(() => filterPoints(visiblePoints(innerChart), innerPointIds), [innerChart, innerPointIds]);
   const outerPoints = useMemo(() => outerChart ? filterPoints(visiblePoints(outerChart), outerPointIds) : [], [outerChart, outerPointIds]);
   const ascendant = innerChart.meta.ascendant;
+  const innerLayouts = useMemo(() => planetLayouts(innerPoints, ascendant), [ascendant, innerPoints]);
   const outerActive = hoveredOuter || selectedOuter;
   const activeInner = hoveredInner ?? selectedInner;
   const activeOuter = hoveredOuter ?? selectedOuter;
@@ -405,12 +466,7 @@ export function BiWheelChart({
         <circle cx={CENTER} cy={CENTER} r="398" fill="none" stroke="rgba(245,215,130,0.15)" strokeWidth="10" />
         <circle cx={CENTER} cy={CENTER} r="420" fill="url(#bw-field-glow)" />
         <circle cx={CENTER} cy={CENTER} r="392" fill="none" stroke="rgba(30,26,46,0.06)" strokeWidth="16" filter="url(#bw-soft-halo)" />
-        {outerChart ? (
-          <>
-            <circle cx={CENTER} cy={CENTER} r={OUTER_SEP_R} fill="none" stroke="rgba(30,26,46,0.2)" strokeWidth="1.2" strokeDasharray="4 9" />
-            <circle cx={CENTER} cy={CENTER} r={OUTER_PLANET_R} fill="none" stroke="rgba(143,123,69,0.09)" strokeWidth="16" filter="url(#bw-soft-halo)" />
-          </>
-        ) : null}
+        {outerChart ? <circle cx={CENTER} cy={CENTER} r={OUTER_PLANET_R} fill="none" stroke="rgba(143,123,69,0.09)" strokeWidth="16" filter="url(#bw-soft-halo)" /> : null}
 
         <g>
           <circle cx={CENTER} cy={CENTER} r="386" fill="rgba(255,250,240,0.28)" stroke="rgba(30,26,46,0.2)" />
@@ -434,7 +490,7 @@ export function BiWheelChart({
                   className="font-serif text-[32px] font-bold"
                   fill={zodiacLabelFill(sign.element)}
                   fillOpacity="0.92"
-                  fontFamily="'Times New Roman', Georgia, 'Noto Serif', serif"
+                  fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
                   stroke="rgba(255,253,248,0.86)"
                   strokeWidth="1.15"
                   paintOrder="stroke fill"
@@ -449,6 +505,8 @@ export function BiWheelChart({
           <circle cx={CENTER} cy={CENTER} r={ZODIAC_OUTER_R - 12} fill="none" stroke="rgba(245,215,130,0.24)" strokeWidth="0.8" />
           <circle cx={CENTER} cy={CENTER} r={ZODIAC_INNER_R + 12} fill="none" stroke="rgba(124,191,255,0.18)" strokeWidth="0.8" />
           <circle cx={CENTER} cy={CENTER} r={ZODIAC_INNER_R} fill="none" stroke="rgba(8,42,120,0.42)" strokeWidth="1.3" />
+          <circle cx={CENTER} cy={CENTER} r={HOUSE_OUTER_R} fill="none" stroke="rgba(8,42,120,0.16)" strokeWidth="0.9" />
+          <circle cx={CENTER} cy={CENTER} r={HOUSE_INNER_R} fill="none" stroke="rgba(8,42,120,0.12)" strokeWidth="0.8" />
           <DegreeTickRing ascendant={ascendant} />
           {innerChart.houses.map((house) => {
             const lineStart = pointAtRadius(ZODIAC_INNER_R, house.longitude, ascendant);
@@ -562,13 +620,17 @@ export function BiWheelChart({
           <circle cx={CENTER} cy={CENTER} r="5" fill="rgba(30,26,46,0.62)" filter="url(#bw-glow)" />
 
           {innerPoints.map((point) => {
+            const layout = innerLayouts.get(point.id);
+            if (!layout) return null;
             const active = hoveredInner === point.id || selectedInner === point.id;
-            const position = pointAtRadius(INNER_PLANET_R, point.longitude, ascendant);
+            const scale = hoveredInner === point.id ? 1.1 : selectedInner === point.id ? 1.08 : 1;
+            const transform = scale !== 1 ? `translate(${layout.x} ${layout.y}) scale(${scale}) translate(${-layout.x} ${-layout.y})` : undefined;
             return (
               <g
                 key={point.id}
                 role="button"
                 tabIndex={0}
+                transform={transform}
                 onMouseEnter={() => setHoveredInner(point.id)}
                 onMouseLeave={() => setHoveredInner(null)}
                 onClick={() => {
@@ -580,13 +642,33 @@ export function BiWheelChart({
                 className="cursor-pointer outline-none"
                 style={{ outline: "none" }}
               >
-                {active ? (
-                  <circle cx={position.x} cy={position.y} r="29" fill="rgba(232,197,71,0.08)" stroke={point.color} strokeOpacity="0.55" strokeWidth="1.2" />
+                {layout.hasConnector ? (
+                  <line
+                    x1={layout.connectorStart.x}
+                    y1={layout.connectorStart.y}
+                    x2={layout.x}
+                    y2={layout.y}
+                    stroke="rgba(0,102,255,0.22)"
+                    strokeWidth="0.55"
+                    strokeLinecap="round"
+                  />
                 ) : null}
-                <circle cx={position.x} cy={position.y} r="20" fill="rgba(255,253,248,0.96)" stroke="rgba(0,102,255,0.24)" strokeWidth="0.9" filter="url(#bw-glow)" />
+                {active ? (
+                  <circle
+                    cx={layout.x}
+                    cy={layout.y}
+                    r="29"
+                    fill="rgba(0,102,255,0.08)"
+                    stroke="rgba(245,215,130,0.7)"
+                    strokeOpacity="0.8"
+                    strokeWidth="1.2"
+                    filter="url(#bw-hover-glow)"
+                  />
+                ) : null}
+                <circle cx={layout.x} cy={layout.y} r="20" fill="rgba(255,253,248,0.96)" stroke="rgba(0,102,255,0.24)" strokeWidth="0.9" filter="url(#bw-glow)" />
                 <text
-                  x={position.x}
-                  y={position.y + 1}
+                  x={layout.x}
+                  y={layout.y}
                   textAnchor="middle"
                   dominantBaseline="central"
                   fill={point.color}
