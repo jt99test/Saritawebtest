@@ -1445,6 +1445,9 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
   }, [viewerOpen, viewerMode]);
 
   function handleSelect(pointId: ChartPointId) {
+    setHoveredPointId(null);
+    setHoveredAspectVisualId(null);
+    setTooltip(null);
     selectPoint(pointId);
     openPanel();
   }
