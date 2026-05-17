@@ -1037,6 +1037,8 @@
     "sendingResetLink": "Sending reset link...",
     "resetPasswordSent": "If that email has an account, a reset link is on the way.",
     "resetPasswordError": "We couldn't send the reset link. Try again in a moment.",
+    "resetPasswordSessionMissing": "This link expired or has already been used. Request a new one to change your password.",
+    "resetPasswordRequestNewLink": "Request another link",
     "signingIn": "Signing in...",
     "creatingAccount": "Creating your account...",
     "signedIn": "You're signed in.",
