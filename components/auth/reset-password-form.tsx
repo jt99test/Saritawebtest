@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
@@ -18,6 +18,14 @@ export function ResetPasswordForm() {
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [needsFreshLink, setNeedsFreshLink] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("reset") === "invalid") {
+      setNeedsFreshLink(true);
+      setMessage(dictionary.auth.resetPasswordSessionMissing);
+    }
+  }, [dictionary.auth.resetPasswordSessionMissing]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

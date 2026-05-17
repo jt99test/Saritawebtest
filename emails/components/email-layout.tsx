@@ -46,18 +46,45 @@ export function EmailLayout({ children, previewText, locale }: EmailLayoutProps)
 
   return (
     <Html>
-      <Head />
+      <Head>
+        <meta name="color-scheme" content="dark" />
+        <meta name="supported-color-schemes" content="dark" />
+        <style>
+          {`
+            :root {
+              color-scheme: dark;
+              supported-color-schemes: dark;
+            }
+            @media (prefers-color-scheme: dark) {
+              body,
+              table,
+              td {
+                background-color: #0a0a14 !important;
+                color: #ece8df !important;
+              }
+              .sarita-email-container,
+              .sarita-email-panel {
+                background-color: #111122 !important;
+              }
+              .sarita-email-header,
+              .sarita-email-footer {
+                background-color: #0a0a14 !important;
+              }
+            }
+          `}
+        </style>
+      </Head>
       <Preview>{previewText}</Preview>
       <Body style={bodyStyle}>
-        <Container style={containerStyle}>
-          <Section style={headerStyle}>
+        <Container style={containerStyle} className="sarita-email-container">
+          <Section style={headerStyle} className="sarita-email-header">
             <Text style={logoStyle}>SARITA</Text>
             <Hr style={ruleStyle} />
           </Section>
 
-          <Section style={contentStyle}>{children}</Section>
+          <Section style={contentStyle} className="sarita-email-panel">{children}</Section>
 
-          <Section style={footerStyle}>
+          <Section style={footerStyle} className="sarita-email-footer">
             <Text style={footerTextStyle}>© 2026 SARITA · {footer.product}</Text>
             <Text style={footerTextStyle}>{footer.account}</Text>
           </Section>
@@ -70,7 +97,10 @@ export function EmailLayout({ children, previewText, locale }: EmailLayoutProps)
 const bodyStyle = {
   margin: "0",
   background: "#0a0a14",
+  backgroundColor: "#0a0a14",
+  backgroundImage: "linear-gradient(#0a0a14, #0a0a14)",
   color: "#ece8df",
+  colorScheme: "dark",
   fontFamily: "Arial, Helvetica, sans-serif",
 };
 
@@ -78,12 +108,16 @@ const containerStyle = {
   maxWidth: "600px",
   margin: "0 auto",
   background: "#111122",
+  backgroundColor: "#111122",
+  backgroundImage: "linear-gradient(#111122, #111122)",
   border: "1px solid #2a2a3a",
 };
 
 const headerStyle = {
   width: "100%",
   background: "#0a0a14",
+  backgroundColor: "#0a0a14",
+  backgroundImage: "linear-gradient(#0a0a14, #0a0a14)",
   textAlign: "center" as const,
 };
 
@@ -107,6 +141,8 @@ const contentStyle = {
 
 const footerStyle = {
   background: "#0a0a14",
+  backgroundColor: "#0a0a14",
+  backgroundImage: "linear-gradient(#0a0a14, #0a0a14)",
   padding: "24px 48px",
   textAlign: "center" as const,
 };
