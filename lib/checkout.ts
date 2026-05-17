@@ -2,6 +2,16 @@
 
 import type { PriceKey } from "@/lib/billing";
 
+export class CheckoutError extends Error {
+  status: number;
+
+  constructor(status: number, message = "checkout_failed") {
+    super(message);
+    this.name = "CheckoutError";
+    this.status = status;
+  }
+}
+
 export async function startCheckout(priceKey: PriceKey) {
   const endpoint = priceKey === "lavado" ? "/api/stripe/checkout" : "/api/whop/checkout";
   const response = await fetch(endpoint, {
@@ -11,13 +21,14 @@ export async function startCheckout(priceKey: PriceKey) {
   });
 
   if (!response.ok) {
-    throw new Error("checkout_failed");
+    const message = await response.text().catch(() => "checkout_failed");
+    throw new CheckoutError(response.status, message || "checkout_failed");
   }
 
   const { url } = (await response.json()) as { url?: string };
 
   if (!url) {
-    throw new Error("checkout_missing_url");
+    throw new CheckoutError(500, "checkout_missing_url");
   }
 
   window.location.assign(url);

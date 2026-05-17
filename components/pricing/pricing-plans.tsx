@@ -3,7 +3,8 @@
 import { useState } from "react";
 
 import { PrimaryButton } from "@/components/ui/primary-button";
-import { startCheckout } from "@/lib/checkout";
+import { showNotice } from "@/components/ui/notice-provider";
+import { CheckoutError, startCheckout } from "@/lib/checkout";
 import type { Dictionary } from "@/lib/i18n";
 import { PLAN_LIMITS } from "@/lib/reading-limits";
 import type { PaidPlan, PriceKey } from "@/lib/billing";
@@ -44,8 +45,15 @@ export function PricingPlans({ dictionary }: PricingPlansProps) {
     setLoadingKey(key);
     try {
       await startCheckout(key);
-    } catch {
-      window.dispatchEvent(new Event("sarita:open-auth"));
+    } catch (error) {
+      if (error instanceof CheckoutError && error.status === 401) {
+        window.dispatchEvent(new Event("sarita:open-auth"));
+      } else {
+        showNotice({
+          message: "No pude abrir el checkout. Revisa la configuracion de Whop o intenta otra vez.",
+          tone: "error",
+        });
+      }
       setLoadingKey(null);
     }
   }

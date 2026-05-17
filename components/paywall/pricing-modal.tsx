@@ -4,7 +4,8 @@ import { useState } from "react";
 
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { PrimaryButton } from "@/components/ui/primary-button";
-import { startCheckout } from "@/lib/checkout";
+import { showNotice } from "@/components/ui/notice-provider";
+import { CheckoutError, startCheckout } from "@/lib/checkout";
 import { dictionaries } from "@/lib/i18n";
 import type { PaidPlan, PriceKey } from "@/lib/billing";
 
@@ -36,7 +37,15 @@ export function PricingModal({ open, onClose, requiredPlan }: PricingModalProps)
 
     try {
       await startCheckout(key);
-    } catch {
+    } catch (error) {
+      if (error instanceof CheckoutError && error.status === 401) {
+        window.dispatchEvent(new Event("sarita:open-auth"));
+      } else {
+        showNotice({
+          message: "No pude abrir el checkout. Revisa la configuracion de Whop o intenta otra vez.",
+          tone: "error",
+        });
+      }
       setLoadingKey(null);
     }
   }
