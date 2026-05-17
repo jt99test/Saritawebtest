@@ -38,7 +38,7 @@ export function AspectDetailPanel({ chart }: Props) {
             <button
               type="button"
               onClick={() => selectAspect(null)}
-              className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center border border-[#d7e7ff]/16 bg-[#d7e7ff]/8 text-[15px] leading-none text-[#fffaf0]/70 transition hover:border-[#f5d782]/45 hover:bg-[#f5d782]/10 hover:text-[#fffaf0]"
+              className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-[#f5d782]/30 bg-[#030814]/88 text-[16px] leading-none text-[#fffaf0] shadow-[0_0_18px_rgba(0,0,0,0.28)] transition hover:border-[#f5d782]/55 hover:bg-[#f5d782]/12"
               aria-label={dictionary.common.close}
             >
               x
