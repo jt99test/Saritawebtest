@@ -22,6 +22,22 @@ type ChartGeneralReadingProps = {
 };
 
 const PLAN_REQUIRED_ERROR = "SARITA_PLAN_REQUIRED";
+const GENERATION_POLL_DELAY_MS = 2500;
+const GENERATION_POLL_ATTEMPTS = 36;
+
+function waitForGeneration(signal: AbortSignal) {
+  return new Promise<void>((resolve, reject) => {
+    const timeout = window.setTimeout(resolve, GENERATION_POLL_DELAY_MS);
+    signal.addEventListener(
+      "abort",
+      () => {
+        window.clearTimeout(timeout);
+        reject(new DOMException("Aborted", "AbortError"));
+      },
+      { once: true },
+    );
+  });
+}
 
 function isQuestionHeading(value: string) {
   const trimmed = value.trim();
@@ -71,11 +87,13 @@ const THEME_META: Record<GeneralReadingTheme, { glyph: string; label: string }> 
   "donde-transformas": { glyph: "♇", label: "Transformación" },
 };
 
-function ReadingPanelSkeleton() {
+function ReadingPanelSkeleton({ dictionary }: { dictionary: Dictionary }) {
   return (
     <PremiumCard className="mt-4 min-h-[160px] overflow-hidden p-5 sm:p-6 animate-pulse">
       <div className="mb-4 h-[3px] w-12 rounded-full bg-dusty-gold/50" />
-      <div className="h-3 w-24 rounded bg-black/8" />
+      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+        {dictionary.result.generalReading.generating}
+      </p>
       <div className="mt-3 h-6 w-3/4 rounded bg-black/8" />
       <div className="mt-3 space-y-2">
         <div className="h-3 w-full rounded bg-black/6" />
@@ -135,12 +153,29 @@ export function ChartGeneralReading({ chart, dictionary, readingId, gender }: Ch
       setReadings((current) => ({ ...current, [theme]: current[theme] ?? "" }));
 
       try {
-        const response = await fetch("/api/general-reading", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chart, theme, locale, readingId, gender }),
-          signal: controller.signal,
-        });
+        let response: Response | null = null;
+
+        for (let attempt = 0; attempt < GENERATION_POLL_ATTEMPTS; attempt += 1) {
+          response = await fetch("/api/general-reading", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ chart, theme, locale, readingId, gender }),
+            signal: controller.signal,
+          });
+
+          if (
+            response.status !== 409 ||
+            response.headers.get("X-Sarita-Generation-Status") !== "generating"
+          ) {
+            break;
+          }
+
+          await waitForGeneration(controller.signal);
+        }
+
+        if (!response) {
+          throw new Error(dictionary.chart.generateError);
+        }
 
         if (response.status === 403) {
           throw new Error(PLAN_REQUIRED_ERROR);
@@ -212,7 +247,7 @@ export function ChartGeneralReading({ chart, dictionary, readingId, gender }: Ch
         }, {}),
       );
 
-      await Promise.all(missingThemes.map((theme) => fetchReading(theme, nextHash)));
+      await Promise.all(missingThemes.map((theme) => fetchReading(theme, readingCacheHash)));
     })();
 
     return () => {
@@ -274,7 +309,7 @@ export function ChartGeneralReading({ chart, dictionary, readingId, gender }: Ch
         {selectedError === PLAN_REQUIRED_ERROR ? (
           <LockedReadingPanel dictionary={dictionary} />
         ) : selectedLoading ? (
-          <ReadingPanelSkeleton />
+          <ReadingPanelSkeleton dictionary={dictionary} />
         ) : (
           <PremiumCard className="mt-4 min-h-[160px] overflow-hidden p-5 sm:p-6">
             <div className="mb-4 h-[3px] w-12 rounded-full bg-dusty-gold/50" />
