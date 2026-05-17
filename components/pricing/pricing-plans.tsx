@@ -10,7 +10,7 @@ import { PLAN_LIMITS } from "@/lib/reading-limits";
 import type { PaidPlan, PriceKey } from "@/lib/billing";
 
 const PRICES = {
-  pro: { monthly: "€14.99", yearly: "€119.99" },
+  pro: { monthly: "€14.99", yearly: "€119" },
   avanzado: { monthly: "€39.99", yearly: "€299" },
 } as const;
 

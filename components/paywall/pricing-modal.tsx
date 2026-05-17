@@ -16,7 +16,7 @@ type PricingModalProps = {
 };
 
 const PRICES = {
-  pro: { monthly: "\u20ac14.99", yearly: "\u20ac119.99", saving: "60" },
+  pro: { monthly: "\u20ac14.99", yearly: "\u20ac119", saving: "60" },
   avanzado: { monthly: "\u20ac39.99", yearly: "\u20ac299", saving: "180" },
 } as const;
 
