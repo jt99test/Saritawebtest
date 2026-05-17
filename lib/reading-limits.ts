@@ -3,7 +3,7 @@ export const PLAN_LIMITS: Record<string, number> = {
   basico: 5,
   completo: 20,
   pro: 5,
-  avanzado: 20,
+  avanzado: 22,
 };
 
 export function getPlanReadingLimit(plan: string | null | undefined) {
