@@ -19,6 +19,8 @@ type BiWheelChartProps = {
   interAspects?: SynastryAspect[];
   showOuterAspects?: boolean;
   showInterAspects?: boolean;
+  selectedInnerPointId?: ChartPointId | null;
+  selectedOuterPointId?: ChartPointId | null;
   onInnerPlanetSelect?: (pointId: ChartPointId) => void;
   onOuterPlanetSelect?: (pointId: ChartPointId) => void;
 };
@@ -31,7 +33,8 @@ const OUTER_SEP_R = 343;
 const OUTER_PLANET_R = 414;
 const OUTER_LABEL_R = 432;
 const HOUSE_OUTER_R = 252;
-const HOUSE_INNER_R = 168;
+const HOUSE_INNER_R = 142;
+const HOUSE_NUMBER_R = 208;
 const DRAWABLE_IDS = new Set<ChartPointId>([
   "sun",
   "moon",
@@ -50,22 +53,6 @@ const DRAWABLE_IDS = new Set<ChartPointId>([
   "lilith",
   "ceres",
 ]);
-
-const SIGN_SYMBOLS = {
-  aries: "\u2648\ufe0e",
-  taurus: "\u2649\ufe0e",
-  gemini: "\u264a\ufe0e",
-  cancer: "\u264b\ufe0e",
-  leo: "\u264c\ufe0e",
-  virgo: "\u264d\ufe0e",
-  libra: "\u264e\ufe0e",
-  scorpio: "\u264f\ufe0e",
-  Sagittarius: "\u2650\ufe0e",
-  sagittarius: "\u2650\ufe0e",
-  capricorn: "\u2651\ufe0e",
-  aquarius: "\u2652\ufe0e",
-  pisces: "\u2653\ufe0e",
-} as const;
 
 const POINT_SYMBOLS: Record<ChartPointId, string> = {
   sun: "\u2609",
@@ -120,6 +107,10 @@ function pointAtRadius(radius: number, longitude: number, ascendant: number) {
   };
 }
 
+function round(value: number) {
+  return Math.round(value * 100) / 100;
+}
+
 function lineBetween(innerRadius: number, outerRadius: number, longitude: number, ascendant: number) {
   return {
     inner: pointAtRadius(innerRadius, longitude, ascendant),
@@ -146,10 +137,6 @@ function describeRingSegment(startLongitude: number, endLongitude: number, inner
 
 function midpointLongitude(start: number, end: number) {
   return normalizeLongitude(start + normalizeLongitude(end - start) / 2);
-}
-
-function zodiacLabelFill(element: (typeof zodiacSigns)[number]["element"]) {
-  return "#061331";
 }
 
 function circularDistance(left: number, right: number) {
@@ -235,16 +222,18 @@ function planetLayouts(points: ChartPoint[], ascendant: number) {
   return layouts;
 }
 
-function DegreeTickRing({ ascendant }: { ascendant: number }) {
+function DegreeTickRing({ ascendant, points }: { ascendant: number; points: ChartPoint[] }) {
   const ticks = [];
+  const labels = [];
 
   for (const sign of zodiacSigns) {
     for (let degree = 0; degree < 30; degree += 1) {
       const longitude = sign.start + degree;
-      const major = degree === 0 || degree === 15;
-      const medium = degree % 5 === 0;
+      const isFifteen = degree === 15;
+      const isLabelDegree = degree === 0 || isFifteen;
+      const isFive = degree % 5 === 0 && !isLabelDegree;
       const radii = lineBetween(
-        major ? ZODIAC_INNER_R : medium ? ZODIAC_INNER_R + 5 : ZODIAC_INNER_R + 10,
+        isLabelDegree ? ZODIAC_INNER_R - 16 : isFive ? ZODIAC_INNER_R - 10 : ZODIAC_INNER_R - 6,
         ZODIAC_OUTER_R,
         longitude,
         ascendant,
@@ -253,66 +242,162 @@ function DegreeTickRing({ ascendant }: { ascendant: number }) {
       ticks.push(
         <line
           key={`tick-${longitude}`}
-          x1={radii.inner.x}
-          y1={radii.inner.y}
-          x2={radii.outer.x}
-          y2={radii.outer.y}
-          stroke={major ? "rgba(30,26,46,0.22)" : medium ? "rgba(30,26,46,0.14)" : "rgba(30,26,46,0.08)"}
-          strokeWidth={major ? "0.8" : "0.45"}
+          x1={round(radii.outer.x)}
+          y1={round(radii.outer.y)}
+          x2={round(radii.inner.x)}
+          y2={round(radii.inner.y)}
+          stroke={isLabelDegree ? "rgba(8,42,120,0.38)" : isFive ? "rgba(8,42,120,0.24)" : "rgba(8,42,120,0.12)"}
+          strokeWidth={isLabelDegree ? "0.9" : isFive ? "0.7" : "0.48"}
         />,
       );
 
-      if (degree === 0) {
-        const label = pointAtRadius(ZODIAC_INNER_R + 26, longitude + 1.2, ascendant);
-        ticks.push(
-          <text
-            key={`tick-label-${longitude}`}
-            x={label.x}
-            y={label.y}
-            textAnchor="middle"
-            dominantBaseline="central"
-            className="text-[10px] font-semibold"
-            fill="rgba(30,26,46,0.56)"
-          >
-            {degree}
-          </text>,
+      if (isLabelDegree) {
+        const hasNearbyPlanet = points.some((point) => circularDistance(point.longitude, longitude) <= 3);
+
+        if (hasNearbyPlanet) {
+          continue;
+        }
+
+        const label = pointAtRadius(ZODIAC_INNER_R - 23, longitude + 1.2, ascendant);
+        labels.push(
+          <g key={`tick-label-${longitude}`}>
+            <circle cx={round(label.x)} cy={round(label.y)} r="8" fill="rgba(255,253,248,0.82)" />
+            <text
+              x={round(label.x)}
+              y={round(label.y)}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fill="rgba(6,19,49,0.86)"
+              fontFamily="'Inter', sans-serif"
+              fontSize="10.5"
+              fontWeight="700"
+              letterSpacing="0"
+            >
+              {degree}
+            </text>
+          </g>,
         );
       }
     }
   }
 
-  return <>{ticks}</>;
+  return (
+    <>
+      <g>{ticks}</g>
+      <g>{labels}</g>
+    </>
+  );
 }
 
 function AxisLines({ chart, ascendant }: { chart: NatalChartData; ascendant: number }) {
   const axes = [
-    { longitude: chart.meta.ascendant, opposite: chart.meta.descendant, start: "AC", end: "DC" },
-    { longitude: chart.meta.mc, opposite: chart.meta.ic, start: "MC", end: "IC" },
+    { longitude: chart.meta.ascendant, opposite: chart.meta.descendant, weight: 1.8, start: "AC", end: "DC" },
+    { longitude: chart.meta.mc, opposite: chart.meta.ic, weight: 1.1, start: "MC", end: "IC" },
   ];
 
   return (
     <>
       {axes.map((axis) => {
-        const start = pointAtRadius(ZODIAC_OUTER_R + 4, axis.longitude, ascendant);
-        const end = pointAtRadius(ZODIAC_OUTER_R + 4, axis.opposite, ascendant);
+        const start = pointAtRadius(ZODIAC_OUTER_R + 2, axis.longitude, ascendant);
+        const end = pointAtRadius(ZODIAC_OUTER_R + 2, axis.opposite, ascendant);
         const startLabel = pointAtRadius(ZODIAC_OUTER_R - 12, axis.longitude, ascendant);
         const endLabel = pointAtRadius(ZODIAC_OUTER_R - 12, axis.opposite, ascendant);
 
         return (
           <g key={axis.start}>
-            <line x1={start.x} y1={start.y} x2={end.x} y2={end.y} stroke="rgba(30,26,46,0.58)" strokeWidth="1.1" />
+            <line x1={round(start.x)} y1={round(start.y)} x2={round(end.x)} y2={round(end.y)} stroke="rgba(6,19,49,0.74)" strokeWidth={axis.weight} />
             {[
               { label: axis.start, point: startLabel },
               { label: axis.end, point: endLabel },
             ].map(({ label, point }) => (
               <g key={label}>
-                <rect x={point.x - 13} y={point.y - 8} width="26" height="16" rx="7" fill="#fffaf0" stroke="rgba(30,26,46,0.28)" strokeWidth="0.8" />
-                <text x={point.x} y={point.y + 0.5} textAnchor="middle" dominantBaseline="central" className="font-serif text-[11px] font-semibold" fill="#1e1a2e">
+                <rect x={round(point.x) - 20} y={round(point.y) - 11} width="40" height="22" rx="11" fill="#fffdf8" stroke="rgba(0,102,255,0.28)" strokeWidth="1" filter="url(#bw-glow)" />
+                <text
+                  x={round(point.x)}
+                  y={round(point.y)}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  fill="#061331"
+                  fontFamily="'Spectral', serif"
+                  fontSize="14"
+                  fontWeight="700"
+                  letterSpacing="0.04em"
+                >
                   {label}
                 </text>
               </g>
             ))}
           </g>
+        );
+      })}
+    </>
+  );
+}
+
+function HouseGeometry({ chart, ascendant }: { chart: NatalChartData; ascendant: number }) {
+  const houseTones = {
+    angular: "rgba(209,118,118,0.05)",
+    succedent: "rgba(216,194,122,0.035)",
+    cadent: "rgba(140,158,240,0.03)",
+  } as const;
+
+  return (
+    <>
+      {chart.houses.map((house, index) => {
+        const current = house.longitude;
+        const next = chart.houses[(index + 1) % 12]!.longitude;
+        const span = (next - current + 360) % 360;
+        const end = current + (span === 0 ? 360 : span);
+        const tone =
+          house.house === 1 || house.house === 4 || house.house === 7 || house.house === 10
+            ? houseTones.angular
+            : house.house === 2 || house.house === 5 || house.house === 8 || house.house === 11
+              ? houseTones.succedent
+              : houseTones.cadent;
+
+        return (
+          <path
+            key={`house-zone-${house.house}`}
+            d={describeRingSegment(current, end, HOUSE_INNER_R, HOUSE_OUTER_R, ascendant)}
+            fill={tone}
+            stroke="none"
+          />
+        );
+      })}
+
+      {chart.houses.map((house) => {
+        const lineStart = pointAtRadius(ZODIAC_INNER_R, house.longitude, ascendant);
+        const lineEnd = pointAtRadius(HOUSE_INNER_R, house.longitude, ascendant);
+        return (
+          <line
+            key={`house-line-${house.house}`}
+            x1={round(lineStart.x)}
+            y1={round(lineStart.y)}
+            x2={round(lineEnd.x)}
+            y2={round(lineEnd.y)}
+            stroke="rgba(8,42,120,0.28)"
+            strokeWidth={house.house === 1 || house.house === 4 || house.house === 7 || house.house === 10 ? "1.6" : "0.9"}
+          />
+        );
+      })}
+
+      {chart.houses.map((house, index) => {
+        const nextHouse = chart.houses[(index + 1) % chart.houses.length] ?? chart.houses[0]!;
+        const label = pointAtRadius(HOUSE_NUMBER_R, midpointLongitude(house.longitude, nextHouse.longitude), ascendant);
+        return (
+          <text
+            key={`house-label-${house.house}`}
+            x={round(label.x)}
+            y={round(label.y)}
+            textAnchor="middle"
+            dominantBaseline="central"
+            fill="rgba(6,19,49,0.66)"
+            fontFamily="'Inter', sans-serif"
+            fontSize="13"
+            fontWeight="500"
+          >
+            {house.house}
+          </text>
         );
       })}
     </>
@@ -418,18 +503,22 @@ export function BiWheelChart({
   interAspects = [],
   showOuterAspects = false,
   showInterAspects = false,
+  selectedInnerPointId,
+  selectedOuterPointId,
   onInnerPlanetSelect,
   onOuterPlanetSelect,
 }: BiWheelChartProps) {
   const colors = VARIANTS[variant];
   const [hoveredInner, setHoveredInner] = useState<ChartPointId | null>(null);
-  const [selectedInner, setSelectedInner] = useState<ChartPointId | null>(null);
+  const [uncontrolledSelectedInner, setUncontrolledSelectedInner] = useState<ChartPointId | null>(null);
   const [hoveredOuter, setHoveredOuter] = useState<ChartPointId | null>(null);
-  const [selectedOuter, setSelectedOuter] = useState<ChartPointId | null>(null);
+  const [uncontrolledSelectedOuter, setUncontrolledSelectedOuter] = useState<ChartPointId | null>(null);
   const innerPoints = useMemo(() => filterPoints(visiblePoints(innerChart), innerPointIds), [innerChart, innerPointIds]);
   const outerPoints = useMemo(() => outerChart ? filterPoints(visiblePoints(outerChart), outerPointIds) : [], [outerChart, outerPointIds]);
   const ascendant = innerChart.meta.ascendant;
   const innerLayouts = useMemo(() => planetLayouts(innerPoints, ascendant), [ascendant, innerPoints]);
+  const selectedInner = selectedInnerPointId !== undefined ? selectedInnerPointId : uncontrolledSelectedInner;
+  const selectedOuter = selectedOuterPointId !== undefined ? selectedOuterPointId : uncontrolledSelectedOuter;
   const outerActive = hoveredOuter || selectedOuter;
   const activeInner = hoveredInner ?? selectedInner;
   const activeOuter = hoveredOuter ?? selectedOuter;
@@ -469,8 +558,7 @@ export function BiWheelChart({
         {outerChart ? <circle cx={CENTER} cy={CENTER} r={OUTER_PLANET_R} fill="none" stroke="rgba(143,123,69,0.09)" strokeWidth="16" filter="url(#bw-soft-halo)" /> : null}
 
         <g>
-          <circle cx={CENTER} cy={CENTER} r="386" fill="rgba(255,250,240,0.28)" stroke="rgba(30,26,46,0.2)" />
-          <circle cx={CENTER} cy={CENTER} r="356" fill="none" stroke="rgba(30,26,46,0.08)" strokeWidth="18" />
+          <circle cx={CENTER} cy={CENTER} r={ZODIAC_INNER_R} fill="url(#bw-field-glow)" />
           {zodiacSigns.map((sign) => {
             const label = pointAtRadius((ZODIAC_OUTER_R + ZODIAC_INNER_R) / 2, midpointLongitude(sign.start, sign.start + 30), ascendant);
 
@@ -487,16 +575,17 @@ export function BiWheelChart({
                   y={label.y + 1}
                   textAnchor="middle"
                   dominantBaseline="central"
-                  className="font-serif text-[32px] font-bold"
-                  fill={zodiacLabelFill(sign.element)}
+                  fill="#061331"
                   fillOpacity="0.92"
                   fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
+                  fontSize="32"
+                  fontWeight="700"
                   stroke="rgba(255,253,248,0.86)"
                   strokeWidth="1.15"
                   paintOrder="stroke fill"
                   style={{ filter: "drop-shadow(0 0 6px rgba(124,191,255,0.18))" }}
                 >
-                  {SIGN_SYMBOLS[sign.id]}
+                  {sign.glyph}
                 </text>
               </g>
             );
@@ -507,40 +596,9 @@ export function BiWheelChart({
           <circle cx={CENTER} cy={CENTER} r={ZODIAC_INNER_R} fill="none" stroke="rgba(8,42,120,0.42)" strokeWidth="1.3" />
           <circle cx={CENTER} cy={CENTER} r={HOUSE_OUTER_R} fill="none" stroke="rgba(8,42,120,0.16)" strokeWidth="0.9" />
           <circle cx={CENTER} cy={CENTER} r={HOUSE_INNER_R} fill="none" stroke="rgba(8,42,120,0.12)" strokeWidth="0.8" />
-          <DegreeTickRing ascendant={ascendant} />
-          {innerChart.houses.map((house) => {
-            const lineStart = pointAtRadius(ZODIAC_INNER_R, house.longitude, ascendant);
-            const lineEnd = pointAtRadius(HOUSE_INNER_R, house.longitude, ascendant);
-            return (
-              <line
-                key={house.house}
-                x1={lineStart.x}
-                y1={lineStart.y}
-                x2={lineEnd.x}
-                y2={lineEnd.y}
-                stroke="rgba(30,26,46,0.22)"
-                strokeWidth="0.8"
-              />
-            );
-          })}
+          <DegreeTickRing ascendant={ascendant} points={innerPoints} />
+          <HouseGeometry chart={innerChart} ascendant={ascendant} />
           <AxisLines chart={innerChart} ascendant={ascendant} />
-          {innerChart.houses.map((house, index) => {
-            const nextHouse = innerChart.houses[(index + 1) % innerChart.houses.length] ?? innerChart.houses[0]!;
-            const label = pointAtRadius(230, midpointLongitude(house.longitude, nextHouse.longitude), ascendant);
-            return (
-              <text
-                key={`house-label-${house.house}`}
-                x={label.x}
-                y={label.y}
-                textAnchor="middle"
-                dominantBaseline="central"
-                className="text-[15px] font-semibold"
-                fill="rgba(30,26,46,0.52)"
-              >
-                {house.house}
-              </text>
-            );
-          })}
           {innerChart.aspects.slice(0, 32).map((aspect) => {
             const from = innerPoints.find((point) => point.id === aspect.from);
             const to = innerPoints.find((point) => point.id === aspect.to);
@@ -634,8 +692,8 @@ export function BiWheelChart({
                 onMouseEnter={() => setHoveredInner(point.id)}
                 onMouseLeave={() => setHoveredInner(null)}
                 onClick={() => {
-                  setSelectedInner(point.id);
-                  setSelectedOuter(null);
+                  setUncontrolledSelectedInner(point.id);
+                  setUncontrolledSelectedOuter(null);
                   onInnerPlanetSelect?.(point.id);
                 }}
                 opacity={outerActive && !active ? 0.45 : 1}
@@ -700,8 +758,8 @@ export function BiWheelChart({
               onMouseEnter={() => setHoveredOuter(point.id)}
               onMouseLeave={() => setHoveredOuter(null)}
               onClick={() => {
-                setSelectedOuter(point.id);
-                setSelectedInner(null);
+                setUncontrolledSelectedOuter(point.id);
+                setUncontrolledSelectedInner(null);
                 onOuterPlanetSelect?.(point.id);
               }}
               className="cursor-pointer outline-none"

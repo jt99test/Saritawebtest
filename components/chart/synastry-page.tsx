@@ -509,6 +509,8 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
             variant="synastry"
             innerPointIds={synastryWheelMode === "aspected" ? aspectedInnerIds : undefined}
             outerPointIds={synastryWheelMode === "aspected" ? aspectedOuterIds : undefined}
+            selectedInnerPointId={biWheelSelected?.ring === "inner" ? biWheelSelected.id : null}
+            selectedOuterPointId={biWheelSelected?.ring === "outer" ? biWheelSelected.id : null}
             onInnerPlanetSelect={(id) => setBiWheelSelected({ id, ring: "inner" })}
             onOuterPlanetSelect={(id) => setBiWheelSelected({ id, ring: "outer" })}
           />

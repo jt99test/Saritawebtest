@@ -434,6 +434,8 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
           interAspects={natalSolarAspects}
           showOuterAspects
           showInterAspects
+          selectedInnerPointId={biWheelSelected?.ring === "inner" ? biWheelSelected.id : null}
+          selectedOuterPointId={biWheelSelected?.ring === "outer" ? biWheelSelected.id : null}
           onInnerPlanetSelect={(id) => setBiWheelSelected({ id, ring: "inner" })}
           onOuterPlanetSelect={(id) => setBiWheelSelected({ id, ring: "outer" })}
         />

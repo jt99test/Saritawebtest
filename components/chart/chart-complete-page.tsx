@@ -535,6 +535,8 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
               variant="synastry"
               innerPointIds={transitWheelMode === "active" ? activeTransitInnerIds : undefined}
               outerPointIds={transitWheelMode === "active" ? activeTransitOuterIds : undefined}
+              selectedInnerPointId={biWheelSelected?.ring === "inner" ? biWheelSelected.id : null}
+              selectedOuterPointId={biWheelSelected?.ring === "outer" ? biWheelSelected.id : null}
               onInnerPlanetSelect={(id) => setBiWheelSelected({ id, ring: "inner" })}
               onOuterPlanetSelect={(id) => setBiWheelSelected({ id, ring: "outer" })}
             />
