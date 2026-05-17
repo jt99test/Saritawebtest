@@ -3,6 +3,7 @@ import { createElement } from "react";
 import LavadoReceiptEmail, { subject as lavadoReceiptSubject } from "@/emails/lavado-receipt";
 import { isPriceKey } from "@/lib/billing";
 import { sendEmail } from "@/lib/email";
+import { isLocale } from "@/lib/i18n";
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
 import {
   dateFromWhopTimestamp,
@@ -100,14 +101,21 @@ async function recordWebhookEvent(eventId: string, eventType: string) {
   return !error;
 }
 
-async function getProfileEmailByUserId(userId: string) {
+async function getProfileContactByUserId(userId: string) {
   const supabase = createServiceSupabaseClient();
-  const { data } = await supabase.from("profiles").select("email").eq("id", userId).maybeSingle<{ email: string | null }>();
-  return data?.email ?? null;
+  const { data } = await supabase
+    .from("profiles")
+    .select("email,locale")
+    .eq("id", userId)
+    .maybeSingle<{ email: string | null; locale: string | null }>();
+  return {
+    email: data?.email ?? null,
+    locale: data?.locale && isLocale(data.locale) ? data.locale : "es",
+  };
 }
 
 async function sendLavadoReceipt(userId: string, amount: string) {
-  const email = await getProfileEmailByUserId(userId);
+  const { email, locale } = await getProfileContactByUserId(userId);
 
   if (!email) {
     return;
@@ -115,8 +123,8 @@ async function sendLavadoReceipt(userId: string, amount: string) {
 
   await sendEmail({
     to: email,
-    subject: lavadoReceiptSubject,
-    react: createElement(LavadoReceiptEmail, { amount }),
+    subject: lavadoReceiptSubject(locale),
+    react: createElement(LavadoReceiptEmail, { amount, locale }),
   });
 }
 

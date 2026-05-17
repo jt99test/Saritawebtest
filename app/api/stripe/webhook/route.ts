@@ -221,7 +221,7 @@ async function sendLavadoReceipt(session: Stripe.Checkout.Session) {
 
   await sendEmail({
     to: email,
-    subject: lavadoReceiptSubject,
+    subject: lavadoReceiptSubject("es"),
     react: createElement(LavadoReceiptEmail, { amount: "€49.99" }),
   });
 }

@@ -5,7 +5,7 @@ import { createElement } from "react";
 
 import AccountDeletionEmail, { subject as accountDeletionSubject } from "@/emails/account-deletion";
 import { sendEmail } from "@/lib/email";
-import type { Locale } from "@/lib/i18n";
+import { isLocale, type Locale } from "@/lib/i18n";
 import { createServerSupabaseClient, createServiceSupabaseClient } from "@/lib/supabase/server";
 
 export async function sendPasswordResetAction(requestedLocale?: Locale) {
@@ -42,10 +42,17 @@ export async function deleteAccountAction(confirmWord: string, expectedWord: str
   }
 
   if (user.email) {
+    const { data: profile } = await createServiceSupabaseClient()
+      .from("profiles")
+      .select("locale")
+      .eq("id", user.id)
+      .maybeSingle<{ locale: string | null }>();
+    const locale = profile?.locale && isLocale(profile.locale) ? profile.locale : "es";
+
     await sendEmail({
       to: user.email,
-      subject: accountDeletionSubject,
-      react: createElement(AccountDeletionEmail),
+      subject: accountDeletionSubject(locale),
+      react: createElement(AccountDeletionEmail, { locale }),
     });
   }
 

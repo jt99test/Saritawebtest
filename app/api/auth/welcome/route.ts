@@ -2,6 +2,7 @@ import { createElement } from "react";
 
 import WelcomeEmail, { subject as welcomeSubject } from "@/emails/welcome";
 import { sendEmail } from "@/lib/email";
+import { isLocale } from "@/lib/i18n";
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
@@ -35,12 +36,12 @@ export async function POST(request: Request) {
     return new Response("Profile email not found", { status: 404 });
   }
 
-  void profile.locale;
+  const locale = profile.locale && isLocale(profile.locale) ? profile.locale : "es";
 
   await sendEmail({
     to: profile.email,
-    subject: welcomeSubject,
-    react: createElement(WelcomeEmail, { firstName: "" }),
+    subject: welcomeSubject(locale),
+    react: createElement(WelcomeEmail, { firstName: "", locale }),
   });
 
   return Response.json({ ok: true });
