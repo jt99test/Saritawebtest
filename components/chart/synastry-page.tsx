@@ -9,7 +9,6 @@ import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import {
   deleteSynastryPartnerAction,
-  getSynastryPartnersAction,
   saveAndCalculateSynastryPartnerAction,
   type SynastryPartnerInput,
 } from "@/lib/actions";
@@ -38,8 +37,10 @@ type SynastryData = {
 
 const SARITA_DATA_MARKER = "__SARITA_DATA__";
 const READING_TIMEOUT_MS = 45000;
-const SELECTED_PARTNER_STORAGE_KEY = "sarita_synastry_selected_partner";
-const SELECTED_PARTNER_DATA_STORAGE_KEY = "sarita_synastry_selected_partner_data";
+const LEGACY_SELECTED_PARTNER_STORAGE_KEYS = [
+  "sarita_synastry_selected_partner",
+  "sarita_synastry_selected_partner_data",
+] as const;
 
 type PartnerRow = {
   id: string;
@@ -157,37 +158,6 @@ function localPartnerFromForm(form: SynastryPartnerInput, chart: NatalChartData)
   };
 }
 
-function readStoredPartner(): PartnerRow | null {
-  const rawPartner = window.localStorage.getItem(SELECTED_PARTNER_DATA_STORAGE_KEY);
-  if (!rawPartner) return null;
-
-  try {
-    const parsed = JSON.parse(rawPartner) as Partial<PartnerRow>;
-    if (
-      typeof parsed.id === "string" &&
-      typeof parsed.name === "string" &&
-      typeof parsed.birth_date === "string" &&
-      typeof parsed.birth_city === "string" &&
-      parsed.chart_data
-    ) {
-      return {
-        id: parsed.id,
-        name: parsed.name,
-        birth_date: parsed.birth_date,
-        birth_time: typeof parsed.birth_time === "string" ? parsed.birth_time : null,
-        birth_time_unknown: parsed.birth_time_unknown === true,
-        gender: parsed.gender === "female" || parsed.gender === "male" ? parsed.gender : "",
-        birth_city: parsed.birth_city,
-        chart_data: parsed.chart_data as NatalChartData,
-      };
-    }
-  } catch {
-    window.localStorage.removeItem(SELECTED_PARTNER_DATA_STORAGE_KEY);
-  }
-
-  return null;
-}
-
 function pointLabel(id: ChartPointId, dictionary: Dictionary) {
   return dictionary.result.points[id] ?? id;
 }
@@ -263,8 +233,6 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
   const [synastryWheelMode, setSynastryWheelMode] = useState<SynastryWheelMode>("all");
   const [natalHash, setNatalHash] = useState<string | null>(null);
   const [partnerHash, setPartnerHash] = useState<string | null>(null);
-  const [partnersLoaded, setPartnersLoaded] = useState(false);
-  const [selectionHydrated, setSelectionHydrated] = useState(false);
   const partnerChart = selectedPartner?.chart_data ?? null;
   const innerChart = flipped && partnerChart ? partnerChart : natalChart;
   const outerChart = flipped && partnerChart ? natalChart : partnerChart;
@@ -298,29 +266,10 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
   const hasAiCompatibility = Boolean(synastryData.compatibilityLabel && synastryData.compatibilityDescription);
 
   useEffect(() => {
-    startTransition(async () => {
-      const savedPartners = (await getSynastryPartnersAction()) as PartnerRow[];
-      const storedPartner = readStoredPartner();
-      setPartners(storedPartner && !savedPartners.some((partner) => partner.id === storedPartner.id)
-        ? [storedPartner, ...savedPartners]
-        : savedPartners);
-      setPartnersLoaded(true);
+    LEGACY_SELECTED_PARTNER_STORAGE_KEYS.forEach((key) => {
+      window.localStorage.removeItem(key);
     });
   }, []);
-
-  useEffect(() => {
-    if (selectionHydrated || selectedPartner) return;
-    const storedPartnerId = window.localStorage.getItem(SELECTED_PARTNER_STORAGE_KEY);
-    const storedPartner = storedPartnerId
-      ? partners.find((partner) => partner.id === storedPartnerId) ?? readStoredPartner()
-      : readStoredPartner();
-    if (!storedPartner && !partnersLoaded) return;
-    if (storedPartner) {
-      setPartners((current) => current.some((partner) => partner.id === storedPartner.id) ? current : [storedPartner, ...current]);
-      setSelectedPartner(storedPartner);
-    }
-    setSelectionHydrated(true);
-  }, [partners, partnersLoaded, selectedPartner, selectionHydrated]);
 
   useEffect(() => {
     let active = true;
@@ -346,15 +295,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
 
   useEffect(() => {
     setBiWheelSelected(null);
-    if (!selectionHydrated) return;
-    if (selectedPartner) {
-      window.localStorage.setItem(SELECTED_PARTNER_STORAGE_KEY, selectedPartner.id);
-      window.localStorage.setItem(SELECTED_PARTNER_DATA_STORAGE_KEY, JSON.stringify(selectedPartner));
-    } else {
-      window.localStorage.removeItem(SELECTED_PARTNER_STORAGE_KEY);
-      window.localStorage.removeItem(SELECTED_PARTNER_DATA_STORAGE_KEY);
-    }
-  }, [selectedPartner, selectionHydrated]);
+  }, [selectedPartner]);
 
   useEffect(() => {
     setBiWheelSelected(null);
