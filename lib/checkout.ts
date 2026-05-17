@@ -13,7 +13,7 @@ export class CheckoutError extends Error {
 }
 
 export async function startCheckout(priceKey: PriceKey) {
-  const endpoint = priceKey === "lavado" ? "/api/stripe/checkout" : "/api/whop/checkout";
+  const endpoint = "/api/whop/checkout";
   const response = await fetch(endpoint, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

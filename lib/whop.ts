@@ -1,19 +1,21 @@
 import { Whop } from "@whop/sdk";
 
 import {
+  isPriceKey,
   isSubscriptionPriceKey,
   planFromPriceKey,
-  type SubscriptionPriceKey,
+  type PriceKey,
 } from "@/lib/billing";
 
 const whopApiKey = process.env.WHOP_API_KEY;
 const whopWebhookSecret = process.env.WHOP_WEBHOOK_SECRET;
 
-export const WHOP_PRODUCT_MAP: Record<SubscriptionPriceKey, string | undefined> = {
+export const WHOP_PRODUCT_MAP: Record<PriceKey, string | undefined> = {
   pro_monthly: process.env.WHOP_PRO_MONTHLY_PRODUCT_ID,
   pro_yearly: process.env.WHOP_PRO_YEARLY_PRODUCT_ID,
   avanzado_monthly: process.env.WHOP_AVANZADO_MONTHLY_PRODUCT_ID,
   avanzado_yearly: process.env.WHOP_AVANZADO_YEARLY_PRODUCT_ID,
+  lavado: process.env.WHOP_LAVADO_PRODUCT_ID,
 };
 
 export function getWhopClient() {
@@ -27,7 +29,7 @@ export function getWhopClient() {
   });
 }
 
-export function getWhopProductForPriceKey(priceKey: SubscriptionPriceKey) {
+export function getWhopProductForPriceKey(priceKey: PriceKey) {
   const productId = WHOP_PRODUCT_MAP[priceKey];
 
   if (!productId) {
@@ -41,12 +43,12 @@ export function priceKeyFromWhopProductId(productId: string | null | undefined) 
   if (!productId) return null;
   const entry = Object.entries(WHOP_PRODUCT_MAP).find(([, configuredProductId]) => configuredProductId === productId);
   const priceKey = entry?.[0];
-  return isSubscriptionPriceKey(priceKey) ? priceKey : null;
+  return isPriceKey(priceKey) ? priceKey : null;
 }
 
 export function planFromWhopProductId(productId: string | null | undefined) {
   const priceKey = priceKeyFromWhopProductId(productId);
-  return priceKey ? planFromPriceKey(priceKey) : null;
+  return isSubscriptionPriceKey(priceKey) ? planFromPriceKey(priceKey) : null;
 }
 
 export function whopPurchaseUrl(pathOrUrl: string) {

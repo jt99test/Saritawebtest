@@ -14,7 +14,7 @@ const FAQ: Record<Locale, Array<{ question: string; answer: string }>> = {
     { question: "¿Cómo cancelo mi suscripción?", answer: "Desde tu cuenta, usando el botón de gestión de facturación." },
     { question: "¿Qué es la Revolución Solar?", answer: "Es la carta del momento en que el Sol vuelve a su posición natal. Muestra temas del año." },
     { question: "¿Qué es el Lavado Intestinal?", answer: "Es una guía digital de Laghoo Shankhaprakshala, una práctica corta de limpieza intestinal." },
-    { question: "¿Mis datos están seguros?", answer: "Usamos Supabase para proteger cuentas y datos, y Stripe para pagos. Puedes pedir eliminación cuando quieras." },
+    { question: "¿Mis datos están seguros?", answer: "Usamos Supabase para proteger cuentas y datos, y Whop para pagos. Puedes pedir eliminación cuando quieras." },
     { question: "¿Cómo contacto con soporte?", answer: "Escríbenos a contacto@saritaastrology.com." },
   ],
   en: [
@@ -24,7 +24,7 @@ const FAQ: Record<Locale, Array<{ question: string; answer: string }>> = {
     { question: "How do I cancel my subscription?", answer: "From your account, using the billing management button." },
     { question: "What is the Solar Return?", answer: "It is the chart for the moment the Sun returns to its natal position. It shows themes for the year." },
     { question: "What is the Intestinal Cleanse?", answer: "It is a digital guide to Laghoo Shankhaprakshala, a short intestinal cleansing practice." },
-    { question: "Is my data safe?", answer: "We use Supabase to protect accounts and data, and Stripe for payments. You can request deletion anytime." },
+    { question: "Is my data safe?", answer: "We use Supabase to protect accounts and data, and Whop for payments. You can request deletion anytime." },
     { question: "How do I contact support?", answer: "Write to contacto@saritaastrology.com." },
   ],
   it: [
@@ -34,7 +34,7 @@ const FAQ: Record<Locale, Array<{ question: string; answer: string }>> = {
     { question: "Come cancello il mio abbonamento?", answer: "Dal tuo account, usando il pulsante di gestione fatturazione." },
     { question: "Che cos’è la Rivoluzione Solare?", answer: "È la carta del momento in cui il Sole torna alla sua posizione natale. Mostra i temi dell’anno." },
     { question: "Che cos’è il Lavaggio Intestinale?", answer: "È una guida digitale a Laghoo Shankhaprakshala, una pratica breve di pulizia intestinale." },
-    { question: "I miei dati sono al sicuro?", answer: "Usiamo Supabase per proteggere account e dati, e Stripe per i pagamenti. Puoi chiedere l’eliminazione quando vuoi." },
+    { question: "I miei dati sono al sicuro?", answer: "Usiamo Supabase per proteggere account e dati, e Whop per i pagamenti. Puoi chiedere l’eliminazione quando vuoi." },
     { question: "Come contatto il supporto?", answer: "Scrivici a contacto@saritaastrology.com." },
   ],
 };

@@ -32,7 +32,7 @@ export function AspectDetailPanel({ chart }: Props) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 16 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 px-4"
+          className="fixed bottom-[calc(env(safe-area-inset-bottom)+6.7rem)] left-1/2 z-[90] -translate-x-1/2 px-4 md:bottom-6 md:z-50"
         >
           <div className="relative w-[min(520px,calc(100vw-2rem))] rounded-[1rem] border border-[#f5d782]/24 bg-[#061331]/92 px-5 py-5 text-[#fffaf0] shadow-[0_18px_58px_rgba(0,0,0,0.42)] backdrop-blur-[18px] sm:px-6">
             <button

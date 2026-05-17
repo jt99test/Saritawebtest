@@ -883,7 +883,7 @@
       },
       {
         "title": "Con chi li condividiamo",
-        "body": "Usiamo Supabase per autenticazione e database, Stripe per i pagamenti e Anthropic per le letture con IA. Condividiamo solo ciò che serve a ogni funzione."
+        "body": "Usiamo Supabase per autenticazione e database, Whop per i pagamenti e Anthropic per le letture con IA. Condividiamo solo ciò che serve a ogni funzione."
       },
       {
         "title": "I tuoi diritti",
@@ -1073,7 +1073,7 @@
       { "question": "Come cancello il mio abbonamento?", "answer": "Entra nel tuo account e usa il pulsante per la gestione della fatturazione." },
       { "question": "Che cos'e la Rivoluzione Solare?", "answer": "E la carta del momento in cui il Sole torna alla posizione natale. Evidenzia i temi principali dell'anno." },
       { "question": "Che cos'e il Lavaggio Intestinale?", "answer": "E una guida digitale a Laghoo Shankhaprakshala, una pratica breve di pulizia intestinale." },
-      { "question": "I miei dati sono al sicuro?", "answer": "Usiamo Supabase per proteggere account e dati, e Stripe per i pagamenti. Puoi chiedere l'eliminazione quando vuoi." },
+      { "question": "I miei dati sono al sicuro?", "answer": "Usiamo Supabase per proteggere account e dati, e Whop per i pagamenti. Puoi chiedere l'eliminazione quando vuoi." },
       { "question": "Come contatto il supporto?", "answer": "Scrivici a contacto@saritaastrology.com." }
     ]
   },

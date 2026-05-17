@@ -883,7 +883,7 @@
       },
       {
         "title": "Who we share it with",
-        "body": "We use Supabase for authentication and database storage, Stripe for payments and Anthropic for AI readings. We only share what each function needs."
+        "body": "We use Supabase for authentication and database storage, Whop for payments and Anthropic for AI readings. We only share what each function needs."
       },
       {
         "title": "Your rights",
@@ -1073,7 +1073,7 @@
       { "question": "How do I cancel my subscription?", "answer": "Go to your account and use the billing management button." },
       { "question": "What is a Solar Return?", "answer": "It is the chart for the moment the Sun returns to its natal position. It highlights the main themes of your year." },
       { "question": "What is the Intestinal Cleanse?", "answer": "It is a digital guide to Laghoo Shankhaprakshala, a short intestinal cleansing practice." },
-      { "question": "Is my data safe?", "answer": "We use Supabase to protect accounts and data, and Stripe for payments. You can request deletion at any time." },
+      { "question": "Is my data safe?", "answer": "We use Supabase to protect accounts and data, and Whop for payments. You can request deletion at any time." },
       { "question": "How do I contact support?", "answer": "Write to us at contacto@saritaastrology.com." }
     ]
   },

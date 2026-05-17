@@ -1,4 +1,4 @@
-import { isSubscriptionPriceKey } from "@/lib/billing";
+import { isPriceKey } from "@/lib/billing";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { getWhopClient, getWhopProductForPriceKey, whopPurchaseUrl } from "@/lib/whop";
 
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
   const { priceKey } = (await request.json()) as { priceKey?: unknown };
 
-  if (!isSubscriptionPriceKey(priceKey)) {
+  if (!isPriceKey(priceKey)) {
     return new Response("Unknown Whop product", { status: 400 });
   }
 
@@ -47,10 +47,11 @@ export async function POST(request: Request) {
         supabase_user_id: user.id,
         price_key: priceKey,
         product_id: productId,
+        type: priceKey === "lavado" ? "lavado" : "subscription",
         provider: "whop",
       },
       redirect_url: `${origin}/resultado?checkout=success`,
-      source_url: `${origin}/precios`,
+      source_url: priceKey === "lavado" ? `${origin}/yoga-astral/kriyas/lavado-intestinal` : `${origin}/precios`,
     });
 
     return Response.json({ url: whopPurchaseUrl(checkoutConfiguration.purchase_url) });

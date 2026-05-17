@@ -1,3 +1,8 @@
+import { createElement } from "react";
+
+import LavadoReceiptEmail, { subject as lavadoReceiptSubject } from "@/emails/lavado-receipt";
+import { isPriceKey } from "@/lib/billing";
+import { sendEmail } from "@/lib/email";
 import { createServiceSupabaseClient } from "@/lib/supabase/server";
 import {
   dateFromWhopTimestamp,
@@ -12,6 +17,7 @@ type WhopMetadata = {
   supabase_user_id?: unknown;
   price_key?: unknown;
   product_id?: unknown;
+  type?: unknown;
 };
 
 function metadataValue(metadata: WhopMetadata | null | undefined, key: keyof WhopMetadata) {
@@ -56,6 +62,19 @@ function whopUserIdFromEventData(data: Record<string, unknown>) {
   return null;
 }
 
+function priceKeyFromMetadataOrProduct(metadata: WhopMetadata | null | undefined, productId: string | null) {
+  const metadataPriceKey = metadataValue(metadata, "price_key");
+  if (isPriceKey(metadataPriceKey)) return metadataPriceKey;
+  return priceKeyFromWhopProductId(productId);
+}
+
+function amountFromEventData(data: Record<string, unknown>) {
+  const value = data.final_amount ?? data.amount ?? data.total ?? data.subtotal;
+  if (typeof value === "string" && value.trim()) return value;
+  if (typeof value === "number" && Number.isFinite(value)) return `EUR ${(value / 100).toFixed(2)}`;
+  return "EUR 49.99";
+}
+
 async function metadataForEventData(data: Record<string, unknown>) {
   const metadata = data.metadata && typeof data.metadata === "object" ? data.metadata as WhopMetadata : null;
   if (metadataValue(metadata, "supabase_user_id")) return metadata;
@@ -81,10 +100,41 @@ async function recordWebhookEvent(eventId: string, eventType: string) {
   return !error;
 }
 
-async function activateProfile(data: Record<string, unknown>, metadata: WhopMetadata | null | undefined) {
+async function getProfileEmailByUserId(userId: string) {
+  const supabase = createServiceSupabaseClient();
+  const { data } = await supabase.from("profiles").select("email").eq("id", userId).maybeSingle<{ email: string | null }>();
+  return data?.email ?? null;
+}
+
+async function sendLavadoReceipt(userId: string, amount: string) {
+  const email = await getProfileEmailByUserId(userId);
+
+  if (!email) {
+    return;
+  }
+
+  await sendEmail({
+    to: email,
+    subject: lavadoReceiptSubject,
+    react: createElement(LavadoReceiptEmail, { amount }),
+  });
+}
+
+async function activateProfile(eventType: string, data: Record<string, unknown>, metadata: WhopMetadata | null | undefined) {
   const userId = metadataValue(metadata, "supabase_user_id");
   const metadataProductId = metadataValue(metadata, "product_id");
   const productId = metadataProductId ?? productIdFromEventData(data);
+  const priceKey = priceKeyFromMetadataOrProduct(metadata, productId);
+
+  if (userId && priceKey === "lavado") {
+    const supabase = createServiceSupabaseClient();
+    await supabase.from("profiles").update({ lavado_purchased: true }).eq("id", userId);
+    if (eventType === "payment.succeeded") {
+      await sendLavadoReceipt(userId, amountFromEventData(data));
+    }
+    return;
+  }
+
   const plan = planFromWhopProductId(productId);
 
   if (!userId || !plan) {
@@ -115,8 +165,16 @@ async function deactivateProfile(data: Record<string, unknown>, metadata: WhopMe
   const userId = metadataValue(metadata, "supabase_user_id");
   const membershipId = membershipIdFromEventData(data);
   const productId = metadataValue(metadata, "product_id") ?? productIdFromEventData(data);
-  const priceKey = priceKeyFromWhopProductId(productId);
+  const priceKey = priceKeyFromMetadataOrProduct(metadata, productId);
   const supabase = createServiceSupabaseClient();
+
+  if (priceKey === "lavado") {
+    if (userId) {
+      await supabase.from("profiles").update({ lavado_purchased: false }).eq("id", userId);
+    }
+    return;
+  }
+
   const update = {
     plan: "free",
     billing_period: null,
@@ -160,7 +218,7 @@ export async function POST(request: Request) {
   const metadata = await metadataForEventData(data);
 
   if (event.type === "payment.succeeded" || event.type === "membership.activated") {
-    await activateProfile(data, metadata);
+    await activateProfile(event.type, data, metadata);
   }
 
   if (event.type === "payment.failed" || event.type === "membership.deactivated" || event.type === "refund.created") {
