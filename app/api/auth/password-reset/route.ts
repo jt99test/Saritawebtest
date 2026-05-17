@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
   const supabase = createServiceSupabaseClient();
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://saritaastrology.com";
-  const redirectTo = `${siteUrl}/auth/callback?next=/cuenta/password`;
+  const redirectTo = `${siteUrl}/cuenta/password`;
 
   await supabase.auth.resetPasswordForEmail(email, {
     redirectTo,

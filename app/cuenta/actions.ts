@@ -21,7 +21,7 @@ export async function sendPasswordResetAction(requestedLocale?: Locale) {
   void requestedLocale;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://saritaastrology.com";
   const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-    redirectTo: `${siteUrl}/auth/callback?next=/cuenta/password`,
+    redirectTo: `${siteUrl}/cuenta/password`,
   });
 
   return { ok: !error };

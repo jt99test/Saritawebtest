@@ -24,8 +24,37 @@ export function ResetPasswordForm() {
     if (params.get("reset") === "invalid") {
       setNeedsFreshLink(true);
       setMessage(dictionary.auth.resetPasswordSessionMissing);
+      return;
     }
-  }, [dictionary.auth.resetPasswordSessionMissing]);
+
+    const code = params.get("code");
+    if (!code) {
+      return;
+    }
+
+    let cancelled = false;
+    setPending(true);
+    void supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
+      if (cancelled) {
+        return;
+      }
+
+      setPending(false);
+
+      if (error) {
+        setNeedsFreshLink(true);
+        setMessage(dictionary.auth.resetPasswordSessionMissing);
+        showNotice({ message: dictionary.auth.resetPasswordSessionMissing, tone: "error" });
+        return;
+      }
+
+      window.history.replaceState(null, "", window.location.pathname);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dictionary.auth.resetPasswordSessionMissing, supabase]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
