@@ -28,13 +28,26 @@ export function ResetPasswordForm() {
     }
 
     const code = params.get("code");
-    if (!code) {
+    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+    const accessToken = hashParams.get("access_token");
+    const refreshToken = hashParams.get("refresh_token");
+    const resetType = hashParams.get("type");
+
+    if (!code && (!accessToken || !refreshToken || resetType !== "recovery")) {
       return;
     }
 
     let cancelled = false;
     setPending(true);
-    void supabase.auth.exchangeCodeForSession(code).then(({ error }) => {
+
+    const sessionPromise = code
+      ? supabase.auth.exchangeCodeForSession(code)
+      : supabase.auth.setSession({
+          access_token: accessToken!,
+          refresh_token: refreshToken!,
+        });
+
+    void sessionPromise.then(({ error }) => {
       if (cancelled) {
         return;
       }
