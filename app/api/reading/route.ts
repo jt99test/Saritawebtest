@@ -189,6 +189,7 @@ export async function POST(request: Request) {
       scope: "planet",
       itemKey,
       locale,
+      cacheUserId: access.cacheUserId,
     });
 
     const cachedStatus = getAiGenerationStatus(cachedContent);
@@ -223,6 +224,7 @@ export async function POST(request: Request) {
       scope: "planet",
       itemKey,
       locale,
+      cacheUserId: access.cacheUserId,
     });
 
     if (!reservation.ok) {
@@ -254,6 +256,7 @@ export async function POST(request: Request) {
         scope: "planet",
         itemKey,
         locale,
+        cacheUserId: access.cacheUserId,
       });
       return new Response("Unknown point", { status: 400 });
     }
@@ -278,6 +281,7 @@ export async function POST(request: Request) {
         scope: "planet",
         itemKey,
         locale,
+        cacheUserId: access.cacheUserId,
       });
       return new Response("Planet reading generation failed", { status: 502 });
     }
@@ -290,6 +294,7 @@ export async function POST(request: Request) {
         scope: "planet",
         itemKey,
         locale,
+        cacheUserId: access.cacheUserId,
       });
       return new Response("Empty model response", { status: 502 });
     }
@@ -301,6 +306,7 @@ export async function POST(request: Request) {
       scope: "planet",
       itemKey,
       locale,
+      cacheUserId: access.cacheUserId,
       content,
     });
 

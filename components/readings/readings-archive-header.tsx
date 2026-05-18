@@ -7,13 +7,15 @@ import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { dictionaries } from "@/lib/i18n";
 
-export function ReadingsArchiveHeader() {
+export function ReadingsArchiveHeader({ isAdmin = false }: { isAdmin?: boolean }) {
   const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
+  const adminEyebrow = locale === "en" ? "master archive" : locale === "it" ? "archivio master" : "archivo master";
+  const adminTitle = locale === "en" ? "All readings" : locale === "it" ? "Tutte le letture" : "Todas las lecturas";
 
   return (
     <>
-      <div className="mx-auto mb-10 flex max-w-3xl items-center justify-between gap-4 border-b border-black/10 pb-4">
+      <div className={`mx-auto mb-10 flex ${isAdmin ? "max-w-5xl" : "max-w-3xl"} items-center justify-between gap-4 border-b border-black/10 pb-4`}>
         <Link
           href="/"
           className="text-xs font-medium uppercase tracking-[0.24em] text-[#3a3048] transition hover:text-ivory"
@@ -23,14 +25,14 @@ export function ReadingsArchiveHeader() {
         <AccountButton />
       </div>
 
-      <div className="mx-auto max-w-3xl">
+      <div className={`mx-auto ${isAdmin ? "max-w-5xl" : "max-w-3xl"}`}>
         <div className="grid gap-6 sm:grid-cols-[1fr_auto] sm:items-end">
           <div>
             <p className="mb-3 text-[12px] font-semibold uppercase tracking-[0.24em] text-[#5c4a24]">
-              {dictionary.readings.eyebrow}
+              {isAdmin ? adminEyebrow : dictionary.readings.eyebrow}
             </p>
             <h1 className="font-serif text-[48px] font-normal leading-none text-ivory">
-              {dictionary.readings.title}
+              {isAdmin ? adminTitle : dictionary.readings.title}
             </h1>
           </div>
           <PrimaryButton

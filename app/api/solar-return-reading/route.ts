@@ -175,6 +175,7 @@ export async function POST(request: Request) {
     scope: "solar_return",
     itemKey,
     locale,
+    cacheUserId: access.cacheUserId,
   });
 
   const cachedStatus = getAiGenerationStatus(cachedContent);
@@ -196,6 +197,7 @@ export async function POST(request: Request) {
     scope: "solar_return",
     itemKey,
     locale,
+    cacheUserId: access.cacheUserId,
   });
 
   if (!reservation.ok) return reservation.response;
@@ -257,6 +259,7 @@ ${langInstruction(locale)}`;
       scope: "solar_return",
       itemKey,
       locale,
+      cacheUserId: access.cacheUserId,
     });
     return new Response("Solar return reading JSON could not be parsed", { status: 502 });
   }
@@ -270,6 +273,7 @@ ${langInstruction(locale)}`;
       scope: "solar_return",
       itemKey,
       locale,
+      cacheUserId: access.cacheUserId,
     });
     return new Response("Solar return reading JSON shape invalid", { status: 502 });
   }
@@ -286,6 +290,7 @@ ${langInstruction(locale)}`;
     scope: "solar_return",
     itemKey,
     locale,
+    cacheUserId: access.cacheUserId,
     content: data,
   });
 

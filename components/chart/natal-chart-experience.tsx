@@ -40,7 +40,10 @@ type PageTabId = "natal" | "moon" | "yoga" | "complete" | "solarReturn" | "synas
 
 const PAGE_TABS: PageTabId[] = ["natal", "moon", "yoga", "complete", "solarReturn", "synastry", "astrocartography"];
 const MOBILE_PRIMARY_TABS: PageTabId[] = ["natal", "moon", "yoga", "complete"];
-const INTRO_VIDEO_URL = "https://www.loom.com/share/6b4a02e4b2a0405f9d764cd77d36d594";
+const INTRO_VIDEO_URLS: Partial<Record<Locale, string>> = {
+  es: "https://www.loom.com/share/4bdc3a5ed1de45daa28625a99d44ac20",
+  it: "https://www.loom.com/share/4ac67c6bae7b4656a31d76e63d3b9fac",
+};
 
 function introHelpLabel(locale: Locale) {
   if (locale === "en") return "Need help? See how SARITA works";
@@ -210,6 +213,7 @@ export function NatalChartExperience({
   const titleNameClass = nameSizeClass(firstName);
   const activeRequiredPlan = TAB_REQUIREMENTS[pageTab];
   const activeTabLocked = !planLoading && !hasPlanAccess(plan, activeRequiredPlan);
+  const introVideoUrl = INTRO_VIDEO_URLS[locale];
 
   function openPricing(requiredPlan: PaidPlan) {
     setPricingRequiredPlan(requiredPlan);
@@ -511,16 +515,18 @@ export function NatalChartExperience({
               </p>
             ) : null}
             <ChartShareActions chart={chart} dictionary={dictionary} plan={plan} />
-            <div className="mt-4 text-center">
-              <a
-                href={INTRO_VIDEO_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center border border-[#d7e7ff]/14 bg-[#061331]/42 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d7e7ff]/72 shadow-[0_0_24px_rgba(0,102,255,0.08)] transition hover:border-[#f5d782]/38 hover:text-[#f5d782]"
-              >
-                {introHelpLabel(locale)}
-              </a>
-            </div>
+            {introVideoUrl ? (
+              <div className="mt-4 text-center">
+                <a
+                  href={introVideoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center border border-[#d7e7ff]/14 bg-[#061331]/42 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d7e7ff]/72 shadow-[0_0_24px_rgba(0,102,255,0.08)] transition hover:border-[#f5d782]/38 hover:text-[#f5d782]"
+                >
+                  {introHelpLabel(locale)}
+                </a>
+              </div>
+            ) : null}
 
             {!panelOpen && !selectedPointId ? (
               <div className="mx-auto mt-8 max-w-3xl py-6 text-center">

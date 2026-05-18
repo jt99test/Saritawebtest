@@ -1,5 +1,8 @@
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 
+import { isAdminEmail } from "@/lib/admin";
+import { createServiceSupabaseClient } from "@/lib/supabase/server";
+
 export type AiReadingScope =
   | "planet"
   | "general"
@@ -27,6 +30,7 @@ type AiReadingCacheInput = {
   scope: AiReadingScope;
   itemKey: string;
   locale?: string;
+  cacheUserId?: string;
 };
 
 type SetAiReadingCacheInput = AiReadingCacheInput & {
@@ -47,6 +51,14 @@ function dailyAiReadingLimit() {
 
 function normalizedLocale(locale?: string) {
   return locale === "en" || locale === "it" ? locale : "es";
+}
+
+function getCacheUserId({ user, cacheUserId }: Pick<AiReadingCacheInput, "user" | "cacheUserId">) {
+  return cacheUserId ?? user.id;
+}
+
+function getCacheSupabase({ supabase, user, cacheUserId }: Pick<AiReadingCacheInput, "supabase" | "user" | "cacheUserId">) {
+  return getCacheUserId({ user, cacheUserId }) === user.id ? supabase : createServiceSupabaseClient();
 }
 
 function isMissingRateLimitTable(error: { code?: string; message?: string } | null) {
@@ -90,13 +102,16 @@ async function getAiReadingGenerationRow({
   scope,
   itemKey,
   locale,
+  cacheUserId,
 }: AiReadingCacheInput) {
   if (!readingId) return { row: null as AiReadingGenerationRow | null, error: null };
 
-  const query = supabase
+  const ownerId = getCacheUserId({ user, cacheUserId });
+  const client = getCacheSupabase({ supabase, user, cacheUserId });
+  const query = client
     .from("ai_reading_generations")
     .select("content, created_at")
-    .eq("user_id", user.id)
+    .eq("user_id", ownerId)
     .eq("reading_id", readingId)
     .eq("scope", scope)
     .eq("item_key", itemKey)
@@ -110,10 +125,10 @@ async function getAiReadingGenerationRow({
     return { row: null, error };
   }
 
-  const fallback = await supabase
+  const fallback = await client
     .from("ai_reading_generations")
     .select("content")
-    .eq("user_id", user.id)
+    .eq("user_id", ownerId)
     .eq("reading_id", readingId)
     .eq("scope", scope)
     .eq("item_key", itemKey)
@@ -156,10 +171,10 @@ export async function validateReadingGenerationAccess({
 
   const { data, error } = await supabase
     .from("readings")
-    .select("id")
+    .select("id,user_id")
     .eq("id", readingId)
     .eq("user_id", user.id)
-    .maybeSingle();
+    .maybeSingle<{ id: string; user_id: string }>();
 
   if (error) {
     console.error("Reading access check failed:", error.message);
@@ -167,10 +182,30 @@ export async function validateReadingGenerationAccess({
   }
 
   if (!data) {
-    return { ok: false as const, response: new Response("Reading not found", { status: 404 }) };
+    if (!isAdminEmail(user.email)) {
+      return { ok: false as const, response: new Response("Reading not found", { status: 404 }) };
+    }
+
+    const service = createServiceSupabaseClient();
+    const { data: adminData, error: adminError } = await service
+      .from("readings")
+      .select("id,user_id")
+      .eq("id", readingId)
+      .maybeSingle<{ id: string; user_id: string }>();
+
+    if (adminError) {
+      console.error("Admin reading access check failed:", adminError.message);
+      return { ok: false as const, response: new Response("Reading access check failed", { status: 500 }) };
+    }
+
+    if (!adminData) {
+      return { ok: false as const, response: new Response("Reading not found", { status: 404 }) };
+    }
+
+    return { ok: true as const, cacheUserId: adminData.user_id };
   }
 
-  return { ok: true as const };
+  return { ok: true as const, cacheUserId: data.user_id };
 }
 
 export async function getCachedAiReading({
@@ -180,6 +215,7 @@ export async function getCachedAiReading({
   scope,
   itemKey,
   locale,
+  cacheUserId,
 }: AiReadingCacheInput) {
   if (!readingId) return null;
 
@@ -190,6 +226,7 @@ export async function getCachedAiReading({
     scope,
     itemKey,
     locale,
+    cacheUserId,
   });
 
   if (error) {
@@ -207,11 +244,14 @@ export async function reserveAiReadingGeneration({
   scope,
   itemKey,
   locale,
+  cacheUserId,
 }: AiReadingCacheInput): Promise<AiReadingReservation> {
   if (!readingId) {
     return { ok: false, response: new Response("readingId required", { status: 400 }) };
   }
 
+  const ownerId = getCacheUserId({ user, cacheUserId });
+  const client = getCacheSupabase({ supabase, user, cacheUserId });
   const { row: cachedRow, error: cacheError } = await getAiReadingGenerationRow({
     supabase,
     user,
@@ -219,6 +259,7 @@ export async function reserveAiReadingGeneration({
     scope,
     itemKey,
     locale,
+    cacheUserId,
   });
 
   if (cacheError) {
@@ -292,20 +333,20 @@ export async function reserveAiReadingGeneration({
 
   const normalized = normalizedLocale(locale);
   if (status === "failed" || staleGenerating) {
-    let { error } = await supabase
+    let { error } = await client
       .from("ai_reading_generations")
       .update({ content: GENERATING_CONTENT, created_at: new Date().toISOString() })
-      .eq("user_id", user.id)
+      .eq("user_id", ownerId)
       .eq("reading_id", readingId)
       .eq("scope", scope)
       .eq("item_key", itemKey)
       .eq("locale", normalized);
 
     if (isMissingCreatedAtColumn(error)) {
-      const fallback = await supabase
+      const fallback = await client
         .from("ai_reading_generations")
         .update({ content: GENERATING_CONTENT })
-        .eq("user_id", user.id)
+        .eq("user_id", ownerId)
         .eq("reading_id", readingId)
         .eq("scope", scope)
         .eq("item_key", itemKey)
@@ -321,10 +362,10 @@ export async function reserveAiReadingGeneration({
     return { ok: true, reserved: true };
   }
 
-  const { error } = await supabase
+  const { error } = await client
     .from("ai_reading_generations")
     .insert({
-      user_id: user.id,
+      user_id: ownerId,
       reading_id: readingId,
       scope,
       item_key: itemKey,
@@ -333,7 +374,7 @@ export async function reserveAiReadingGeneration({
     });
 
   if (error) {
-    const latestContent = await getCachedAiReading({ supabase, user, readingId, scope, itemKey, locale });
+    const latestContent = await getCachedAiReading({ supabase, user, readingId, scope, itemKey, locale, cacheUserId });
     const latestStatus = getAiGenerationStatus(latestContent);
     if (latestStatus === "generating" || latestStatus === "failed") {
       return { ok: false, response: aiGenerationStatusResponse(latestStatus) };
@@ -357,14 +398,17 @@ export async function setCachedAiReading({
   itemKey,
   locale,
   content,
+  cacheUserId,
 }: SetAiReadingCacheInput) {
   if (!readingId) return;
 
   const normalized = normalizedLocale(locale);
-  const { data: updated, error: updateError } = await supabase
+  const ownerId = getCacheUserId({ user, cacheUserId });
+  const client = getCacheSupabase({ supabase, user, cacheUserId });
+  const { data: updated, error: updateError } = await client
     .from("ai_reading_generations")
     .update({ content })
-    .eq("user_id", user.id)
+    .eq("user_id", ownerId)
     .eq("reading_id", readingId)
     .eq("scope", scope)
     .eq("item_key", itemKey)
@@ -376,11 +420,11 @@ export async function setCachedAiReading({
     return;
   }
 
-  const { error } = await supabase
+  const { error } = await client
     .from("ai_reading_generations")
     .upsert(
       {
-        user_id: user.id,
+        user_id: ownerId,
         reading_id: readingId,
         scope,
         item_key: itemKey,

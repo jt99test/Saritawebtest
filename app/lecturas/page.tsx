@@ -5,8 +5,17 @@ import { ReadingUsageSummary } from "@/components/readings/reading-usage-summary
 import { ReadingsList } from "@/components/readings/readings-list";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { isAdminEmail } from "@/lib/admin";
+import { createServerSupabaseClient, createServiceSupabaseClient } from "@/lib/supabase/server";
 import { getPlanReadingLimit } from "@/lib/reading-limits";
+
+type ReadingRow = {
+  id: string;
+  user_id: string | null;
+  type: string | null;
+  chart_data: unknown;
+  created_at: string;
+};
 
 export default async function ReadingsPage() {
   const supabase = await createServerSupabaseClient();
@@ -18,11 +27,24 @@ export default async function ReadingsPage() {
     redirect("/?auth=required");
   }
 
-  const { data: readings } = await supabase
-    .from("readings")
-    .select("id,type,chart_data,created_at")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
+  const isAdmin = isAdminEmail(user.email);
+  const readingsClient = isAdmin ? createServiceSupabaseClient() : supabase;
+  const readingsQuery = readingsClient.from("readings").select("id,user_id,type,chart_data,created_at").order("created_at", { ascending: false });
+  const { data: rawReadings } = isAdmin ? await readingsQuery : await readingsQuery.eq("user_id", user.id);
+  const readingRows = (rawReadings ?? []) as ReadingRow[];
+  const ownerIds = Array.from(new Set(readingRows.map((reading) => reading.user_id).filter(Boolean))) as string[];
+  const { data: ownerProfiles } = isAdmin && ownerIds.length
+    ? await readingsClient.from("profiles").select("id,email").in("id", ownerIds)
+    : { data: [] };
+  const ownerEmails = new Map((ownerProfiles ?? []).map((profile) => [profile.id, profile.email]));
+  const readings = readingRows.map((reading) => ({
+    id: reading.id,
+    user_id: reading.user_id,
+    type: reading.type,
+    chart_data: reading.chart_data,
+    created_at: reading.created_at,
+    owner_email: reading.user_id ? ownerEmails.get(reading.user_id) ?? null : null,
+  }));
   const { data: profile } = await supabase
     .from("profiles")
     .select("plan")
@@ -47,11 +69,19 @@ export default async function ReadingsPage() {
 
       <section className="relative py-5 sm:py-8">
         <Container className="min-h-[100svh] sm:min-h-screen">
-          <ReadingsArchiveHeader />
+          <ReadingsArchiveHeader isAdmin={isAdmin} />
 
-          <div className="mx-auto max-w-3xl">
-            <ReadingUsageSummary plan={plan} count={count ?? 0} limit={limit} />
-            <ReadingsList readings={readings ?? []} />
+          <div className={isAdmin ? "mx-auto max-w-5xl" : "mx-auto max-w-3xl"}>
+            {isAdmin ? (
+              <div className="mt-6 border-y border-black/10 py-4">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048]">
+                  Master view <span className="text-[#5c4a24]">{readings.length} readings</span>
+                </p>
+              </div>
+            ) : (
+              <ReadingUsageSummary plan={plan} count={count ?? 0} limit={limit} />
+            )}
+            <ReadingsList readings={readings} isAdmin={isAdmin} />
           </div>
         </Container>
       </section>

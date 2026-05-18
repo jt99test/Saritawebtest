@@ -374,6 +374,7 @@ export async function POST(request: Request) {
       scope: "lunar",
       itemKey,
       locale,
+      cacheUserId: access.cacheUserId,
     });
 
     const cachedStatus = getAiGenerationStatus(cachedContent);
@@ -420,6 +421,7 @@ export async function POST(request: Request) {
       scope: "lunar",
       itemKey,
       locale,
+      cacheUserId: access.cacheUserId,
     });
 
     if (!reservation.ok) {
@@ -510,6 +512,7 @@ Reglas para esa línea final:
         scope: "lunar",
         itemKey,
         locale,
+        cacheUserId: access.cacheUserId,
       });
       return new Response("Lunar report generation failed", { status: 502 });
     }
@@ -534,6 +537,7 @@ Reglas para esa línea final:
         scope: "lunar",
         itemKey,
         locale,
+        cacheUserId: access.cacheUserId,
       });
       return new Response("Empty model response", { status: 502 });
     }
@@ -545,6 +549,7 @@ Reglas para esa línea final:
       scope: "lunar",
       itemKey,
       locale,
+      cacheUserId: access.cacheUserId,
       content: {
         prose,
         actions: finalActions,

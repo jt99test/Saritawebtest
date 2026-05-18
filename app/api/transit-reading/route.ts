@@ -205,6 +205,7 @@ export async function POST(request: Request) {
     scope: "transit",
     itemKey,
     locale,
+    cacheUserId: access.cacheUserId,
   });
 
   const cachedStatus = getAiGenerationStatus(cachedContent);
@@ -226,6 +227,7 @@ export async function POST(request: Request) {
     scope: "transit",
     itemKey,
     locale,
+    cacheUserId: access.cacheUserId,
   });
 
   if (!reservation.ok) return reservation.response;
@@ -442,6 +444,7 @@ ${promptLanguageInstruction(locale)}`;
       scope: "transit",
       itemKey,
       locale,
+      cacheUserId: access.cacheUserId,
     });
     return new Response("Transit reading JSON could not be parsed", { status: 502 });
   }
@@ -455,6 +458,7 @@ ${promptLanguageInstruction(locale)}`;
       scope: "transit",
       itemKey,
       locale,
+      cacheUserId: access.cacheUserId,
     });
     return new Response("Transit reading JSON shape invalid", { status: 502 });
   }
@@ -468,6 +472,7 @@ ${promptLanguageInstruction(locale)}`;
     scope: "transit",
     itemKey,
     locale,
+    cacheUserId: access.cacheUserId,
     content: {
       ...parsed,
       readingGeneratedAt,

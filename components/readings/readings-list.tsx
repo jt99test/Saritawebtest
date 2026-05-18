@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 
 import { deleteReadingAction } from "@/app/lecturas/actions";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
@@ -13,9 +13,11 @@ import { dictionaries } from "@/lib/i18n";
 
 type StoredReading = {
   id: string;
+  user_id: string | null;
   type: string | null;
   chart_data: unknown;
   created_at: string;
+  owner_email?: string | null;
 };
 
 function getStoredResult(reading: StoredReading): ChartCalculationResult | null {
@@ -32,13 +34,57 @@ function getStoredResult(reading: StoredReading): ChartCalculationResult | null 
   } as ChartCalculationResult;
 }
 
-export function ReadingsList({ readings }: { readings: StoredReading[] }) {
+export function ReadingsList({ readings, isAdmin = false }: { readings: StoredReading[]; isAdmin?: boolean }) {
   const router = useRouter();
   const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
   const [isPending, startTransition] = useTransition();
+  const adminCopy = {
+    search: locale === "en" ? "Search by client or email" : locale === "it" ? "Cerca per cliente o email" : "Buscar por cliente o email",
+    allTypes: locale === "en" ? "All types" : locale === "it" ? "Tutti i tipi" : "Todos los tipos",
+    noMatches: locale === "en" ? "No readings match those filters." : locale === "it" ? "Nessuna lettura coincide con i filtri." : "No hay lecturas con esos filtros.",
+    client: locale === "en" ? "Client" : locale === "it" ? "Cliente" : "Cliente",
+    account: locale === "en" ? "Account" : locale === "it" ? "Account" : "Cuenta",
+  };
+  const typeOptions = useMemo(
+    () => Array.from(new Set(readings.map((reading) => reading.type).filter(Boolean))).sort() as string[],
+    [readings],
+  );
+  const filteredReadings = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase();
+
+    return readings.filter((reading) => {
+      const result = getStoredResult(reading);
+      const label = result?.chart.event.name ?? dictionary.readings.fallbackTitle;
+      const typeLabel =
+        reading.type && reading.type in dictionary.readings.types
+          ? dictionary.readings.types[reading.type as keyof typeof dictionary.readings.types]
+          : reading.type ?? "";
+      const matchesType = typeFilter === "all" || reading.type === typeFilter;
+      const matchesSearch =
+        !normalizedSearch ||
+        label.toLowerCase().includes(normalizedSearch) ||
+        (reading.owner_email ?? "").toLowerCase().includes(normalizedSearch) ||
+        typeLabel.toLowerCase().includes(normalizedSearch);
+
+      return matchesType && matchesSearch;
+    });
+  }, [dictionary, readings, search, typeFilter]);
+
+  function openReading(reading: StoredReading) {
+    const result = getStoredResult(reading);
+
+    if (!result) {
+      return;
+    }
+
+    window.sessionStorage.setItem(CHART_RESULT_KEY, JSON.stringify(result));
+    router.push("/resultado");
+  }
 
   if (!readings.length) {
     return (
@@ -72,106 +118,128 @@ export function ReadingsList({ readings }: { readings: StoredReading[] }) {
   }
 
   return (
-    <div className="mt-8 rounded-[1.8rem] border border-dusty-gold/14 bg-[#f8f2e8]/82 px-5 py-2 shadow-[0_12px_34px_rgba(30,26,46,0.05),inset_0_1px_0_rgba(255,255,255,0.72)] sm:px-6">
-      {readings.map((reading) => {
-        const result = getStoredResult(reading);
-        const label = result?.chart.event.name ?? dictionary.readings.fallbackTitle;
-        const typeLabel =
-          reading.type && reading.type in dictionary.readings.types
-            ? dictionary.readings.types[reading.type as keyof typeof dictionary.readings.types]
-            : reading.type;
-        const date = new Intl.DateTimeFormat(locale, {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }).format(new Date(reading.created_at));
-
-        return (
-          <article
-            key={reading.id}
-            className="grid gap-4 border-b border-black/10 py-5 transition hover:border-dusty-gold/24 sm:grid-cols-[1fr_auto] sm:items-center"
+    <>
+      {isAdmin ? (
+        <div className="mt-8 grid gap-3 border-y border-black/10 py-4 sm:grid-cols-[1fr_14rem]">
+          <input
+            type="search"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder={adminCopy.search}
+            className="min-h-11 border border-black/10 bg-[#f8f2e8]/82 px-4 text-[13px] font-medium text-[#3a3048] outline-none transition placeholder:text-[#3a3048]/45 focus:border-dusty-gold/45"
+          />
+          <select
+            value={typeFilter}
+            onChange={(event) => setTypeFilter(event.target.value)}
+            className="min-h-11 border border-black/10 bg-[#f8f2e8]/82 px-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#3a3048] outline-none transition focus:border-dusty-gold/45"
           >
-            <button
-              type="button"
-              disabled={!result}
-              onClick={() => {
-                if (!result) {
-                  return;
-                }
+            <option value="all">{adminCopy.allTypes}</option>
+            {typeOptions.map((type) => (
+              <option key={type} value={type}>
+                {type in dictionary.readings.types ? dictionary.readings.types[type as keyof typeof dictionary.readings.types] : type}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : null}
 
-                window.sessionStorage.setItem(CHART_RESULT_KEY, JSON.stringify(result));
-                router.push("/resultado");
-              }}
-              className="min-w-0 text-left disabled:cursor-not-allowed disabled:opacity-50"
+      <div className="mt-8 rounded-[1.8rem] border border-dusty-gold/14 bg-[#f8f2e8]/82 px-5 py-2 shadow-[0_12px_34px_rgba(30,26,46,0.05),inset_0_1px_0_rgba(255,255,255,0.72)] sm:px-6">
+        {filteredReadings.length ? filteredReadings.map((reading) => {
+          const result = getStoredResult(reading);
+          const label = result?.chart.event.name ?? dictionary.readings.fallbackTitle;
+          const typeLabel =
+            reading.type && reading.type in dictionary.readings.types
+              ? dictionary.readings.types[reading.type as keyof typeof dictionary.readings.types]
+              : reading.type;
+          const date = new Intl.DateTimeFormat(locale, {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          }).format(new Date(reading.created_at));
+
+          return (
+            <article
+              key={reading.id}
+              className="grid gap-4 border-b border-black/10 py-5 transition hover:border-dusty-gold/24 sm:grid-cols-[1fr_auto] sm:items-center"
             >
-              <p className="font-serif text-[21px] leading-tight text-ivory">
-                {label}
-              </p>
-              <p className="mt-1 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048]">
-                {typeLabel} · {date}
-              </p>
-            </button>
+              <button
+                type="button"
+                disabled={!result}
+                onClick={() => openReading(reading)}
+                className="min-w-0 text-left disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <p className="font-serif text-[21px] leading-tight text-ivory">
+                  {label}
+                </p>
+                <p className="mt-1 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048]">
+                  {typeLabel} · {date}
+                </p>
+                {isAdmin ? (
+                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#5c4a24]">
+                    <span>{adminCopy.client}: {label}</span>
+                    <span>{adminCopy.account}: {reading.owner_email ?? reading.user_id ?? "-"}</span>
+                  </div>
+                ) : null}
+              </button>
 
-            <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-              {confirmingId === reading.id ? (
-                <>
-                  <button
-                    type="button"
-                    disabled={isPending && pendingId === reading.id}
-                    onClick={() => {
-                      setPendingId(reading.id);
-                      startTransition(async () => {
-                        const result = await deleteReadingAction(reading.id);
-                        setPendingId(null);
+              <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                {confirmingId === reading.id && !isAdmin ? (
+                  <>
+                    <button
+                      type="button"
+                      disabled={isPending && pendingId === reading.id}
+                      onClick={() => {
+                        setPendingId(reading.id);
+                        startTransition(async () => {
+                          const result = await deleteReadingAction(reading.id);
+                          setPendingId(null);
 
-                        if (result.ok) {
-                          setConfirmingId(null);
-                          router.refresh();
-                        }
-                      });
-                    }}
-                    className="inline-flex min-w-20 items-center justify-center border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-amber-100/82 transition hover:border-amber-300/45"
-                  >
-                    {isPending && pendingId === reading.id ? "..." : dictionary.readings.delete}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setConfirmingId(null)}
-                    className="inline-flex min-w-20 items-center justify-center border border-black/10 px-3 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-ivory"
-                  >
-                    {dictionary.readings.cancel}
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    type="button"
-                    disabled={!result}
-                    onClick={() => {
-                      if (!result) {
-                        return;
-                      }
-
-                      window.sessionStorage.setItem(CHART_RESULT_KEY, JSON.stringify(result));
-                      router.push("/resultado");
-                    }}
-                    className="inline-flex min-w-24 items-center justify-center border border-dusty-gold/24 bg-dusty-gold/[0.055] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24] transition hover:border-dusty-gold/42 hover:bg-dusty-gold/[0.085] disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {dictionary.readings.open}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setConfirmingId(reading.id)}
-                    className="inline-flex min-w-24 items-center justify-center border border-black/10 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:border-amber-300/28 hover:text-amber-100/78"
-                  >
-                    {dictionary.readings.delete}
-                  </button>
-                </>
-              )}
-            </div>
-          </article>
-        );
-      })}
-    </div>
+                          if (result.ok) {
+                            setConfirmingId(null);
+                            router.refresh();
+                          }
+                        });
+                      }}
+                      className="inline-flex min-w-20 items-center justify-center border border-amber-300/30 bg-amber-300/10 px-3 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-amber-100/82 transition hover:border-amber-300/45"
+                    >
+                      {isPending && pendingId === reading.id ? "..." : dictionary.readings.delete}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmingId(null)}
+                      className="inline-flex min-w-20 items-center justify-center border border-black/10 px-3 py-2 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#3a3048] transition hover:text-ivory"
+                    >
+                      {dictionary.readings.cancel}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      disabled={!result}
+                      onClick={() => openReading(reading)}
+                      className="inline-flex min-w-24 items-center justify-center border border-dusty-gold/24 bg-dusty-gold/[0.055] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24] transition hover:border-dusty-gold/42 hover:bg-dusty-gold/[0.085] disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {dictionary.readings.open}
+                    </button>
+                    {!isAdmin ? (
+                      <button
+                        type="button"
+                        onClick={() => setConfirmingId(reading.id)}
+                        className="inline-flex min-w-24 items-center justify-center border border-black/10 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:border-amber-300/28 hover:text-amber-100/78"
+                      >
+                        {dictionary.readings.delete}
+                      </button>
+                    ) : null}
+                  </>
+                )}
+              </div>
+            </article>
+          );
+        }) : (
+          <p className="py-8 text-center text-sm font-medium text-[#3a3048]">{adminCopy.noMatches}</p>
+        )}
+      </div>
+    </>
   );
 }

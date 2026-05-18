@@ -22,7 +22,10 @@ type HomePageProps = {
 };
 
 const FEATURE_SYMBOLS = ["\u263d", "\u2609", "\u2644", "\u260c", "\u2609", "\u26ad", "\u2641"] as const;
-const INTRO_VIDEO_URL = "https://www.loom.com/share/6b4a02e4b2a0405f9d764cd77d36d594";
+const INTRO_VIDEO_URLS: Partial<Record<Locale, string>> = {
+  es: "https://www.loom.com/share/4bdc3a5ed1de45daa28625a99d44ac20",
+  it: "https://www.loom.com/share/4ac67c6bae7b4656a31d76e63d3b9fac",
+};
 
 function introHelpLabel(locale: Locale) {
   if (locale === "en") return "First time here? See how SARITA works";
@@ -108,6 +111,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
     locale === "en" ? "View all readings" : locale === "it" ? "Vedi tutte le letture" : "Ver todas las lecturas";
   const lessReadingsLabel =
     locale === "en" ? "Show less" : locale === "it" ? "Mostra meno" : "Ver menos";
+  const introVideoUrl = INTRO_VIDEO_URLS[locale];
   const mobileMenuLinks = [
     { href: "/form", label: dictionary.common.newReading },
     { href: "/lecturas", label: dictionary.common.viewReadings },
@@ -328,14 +332,16 @@ export function HomePage({ moonStatus }: HomePageProps) {
               >
                 {dictionary.home.cta}
               </PrimaryButton>
-              <a
-                href={INTRO_VIDEO_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d7e7ff]/68 transition hover:text-[#f5d782] sm:text-[11px]"
-              >
-                {introHelpLabel(locale)}
-              </a>
+              {introVideoUrl ? (
+                <a
+                  href={introVideoUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d7e7ff]/68 transition hover:text-[#f5d782] sm:text-[11px]"
+                >
+                  {introHelpLabel(locale)}
+                </a>
+              ) : null}
             </motion.div>
           </div>
 
