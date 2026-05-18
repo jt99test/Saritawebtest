@@ -1,6 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { Message } from "@anthropic-ai/sdk/resources/messages";
 
+import { isAdminEmail } from "@/lib/admin";
+
 import { ANTHROPIC_PREMIUM_READING_MODEL } from "@/lib/anthropic-models";
 import {
   aiGenerationStatusResponse,
@@ -188,7 +190,7 @@ export async function POST(request: Request) {
   }
 
   const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).maybeSingle();
-  if (profile?.plan !== "avanzado") return new Response("Advanced plan required", { status: 403 });
+  if (!isAdminEmail(user.email) && profile?.plan !== "avanzado") return new Response("Advanced plan required", { status: 403 });
 
   const reservation = await reserveAiReadingGeneration({
     supabase,
@@ -302,3 +304,5 @@ ${langInstruction(locale)}`;
     },
   });
 }
+
+

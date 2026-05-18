@@ -1,6 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { Message } from "@anthropic-ai/sdk/resources/messages";
 
+import { isAdminEmail } from "@/lib/admin";
+
 import type { ChartPointId, NatalChartData } from "@/lib/chart";
 import { zodiacSigns } from "@/lib/chart";
 import { ANTHROPIC_STANDARD_READING_MODEL } from "@/lib/anthropic-models";
@@ -213,7 +215,7 @@ export async function POST(request: Request) {
       .eq("id", user.id)
       .maybeSingle();
 
-    if ((profile?.plan ?? "free") === "free") {
+    if (!isAdminEmail(user.email) && (profile?.plan ?? "free") === "free") {
       return new Response("Plan required", { status: 403 });
     }
 
@@ -322,3 +324,5 @@ export async function POST(request: Request) {
     return new Response("Internal error", { status: 500 });
   }
 }
+
+

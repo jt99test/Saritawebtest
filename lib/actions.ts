@@ -4,6 +4,7 @@ import type { NatalChartData } from "./chart";
 import type { ChartActionResult, ChartCalculationResult, FormValues } from "./chart-session";
 import type { PlaceSuggestion } from "./geocoding";
 import type { ReadingGender } from "./reading-gender";
+import { isAdminEmail } from "./admin";
 import { getPlanReadingLimit } from "./reading-limits";
 import { createServerSupabaseClient } from "./supabase/server";
 
@@ -28,8 +29,9 @@ async function getReadingAccess() {
     .eq("id", user.id)
     .maybeSingle();
 
-  const plan = profile?.plan ?? "free";
-  const limit = getPlanReadingLimit(plan);
+  const admin = isAdminEmail(user.email);
+  const plan = admin ? "avanzado" : profile?.plan ?? "free";
+  const limit = admin ? Number.MAX_SAFE_INTEGER : getPlanReadingLimit(plan);
   // Usage is counted from immutable usage events so deleting an archived reading
   // does not refund the monthly quota that was already spent.
   const { count } = await supabase
@@ -340,7 +342,7 @@ export async function saveAndCalculateSynastryPartnerAction(input: SynastryPartn
     .eq("id", user.id)
     .maybeSingle();
 
-  if (profile?.plan !== "avanzado") {
+  if (!isAdminEmail(user.email) && profile?.plan !== "avanzado") {
     return { ok: false as const, error: "advanced_plan_required" };
   }
 

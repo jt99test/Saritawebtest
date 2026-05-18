@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { isAdminEmail } from "@/lib/admin";
 import { getPlanReadingLimit } from "@/lib/reading-limits";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -52,8 +53,9 @@ export async function getReadingUsageAction() {
     .select("id", { count: "exact", head: true })
     .eq("user_id", user.id)
     .gte("created_at", startOfMonth.toISOString());
-  const plan = profile?.plan === "pro" || profile?.plan === "avanzado" ? profile.plan : "free";
-  const limit = getPlanReadingLimit(plan);
+  const admin = isAdminEmail(user.email);
+  const plan = admin ? "avanzado" : profile?.plan === "pro" || profile?.plan === "avanzado" ? profile.plan : "free";
+  const limit = admin ? Number.MAX_SAFE_INTEGER : getPlanReadingLimit(plan);
 
   return { count: count ?? 0, limit, plan };
 }

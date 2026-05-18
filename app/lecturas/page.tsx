@@ -73,9 +73,9 @@ export default async function ReadingsPage() {
 
           <div className={isAdmin ? "mx-auto max-w-5xl" : "mx-auto max-w-3xl"}>
             {isAdmin ? (
-              <div className="mt-6 border-y border-black/10 py-4">
-                <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048]">
-                  Master view <span className="text-[#5c4a24]">{readings.length} readings</span>
+              <div className="mt-6 border-y border-[#d7e7ff]/18 py-4">
+                <p className="text-[12px] font-semibold uppercase tracking-[0.2em] text-[#d7e7ff]/78">
+                  Master view <span className="text-[#f5d782]">{readings.length} readings</span>
                 </p>
               </div>
             ) : (

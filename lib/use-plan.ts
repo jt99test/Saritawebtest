@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { getCurrentPlanAction } from "@/app/plan/actions";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import type { BillingPeriod, PaidPlan } from "@/lib/billing";
 
@@ -38,17 +39,13 @@ export function usePlan() {
         return;
       }
 
-      const { data } = await supabase
-        .from("profiles")
-        .select("plan,billing_period,lavado_purchased")
-        .eq("id", user.id)
-        .maybeSingle();
+      const data = await getCurrentPlanAction();
 
       if (!cancelled) {
         setState({
-          plan: data?.plan === "pro" || data?.plan === "avanzado" ? data.plan : "free",
-          billing_period: data?.billing_period === "monthly" || data?.billing_period === "yearly" ? data.billing_period : null,
-          lavado_purchased: Boolean(data?.lavado_purchased),
+          plan: data.plan,
+          billing_period: data.billing_period,
+          lavado_purchased: data.lavado_purchased,
           loading: false,
         });
       }

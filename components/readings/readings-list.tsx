@@ -120,18 +120,18 @@ export function ReadingsList({ readings, isAdmin = false }: { readings: StoredRe
   return (
     <>
       {isAdmin ? (
-        <div className="mt-8 grid gap-3 border-y border-black/10 py-4 sm:grid-cols-[1fr_14rem]">
+        <div className="mt-8 grid gap-3 border-y border-[#d7e7ff]/18 py-4 sm:grid-cols-[1fr_14rem]">
           <input
             type="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder={adminCopy.search}
-            className="min-h-11 border border-black/10 bg-[#f8f2e8]/82 px-4 text-[13px] font-medium text-[#3a3048] outline-none transition placeholder:text-[#3a3048]/45 focus:border-dusty-gold/45"
+            className="min-h-11 border border-[#d7e7ff]/20 bg-[#071437]/84 px-4 text-[13px] font-medium text-[#fffaf0] shadow-[0_0_22px_rgba(0,102,255,0.1)] outline-none transition placeholder:text-[#d7e7ff]/58 focus:border-[#f5d782]/55"
           />
           <select
             value={typeFilter}
             onChange={(event) => setTypeFilter(event.target.value)}
-            className="min-h-11 border border-black/10 bg-[#f8f2e8]/82 px-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#3a3048] outline-none transition focus:border-dusty-gold/45"
+            className="min-h-11 border border-[#f5d782]/40 bg-[#071437]/92 px-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#fffaf0] shadow-[0_0_22px_rgba(245,215,130,0.1)] outline-none transition focus:border-[#f5d782]/70"
           >
             <option value="all">{adminCopy.allTypes}</option>
             {typeOptions.map((type) => (
@@ -143,7 +143,7 @@ export function ReadingsList({ readings, isAdmin = false }: { readings: StoredRe
         </div>
       ) : null}
 
-      <div className="mt-8 rounded-[1.8rem] border border-dusty-gold/14 bg-[#f8f2e8]/82 px-5 py-2 shadow-[0_12px_34px_rgba(30,26,46,0.05),inset_0_1px_0_rgba(255,255,255,0.72)] sm:px-6">
+      <div className="mt-8 rounded-[1.8rem] border border-[#d7e7ff]/18 bg-[#071437]/76 px-5 py-2 shadow-[0_20px_64px_rgba(0,0,0,0.32),0_0_36px_rgba(0,102,255,0.12),inset_0_1px_0_rgba(255,250,240,0.08)] backdrop-blur-md sm:px-6">
         {filteredReadings.length ? filteredReadings.map((reading) => {
           const result = getStoredResult(reading);
           const label = result?.chart.event.name ?? dictionary.readings.fallbackTitle;
@@ -160,7 +160,7 @@ export function ReadingsList({ readings, isAdmin = false }: { readings: StoredRe
           return (
             <article
               key={reading.id}
-              className="grid gap-4 border-b border-black/10 py-5 transition hover:border-dusty-gold/24 sm:grid-cols-[1fr_auto] sm:items-center"
+              className="grid gap-4 border-b border-[#d7e7ff]/14 py-5 transition hover:border-[#f5d782]/32 sm:grid-cols-[1fr_auto] sm:items-center"
             >
               <button
                 type="button"
@@ -171,11 +171,11 @@ export function ReadingsList({ readings, isAdmin = false }: { readings: StoredRe
                 <p className="font-serif text-[21px] leading-tight text-ivory">
                   {label}
                 </p>
-                <p className="mt-1 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048]">
+                <p className="mt-1 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#d7e7ff]/74">
                   {typeLabel} · {date}
                 </p>
                 {isAdmin ? (
-                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#5c4a24]">
+                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#f5d782]">
                     <span>{adminCopy.client}: {label}</span>
                     <span>{adminCopy.account}: {reading.owner_email ?? reading.user_id ?? "-"}</span>
                   </div>
@@ -218,7 +218,7 @@ export function ReadingsList({ readings, isAdmin = false }: { readings: StoredRe
                       type="button"
                       disabled={!result}
                       onClick={() => openReading(reading)}
-                      className="inline-flex min-w-24 items-center justify-center border border-dusty-gold/24 bg-dusty-gold/[0.055] px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24] transition hover:border-dusty-gold/42 hover:bg-dusty-gold/[0.085] disabled:cursor-not-allowed disabled:opacity-50"
+                      className="inline-flex min-w-24 items-center justify-center border border-[#f5d782]/34 bg-[#f5d782]/10 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#f5d782] transition hover:border-[#f5d782]/58 hover:bg-[#f5d782]/16 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {dictionary.readings.open}
                     </button>
@@ -237,7 +237,7 @@ export function ReadingsList({ readings, isAdmin = false }: { readings: StoredRe
             </article>
           );
         }) : (
-          <p className="py-8 text-center text-sm font-medium text-[#3a3048]">{adminCopy.noMatches}</p>
+          <p className="py-8 text-center text-sm font-medium text-[#d7e7ff]/74">{adminCopy.noMatches}</p>
         )}
       </div>
     </>

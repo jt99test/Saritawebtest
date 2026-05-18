@@ -284,50 +284,52 @@ export async function reserveAiReadingGeneration({
     return { ok: true, reserved: false, content };
   }
 
-  const limit = dailyAiReadingLimit();
-  const dayStart = new Date();
-  dayStart.setUTCHours(0, 0, 0, 0);
+  if (!isAdminEmail(user.email)) {
+    const limit = dailyAiReadingLimit();
+    const dayStart = new Date();
+    dayStart.setUTCHours(0, 0, 0, 0);
 
-  const { count, error: countError } = await supabase
-    .from("ai_reading_request_events")
-    .select("id", { count: "exact", head: true })
-    .eq("user_id", user.id)
-    .gte("created_at", dayStart.toISOString());
+    const { count, error: countError } = await supabase
+      .from("ai_reading_request_events")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .gte("created_at", dayStart.toISOString());
 
-  if (isMissingRateLimitTable(countError)) {
-    console.warn("AI reading request event table missing; rate limit will activate after the migration is applied.");
-  } else if (countError) {
-    console.error("AI reading rate limit lookup failed:", countError.message);
-    return { ok: false, response: new Response("AI reading rate limit check failed", { status: 500 }) };
-  } else if ((count ?? 0) >= limit) {
-    return {
-      ok: false,
-      response: new Response("Daily AI reading limit reached", {
-        status: 429,
-        headers: {
-          "Cache-Control": "no-cache",
-          "Retry-After": String(Math.max(1, Math.ceil((dayStart.getTime() + 86_400_000 - Date.now()) / 1000))),
-          "X-Sarita-AI-Limit": String(limit),
-          "X-Sarita-AI-Remaining": "0",
-        },
-      }),
-    };
-  }
+    if (isMissingRateLimitTable(countError)) {
+      console.warn("AI reading request event table missing; rate limit will activate after the migration is applied.");
+    } else if (countError) {
+      console.error("AI reading rate limit lookup failed:", countError.message);
+      return { ok: false, response: new Response("AI reading rate limit check failed", { status: 500 }) };
+    } else if ((count ?? 0) >= limit) {
+      return {
+        ok: false,
+        response: new Response("Daily AI reading limit reached", {
+          status: 429,
+          headers: {
+            "Cache-Control": "no-cache",
+            "Retry-After": String(Math.max(1, Math.ceil((dayStart.getTime() + 86_400_000 - Date.now()) / 1000))),
+            "X-Sarita-AI-Limit": String(limit),
+            "X-Sarita-AI-Remaining": "0",
+          },
+        }),
+      };
+    }
 
-  const { error: eventError } = await supabase
-    .from("ai_reading_request_events")
-    .insert({
-      user_id: user.id,
-      reading_id: readingId,
-      scope,
-    });
+    const { error: eventError } = await supabase
+      .from("ai_reading_request_events")
+      .insert({
+        user_id: user.id,
+        reading_id: readingId,
+        scope,
+      });
 
-  if (eventError) {
-    if (isMissingRateLimitTable(eventError)) {
-      console.warn("AI reading request event table missing; falling back without event logging.");
-    } else {
-      console.error("AI reading rate limit event failed:", eventError.message);
-      return { ok: false, response: new Response("AI reading rate limit event failed", { status: 500 }) };
+    if (eventError) {
+      if (isMissingRateLimitTable(eventError)) {
+        console.warn("AI reading request event table missing; falling back without event logging.");
+      } else {
+        console.error("AI reading rate limit event failed:", eventError.message);
+        return { ok: false, response: new Response("AI reading rate limit event failed", { status: 500 }) };
+      }
     }
   }
 

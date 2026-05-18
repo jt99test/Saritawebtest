@@ -1,5 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { Message } from "@anthropic-ai/sdk/resources/messages";
+
+import { isAdminEmail } from "@/lib/admin";
 import { DateTime } from "luxon";
 
 import { getSignFromLongitude, getSignMeta, type NatalChartData } from "@/lib/chart";
@@ -293,7 +295,7 @@ export async function POST(request: Request) {
       .eq("id", user.id)
       .maybeSingle();
 
-    if ((profile?.plan ?? "free") === "free") {
+    if (!isAdminEmail(user.email) && (profile?.plan ?? "free") === "free") {
       return new Response("Plan required", { status: 403 });
     }
 
@@ -573,3 +575,5 @@ Reglas para esa línea final:
     return new Response("Internal error", { status: 500 });
   }
 }
+
+
