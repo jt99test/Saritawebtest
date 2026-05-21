@@ -106,8 +106,11 @@ function displayPointForPanel(
     };
   }
 
-  if (variant !== "synastry") {
-    return point;
+  if (variant === "synastry") {
+    return {
+      ...point,
+      house: getHouseForLongitude(point.longitude, innerChart.houses),
+    };
   }
 
   return point;
