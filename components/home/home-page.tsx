@@ -101,6 +101,11 @@ export function HomePage({ moonStatus }: HomePageProps) {
     });
   }
 
+  function showInstallPrompt() {
+    window.dispatchEvent(new Event("sarita:show-install-prompt"));
+    setMobileMenuOpen(false);
+  }
+
   const mobileFeaturedItems = showAllFeatures ? features : features.slice(0, 3);
   const moonCopy = dictionary.home.currentMoon;
   const startHereCopy = dictionary.home.startHere;
@@ -206,6 +211,13 @@ export function HomePage({ moonStatus }: HomePageProps) {
                       {link.label}
                     </Link>
                   ))}
+                  <button
+                    type="button"
+                    onClick={showInstallPrompt}
+                    className="sarita-tab-inactive border px-4 py-3 text-left text-[12px] font-semibold uppercase tracking-[0.18em] transition"
+                  >
+                    {dictionary.common.installApp}
+                  </button>
                 </div>
                 <div className="mt-5 border-t border-black/10 pt-4">
                   {user ? (
