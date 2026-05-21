@@ -18,7 +18,8 @@
     "account": "Il mio account",
     "newReading": "Genera nuova lettura",
     "viewReadings": "Vedi letture",
-    "signOut": "Esci"
+    "signOut": "Esci",
+    "installApp": "Aggiungi alla schermata Home"
   },
   "home": {
     "eyebrow": "Carta natale · Tema natale",
@@ -116,7 +117,9 @@
     "title": "Dicci quando e dove sei nato",
     "subtitle": "Solo ciò che serve per preparare la tua carta natale con calma e chiarezza.",
     "fields": {
-      "name": "Nome",
+      "name": "Nome completo",
+      "firstName": "Nome",
+      "lastName": "Cognome",
       "birthdate": "Data di nascita",
       "birthtime": "Ora di nascita",
       "gender": "Genere per la lettura",
@@ -134,6 +137,8 @@
     },
     "placeholders": {
       "name": "Il tuo nome",
+      "firstName": "Il tuo nome",
+      "lastName": "Il tuo cognome",
       "location": "Madrid, Spagna"
     },
     "locationStatus": {

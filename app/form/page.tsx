@@ -23,6 +23,8 @@ export default function FormPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [values, setValues] = useState<FormValues>({
     name: "",
+    firstName: "",
+    lastName: "",
     birthDate: "",
     birthTime: "",
     birthTimeUnknown: false,
@@ -37,7 +39,11 @@ export default function FormPage() {
 
   function submitChart() {
     setSubmitting(true);
-    sessionStorage.setItem(CHART_DRAFT_KEY, JSON.stringify(values));
+    const nextValues = {
+      ...values,
+      name: `${values.firstName ?? ""} ${values.lastName ?? ""}`.trim(),
+    };
+    sessionStorage.setItem(CHART_DRAFT_KEY, JSON.stringify(nextValues));
     sessionStorage.removeItem(CHART_RESULT_KEY);
     router.push("/loading");
   }
@@ -77,13 +83,40 @@ export default function FormPage() {
                 className="grid gap-4 border-t border-dusty-gold/16 pt-6 sm:grid-cols-2 sm:pt-8 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0"
               >
                 <label className="block">
-                  <span className={labelClass}>{dictionary.form.fields.name}</span>
+                  <span className={labelClass}>{dictionary.form.fields.firstName}</span>
                   <input
                     type="text"
                     required
-                    value={values.name}
-                    onChange={(event) => setValue("name", event.target.value)}
-                    placeholder={dictionary.form.placeholders.name}
+                    value={values.firstName ?? ""}
+                    onChange={(event) => {
+                      const firstName = event.target.value;
+                      setValues((current) => ({
+                        ...current,
+                        firstName,
+                        name: `${firstName} ${current.lastName ?? ""}`.trim(),
+                      }));
+                    }}
+                    placeholder={dictionary.form.placeholders.firstName}
+                    disabled={submitting}
+                    className={inputClass}
+                  />
+                </label>
+
+                <label className="block">
+                  <span className={labelClass}>{dictionary.form.fields.lastName}</span>
+                  <input
+                    type="text"
+                    required
+                    value={values.lastName ?? ""}
+                    onChange={(event) => {
+                      const lastName = event.target.value;
+                      setValues((current) => ({
+                        ...current,
+                        lastName,
+                        name: `${current.firstName ?? ""} ${lastName}`.trim(),
+                      }));
+                    }}
+                    placeholder={dictionary.form.placeholders.lastName}
                     disabled={submitting}
                     className={inputClass}
                   />

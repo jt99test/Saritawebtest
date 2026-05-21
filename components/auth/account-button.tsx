@@ -163,6 +163,11 @@ export function AccountButton({ compact = false, tone = "light" }: AccountButton
     setMenuOpen(true);
   }
 
+  function showInstallPrompt() {
+    window.dispatchEvent(new Event("sarita:show-install-prompt"));
+    closeMenu();
+  }
+
   const compactClassName = tone === "night"
     ? "sarita-night-pill flex h-10 w-10 items-center justify-center rounded-full text-lg transition"
     : "sarita-night-pill flex h-10 w-10 items-center justify-center rounded-full text-lg transition";
@@ -260,6 +265,13 @@ export function AccountButton({ compact = false, tone = "light" }: AccountButton
           >
             {dictionary.nav.help}
           </Link>
+          <button
+            type="button"
+            onClick={showInstallPrompt}
+            className="block w-full py-2 text-right text-[12px] font-semibold uppercase tracking-[0.2em] text-[#d7e7ff]/78 transition hover:text-[#f5d782] sm:hidden"
+          >
+            {dictionary.common.installApp}
+          </button>
           <button
             type="button"
             onClick={() => void signOut()}

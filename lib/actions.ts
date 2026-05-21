@@ -299,6 +299,8 @@ export async function calculateSolarReturnAction(input: {
 
 export type SynastryPartnerInput = {
   name: string;
+  firstName?: string;
+  lastName?: string;
   birthDate: string;
   birthTime?: string;
   birthTimeUnknown?: boolean;

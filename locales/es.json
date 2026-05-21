@@ -18,7 +18,8 @@
     "account": "Mi cuenta",
     "newReading": "Generar nueva lectura",
     "viewReadings": "Ver lecturas",
-    "signOut": "Cerrar sesión"
+    "signOut": "Cerrar sesión",
+    "installApp": "Añadir a pantalla de inicio"
   },
   "home": {
     "eyebrow": "Carta natal · Carta astral",
@@ -116,7 +117,9 @@
     "title": "Cuéntanos cuándo y dónde naciste",
     "subtitle": "Lo justo para preparar tu carta natal con calma y claridad.",
     "fields": {
-      "name": "Nombre",
+      "name": "Nombre completo",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
       "birthdate": "Fecha de nacimiento",
       "birthtime": "Hora de nacimiento",
       "gender": "Género para la lectura",
@@ -134,6 +137,8 @@
     },
     "placeholders": {
       "name": "Tu nombre",
+      "firstName": "Tu nombre",
+      "lastName": "Tu apellido",
       "location": "Madrid, España"
     },
     "locationStatus": {

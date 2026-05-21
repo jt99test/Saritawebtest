@@ -4,6 +4,8 @@ import type { ReadingGender } from "@/lib/reading-gender";
 
 export type FormValues = {
   name: string;
+  firstName?: string;
+  lastName?: string;
   birthDate: string;
   birthTime: string;
   birthTimeUnknown?: boolean;

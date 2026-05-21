@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 
 import { isAdminEmail } from "@/lib/admin";
 import { getPlanReadingLimit } from "@/lib/reading-limits";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createServerSupabaseClient, createServiceSupabaseClient } from "@/lib/supabase/server";
 
 export async function deleteReadingAction(readingId: string) {
   const supabase = await createServerSupabaseClient();
@@ -16,11 +16,18 @@ export async function deleteReadingAction(readingId: string) {
     return { ok: false, error: "not_authenticated" };
   }
 
-  const { error } = await supabase
+  const isAdmin = isAdminEmail(user.email);
+  const deleteClient = isAdmin ? createServiceSupabaseClient() : supabase;
+  let deleteQuery = deleteClient
     .from("readings")
     .delete()
-    .eq("id", readingId)
-    .eq("user_id", user.id);
+    .eq("id", readingId);
+
+  if (!isAdmin) {
+    deleteQuery = deleteQuery.eq("user_id", user.id);
+  }
+
+  const { error } = await deleteQuery;
 
   if (error) {
     return { ok: false, error: error.message };

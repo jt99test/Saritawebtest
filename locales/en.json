@@ -18,7 +18,8 @@
     "account": "My account",
     "newReading": "Generate new reading",
     "viewReadings": "View readings",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "installApp": "Add to Home Screen"
   },
   "home": {
     "eyebrow": "Natal chart · Birth chart",
@@ -116,7 +117,9 @@
     "title": "Tell us when and where you were born",
     "subtitle": "Just enough to prepare your natal chart with calm and clarity.",
     "fields": {
-      "name": "Name",
+      "name": "Full name",
+      "firstName": "First name",
+      "lastName": "Last name",
       "birthdate": "Birth date",
       "birthtime": "Birth time",
       "gender": "Gender for the reading",
@@ -134,6 +137,8 @@
     },
     "placeholders": {
       "name": "Your name",
+      "firstName": "Your first name",
+      "lastName": "Your last name",
       "location": "Madrid, Spain"
     },
     "locationStatus": {

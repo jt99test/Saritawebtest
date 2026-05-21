@@ -183,7 +183,7 @@ export function ReadingsList({ readings, isAdmin = false }: { readings: StoredRe
               </button>
 
               <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                {confirmingId === reading.id && !isAdmin ? (
+                {confirmingId === reading.id ? (
                   <>
                     <button
                       type="button"
@@ -222,15 +222,13 @@ export function ReadingsList({ readings, isAdmin = false }: { readings: StoredRe
                     >
                       {dictionary.readings.open}
                     </button>
-                    {!isAdmin ? (
-                      <button
-                        type="button"
-                        onClick={() => setConfirmingId(reading.id)}
-                        className="inline-flex min-w-24 items-center justify-center border border-black/10 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:border-amber-300/28 hover:text-amber-100/78"
-                      >
-                        {dictionary.readings.delete}
-                      </button>
-                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => setConfirmingId(reading.id)}
+                      className="inline-flex min-w-24 items-center justify-center border border-black/10 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#3a3048] transition hover:border-amber-300/28 hover:text-amber-100/78"
+                    >
+                      {dictionary.readings.delete}
+                    </button>
                   </>
                 )}
               </div>

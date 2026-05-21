@@ -121,6 +121,20 @@ export function InstallAppPrompt() {
     };
   }, []);
 
+  useEffect(() => {
+    function handleManualPrompt() {
+      if (window.localStorage.getItem(INSTALL_PROMPT_INSTALLED_KEY) || isStandaloneMode()) {
+        return;
+      }
+
+      setIos(isIOSDevice());
+      setVisible(true);
+    }
+
+    window.addEventListener("sarita:show-install-prompt", handleManualPrompt);
+    return () => window.removeEventListener("sarita:show-install-prompt", handleManualPrompt);
+  }, []);
+
   async function installApp() {
     if (!installEvent) return;
     await installEvent.prompt();

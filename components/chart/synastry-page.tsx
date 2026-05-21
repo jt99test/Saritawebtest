@@ -214,6 +214,8 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
   const [selectedPartner, setSelectedPartner] = useState<PartnerRow | null>(null);
   const [form, setForm] = useState<SynastryPartnerInput>({
     name: "",
+    firstName: "",
+    lastName: "",
     birthDate: "",
     birthTime: "12:00",
     birthTimeUnknown: false,
@@ -388,14 +390,18 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
   function savePartner() {
     setError(null);
     startTransition(async () => {
-      const result = await saveAndCalculateSynastryPartnerAction(form);
+      const nextForm = {
+        ...form,
+        name: `${form.firstName ?? ""} ${form.lastName ?? ""}`.trim(),
+      };
+      const result = await saveAndCalculateSynastryPartnerAction(nextForm);
       if (!result.ok) {
         if (result.chart) {
-          const localPartner = localPartnerFromForm(form, result.chart);
+          const localPartner = localPartnerFromForm(nextForm, result.chart);
           setPartners((current) => [localPartner, ...current]);
           setSelectedPartner(localPartner);
           setFlipped(false);
-          setForm({ name: "", birthDate: "", birthTime: "12:00", birthTimeUnknown: false, gender: "", birthCity: "", selectedLocation: null });
+          setForm({ name: "", firstName: "", lastName: "", birthDate: "", birthTime: "12:00", birthTimeUnknown: false, gender: "", birthCity: "", selectedLocation: null });
           return;
         }
         setError(result.error ?? synastryCopy.saveError);
@@ -409,7 +415,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
       setPartners((current) => [nextPartner, ...current]);
       setSelectedPartner(nextPartner);
       setFlipped(false);
-      setForm({ name: "", birthDate: "", birthTime: "12:00", birthTimeUnknown: false, gender: "", birthCity: "", selectedLocation: null });
+      setForm({ name: "", firstName: "", lastName: "", birthDate: "", birthTime: "12:00", birthTimeUnknown: false, gender: "", birthCity: "", selectedLocation: null });
     });
   }
 
@@ -629,7 +635,34 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
 
       <div className="mt-10 grid gap-5 border-t border-dusty-gold/14 pt-8">
         <p className="font-serif text-2xl text-ivory">{synastryCopy.addPerson}</p>
-        <input className="min-h-[4.25rem] rounded-2xl border border-black/10 bg-white/70 px-5 py-4 text-[16px] leading-6 text-[#1e1a2e] shadow-[0_2px_8px_rgba(0,0,0,0.06)] outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-[#3a3048]/55 hover:border-black/15 focus:border-dusty-gold/50 focus:shadow-[0_0_0_3px_rgba(111,90,42,0.12)] sm:text-sm sm:placeholder:text-sm" placeholder={dictionary.form.fields.name} value={form.name} onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))} />
+        <div className="grid gap-3 sm:grid-cols-2">
+          <input
+            className="min-h-[4.25rem] rounded-2xl border border-black/10 bg-white/70 px-5 py-4 text-[16px] leading-6 text-[#1e1a2e] shadow-[0_2px_8px_rgba(0,0,0,0.06)] outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-[#3a3048]/55 hover:border-black/15 focus:border-dusty-gold/50 focus:shadow-[0_0_0_3px_rgba(111,90,42,0.12)] sm:text-sm sm:placeholder:text-sm"
+            placeholder={dictionary.form.fields.firstName}
+            value={form.firstName ?? ""}
+            onChange={(event) => {
+              const firstName = event.target.value;
+              setForm((current) => ({
+                ...current,
+                firstName,
+                name: `${firstName} ${current.lastName ?? ""}`.trim(),
+              }));
+            }}
+          />
+          <input
+            className="min-h-[4.25rem] rounded-2xl border border-black/10 bg-white/70 px-5 py-4 text-[16px] leading-6 text-[#1e1a2e] shadow-[0_2px_8px_rgba(0,0,0,0.06)] outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-[#3a3048]/55 hover:border-black/15 focus:border-dusty-gold/50 focus:shadow-[0_0_0_3px_rgba(111,90,42,0.12)] sm:text-sm sm:placeholder:text-sm"
+            placeholder={dictionary.form.fields.lastName}
+            value={form.lastName ?? ""}
+            onChange={(event) => {
+              const lastName = event.target.value;
+              setForm((current) => ({
+                ...current,
+                lastName,
+                name: `${current.firstName ?? ""} ${lastName}`.trim(),
+              }));
+            }}
+          />
+        </div>
         <input className="min-h-[4.25rem] rounded-2xl border border-black/10 bg-white/70 px-5 py-4 text-[16px] leading-6 text-[#1e1a2e] shadow-[0_2px_8px_rgba(0,0,0,0.06)] outline-none transition placeholder:text-[16px] placeholder:leading-6 placeholder:text-[#3a3048]/55 hover:border-black/15 focus:border-dusty-gold/50 focus:shadow-[0_0_0_3px_rgba(111,90,42,0.12)] sm:text-sm sm:placeholder:text-sm [&::-webkit-date-and-time-value]:min-h-6 [&::-webkit-date-and-time-value]:text-left [&::-webkit-date-and-time-value]:text-[inherit]" type="date" value={form.birthDate} onChange={(event) => setForm((current) => ({ ...current, birthDate: clampIsoDateYear(event.target.value) }))} />
         <div>
           <input
@@ -691,7 +724,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
           dictionary={dictionary}
         />
         {error ? <p className="text-sm text-[#f5d782]/82">{error}</p> : null}
-        <PrimaryButton type="button" onClick={savePartner} disabled={isPending || !form.name || !form.birthDate || !form.birthCity}>
+        <PrimaryButton type="button" onClick={savePartner} disabled={isPending || !form.firstName || !form.lastName || !form.birthDate || !form.birthCity}>
           {isPending ? synastryCopy.saving : synastryCopy.saveAndCompare}
         </PrimaryButton>
       </div>
