@@ -76,6 +76,10 @@ function amountFromEventData(data: Record<string, unknown>) {
   return "EUR 49.99";
 }
 
+function normalizeWhopEventType(eventType: string) {
+  return eventType.replaceAll("_", ".");
+}
+
 async function metadataForEventData(data: Record<string, unknown>) {
   const metadata = data.metadata && typeof data.metadata === "object" ? data.metadata as WhopMetadata : null;
   if (metadataValue(metadata, "supabase_user_id")) return metadata;
@@ -224,12 +228,13 @@ export async function POST(request: Request) {
 
   const data = event.data as Record<string, unknown>;
   const metadata = await metadataForEventData(data);
+  const eventType = normalizeWhopEventType(event.type);
 
-  if (event.type === "payment.succeeded" || event.type === "membership.activated") {
-    await activateProfile(event.type, data, metadata);
+  if (eventType === "payment.succeeded" || eventType === "membership.activated") {
+    await activateProfile(eventType, data, metadata);
   }
 
-  if (event.type === "payment.failed" || event.type === "membership.deactivated" || event.type === "refund.created") {
+  if (eventType === "payment.failed" || eventType === "membership.deactivated" || eventType === "refund.created") {
     await deactivateProfile(data, metadata);
   }
 
