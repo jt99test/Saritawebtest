@@ -199,22 +199,17 @@ function planetLayouts(points: ChartPoint[], ascendant: number) {
 
   clusters.forEach((cluster) => {
     const sortedCluster = [...cluster].sort((left, right) => left.longitude - right.longitude);
-    const clusterCenter = sortedCluster.reduce((sum, point) => sum + point.longitude, 0) / sortedCluster.length;
 
     sortedCluster.forEach((point, index) => {
-      const angle = (pointAngle(clusterCenter, ascendant) * Math.PI) / 180;
-      const tangentX = -Math.sin(angle);
-      const tangentY = Math.cos(angle);
       const centeredIndex = index - (sortedCluster.length - 1) / 2;
-      const tangentOffset = sortedCluster.length > 1 ? centeredIndex * 34 : 0;
-      const stackPull = Math.abs(centeredIndex) * 4;
-      const base = pointAtRadius(INNER_PLANET_LABEL_R + 8 - stackPull, clusterCenter, ascendant);
+      const radialOffset = sortedCluster.length > 1 ? centeredIndex * 18 : 0;
+      const base = pointAtRadius(INNER_PLANET_LABEL_R + 8 + radialOffset, point.longitude, ascendant);
 
       layouts.set(point.id, {
-        x: base.x + tangentX * tangentOffset,
-        y: base.y + tangentY * tangentOffset,
+        x: base.x,
+        y: base.y,
         connectorStart: pointAtRadius(INNER_PLANET_LABEL_R + 2, point.longitude, ascendant),
-        hasConnector: sortedCluster.length > 1 || Math.abs(point.longitude - clusterCenter) > 1,
+        hasConnector: sortedCluster.length > 1,
       });
     });
   });

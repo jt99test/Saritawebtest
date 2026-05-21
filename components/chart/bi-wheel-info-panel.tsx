@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 
-import type { ChartPoint, ChartPointId, NatalChartData } from "@/lib/chart";
-import { formatSignPosition, getAugmentedChartPoints, getSignMeta, zodiacSigns } from "@/lib/chart";
+import type { ChartPoint, ChartPointId, HouseCusp, NatalChartData } from "@/lib/chart";
+import { formatSignPosition, getAugmentedChartPoints, getSignMeta, normalizeLongitude, zodiacSigns } from "@/lib/chart";
 import { getAspectLabel, getHouseArea, getPointLabel, getSignLabel } from "@/lib/chart-labels";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { dictionaries } from "@/lib/i18n";
@@ -56,6 +56,42 @@ function selectedPoint(
 
   const chart = ring === "inner" ? innerChart : outerChart;
   return chart ? getAugmentedChartPoints(chart).find((point) => point.id === selectedId) ?? null : null;
+}
+
+function getHouseForLongitude(longitude: number, houses: HouseCusp[]) {
+  const normalized = normalizeLongitude(longitude);
+
+  for (let index = 0; index < houses.length; index += 1) {
+    const current = houses[index]!;
+    const next = houses[(index + 1) % houses.length]!;
+    const start = normalizeLongitude(current.longitude);
+    const end = normalizeLongitude(next.longitude);
+    const inHouse = start <= end
+      ? normalized >= start && normalized < end
+      : normalized >= start || normalized < end;
+
+    if (inHouse) {
+      return current.house;
+    }
+  }
+
+  return houses[houses.length - 1]?.house ?? 12;
+}
+
+function displayPointForPanel(
+  variant: BiWheelPanelVariant,
+  ring: "inner" | "outer",
+  point: ChartPoint,
+  innerChart: NatalChartData,
+) {
+  if (variant !== "transits" || ring !== "outer") {
+    return point;
+  }
+
+  return {
+    ...point,
+    house: getHouseForLongitude(point.longitude, innerChart.houses),
+  };
 }
 
 function ringLabel(
@@ -550,6 +586,7 @@ export function BiWheelInfoPanel({
   const isDesktop = useDesktopBreakpoint();
   const panelRef = useRef<HTMLDivElement | null>(null);
   const point = selectedPoint(selectedId, ring, innerChart, outerChart);
+  const displayPoint = point ? displayPointForPanel(variant, ring, point, innerChart) : null;
 
   useEffect(() => {
     if (!selectedId || !point) {
@@ -579,14 +616,14 @@ export function BiWheelInfoPanel({
     };
   }, [onClose, point, selectedId]);
 
-  const signMeta = point ? getSignMeta(point.sign) : null;
-  const signGlyph = point ? zodiacSigns.find((sign) => sign.id === point.sign)?.glyph ?? "" : "";
-  const position = point ? formatSignPosition(point.longitude) : null;
-  const reading = point ? biWheelReading({ variant, ring, point, copy, innerName, outerName, locale }) : "";
+  const signMeta = displayPoint ? getSignMeta(displayPoint.sign) : null;
+  const signGlyph = displayPoint ? zodiacSigns.find((sign) => sign.id === displayPoint.sign)?.glyph ?? "" : "";
+  const position = displayPoint ? formatSignPosition(displayPoint.longitude) : null;
+  const reading = displayPoint ? biWheelReading({ variant, ring, point: displayPoint, copy, innerName, outerName, locale }) : "";
 
   return (
     <AnimatePresence>
-      {selectedId && point ? (
+      {selectedId && point && displayPoint ? (
         <>
         {!isDesktop ? (
           <button
@@ -618,15 +655,15 @@ export function BiWheelInfoPanel({
                   {ringLabel(variant, ring, copy, innerName, outerName)}
                 </p>
                 <div className="mt-2 flex items-center gap-3">
-                  <span className="font-serif text-[2rem] leading-none" style={{ color: point.color }}>
-                    {point.glyph}
+                  <span className="font-serif text-[2rem] leading-none" style={{ color: displayPoint.color }}>
+                    {displayPoint.glyph}
                   </span>
                   <div>
                     <h3 className="font-serif text-[22px] leading-none text-ivory">
                       {dictionary.result.points[selectedId]}
                     </h3>
                     <p className="mt-1.5 text-[13px] leading-6 text-[#d7e7ff]/66">
-                      {getSignLabel(point.sign, locale)} · {dictionary.result.transitPage.housePrefix} {point.house} · {getHouseArea(point.house, locale)}
+                      {getSignLabel(displayPoint.sign, locale)} · {dictionary.result.transitPage.housePrefix} {displayPoint.house} · {getHouseArea(displayPoint.house, locale)}
                     </p>
                   </div>
                 </div>
@@ -655,15 +692,15 @@ export function BiWheelInfoPanel({
                   <ul className="mt-3 space-y-2 text-sm leading-7 text-[#fffaf0]/78">
                     <li className="flex gap-2">
                       <span className="mt-3 h-1.5 w-1.5 rounded-full bg-ivory/35" />
-                      <span>{getSignLabel(point.sign, locale)}{" \u00b7 "}{dictionary.result.elements[signMeta.element]}</span>
+                      <span>{getSignLabel(displayPoint.sign, locale)}{" \u00b7 "}{dictionary.result.elements[signMeta.element]}</span>
                     </li>
                     <li className="flex gap-2">
                       <span className="mt-3 h-1.5 w-1.5 rounded-full bg-ivory/35" />
-                      <span>{dictionary.result.editorial.signPrompts[point.sign]}</span>
+                      <span>{dictionary.result.editorial.signPrompts[displayPoint.sign]}</span>
                     </li>
                     <li className="flex gap-2">
                       <span className="mt-3 h-1.5 w-1.5 rounded-full bg-ivory/35" />
-                      <span>{dictionary.result.transitPage.housePrefix} {point.house}{" \u00b7 "}{getHouseArea(point.house, locale)}</span>
+                      <span>{dictionary.result.transitPage.housePrefix} {displayPoint.house}{" \u00b7 "}{getHouseArea(displayPoint.house, locale)}</span>
                     </li>
                   </ul>
                 ) : null}
@@ -673,17 +710,17 @@ export function BiWheelInfoPanel({
                 <SectionLabel>{sectionCopy.data}</SectionLabel>
                 {position && signMeta ? (
                   <dl className="mt-3">
-                    <InfoRow label={dictionary.result.fields.position} value={formatPointPosition(point)} />
+                    <InfoRow label={dictionary.result.fields.position} value={formatPointPosition(displayPoint)} />
                     <InfoRow
                       label={dictionary.result.fields.zodiacPosition}
                       value={`${position.degreeInSign}\u00b0 ${String(position.minutesInSign).padStart(2, "0")}\u2032 ${signGlyph}`}
                     />
-                    <InfoRow label={dictionary.result.fields.eclipticLongitude} value={formatAbsoluteLongitude(point)} />
-                    <InfoRow label={dictionary.result.fields.sign} value={getSignLabel(point.sign, locale)} />
-                    <InfoRow label={dictionary.result.fields.house} value={String(point.house)} />
+                    <InfoRow label={dictionary.result.fields.eclipticLongitude} value={formatAbsoluteLongitude(displayPoint)} />
+                    <InfoRow label={dictionary.result.fields.sign} value={getSignLabel(displayPoint.sign, locale)} />
+                    <InfoRow label={dictionary.result.fields.house} value={String(displayPoint.house)} />
                     <InfoRow label={dictionary.result.fields.element} value={dictionary.result.elements[signMeta.element]} />
                     <InfoRow label={dictionary.result.fields.modality} value={dictionary.result.modalities[signMeta.modality]} />
-                    <InfoRow label={dictionary.result.fields.retrograde} value={point.retrograde ? dictionary.common.yes : dictionary.common.no} />
+                    <InfoRow label={dictionary.result.fields.retrograde} value={displayPoint.retrograde ? dictionary.common.yes : dictionary.common.no} />
                   </dl>
                 ) : null}
               </section>
@@ -694,7 +731,7 @@ export function BiWheelInfoPanel({
               {variant === "transits" ? (
                 <TransitRows ring={ring} selectedId={selectedId} copy={copy} locale={locale} activeTransits={activeTransits} />
               ) : null}
-              {variant === "solar-return" ? <SolarReturnNote point={point} copy={copy} locale={locale} /> : null}
+              {variant === "solar-return" ? <SolarReturnNote point={displayPoint} copy={copy} locale={locale} /> : null}
               {variant === "synastry" ? (
                 <SynastryRows ring={ring} selectedId={selectedId} copy={copy} locale={locale} synastryAspects={synastryAspects} />
               ) : null}

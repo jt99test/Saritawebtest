@@ -1080,21 +1080,14 @@ function ClearPlanetLayer({
 
   clusters.forEach((cluster) => {
     const sortedCluster = [...cluster].sort((left, right) => left.longitude - right.longitude);
-    const clusterCenter =
-      sortedCluster.reduce((sum, point) => sum + point.longitude, 0) / sortedCluster.length;
 
     sortedCluster.forEach((point, index) => {
-      const angle = pointAngle(clusterCenter, ascendant);
+      const angle = pointAngle(point.longitude, ascendant);
       const radialX = Math.cos(angle);
-      const tangentX = -Math.sin(angle);
-      const tangentY = Math.cos(angle);
       const centeredIndex = index - (sortedCluster.length - 1) / 2;
-      const tangentOffset = sortedCluster.length > 1 ? centeredIndex * 34 : 0;
-      const stackPull = Math.abs(centeredIndex) * 4;
+      const radialOffset = sortedCluster.length > 1 ? centeredIndex * 18 : 0;
       const [connectorX1, connectorY1] = pointAtRadius(PLANET_LABEL_RADIUS + 2, point.longitude, ascendant);
-      const [baseGlyphX, baseGlyphY] = pointAtRadius(PLANET_LABEL_RADIUS + 8 - stackPull, clusterCenter, ascendant);
-      const glyphX = baseGlyphX + tangentX * tangentOffset;
-      const glyphY = baseGlyphY + tangentY * tangentOffset;
+      const [glyphX, glyphY] = pointAtRadius(PLANET_LABEL_RADIUS + 8 + radialOffset, point.longitude, ascendant);
       const labelSide = radialX >= 0 ? 1 : -1;
       const labelX = glyphX + labelSide * 28;
       const labelY = glyphY + 10;
@@ -1112,7 +1105,7 @@ function ClearPlanetLayer({
         connectorY1,
         connectorX2: glyphX,
         connectorY2: glyphY,
-        hasConnector: sortedCluster.length > 1 || Math.abs(point.longitude - clusterCenter) > 1,
+        hasConnector: sortedCluster.length > 1,
       });
     });
   });
