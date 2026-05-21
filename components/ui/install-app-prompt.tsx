@@ -159,7 +159,7 @@ export function InstallAppPrompt() {
   }
 
   return (
-    <div className="fixed inset-x-4 bottom-[7rem] z-[1100] mx-auto max-w-md border border-[#f5d782]/38 bg-[#071437]/94 p-4 text-[#d7e7ff] shadow-[0_22px_70px_rgba(0,0,0,0.34),0_0_34px_rgba(0,102,255,0.14)] backdrop-blur-md sm:bottom-6 sm:right-6 sm:left-auto sm:mx-0">
+    <div className="fixed inset-x-0 bottom-0 z-[1100] mx-0 max-w-none border border-x-0 border-b-0 border-[#f5d782]/38 bg-[#071437]/96 px-5 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-4 text-[#d7e7ff] shadow-[0_-18px_70px_rgba(0,0,0,0.42),0_0_34px_rgba(0,102,255,0.14)] backdrop-blur-md sm:bottom-6 sm:left-auto sm:right-6 sm:mx-0 sm:max-w-md sm:border sm:p-4 sm:shadow-[0_22px_70px_rgba(0,0,0,0.34),0_0_34px_rgba(0,102,255,0.14)]">
       <div className="flex items-start gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-[#f5d782]/45 bg-[#f5d782]/14 font-serif text-lg text-[#f5d782]">
           S
