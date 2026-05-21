@@ -84,7 +84,7 @@ function displayPointForPanel(
   point: ChartPoint,
   innerChart: NatalChartData,
 ) {
-  if (variant !== "transits" || ring !== "outer") {
+  if (variant !== "transits") {
     return point;
   }
 

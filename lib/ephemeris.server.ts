@@ -108,22 +108,6 @@ type WasmHouses = {
   ascmc: Float64Array;  // [0]=ASC [1]=MC [2]=ARMC [3]=Vertex
 };
 
-const FIVE_DEGREE_CUSP_ORB = 5;
-const FIVE_DEGREE_CUSP_POINT_IDS = new Set<ChartPointId>([
-  "sun",
-  "moon",
-  "mercury",
-  "venus",
-  "mars",
-  "jupiter",
-  "saturn",
-  "uranus",
-  "neptune",
-  "pluto",
-  "northNode",
-  "southNode",
-]);
-
 const HOUSE_SYSTEM_LABELS = {
   P: "placidus",
   W: "wholeSign",
@@ -163,7 +147,6 @@ function getHouseForLongitude(
   houses: WasmHouses,
   obliquityOfDate: number,
   houseSystem: ChartInput["houseSystem"] = "P",
-  applyFiveDegreeCuspRule = false,
 ) {
   // Match standard chart-wheel practice and Astro.com style placement:
   // house membership is read from ecliptic longitude on the zodiac circle,
@@ -176,19 +159,7 @@ function getHouseForLongitude(
     longitude,
     0,
   );
-  const house = clampHouse(housePosition);
-
-  if (!applyFiveDegreeCuspRule) {
-    return house;
-  }
-
-  const nextHouse = house === 12 ? 1 : house + 1;
-  const nextCusp = normalizeLongitude(houses.cusps[nextHouse]!);
-  const distanceBeforeNextCusp = normalizeLongitude(nextCusp - longitude);
-
-  // Traditional practice commonly uses a 5 degree orb before a cusp, though some schools use 3.
-  // SARITA applies the 5 degree rule for planets and nodes, not for cusp/angle points.
-  return distanceBeforeNextCusp < FIVE_DEGREE_CUSP_ORB ? nextHouse : house;
+  return clampHouse(housePosition);
 }
 
 function buildPoint(
@@ -217,7 +188,6 @@ function buildPoint(
       houses,
       obliquityOfDate,
       houseSystem,
-      FIVE_DEGREE_CUSP_POINT_IDS.has(config.id),
     ),
     color: config.color,
     retrograde: result.longitudeSpeed < 0,
@@ -236,7 +206,6 @@ function buildDerivedPoint(
   obliquityOfDate: number,
   houseSystem: ChartInput["houseSystem"],
   retrograde = false,
-  applyFiveDegreeCuspRule = false,
   longitudeSpeed = 0,
 ): ChartPoint {
   const normalized = normalizeLongitude(longitude);
@@ -256,7 +225,6 @@ function buildDerivedPoint(
       houses,
       obliquityOfDate,
       houseSystem,
-      applyFiveDegreeCuspRule,
     ),
     color,
     retrograde,
@@ -351,7 +319,7 @@ export async function calculateNatalChart(input: ChartInput): Promise<NatalChart
 
   if (northNode) {
     points.push(buildDerivedPoint(se, "southNode", "☋", northNode.longitude + 180, "#8f8798",
-      rawHouses, input.lat, eps, houseSystem, northNode.retrograde, true, northNode.longitudeSpeed ?? 0));
+      rawHouses, input.lat, eps, houseSystem, northNode.retrograde, northNode.longitudeSpeed ?? 0));
   }
 
   if (sun && moon) {
@@ -367,7 +335,7 @@ export async function calculateNatalChart(input: ChartInput): Promise<NatalChart
   // until a view explicitly chooses to render extended points.
   const ceresResult = calcUt(se, julianDayUt, SE_CERES, flags);
   const ceres = buildDerivedPoint(se, "ceres", "⚳", ceresResult.longitude, "#cdbf8d",
-    rawHouses, input.lat, eps, houseSystem, ceresResult.longitudeSpeed < 0, false, ceresResult.longitudeSpeed);
+    rawHouses, input.lat, eps, houseSystem, ceresResult.longitudeSpeed < 0, ceresResult.longitudeSpeed);
   const extendedPoints = [...points, ceres];
 
   const aspects = detectAspects(points);
