@@ -83,15 +83,34 @@ function displayPointForPanel(
   ring: "inner" | "outer",
   point: ChartPoint,
   innerChart: NatalChartData,
+  outerChart: NatalChartData | null,
 ) {
-  if (variant !== "transits") {
+  if (variant === "transits") {
+    return {
+      ...point,
+      house: getHouseForLongitude(point.longitude, innerChart.houses),
+    };
+  }
+
+  if (variant === "solar-return" && ring === "outer" && outerChart) {
+    return {
+      ...point,
+      house: getHouseForLongitude(point.longitude, outerChart.houses),
+    };
+  }
+
+  if (variant === "solar-return" && ring === "inner") {
+    return {
+      ...point,
+      house: getHouseForLongitude(point.longitude, innerChart.houses),
+    };
+  }
+
+  if (variant !== "synastry") {
     return point;
   }
 
-  return {
-    ...point,
-    house: getHouseForLongitude(point.longitude, innerChart.houses),
-  };
+  return point;
 }
 
 function ringLabel(
@@ -586,7 +605,7 @@ export function BiWheelInfoPanel({
   const isDesktop = useDesktopBreakpoint();
   const panelRef = useRef<HTMLDivElement | null>(null);
   const point = selectedPoint(selectedId, ring, innerChart, outerChart);
-  const displayPoint = point ? displayPointForPanel(variant, ring, point, innerChart) : null;
+  const displayPoint = point ? displayPointForPanel(variant, ring, point, innerChart, outerChart) : null;
 
   useEffect(() => {
     if (!selectedId || !point) {
