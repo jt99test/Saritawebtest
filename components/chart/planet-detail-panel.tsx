@@ -7,9 +7,11 @@ import {
   formatSignPosition,
   getAugmentedChartPoints,
   getSignMeta,
+  normalizeLongitude,
   zodiacSigns,
   type Aspect,
   type ChartPointId,
+  type HouseCusp,
   type NatalChartData,
 } from "@/lib/chart";
 import type { Dictionary } from "@/lib/i18n";
@@ -86,6 +88,26 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 function houseArea(dictionary: Dictionary, house: number) {
   const key = String(house) as keyof typeof dictionary.result.houseMeanings;
   return dictionary.result.houseMeanings[key];
+}
+
+function getHouseForLongitude(longitude: number, houses: HouseCusp[]) {
+  const normalized = normalizeLongitude(longitude);
+
+  for (let index = 0; index < houses.length; index += 1) {
+    const current = houses[index]!;
+    const next = houses[(index + 1) % houses.length]!;
+    const start = normalizeLongitude(current.longitude);
+    const end = normalizeLongitude(next.longitude);
+    const inHouse = start <= end
+      ? normalized >= start && normalized < end
+      : normalized >= start || normalized < end;
+
+    if (inHouse) {
+      return current.house;
+    }
+  }
+
+  return houses[houses.length - 1]?.house ?? 12;
 }
 
 function formatAspectLabel(dictionary: Dictionary, aspect: Aspect, pointId: ChartPointId) {
@@ -260,7 +282,8 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
   const signGlyph = zodiacSigns.find((sign) => sign.id === point.sign)?.glyph ?? "";
   const pointColor = PANEL_POINT_COLORS[point.id] ?? point.color;
   const position = formatSignPosition(point.longitude);
-  const selectedHouseArea = houseArea(dictionary, point.house);
+  const displayHouse = getHouseForLongitude(point.longitude, chart.houses);
+  const selectedHouseArea = houseArea(dictionary, displayHouse);
   const paragraphs = splitReadingParagraphs(reading);
   const previewParagraph = paragraphs[0] ?? "";
   const remainingParagraphs = paragraphs.slice(1);
@@ -269,8 +292,8 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
     dictionary.result.editorial.signPrompts[point.sign],
   ];
   const manifestationItems = [
-    `${dictionary.result.fields.house} ${point.house} · ${selectedHouseArea}`,
-    dictionary.result.editorial.housePrompts[String(point.house) as keyof typeof dictionary.result.editorial.housePrompts],
+    `${dictionary.result.fields.house} ${displayHouse} · ${selectedHouseArea}`,
+    dictionary.result.editorial.housePrompts[String(displayHouse) as keyof typeof dictionary.result.editorial.housePrompts],
     point.retrograde
       ? dictionary.result.editorial.retrogradeActive
       : dictionary.result.editorial.retrogradeDirect,
@@ -328,7 +351,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
                           {dictionary.result.points[point.id]}
                         </h2>
                         <p className="mt-2 text-sm text-[#3a3048]">
-                          {dictionary.result.signs[point.sign]} · {dictionary.result.fields.house} {point.house} ·{" "}
+                          {dictionary.result.signs[point.sign]} · {dictionary.result.fields.house} {displayHouse} ·{" "}
                           {selectedHouseArea}
                         </p>
                       </div>
@@ -434,7 +457,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
                       />
                       <InfoRow label={dictionary.result.fields.eclipticLongitude} value={point.absoluteLongitudeLabel} />
                       <InfoRow label={dictionary.result.fields.sign} value={dictionary.result.signs[point.sign]} />
-                      <InfoRow label={dictionary.result.fields.house} value={String(point.house)} />
+                      <InfoRow label={dictionary.result.fields.house} value={String(displayHouse)} />
                       <InfoRow label={dictionary.result.fields.element} value={dictionary.result.elements[signMeta.element]} />
                       <InfoRow
                         label={dictionary.result.fields.modality}
