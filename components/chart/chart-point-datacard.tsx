@@ -9,6 +9,7 @@ import {
   type ChartPointId,
   type NatalChartData,
 } from "@/lib/chart";
+import { formatHouseWithTransition } from "@/components/chart/chart-helpers";
 
 type ChartPointDataCardProps = {
   chart: NatalChartData;
@@ -62,9 +63,9 @@ function DetailList({
   );
 }
 
-function houseLabel(dictionary: Dictionary, house: number) {
+function houseLabel(dictionary: Dictionary, house: number, displayHouse = String(house)) {
   const houseKey = String(house) as keyof typeof dictionary.result.houseMeanings;
-  return `${dictionary.result.fields.house} ${house} · ${dictionary.result.houseMeanings[houseKey]}`;
+  return `${dictionary.result.fields.house} ${displayHouse} · ${dictionary.result.houseMeanings[houseKey]}`;
 }
 
 export function ChartPointDataCard({
@@ -80,6 +81,11 @@ export function ChartPointDataCard({
     .sort((left, right) => left.orb - right.orb);
   const position = formatSignPosition(point.longitude);
   const houseKey = String(point.house) as keyof typeof dictionary.result.houseMeanings;
+  const displayHouse = formatHouseWithTransition({
+    longitude: point.longitude,
+    house: point.house,
+    houses: chart.houses,
+  });
 
   const signLens = [
     `${dictionary.result.signs[point.sign]} · ${dictionary.result.elements[signMeta.element]}`,
@@ -88,7 +94,7 @@ export function ChartPointDataCard({
   ];
 
   const houseLens = [
-    houseLabel(dictionary, point.house),
+    houseLabel(dictionary, point.house, displayHouse),
     dictionary.result.editorial.housePrompts[houseKey],
     point.retrograde
       ? dictionary.result.editorial.retrogradeActive
@@ -114,7 +120,7 @@ export function ChartPointDataCard({
                     {dictionary.result.points[point.id]}
                   </p>
                   <p className="mt-2 text-sm text-[#3a3048]">
-                    {dictionary.result.signs[point.sign]} · {houseLabel(dictionary, point.house)}
+                    {dictionary.result.signs[point.sign]} · {houseLabel(dictionary, point.house, displayHouse)}
                   </p>
                 </div>
               </div>
@@ -151,7 +157,7 @@ export function ChartPointDataCard({
           </div>
           <div className="px-5 py-5">
             <SectionLabel>{dictionary.result.editorial.houseFocus}</SectionLabel>
-            <DetailList title={houseLabel(dictionary, point.house)} items={houseLens} />
+            <DetailList title={houseLabel(dictionary, point.house, displayHouse)} items={houseLens} />
           </div>
         </div>
       </section>
@@ -167,7 +173,7 @@ export function ChartPointDataCard({
             />
             <InfoRow label={dictionary.result.fields.eclipticLongitude} value={point.absoluteLongitudeLabel} />
             <InfoRow label={dictionary.result.fields.sign} value={dictionary.result.signs[point.sign]} />
-            <InfoRow label={dictionary.result.fields.house} value={String(point.house)} />
+            <InfoRow label={dictionary.result.fields.house} value={displayHouse} />
             <InfoRow label={dictionary.result.fields.element} value={dictionary.result.elements[signMeta.element]} />
             <InfoRow
               label={dictionary.result.fields.modality}

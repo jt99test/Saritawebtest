@@ -19,6 +19,7 @@ import type { ReadingGender } from "@/lib/reading-gender";
 import { normalizeReadingText } from "@/lib/reading-text";
 
 import { useChartStore } from "@/components/chart/chart-store";
+import { formatHouseWithTransition } from "@/components/chart/chart-helpers";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { RenderedReading, splitReadingParagraphs } from "@/components/ui/rendered-reading";
 
@@ -283,6 +284,11 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
   const pointColor = PANEL_POINT_COLORS[point.id] ?? point.color;
   const position = formatSignPosition(point.longitude);
   const displayHouse = getHouseForLongitude(point.longitude, chart.houses);
+  const displayHouseLabel = formatHouseWithTransition({
+    longitude: point.longitude,
+    house: displayHouse,
+    houses: chart.houses,
+  });
   const selectedHouseArea = houseArea(dictionary, displayHouse);
   const paragraphs = splitReadingParagraphs(reading);
   const previewParagraph = paragraphs[0] ?? "";
@@ -292,7 +298,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
     dictionary.result.editorial.signPrompts[point.sign],
   ];
   const manifestationItems = [
-    `${dictionary.result.fields.house} ${displayHouse} · ${selectedHouseArea}`,
+    `${dictionary.result.fields.house} ${displayHouseLabel} · ${selectedHouseArea}`,
     dictionary.result.editorial.housePrompts[String(displayHouse) as keyof typeof dictionary.result.editorial.housePrompts],
     point.retrograde
       ? dictionary.result.editorial.retrogradeActive
@@ -351,7 +357,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
                           {dictionary.result.points[point.id]}
                         </h2>
                         <p className="mt-2 text-sm text-[#3a3048]">
-                          {dictionary.result.signs[point.sign]} · {dictionary.result.fields.house} {displayHouse} ·{" "}
+                          {dictionary.result.signs[point.sign]} · {dictionary.result.fields.house} {displayHouseLabel} ·{" "}
                           {selectedHouseArea}
                         </p>
                       </div>
@@ -457,7 +463,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
                       />
                       <InfoRow label={dictionary.result.fields.eclipticLongitude} value={point.absoluteLongitudeLabel} />
                       <InfoRow label={dictionary.result.fields.sign} value={dictionary.result.signs[point.sign]} />
-                      <InfoRow label={dictionary.result.fields.house} value={String(displayHouse)} />
+                      <InfoRow label={dictionary.result.fields.house} value={displayHouseLabel} />
                       <InfoRow label={dictionary.result.fields.element} value={dictionary.result.elements[signMeta.element]} />
                       <InfoRow
                         label={dictionary.result.fields.modality}

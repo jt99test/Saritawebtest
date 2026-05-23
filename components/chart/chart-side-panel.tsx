@@ -5,6 +5,7 @@ import type { NatalChartData } from "@/lib/chart";
 import { formatSignPosition, getAugmentedChartPoints, zodiacSigns } from "@/lib/chart";
 
 import { ChartPointDataCard } from "@/components/chart/chart-point-datacard";
+import { formatHouseWithTransition } from "@/components/chart/chart-helpers";
 import { useChartStore } from "@/components/chart/chart-store";
 import { PremiumCard } from "@/components/ui/premium-card";
 
@@ -138,6 +139,11 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
             <div className="mt-4 space-y-2">
               {visiblePoints.map((point) => {
                 const active = point.id === selectedPoint.id;
+                const displayHouse = formatHouseWithTransition({
+                  longitude: point.longitude,
+                  house: point.house,
+                  houses: chart.houses,
+                });
 
                 return (
                   <button
@@ -162,7 +168,7 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                         {point.glyph}
                       </span>
                       <span className="text-[12px] uppercase tracking-[0.22em] text-[#3a3048]">
-                        {point.house}
+                        {displayHouse}
                       </span>
                     </div>
                   </button>
@@ -261,7 +267,13 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                     <span className="mt-1 block text-xs text-[#3a3048]">{point.glyph}</span>
                   </span>
                   <span className="text-sm text-ivory/78">{formatChartPosition(dictionary, point.longitude)}</span>
-                  <span className="text-sm text-[#3a3048]">{point.house}</span>
+                  <span className="text-sm text-[#3a3048]">
+                    {formatHouseWithTransition({
+                      longitude: point.longitude,
+                      house: point.house,
+                      houses: chart.houses,
+                    })}
+                  </span>
                   <span className="text-sm text-[#3a3048]">{point.retrograde ? "Rx" : "—"}</span>
                 </button>
               ))}

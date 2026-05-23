@@ -1,4 +1,4 @@
-import type { ChartPoint, HouseCusp } from "@/lib/chart";
+import { normalizeLongitude, type ChartPoint, type HouseCusp } from "@/lib/chart";
 
 export function longitudeToRadians(longitude: number) {
   return (-longitude * Math.PI) / 180;
@@ -60,3 +60,60 @@ export function getPointDisplayLongitude(point: ChartPoint, points: ChartPoint[]
   };
 }
 
+export function getApproachingHouseTransition({
+  longitude,
+  house,
+  houses,
+  thresholdDegrees = 5,
+}: {
+  longitude: number;
+  house: number;
+  houses: HouseCusp[];
+  thresholdDegrees?: number;
+}) {
+  if (!houses.length) {
+    return null;
+  }
+
+  const currentIndex = houses.findIndex((entry) => entry.house === house);
+  if (currentIndex < 0) {
+    return null;
+  }
+
+  const nextHouse = houses[(currentIndex + 1) % houses.length];
+  if (!nextHouse) {
+    return null;
+  }
+
+  const distanceToNextCusp = normalizeLongitude(nextHouse.longitude - longitude);
+  if (distanceToNextCusp <= 0 || distanceToNextCusp > thresholdDegrees) {
+    return null;
+  }
+
+  return {
+    currentHouse: house,
+    nextHouse: nextHouse.house,
+    distanceToNextCusp,
+  };
+}
+
+export function formatHouseWithTransition({
+  longitude,
+  house,
+  houses,
+  thresholdDegrees,
+}: {
+  longitude: number;
+  house: number;
+  houses: HouseCusp[];
+  thresholdDegrees?: number;
+}) {
+  const transition = getApproachingHouseTransition({
+    longitude,
+    house,
+    houses,
+    thresholdDegrees,
+  });
+
+  return transition ? `${house} -> ${transition.nextHouse}` : String(house);
+}

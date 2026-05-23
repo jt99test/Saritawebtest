@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "motion/react";
 import type { ChartPoint, ChartPointId, HouseCusp, NatalChartData } from "@/lib/chart";
 import { formatSignPosition, getAugmentedChartPoints, getSignMeta, normalizeLongitude, zodiacSigns } from "@/lib/chart";
 import { getAspectLabel, getHouseArea, getPointLabel, getSignLabel } from "@/lib/chart-labels";
+import { formatHouseWithTransition } from "@/components/chart/chart-helpers";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { dictionaries } from "@/lib/i18n";
 import type { SynastryAspect } from "@/lib/synastry";
@@ -92,13 +93,6 @@ function displayPointForPanel(
     };
   }
 
-  if (variant === "solar-return" && ring === "outer" && outerChart) {
-    return {
-      ...point,
-      house: getHouseForLongitude(point.longitude, outerChart.houses),
-    };
-  }
-
   if (variant === "solar-return" && ring === "inner") {
     return {
       ...point,
@@ -114,6 +108,27 @@ function displayPointForPanel(
   }
 
   return point;
+}
+
+function displayHousesForPanel(
+  variant: BiWheelPanelVariant,
+  ring: "inner" | "outer",
+  innerChart: NatalChartData,
+  outerChart: NatalChartData | null,
+) {
+  if (variant === "solar-return" && ring === "outer" && outerChart) {
+    return outerChart.houses;
+  }
+
+  return innerChart.houses;
+}
+
+function displayHouseLabel(point: ChartPoint, houses: HouseCusp[]) {
+  return formatHouseWithTransition({
+    longitude: point.longitude,
+    house: point.house,
+    houses,
+  });
 }
 
 function ringLabel(
@@ -609,6 +624,7 @@ export function BiWheelInfoPanel({
   const panelRef = useRef<HTMLDivElement | null>(null);
   const point = selectedPoint(selectedId, ring, innerChart, outerChart);
   const displayPoint = point ? displayPointForPanel(variant, ring, point, innerChart, outerChart) : null;
+  const displayHouses = displayHousesForPanel(variant, ring, innerChart, outerChart);
 
   useEffect(() => {
     if (!selectedId || !point) {
@@ -642,6 +658,7 @@ export function BiWheelInfoPanel({
   const signGlyph = displayPoint ? zodiacSigns.find((sign) => sign.id === displayPoint.sign)?.glyph ?? "" : "";
   const position = displayPoint ? formatSignPosition(displayPoint.longitude) : null;
   const reading = displayPoint ? biWheelReading({ variant, ring, point: displayPoint, copy, innerName, outerName, locale }) : "";
+  const houseLabel = displayPoint ? displayHouseLabel(displayPoint, displayHouses) : "";
 
   return (
     <AnimatePresence>
@@ -685,7 +702,7 @@ export function BiWheelInfoPanel({
                       {dictionary.result.points[selectedId]}
                     </h3>
                     <p className="mt-1.5 text-[13px] leading-6 text-[#d7e7ff]/66">
-                      {getSignLabel(displayPoint.sign, locale)} · {dictionary.result.transitPage.housePrefix} {displayPoint.house} · {getHouseArea(displayPoint.house, locale)}
+                      {getSignLabel(displayPoint.sign, locale)} · {dictionary.result.transitPage.housePrefix} {houseLabel} · {getHouseArea(displayPoint.house, locale)}
                     </p>
                   </div>
                 </div>
@@ -722,7 +739,7 @@ export function BiWheelInfoPanel({
                     </li>
                     <li className="flex gap-2">
                       <span className="mt-3 h-1.5 w-1.5 rounded-full bg-ivory/35" />
-                      <span>{dictionary.result.transitPage.housePrefix} {displayPoint.house}{" \u00b7 "}{getHouseArea(displayPoint.house, locale)}</span>
+                      <span>{dictionary.result.transitPage.housePrefix} {houseLabel}{" \u00b7 "}{getHouseArea(displayPoint.house, locale)}</span>
                     </li>
                   </ul>
                 ) : null}
@@ -739,7 +756,7 @@ export function BiWheelInfoPanel({
                     />
                     <InfoRow label={dictionary.result.fields.eclipticLongitude} value={formatAbsoluteLongitude(displayPoint)} />
                     <InfoRow label={dictionary.result.fields.sign} value={getSignLabel(displayPoint.sign, locale)} />
-                    <InfoRow label={dictionary.result.fields.house} value={String(displayPoint.house)} />
+                    <InfoRow label={dictionary.result.fields.house} value={houseLabel} />
                     <InfoRow label={dictionary.result.fields.element} value={dictionary.result.elements[signMeta.element]} />
                     <InfoRow label={dictionary.result.fields.modality} value={dictionary.result.modalities[signMeta.modality]} />
                     <InfoRow label={dictionary.result.fields.retrograde} value={displayPoint.retrograde ? dictionary.common.yes : dictionary.common.no} />

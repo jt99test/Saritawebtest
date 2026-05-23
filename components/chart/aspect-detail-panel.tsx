@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "motion/react";
 
+import { formatHouseWithTransition } from "@/components/chart/chart-helpers";
 import { useChartStore } from "@/components/chart/chart-store";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { getAugmentedChartPoints, type NatalChartData } from "@/lib/chart";
@@ -22,6 +23,12 @@ export function AspectDetailPanel({ chart }: Props) {
   const fromPoint = selectedAspect ? pointsById.get(selectedAspect.from) : null;
   const toPoint = selectedAspect ? pointsById.get(selectedAspect.to) : null;
   const housePrefix = dictionary.result.transitPage.housePrefix.toLowerCase();
+  const fromHouse = fromPoint
+    ? formatHouseWithTransition({ longitude: fromPoint.longitude, house: fromPoint.house, houses: chart.houses })
+    : "";
+  const toHouse = toPoint
+    ? formatHouseWithTransition({ longitude: toPoint.longitude, house: toPoint.house, houses: chart.houses })
+    : "";
 
   return (
     <AnimatePresence>
@@ -56,7 +63,7 @@ export function AspectDetailPanel({ chart }: Props) {
                   {dictionary.result.points[fromPoint.id]}
                 </span>
                 <span className="mt-1 truncate text-[12px] text-[#d7e7ff]/68">
-                  {dictionary.result.signs[fromPoint.sign]} {"\u00b7"} {housePrefix} {fromPoint.house}
+                  {dictionary.result.signs[fromPoint.sign]} {"\u00b7"} {housePrefix} {fromHouse}
                 </span>
               </div>
 
@@ -84,7 +91,7 @@ export function AspectDetailPanel({ chart }: Props) {
                   {dictionary.result.points[toPoint.id]}
                 </span>
                 <span className="mt-1 truncate text-[12px] text-[#d7e7ff]/68">
-                  {dictionary.result.signs[toPoint.sign]} {"\u00b7"} {housePrefix} {toPoint.house}
+                  {dictionary.result.signs[toPoint.sign]} {"\u00b7"} {housePrefix} {toHouse}
                 </span>
               </div>
             </div>
