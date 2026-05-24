@@ -11,6 +11,7 @@ import { Container } from "@/components/ui/container";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { Reveal } from "@/components/ui/reveal";
 import { SectionTitle } from "@/components/ui/section-title";
+import { safeRemoveStorageItem, safeSetStorageItem } from "@/lib/browser-storage";
 import { CHART_DRAFT_KEY, CHART_RESULT_KEY, type FormValues } from "@/lib/chart-session";
 import { clampIsoDateYear } from "@/lib/date-input";
 import { dictionaries } from "@/lib/i18n";
@@ -21,6 +22,7 @@ export default function FormPage() {
   const dictionary = dictionaries[locale];
   const [submitting, setSubmitting] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [values, setValues] = useState<FormValues>({
     name: "",
     firstName: "",
@@ -39,12 +41,20 @@ export default function FormPage() {
 
   function submitChart() {
     setSubmitting(true);
+    setSubmitError(null);
     const nextValues = {
       ...values,
       name: `${values.firstName ?? ""} ${values.lastName ?? ""}`.trim(),
     };
-    sessionStorage.setItem(CHART_DRAFT_KEY, JSON.stringify(nextValues));
-    sessionStorage.removeItem(CHART_RESULT_KEY);
+    const stored = safeSetStorageItem("session", CHART_DRAFT_KEY, JSON.stringify(nextValues));
+
+    if (!stored) {
+      setSubmitting(false);
+      setSubmitError(dictionary.loading.errorFallback);
+      return;
+    }
+
+    safeRemoveStorageItem("session", CHART_RESULT_KEY);
     router.push("/loading");
   }
 
@@ -217,6 +227,9 @@ export default function FormPage() {
                 </label>
 
                 <div className="pt-2 sm:col-span-2">
+                  {submitError ? (
+                    <p className="mb-3 text-sm leading-6 text-[#f5d782]">{submitError}</p>
+                  ) : null}
                   <PrimaryButton type="submit" disabled={submitting || !values.selectedLocation}>
                     {dictionary.form.submit}
                   </PrimaryButton>
@@ -258,6 +271,9 @@ export default function FormPage() {
                 <dd className="text-right text-[#fffaf0]">{values.selectedLocation?.displayName ?? values.location}</dd>
               </div>
             </dl>
+            {submitError ? (
+              <p className="mt-4 text-sm leading-6 text-[#f5d782]">{submitError}</p>
+            ) : null}
             <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <PrimaryButton
                 type="button"

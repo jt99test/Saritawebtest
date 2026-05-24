@@ -12,6 +12,8 @@ import {
   saveAndCalculateSynastryPartnerAction,
   type SynastryPartnerInput,
 } from "@/lib/actions";
+import { fetchAiReadingWithPolling } from "@/lib/ai-reading-client";
+import { safeRemoveStorageItem } from "@/lib/browser-storage";
 import type { ChartPointId, NatalChartData } from "@/lib/chart";
 import { hashNatalChart } from "@/lib/chart-hash";
 import { clampIsoDateYear } from "@/lib/date-input";
@@ -36,7 +38,7 @@ type SynastryData = {
 };
 
 const SARITA_DATA_MARKER = "__SARITA_DATA__";
-const READING_TIMEOUT_MS = 45000;
+const READING_TIMEOUT_MS = 120000;
 const LEGACY_SELECTED_PARTNER_STORAGE_KEYS = [
   "sarita_synastry_selected_partner",
   "sarita_synastry_selected_partner_data",
@@ -269,7 +271,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
 
   useEffect(() => {
     LEGACY_SELECTED_PARTNER_STORAGE_KEYS.forEach((key) => {
-      window.localStorage.removeItem(key);
+      safeRemoveStorageItem("local", key);
     });
   }, []);
 
@@ -322,7 +324,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
     setIsLoadingReading(true);
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), READING_TIMEOUT_MS);
-    void fetch("/api/synastry-reading", {
+    void fetchAiReadingWithPolling("/api/synastry-reading", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -428,7 +430,9 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
           {synastryData.compatibilityLabel ? (
             <h2 className="mt-2 break-words font-serif text-[28px] leading-tight text-[#1e1a2e] sm:text-[48px]">{synastryData.compatibilityLabel}</h2>
           ) : (
-            <div className="mx-auto mt-4 h-10 w-72 animate-pulse rounded bg-black/8" />
+            <p className="mx-auto mt-4 animate-pulse text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+              {synastryCopy.readingLoading}
+            </p>
           )}
           <div className="mt-5 hidden justify-center sm:flex">
             <PrimaryButton
@@ -504,6 +508,9 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
             </p>
             {isLoadingReading && !hasAiCompatibility ? (
               <div className="mt-3 animate-pulse space-y-2">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                  {synastryCopy.readingLoading}
+                </p>
                 <div className="h-6 w-3/4 rounded bg-black/8" />
                 <div className="h-3 w-full rounded bg-black/6" />
                 <div className="h-3 w-5/6 rounded bg-black/6" />
@@ -554,6 +561,9 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
                   </p>
                   {isLoadingReading && !layerText ? (
                     <div className="mt-3 animate-pulse space-y-2">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                        {synastryCopy.readingLoading}
+                      </p>
                       <div className="h-6 w-3/4 rounded bg-black/8" />
                       <div className="h-3 w-full rounded bg-black/6" />
                       <div className="h-3 w-5/6 rounded bg-black/6" />

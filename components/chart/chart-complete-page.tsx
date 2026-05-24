@@ -7,6 +7,7 @@ import { BiWheelInfoPanel } from "@/components/chart/bi-wheel-info-panel";
 import { LocationAutocomplete } from "@/components/form/location-autocomplete";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { calculateCurrentTransitsAction } from "@/lib/actions";
+import { fetchAiReadingWithPolling } from "@/lib/ai-reading-client";
 import type { ChartPoint, ChartPointId, HouseCusp, NatalChartData } from "@/lib/chart";
 import { normalizeLongitude } from "@/lib/chart";
 import { hashNatalChart } from "@/lib/chart-hash";
@@ -38,7 +39,7 @@ type TransitData = {
 type TransitWheelMode = "all" | "active";
 
 const SARITA_DATA_MARKER = "__SARITA_DATA__";
-const READING_TIMEOUT_MS = 45000;
+const READING_TIMEOUT_MS = 120000;
 
 const POINT_LABELS: Partial<Record<ChartPointId, string>> = {
   sun: "Sol",
@@ -80,10 +81,12 @@ const HOUSE_AREAS: Record<number, string> = {
   12: "inconsciente, descanso, cierre de ciclos y vida espiritual",
 };
 
-function ReadingSkeleton() {
+function ReadingSkeleton({ label }: { label: string }) {
   return (
     <article className="mt-4 min-h-[160px] animate-pulse border border-black/10 bg-white p-6">
-      <div className="h-3 w-24 rounded bg-black/8" />
+      <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+        {label}
+      </p>
       <div className="mt-3 h-6 w-3/4 rounded bg-black/8" />
       <div className="mt-3 space-y-2">
         <div className="h-3 w-full rounded bg-black/6" />
@@ -361,7 +364,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
     setTransitData({});
     setTransitReadingError(null);
     setIsLoadingTransitReading(true);
-    void fetch("/api/transit-reading", {
+    void fetchAiReadingWithPolling("/api/transit-reading", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chart, transits: top, locale, readingId, cacheKey, gender: request?.gender || undefined }),
@@ -574,6 +577,9 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
             </p>
             {isLoadingTransitReading && !transitData.dominantTitle ? (
               <div className="mt-3 animate-pulse space-y-2">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                  {transitCopy.readingLoading}
+                </p>
                 <div className="h-6 w-3/4 rounded bg-black/8" />
                 <div className="h-3 w-full rounded bg-black/6" />
                 <div className="h-3 w-5/6 rounded bg-black/6" />
@@ -602,6 +608,9 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
             </p>
             {isLoadingTransitReading && !transitData.planetLanguage ? (
               <div className="mt-3 animate-pulse space-y-2">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                  {transitCopy.readingLoading}
+                </p>
                 <div className="h-3 w-full rounded bg-black/6" />
                 <div className="h-3 w-5/6 rounded bg-black/6" />
               </div>
@@ -656,7 +665,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
                 })}
           </div>
           {isLoadingTransitReading && !selectedAiHouse ? (
-            <ReadingSkeleton />
+            <ReadingSkeleton label={transitCopy.readingLoading} />
           ) : transitReadingError && !selectedAiHouse ? (
             <article className="mt-4 min-h-[160px] border border-black/10 bg-white p-6">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">

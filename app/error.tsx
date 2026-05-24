@@ -20,7 +20,21 @@ export default function Error({
 
   useEffect(() => {
     console.error(error);
-  }, [error]);
+    void fetch("/api/client-error", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: error.message,
+        digest: error.digest,
+        stack: error.stack,
+        path: window.location.pathname,
+        userAgent: window.navigator.userAgent,
+        locale,
+        timestamp: new Date().toISOString(),
+      }),
+      keepalive: true,
+    }).catch(() => undefined);
+  }, [error, locale]);
 
   return (
     <main className="premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">

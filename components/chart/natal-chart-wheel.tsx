@@ -37,6 +37,8 @@ const ZODIAC_INNER = 344;
 const DEGREE_TICK_OUTER = 400;
 const PLANET_RING_RADIUS = 286;
 const PLANET_LABEL_RADIUS = 320;
+const PLANET_CLUSTER_CALLOUT_RADIUS = ZODIAC_OUTER + 38;
+const PLANET_CLUSTER_SPACING = 58;
 const HOUSE_OUTER = 252;
 const HOUSE_INNER = 142;
 const HOUSE_NUMBER_RADIUS = 208;
@@ -78,6 +80,52 @@ const POINT_GLYPHS: Record<ChartPointId, string> = {
   lilith: "⚸",
   ceres: "⚳",
 };
+
+const PLANET_GLYPH_INK: Partial<Record<ChartPointId, string>> = {
+  sun: "#b56b00",
+  moon: "#4d4f7d",
+  mercury: "#027a8a",
+  venus: "#b33978",
+  mars: "#b5332f",
+  jupiter: "#4f55c8",
+  saturn: "#76619c",
+  uranus: "#007f91",
+  neptune: "#4c62b8",
+  pluto: "#9f407c",
+  northNode: "#7d7f98",
+  southNode: "#7d7f98",
+  chiron: "#8a5b31",
+  partOfFortune: "#9b6a00",
+  lilith: "#7f4f99",
+  ceres: "#8a5b31",
+};
+
+function planetGlyphInk(pointId: ChartPointId) {
+  return PLANET_GLYPH_INK[pointId] ?? "#061331";
+}
+
+const PLANET_GLYPH_OFFSETS: Partial<Record<ChartPointId, { x: number; y: number }>> = {
+  sun: { x: 0, y: 1 },
+  moon: { x: -0.5, y: 0.5 },
+  mercury: { x: 0, y: 1 },
+  venus: { x: 0, y: 1 },
+  mars: { x: 0.5, y: 1 },
+  jupiter: { x: 0, y: 1 },
+  saturn: { x: 0, y: 1 },
+  uranus: { x: 0, y: 1.5 },
+  neptune: { x: 0, y: 1 },
+  pluto: { x: 0, y: 1 },
+  northNode: { x: 0, y: 2.2 },
+  southNode: { x: 0, y: 2.2 },
+  chiron: { x: 0, y: 1.3 },
+  partOfFortune: { x: 0, y: 1.4 },
+  lilith: { x: 0, y: 1.4 },
+  ceres: { x: 0, y: 1.4 },
+};
+
+function planetGlyphOffset(pointId: ChartPointId) {
+  return PLANET_GLYPH_OFFSETS[pointId] ?? { x: 0, y: 0 };
+}
 
 const POINT_SYMBOLS: Record<ChartPointId, string> = {
   sun: "\u2609",
@@ -138,6 +186,21 @@ function getTouchDistance(touches: { item(index: number): { clientX: number; cli
 function circularDistance(first: number, second: number) {
   const difference = Math.abs(first - second);
   return difference > 180 ? 360 - difference : difference;
+}
+
+function circularMean(values: number[]) {
+  if (!values.length) return 0;
+  const vector = values.reduce(
+    (sum, value) => {
+      const angle = (value * Math.PI) / 180;
+      return {
+        x: sum.x + Math.cos(angle),
+        y: sum.y + Math.sin(angle),
+      };
+    },
+    { x: 0, y: 0 },
+  );
+  return (Math.atan2(vector.y, vector.x) * 180 / Math.PI + 360) % 360;
 }
 
 function pointScaleTransform(x: number, y: number, scale: number) {
@@ -621,7 +684,7 @@ function _PlanetLayer({
   panelOpen: boolean;
   showDegrees: boolean;
   hoveredAspectId: string | null;
-  onSelect: (pointId: ChartPointId) => void;
+  onSelect: (pointId: ChartPointId, tooltip?: TooltipState) => void;
   onHover: (tooltip: TooltipState | null, pointId?: ChartPointId | null) => void;
 }) {
   const highlightedAspect = hoveredAspectId ? hoveredAspectId.split("-") : null;
@@ -657,7 +720,12 @@ function _PlanetLayer({
             key={point.id}
             data-chart-point={point.id}
             transform={scale !== 1 ? pointScaleTransform(glyphX, glyphY, scale) : undefined}
-            onClick={() => onSelect(point.id)}
+            onClick={() => onSelect(point.id, {
+              id: point.id,
+              xPercent: (glyphX / SIZE) * 100,
+              yPercent: (glyphY / SIZE) * 100,
+              content: tooltip,
+            })}
             onMouseEnter={() =>
               onHover(
                 {
@@ -689,7 +757,12 @@ function _PlanetLayer({
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
-                onSelect(point.id);
+                onSelect(point.id, {
+                  id: point.id,
+                  xPercent: (glyphX / SIZE) * 100,
+                  yPercent: (glyphY / SIZE) * 100,
+                  content: tooltip,
+                });
               }
             }}
           >
@@ -787,7 +860,7 @@ function _AstroSeekPlanetLayer({
   panelOpen: boolean;
   showDegrees: boolean;
   hoveredAspectId: string | null;
-  onSelect: (pointId: ChartPointId) => void;
+  onSelect: (pointId: ChartPointId, tooltip?: TooltipState) => void;
   onHover: (tooltip: TooltipState | null, pointId?: ChartPointId | null) => void;
 }) {
   const highlightedAspect = hoveredAspectId ? hoveredAspectId.split("-") : null;
@@ -894,7 +967,12 @@ function _AstroSeekPlanetLayer({
             key={`astroseek-${point.id}`}
             data-chart-point={point.id}
             transform={scale !== 1 ? pointScaleTransform(glyphX, glyphY, scale) : undefined}
-            onClick={() => onSelect(point.id)}
+            onClick={() => onSelect(point.id, {
+              id: point.id,
+              xPercent: (glyphX / SIZE) * 100,
+              yPercent: (glyphY / SIZE) * 100,
+              content: tooltip,
+            })}
             onMouseEnter={() =>
               onHover(
                 {
@@ -926,7 +1004,12 @@ function _AstroSeekPlanetLayer({
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
-                onSelect(point.id);
+                onSelect(point.id, {
+                  id: point.id,
+                  xPercent: (glyphX / SIZE) * 100,
+                  yPercent: (glyphY / SIZE) * 100,
+                  content: tooltip,
+                });
               }
             }}
           >
@@ -1024,7 +1107,7 @@ function ClearPlanetLayer({
   panelOpen: boolean;
   showDegrees: boolean;
   hoveredAspectId: string | null;
-  onSelect: (pointId: ChartPointId) => void;
+  onSelect: (pointId: ChartPointId, tooltip?: TooltipState) => void;
   onHover: (tooltip: TooltipState | null, pointId?: ChartPointId | null) => void;
 }) {
   const highlightedAspect = hoveredAspectId ? hoveredAspectId.split("-") : null;
@@ -1035,7 +1118,7 @@ function ClearPlanetLayer({
   for (const point of sortedPoints) {
     const previous = currentCluster[currentCluster.length - 1];
 
-    if (!previous || circularDistance(previous.longitude, point.longitude) <= 5) {
+    if (!previous || circularDistance(previous.longitude, point.longitude) <= 8) {
       currentCluster.push(point);
       continue;
     }
@@ -1052,7 +1135,7 @@ function ClearPlanetLayer({
       clusters.length > 0 &&
       firstCluster &&
       lastCluster &&
-      circularDistance(firstCluster.longitude, lastCluster.longitude) <= 5
+      circularDistance(firstCluster.longitude, lastCluster.longitude) <= 8
     ) {
       clusters[0] = [...currentCluster, ...clusters[0]];
     } else {
@@ -1075,19 +1158,31 @@ function ClearPlanetLayer({
       connectorX2: number;
       connectorY2: number;
       hasConnector: boolean;
+      isClustered: boolean;
+      clusterPointIds: ChartPointId[];
     }
   >();
 
   clusters.forEach((cluster) => {
     const sortedCluster = [...cluster].sort((left, right) => left.longitude - right.longitude);
+    const clusterLongitude = circularMean(sortedCluster.map((point) => point.longitude));
+    const clusterPointIds = sortedCluster.map((point) => point.id);
 
     sortedCluster.forEach((point, index) => {
-      const angle = pointAngle(point.longitude, ascendant);
+      const isClustered = sortedCluster.length > 1;
+      const calloutLongitude = isClustered ? clusterLongitude : point.longitude;
+      const angle = pointAngle(calloutLongitude, ascendant);
       const radialX = Math.cos(angle);
+      const radialY = Math.sin(angle);
+      const tangentX = -radialY;
+      const tangentY = radialX;
       const centeredIndex = index - (sortedCluster.length - 1) / 2;
-      const radialOffset = sortedCluster.length > 1 ? centeredIndex * 18 : 0;
-      const [connectorX1, connectorY1] = pointAtRadius(PLANET_LABEL_RADIUS + 2, point.longitude, ascendant);
-      const [glyphX, glyphY] = pointAtRadius(PLANET_LABEL_RADIUS + 8 + radialOffset, point.longitude, ascendant);
+      const tangentOffset = isClustered ? centeredIndex * PLANET_CLUSTER_SPACING : 0;
+      const glyphRadius = isClustered ? PLANET_CLUSTER_CALLOUT_RADIUS : PLANET_LABEL_RADIUS + 8;
+      const [connectorX1, connectorY1] = pointAtRadius(ZODIAC_INNER, isClustered ? point.longitude : calloutLongitude, ascendant);
+      const [baseGlyphX, baseGlyphY] = pointAtRadius(glyphRadius, calloutLongitude, ascendant);
+      const glyphX = baseGlyphX + tangentX * tangentOffset;
+      const glyphY = baseGlyphY + tangentY * tangentOffset;
       const labelSide = radialX >= 0 ? 1 : -1;
       const labelX = glyphX + labelSide * 28;
       const labelY = glyphY + 10;
@@ -1105,7 +1200,9 @@ function ClearPlanetLayer({
         connectorY1,
         connectorX2: glyphX,
         connectorY2: glyphY,
-        hasConnector: sortedCluster.length > 1,
+        hasConnector: isClustered,
+        isClustered,
+        clusterPointIds,
       });
     });
   });
@@ -1119,6 +1216,7 @@ function ClearPlanetLayer({
         }
 
         const active = hoveredPointId === point.id || selectedPointId === point.id;
+        const clusterActive = layout.clusterPointIds.some((pointId) => pointId === hoveredPointId || pointId === selectedPointId);
         const scale = selectedPointId === point.id && panelOpen ? 1.15 : hoveredPointId === point.id ? 1.1 : 1;
         const glow =
           selectedPointId === point.id && panelOpen
@@ -1140,7 +1238,12 @@ function ClearPlanetLayer({
             key={`clear-point-${point.id}`}
             data-chart-point={point.id}
             transform={scale !== 1 ? pointScaleTransform(layout.glyphX, layout.glyphY, scale) : undefined}
-            onClick={() => onSelect(point.id)}
+            onClick={() => onSelect(point.id, {
+              id: point.id,
+              xPercent: (layout.glyphX / SIZE) * 100,
+              yPercent: (layout.glyphY / SIZE) * 100,
+              content: tooltip,
+            })}
             onMouseEnter={() =>
               onHover(
                 {
@@ -1172,20 +1275,27 @@ function ClearPlanetLayer({
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
-                onSelect(point.id);
+                onSelect(point.id, {
+                  id: point.id,
+                  xPercent: (layout.glyphX / SIZE) * 100,
+                  yPercent: (layout.glyphY / SIZE) * 100,
+                  content: tooltip,
+                });
               }
             }}
           >
             {layout.hasConnector ? (
-              <line
-                x1={round(layout.connectorX1)}
-                y1={round(layout.connectorY1)}
-                x2={round(layout.connectorX2)}
-                y2={round(layout.connectorY2)}
-                stroke="rgba(0,102,255,0.22)"
-                strokeWidth={0.55}
-                strokeLinecap="round"
-              />
+              <>
+                <line
+                  x1={round(layout.connectorX1)}
+                  y1={round(layout.connectorY1)}
+                  x2={round(layout.connectorX2)}
+                  y2={round(layout.connectorY2)}
+                  stroke={active ? "rgba(245,215,130,0.96)" : clusterActive ? "rgba(245,215,130,0.72)" : "rgba(23,43,79,0.72)"}
+                  strokeWidth={active ? 3 : clusterActive ? 2.4 : 1.65}
+                  strokeLinecap="round"
+                />
+              </>
             ) : null}
 
             {active ? (
@@ -1212,28 +1322,28 @@ function ClearPlanetLayer({
             />
 
             <text
-              x={round(layout.glyphX)}
-              y={round(layout.glyphY)}
+              x={round(layout.glyphX + planetGlyphOffset(point.id).x)}
+              y={round(layout.glyphY + planetGlyphOffset(point.id).y)}
               textAnchor="middle"
               dominantBaseline="central"
-              fill={point.color}
+              fill={planetGlyphInk(point.id)}
               fillOpacity="1"
               fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
               fontSize="27"
               fontWeight="700"
               stroke="#fffdf8"
-              strokeWidth={1.8}
+              strokeWidth={1.35}
               paintOrder="stroke fill"
               style={{ filter: glow }}
             >
               {POINT_SYMBOLS[point.id] ?? POINT_GLYPHS[point.id] ?? point.glyph}
             </text>
 
-            {active ? (
+            {false ? (
               <text
-                x={round(layout.labelX)}
-                y={round(layout.labelY)}
-                textAnchor={layout.labelAnchor}
+                x={round(layout?.labelX ?? 0)}
+                y={round(layout?.labelY ?? 0)}
+                textAnchor={layout?.labelAnchor ?? "middle"}
                 dominantBaseline="central"
                 fill="#061331"
                 fontFamily="'Inter', sans-serif"
@@ -1437,7 +1547,26 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
     };
   }, [viewerOpen, viewerMode]);
 
-  function handleSelect(pointId: ChartPointId) {
+  function isTouchLikeChart() {
+    if (typeof window === "undefined") return false;
+    return window.matchMedia("(hover: none), (pointer: coarse)").matches;
+  }
+
+  function handleSelect(pointId: ChartPointId, nextTooltip?: TooltipState) {
+    if (isTouchLikeChart() && !panelOpen) {
+      setHoveredPointId(pointId);
+      setHoveredAspectVisualId(null);
+      setTooltip(nextTooltip ?? null);
+
+      if (selectedPointId === pointId) {
+        openPanel();
+        return;
+      }
+
+      selectPoint(pointId);
+      return;
+    }
+
     setHoveredPointId(null);
     setHoveredAspectVisualId(null);
     setTooltip(null);
@@ -1578,12 +1707,12 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
       className={[
         "relative aspect-square w-[min(100%,calc(100vw-1.5rem))] max-w-[54rem] rounded-full bg-transparent drop-shadow-[0_18px_42px_rgba(30,26,46,0.18)] lg:w-[640px]",
         viewerMode ? "w-full max-w-none lg:w-full" : "",
-        !viewerMode ? "mb-14 sm:mb-16" : "",
+        !viewerMode ? "mb-28 sm:mb-32" : "",
       ].join(" ")}
     >
       {tooltip ? (
         <div
-          className="pointer-events-none absolute z-30 hidden -translate-x-1/2 -translate-y-[calc(100%+0.85rem)] rounded-2xl border border-dusty-gold/45 bg-[#fffaf0] px-3 py-2 text-xs font-semibold leading-6 text-[#1e1a2e] shadow-[0_18px_45px_rgba(0,0,0,0.28)] md:block"
+          className="pointer-events-none absolute z-30 -translate-x-1/2 -translate-y-[calc(100%+0.85rem)] rounded-2xl border border-dusty-gold/45 bg-[#fffaf0] px-3 py-2 text-xs font-semibold leading-6 text-[#1e1a2e] shadow-[0_18px_45px_rgba(0,0,0,0.28)]"
           style={{ left: `${tooltip.xPercent}%`, top: `${tooltip.yPercent}%` }}
         >
           {tooltip.content}

@@ -8,6 +8,7 @@ import { PaidFeatureGate } from "@/components/paywall/paid-feature-gate";
 import { YogaAstralPage } from "@/components/yoga/yoga-astral-page";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
+import { isStorageEventFor, safeGetStorageItem } from "@/lib/browser-storage";
 import { CHART_RESULT_KEY, type ChartCalculationResult } from "@/lib/chart-session";
 import { dictionaries } from "@/lib/i18n";
 
@@ -19,7 +20,7 @@ function readStoredChartResult() {
     return null;
   }
 
-  const raw = window.sessionStorage.getItem(CHART_RESULT_KEY);
+  const raw = safeGetStorageItem("session", CHART_RESULT_KEY);
 
   if (raw === cachedRawResult) {
     return cachedParsedResult;
@@ -47,7 +48,7 @@ function subscribeToChartResult(onStoreChange: () => void) {
   }
 
   const handleStorage = (event: StorageEvent) => {
-    if (event.storageArea === window.sessionStorage && event.key === CHART_RESULT_KEY) {
+    if (isStorageEventFor("session", event, CHART_RESULT_KEY)) {
       onStoreChange();
     }
   };

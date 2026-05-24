@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { safeGetStorageItem } from "@/lib/browser-storage";
 import { CHART_RESULT_KEY, type ChartCalculationResult } from "@/lib/chart-session";
 
 function parseCoordinateLabel(label: string) {
@@ -74,8 +75,8 @@ export function DebugChartLoader() {
   );
 
   useEffect(() => {
-    const localRaw = window.localStorage.getItem(CHART_RESULT_KEY);
-    const sessionRaw = window.sessionStorage.getItem(CHART_RESULT_KEY);
+    const localRaw = safeGetStorageItem("local", CHART_RESULT_KEY);
+    const sessionRaw = safeGetStorageItem("session", CHART_RESULT_KEY);
     const query =
       buildQueryFromStoredResult(localRaw) ??
       buildQueryFromStoredResult(sessionRaw);

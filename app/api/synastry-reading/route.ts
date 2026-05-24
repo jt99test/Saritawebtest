@@ -14,7 +14,8 @@ import {
 } from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData, SignId } from "@/lib/chart";
 import { getAspectLabel, getPointLabel, getSignLabel } from "@/lib/chart-labels";
-import { promptLanguageInstruction } from "@/lib/prompt-i18n";
+import { assertGeneratedLanguage } from "@/lib/generated-language";
+import { nativeToneInstruction, promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { genderPromptInstruction, genderPromptInstructionForSubject, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import type { SynastryAspect } from "@/lib/synastry";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -212,6 +213,106 @@ function buildContext(chartA: NatalChartData, chartB: NatalChartData, partnerNam
   ].join("\n");
 }
 
+function buildPrompt({
+  name,
+  partnerName,
+  context,
+  locale,
+  readingGender,
+  partnerReadingGender,
+}: {
+  name: string;
+  partnerName: string;
+  context: string;
+  locale?: string;
+  readingGender?: ReadingGender;
+  partnerReadingGender?: ReadingGender;
+}) {
+  if (locale === "en") {
+    return `You are Sarita, an astrologer speaking to ${name} about their relationship with ${partnerName}. Direct, concrete, honest, and practical.
+
+${context}
+
+${genderPromptInstruction(readingGender, locale)}
+${genderPromptInstructionForSubject(partnerName, partnerReadingGender, locale)}
+${grammarPromptInstruction(locale)}
+${nativeToneInstruction(locale)}
+
+Use the synastry_reading tool to return the structured reading.
+Tool keys must remain exactly as defined, even when the content is in another language.
+
+Important: compatibilityDescription and each layers.* field must be developed: 3-5 concrete sentences, about 60-95 words each, so they fill roughly 3-5 lines in the card.
+
+Exact shape:
+{"reading":"[ONE paragraph of 80-100 words about ${name}'s relationship with ${partnerName}. Use the 2 strongest aspects to describe what is felt, where there is tension, and where there is ease. Give a real coexisting example. End with something concrete ${name} can do.]","compatibilityLabel":"[Short relationship label, max 6 words]","compatibilityDescription":"[3-5 honest and practical sentences about the type of bond. Describe how it feels, where it gets stuck, and what helps care for it.]","layers":{"fisico":"[3-5 practical sentences about physical/body connection based on real aspects]","sexual":"[3-5 practical sentences about attraction, desire, or intensity based on real aspects]","emocional":"[3-5 practical sentences about attachment, safety, and vulnerability based on real aspects]","mental":"[3-5 practical sentences about communication and ideas based on real aspects]","profesional":"[3-5 practical sentences about working or building something together based on real aspects]","evolutivo":"[3-5 practical sentences about what pattern or change this relationship activates based on real aspects]"}}
+
+Rules:
+- Every value uses real aspects. Nothing generic.
+- Always speak directly to ${name}.
+- The first character of every text field is uppercase.
+- "reading" is one paragraph, no lists and no headings.
+- No mysticism or New Age language.
+- Do not add new fields.
+
+${langInstruction(locale)}`;
+  }
+
+  if (locale === "it") {
+    return `Sei Sarita, un'astrologa che parla con ${name} della sua relazione con ${partnerName}. Diretta, concreta, onesta e pratica.
+
+${context}
+
+${genderPromptInstruction(readingGender, locale)}
+${genderPromptInstructionForSubject(partnerName, partnerReadingGender, locale)}
+${grammarPromptInstruction(locale)}
+${nativeToneInstruction(locale)}
+
+Usa lo strumento synastry_reading per restituire la lettura strutturata.
+Le chiavi dello strumento devono restare esattamente come sono definite, anche se il contenuto e in un'altra lingua.
+
+Importante: compatibilityDescription e ogni campo layers.* devono essere sviluppati: 3-5 frasi concrete, circa 60-95 parole ciascuno, cosi occupano circa 3-5 righe nella scheda.
+
+Forma esatta:
+{"reading":"[UN paragrafo di 80-100 parole sulla relazione di ${name} con ${partnerName}. Usa i 2 aspetti piu forti per descrivere che cosa si sente, dove c'e tensione e dove c'e facilita. Dai un esempio reale di convivenza. Chiudi con qualcosa di concreto che ${name} puo fare.]","compatibilityLabel":"[Etichetta breve del legame, max 6 parole]","compatibilityDescription":"[3-5 frasi oneste e pratiche sul tipo di legame. Descrivi come si sente, dove si blocca e che cosa aiuta a prendersene cura.]","layers":{"fisico":"[3-5 frasi pratiche sulla connessione fisica/corporea secondo aspetti reali]","sexual":"[3-5 frasi pratiche su attrazione, desiderio o intensita secondo aspetti reali]","emocional":"[3-5 frasi pratiche su attaccamento, sicurezza e vulnerabilita secondo aspetti reali]","mental":"[3-5 frasi pratiche su comunicazione e idee secondo aspetti reali]","profesional":"[3-5 frasi pratiche sul lavorare o costruire qualcosa insieme secondo aspetti reali]","evolutivo":"[3-5 frasi pratiche su quale schema o cambiamento attiva questa relazione secondo aspetti reali]"}}
+
+Regole:
+- Ogni valore usa aspetti reali. Nulla di generico.
+- Parla sempre direttamente a ${name}.
+- Il primo carattere di ogni campo di testo e maiuscolo.
+- "reading" e un solo paragrafo, senza liste ne titoli.
+- Niente misticismi ne linguaggio New Age.
+- Non aggiungere campi nuovi.
+
+${langInstruction(locale)}`;
+  }
+
+  return `Eres Sarita, una astrÃ³loga que habla con ${name} sobre su relaciÃ³n con ${partnerName}. Directa, concreta, honesta y prÃ¡ctica.
+
+${context}
+
+${genderPromptInstruction(readingGender, locale)}
+${genderPromptInstructionForSubject(partnerName, partnerReadingGender, locale)}
+${grammarPromptInstruction(locale)}
+
+Usa la herramienta synastry_reading para devolver la lectura estructurada.
+Las claves de la herramienta deben quedar exactamente como estan definidas aunque el contenido este en otro idioma.
+
+Importante: compatibilityDescription y cada layers.* deben ser mas desarrollados: 3-5 frases concretas, unas 60-95 palabras cada uno, para que ocupen aproximadamente 3-5 lineas en la tarjeta.
+
+Forma exacta:
+{"reading":"[UN parrafo de 80-100 palabras sobre la relacion de ${name} con ${partnerName}. Usa los 2 aspectos mas fuertes para describir que se siente, donde hay tension, donde hay facilidad. Da un ejemplo real de convivencia. Termina con algo concreto que ${name} puede hacer.]","compatibilityLabel":"[Etiqueta corta del vinculo, max 6 palabras]","compatibilityDescription":"[3-5 frases honestas y practicas sobre el tipo de vinculo. Describe como se siente, donde se traba y que ayuda a cuidarlo.]","layers":{"fisico":"[3-5 frases practicas sobre conexion fisica/corporal segun aspectos reales]","sexual":"[3-5 frases practicas sobre atraccion, deseo o intensidad segun aspectos reales]","emocional":"[3-5 frases practicas sobre apego, seguridad y vulnerabilidad segun aspectos reales]","mental":"[3-5 frases practicas sobre comunicacion e ideas segun aspectos reales]","profesional":"[3-5 frases practicas sobre trabajar o construir algo juntos segun aspectos reales]","evolutivo":"[3-5 frases practicas sobre que patron o cambio activa esta relacion segun aspectos reales]"}}
+
+Reglas:
+- Cada valor usa aspectos reales. Nada generico.
+- Habla siempre a ${name} directamente.
+- El primer caracter de cada campo de texto siempre es mayuscula.
+- "reading" es un solo parrafo, sin listas ni subtitulos.
+- Sin misticismos ni lenguaje New Age.
+- No anadas campos nuevos.
+
+${langInstruction(locale)}`;
+}
+
 export async function POST(request: Request) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -235,7 +336,7 @@ export async function POST(request: Request) {
 
   const readingGender = normalizeReadingGender(gender);
   const partnerReadingGender = normalizeReadingGender(partnerGender);
-  const itemKey = `${cacheKey ?? `synastry:${partnerName}:${chartB.event.julianDay}`}:${readingGender || "unspecified"}:${partnerReadingGender || "partner-unspecified"}`;
+  const itemKey = `v2:${cacheKey ?? `synastry:${partnerName}:${chartB.event.julianDay}`}:${readingGender || "unspecified"}:${partnerReadingGender || "partner-unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 
@@ -282,31 +383,7 @@ export async function POST(request: Request) {
   const name = chartA.event.name;
   const context = buildContext(chartA, chartB, partnerName, aspects, locale);
 
-  const prompt = `Eres Sarita, una astróloga que habla con ${name} sobre su relación con ${partnerName}. Directa, concreta, honesta y práctica.
-
-${context}
-
-${genderPromptInstruction(readingGender, locale)}
-${genderPromptInstructionForSubject(partnerName, partnerReadingGender, locale)}
-${grammarPromptInstruction(locale)}
-
-Usa la herramienta synastry_reading para devolver la lectura estructurada.
-Las claves de la herramienta deben quedar exactamente como estan definidas aunque el contenido este en otro idioma.
-
-Importante: compatibilityDescription y cada layers.* deben ser mas desarrollados: 3-5 frases concretas, unas 60-95 palabras cada uno, para que ocupen aproximadamente 3-5 lineas en la tarjeta.
-
-Forma exacta:
-{"reading":"[UN párrafo de 80-100 palabras sobre la relación de ${name} con ${partnerName}. Usa los 2 aspectos más fuertes para describir qué se siente, dónde hay tensión, dónde hay facilidad. Da un ejemplo real de convivencia. Termina con algo concreto que ${name} puede hacer.]","compatibilityLabel":"[Etiqueta corta del vínculo, máx 6 palabras]","compatibilityDescription":"[3-5 frases honestas y prácticas sobre el tipo de vínculo. Describe cómo se siente, dónde se traba y qué ayuda a cuidarlo.]","layers":{"fisico":"[3-5 frases prácticas sobre conexión física/corporal según aspectos reales]","sexual":"[3-5 frases prácticas sobre atracción, deseo o intensidad según aspectos reales]","emocional":"[3-5 frases prácticas sobre apego, seguridad y vulnerabilidad según aspectos reales]","mental":"[3-5 frases prácticas sobre comunicación e ideas según aspectos reales]","profesional":"[3-5 frases prácticas sobre trabajar o construir algo juntos según aspectos reales]","evolutivo":"[3-5 frases prácticas sobre qué patrón o cambio activa esta relación según aspectos reales]"}}
-
-Reglas:
-- Cada valor usa aspectos reales. Nada genérico.
-- Habla siempre a ${name} directamente.
-- El primer carácter de cada campo de texto siempre es mayúscula.
-- "reading" es un solo párrafo, sin listas ni subtítulos.
-- Sin misticismos ni lenguaje New Age.
-- No anadas campos nuevos.
-
-${langInstruction(locale)}`;
+  const prompt = buildPrompt({ name, partnerName, context, locale, readingGender, partnerReadingGender });
 
   let parsed: SynastryPayload | null = null;
 
@@ -344,6 +421,7 @@ ${firstText}`,
       });
       parsed = normalizeSynastryPayload(extractToolInput(repair, SYNASTRY_READING_TOOL.name));
     }
+    assertGeneratedLanguage(parsed, locale);
   } catch (error) {
     console.error("Synastry reading JSON generation failed", error);
     await markAiReadingGenerationFailed({

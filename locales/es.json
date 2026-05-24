@@ -484,6 +484,7 @@
       "panelSelectedBody": "Estas son las líneas más cercanas al lugar seleccionado. Tócalas para resaltarlas en el mapa.",
       "closestLine": "Línea más cercana",
       "readingEyebrow": "lectura generada",
+      "readingLoading": "Generando lectura...",
       "readingPlaceholder": "Selecciona una ciudad para generar una lectura clara de ventajas, fricciones y cómo usar bien ese lugar.",
       "readingError": "No se pudo generar la lectura de astrocartografía.",
       "prosTitle": "A favor",

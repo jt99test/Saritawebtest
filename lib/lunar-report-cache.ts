@@ -1,4 +1,5 @@
 import type { LunarReportCacheEntry } from "@/lib/lunar-report";
+import { safeGetStorageItem, safeSetStorageItem } from "@/lib/browser-storage";
 
 const STORAGE_KEY = "sarita_lunar_reports-v2";
 const MAX_MONTHS_PER_CHART = 3;
@@ -10,7 +11,7 @@ function readStore(): LunarReportStore {
     return {};
   }
 
-  const raw = window.localStorage.getItem(STORAGE_KEY);
+  const raw = safeGetStorageItem("local", STORAGE_KEY);
   if (!raw) {
     return {};
   }
@@ -27,7 +28,7 @@ function writeStore(store: LunarReportStore) {
     return;
   }
 
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+  safeSetStorageItem("local", STORAGE_KEY, JSON.stringify(store));
 }
 
 function touchReportKey(

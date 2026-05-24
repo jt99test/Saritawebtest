@@ -1,3 +1,5 @@
+import { safeGetStorageItem, safeSetStorageItem } from "@/lib/browser-storage";
+
 const STORAGE_KEY = "sarita_premium_readings";
 const MAX_CHARTS = 5;
 const MAX_ENTRIES_PER_CHART = 16;
@@ -13,7 +15,7 @@ function readStore(): PremiumReadingStore {
     return {};
   }
 
-  const raw = window.localStorage.getItem(STORAGE_KEY);
+  const raw = safeGetStorageItem("local", STORAGE_KEY);
   if (!raw) {
     return {};
   }
@@ -30,7 +32,7 @@ function writeStore(store: PremiumReadingStore) {
     return;
   }
 
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+  safeSetStorageItem("local", STORAGE_KEY, JSON.stringify(store));
 }
 
 function touchChartHash(store: PremiumReadingStore, chartHash: string) {

@@ -112,6 +112,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
   const moonPhaseLabel = moonCopy.phases[moonStatus.phase];
   const moonPhaseDescription = moonCopy.descriptions[moonStatus.phase];
   const moonSignLabel = getSignLabel(moonStatus.sign, locale);
+  const moonSignConnector = locale === "es" ? "en" : "in";
   const moreReadingsLabel =
     locale === "en" ? "View all readings" : locale === "it" ? "Vedi tutte le letture" : "Ver todas las lecturas";
   const lessReadingsLabel =
@@ -372,7 +373,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
                   <div>
                     <h2 className="font-serif text-[1.9rem] leading-[1.02] text-[#fffaf0]">{moonCopy.title}</h2>
                     <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#f5d782]">
-                      {moonPhaseLabel} en {moonSignLabel}
+                      {moonPhaseLabel} {moonSignConnector} {moonSignLabel}
                     </p>
                   </div>
                   <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#f5d782]/35 bg-[radial-gradient(circle_at_30%_30%,rgba(255,250,240,0.18),rgba(245,215,130,0.12),rgba(7,20,55,0.68))] font-serif text-2xl text-[#f5d782] shadow-[0_0_24px_rgba(0,102,255,0.18)]">

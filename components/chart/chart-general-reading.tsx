@@ -87,6 +87,27 @@ const THEME_META: Record<GeneralReadingTheme, { glyph: string; label: string }> 
   "donde-transformas": { glyph: "♇", label: "Transformación" },
 };
 
+function themeFallbackLabel(theme: GeneralReadingTheme, locale: string) {
+  const labels: Record<GeneralReadingTheme, Record<"es" | "en" | "it", string>> = {
+    "tu-esencia": { es: "Esencia", en: "Essence", it: "Essenza" },
+    "como-sientes": { es: "Emociones", en: "Emotions", it: "Emozioni" },
+    "que-das-valor": { es: "Valores", en: "Values", it: "Valori" },
+    "como-piensas": { es: "Mente", en: "Mind", it: "Mente" },
+    "tu-proposito": { es: "Propósito", en: "Purpose", it: "Proposito" },
+    "lo-que-suelto": { es: "Lo que sueltas", en: "What you release", it: "Cio che lasci" },
+    "tu-herida-medicina": { es: "Herida", en: "Wound", it: "Ferita" },
+    "tus-desafios": { es: "Desafíos", en: "Challenges", it: "Sfide" },
+    "tu-ascendente": { es: "Ascendente", en: "Ascendant", it: "Ascendente" },
+    "como-actuas": { es: "Acción", en: "Action", it: "Azione" },
+    "donde-creces": { es: "Crecimiento", en: "Growth", it: "Crescita" },
+    "donde-rompes-esquemas": { es: "Cambio", en: "Change", it: "Cambiamento" },
+    "donde-suenas": { es: "Sueños", en: "Dreams", it: "Sogni" },
+    "donde-transformas": { es: "Transformación", en: "Transformation", it: "Trasformazione" },
+  };
+  const language = locale === "en" || locale === "it" ? locale : "es";
+  return labels[theme][language];
+}
+
 function ReadingPanelSkeleton({ dictionary }: { dictionary: Dictionary }) {
   return (
     <PremiumCard className="mt-4 min-h-[160px] overflow-hidden p-5 sm:p-6 animate-pulse">
@@ -299,7 +320,7 @@ export function ChartGeneralReading({ chart, dictionary, readingId, gender }: Ch
                   {meta.glyph}
                 </span>
                 <span className="block w-full max-w-[76px] whitespace-normal text-center text-[9px] font-semibold uppercase leading-[1.2] tracking-[0.1em] text-[#3a3048] sm:max-w-[4.9rem] sm:text-[10px] sm:tracking-[0.12em]">
-                  {card?.title ?? meta.label}
+                  {card?.title ?? themeFallbackLabel(theme, locale)}
                 </span>
               </button>
             );
@@ -314,7 +335,7 @@ export function ChartGeneralReading({ chart, dictionary, readingId, gender }: Ch
           <PremiumCard className="mt-4 min-h-[160px] overflow-hidden p-5 sm:p-6">
             <div className="mb-4 h-[3px] w-12 rounded-full bg-dusty-gold/50" />
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
-              {(selectedCard?.title ?? THEME_META[selectedTheme].label).toUpperCase()}
+              {(selectedCard?.title ?? themeFallbackLabel(selectedTheme, locale)).toUpperCase()}
             </p>
             {selectedError ? (
               <div className="mt-3">

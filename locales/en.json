@@ -484,6 +484,7 @@
       "panelSelectedBody": "These are the closest lines to the selected place. Tap any line to highlight it on the map.",
       "closestLine": "Closest line",
       "readingEyebrow": "generated reading",
+      "readingLoading": "Generating reading...",
       "readingPlaceholder": "Select a city to generate a clear reading of benefits, friction and how to use that place well.",
       "readingError": "Could not generate the astrocartography reading.",
       "prosTitle": "Strengths",

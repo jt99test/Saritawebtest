@@ -15,6 +15,7 @@ import {
 } from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData } from "@/lib/chart";
 import { getAspectLabel, getHouseArea, getPointLabel, getSignLabel } from "@/lib/chart-labels";
+import { assertGeneratedLanguage } from "@/lib/generated-language";
 import { jsonOnlyInstruction, nativeToneInstruction, promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -196,7 +197,7 @@ export async function POST(request: Request) {
   };
 
   const readingGender = normalizeReadingGender(gender);
-  const itemKey = `${cacheKey ?? `transit:${transits.map((transit) => `${transit.transitingPlanet}-${transit.aspectType}-${transit.natalPlanet}`).join("|")}`}:${readingGender || "unspecified"}`;
+  const itemKey = `v2:${cacheKey ?? `transit:${transits.map((transit) => `${transit.transitingPlanet}-${transit.aspectType}-${transit.natalPlanet}`).join("|")}`}:${readingGender || "unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 
@@ -437,6 +438,7 @@ ${promptLanguageInstruction(locale)}`;
       messages: [{ role: "user", content: prompt }],
     });
     parsed = JSON.parse(cleanJsonPayload(extractTextContent(message)));
+    assertGeneratedLanguage(parsed, locale);
   } catch (error) {
     console.error("Transit reading JSON generation failed", error);
     await markAiReadingGenerationFailed({

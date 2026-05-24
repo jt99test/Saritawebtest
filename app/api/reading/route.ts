@@ -16,6 +16,7 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import { getAspectLabel, getHouseArea, getPointLabel, getSignLabel } from "@/lib/chart-labels";
+import { assertGeneratedLanguage } from "@/lib/generated-language";
 import { aspectPhrase, housePhrase, nativeToneInstruction, noMajorAspects, placementPhrase, promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { normalizeReadingText } from "@/lib/reading-text";
 import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
@@ -173,7 +174,7 @@ export async function POST(request: Request) {
       gender?: ReadingGender;
     };
     const readingGender = normalizeReadingGender(gender);
-    const itemKey = `v2:${pointId}:${readingGender || "unspecified"}`;
+    const itemKey = `v3:${pointId}:${readingGender || "unspecified"}`;
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
@@ -274,6 +275,7 @@ export async function POST(request: Request) {
         messages: [{ role: "user", content: prompt }],
       });
       content = normalizeReadingText(extractTextContent(message));
+      assertGeneratedLanguage(content, locale);
     } catch (error) {
       console.error("Planet reading generation failed", error);
       await markAiReadingGenerationFailed({

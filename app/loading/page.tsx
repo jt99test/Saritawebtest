@@ -8,6 +8,7 @@ import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
 import { calculateChartAction } from "@/lib/actions";
+import { safeGetStorageItem, safeSetStorageItem } from "@/lib/browser-storage";
 import {
   CHART_DRAFT_KEY,
   CHART_RESULT_KEY,
@@ -100,7 +101,7 @@ export default function LoadingPage() {
 
   useEffect(() => {
     let cancelled = false;
-    const rawDraft = sessionStorage.getItem(CHART_DRAFT_KEY);
+    const rawDraft = safeGetStorageItem("session", CHART_DRAFT_KEY);
 
     if (!rawDraft) {
       router.replace("/form");
@@ -142,7 +143,11 @@ export default function LoadingPage() {
           return;
         }
 
-        sessionStorage.setItem(CHART_RESULT_KEY, JSON.stringify(result satisfies ChartCalculationResult));
+        const stored = safeSetStorageItem("session", CHART_RESULT_KEY, JSON.stringify(result satisfies ChartCalculationResult));
+        if (!stored) {
+          setError(dictionary.loading.errorFallback);
+          return;
+        }
         router.replace("/resultado");
       } catch (caughtError) {
         if (cancelled) {
@@ -163,7 +168,7 @@ export default function LoadingPage() {
       window.clearInterval(timer);
       window.clearTimeout(timeout);
     };
-  }, [dictionary.loading.steps.length, dictionary.standalonePages.loadingTimeout, router]);
+  }, [dictionary.loading.errorFallback, dictionary.loading.steps.length, dictionary.standalonePages.loadingTimeout, router]);
 
   return (
     <main className="sarita-home-atmosphere premium-noise relative isolate min-h-screen overflow-hidden">

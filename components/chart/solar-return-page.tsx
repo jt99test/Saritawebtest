@@ -8,6 +8,8 @@ import { LocationAutocomplete } from "@/components/form/location-autocomplete";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { calculateSolarReturnAction } from "@/lib/actions";
+import { fetchAiReadingWithPolling } from "@/lib/ai-reading-client";
+import { safeGetStorageItem, safeRemoveStorageItem, safeSetStorageItem } from "@/lib/browser-storage";
 import type { Aspect, ChartPointId, NatalChartData } from "@/lib/chart";
 import { hashNatalChart } from "@/lib/chart-hash";
 import type { FormValues } from "@/lib/chart-session";
@@ -37,7 +39,7 @@ type CachedSolarReturnReading = {
 };
 
 const SARITA_DATA_MARKER = "__SARITA_DATA__";
-const READING_TIMEOUT_MS = 45000;
+const READING_TIMEOUT_MS = 120000;
 const SOLAR_RETURN_SELECTION_KEY = "sarita_solar_return_selection";
 
 type StoredSolarReturnSelection = {
@@ -245,7 +247,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
   }, [solarWheelMode]);
 
   useEffect(() => {
-    const rawSelection = window.localStorage.getItem(SOLAR_RETURN_SELECTION_KEY);
+    const rawSelection = safeGetStorageItem("local", SOLAR_RETURN_SELECTION_KEY);
     if (!rawSelection) return;
 
     try {
@@ -260,7 +262,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
         setSelectedLocation(storedSelection.selectedLocation);
       }
     } catch {
-      window.localStorage.removeItem(SOLAR_RETURN_SELECTION_KEY);
+      safeRemoveStorageItem("local", SOLAR_RETURN_SELECTION_KEY);
     }
   }, []);
 
@@ -293,7 +295,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
     if (aiCacheHash) {
       const cachedReading = getCachedPremiumReading<CachedSolarReturnReading>(aiCacheHash, solarCacheKey);
       if (cachedReading) {
-        window.localStorage.setItem(SOLAR_RETURN_SELECTION_KEY, JSON.stringify({ targetYear, city, selectedLocation }));
+        safeSetStorageItem("local", SOLAR_RETURN_SELECTION_KEY, JSON.stringify({ targetYear, city, selectedLocation }));
         setSolarChart(cachedReading.chart);
         setSolarData(normalizeSolarData(cachedReading.data));
         setAiReading("");
@@ -315,7 +317,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
       });
 
       if (result.ok) {
-        window.localStorage.setItem(SOLAR_RETURN_SELECTION_KEY, JSON.stringify({ targetYear, city, selectedLocation }));
+        safeSetStorageItem("local", SOLAR_RETURN_SELECTION_KEY, JSON.stringify({ targetYear, city, selectedLocation }));
         setSolarChart(result.chart);
         setAiReading("");
         setSolarData({});
@@ -324,7 +326,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
         setIsLoadingReading(true);
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), READING_TIMEOUT_MS);
-        void fetch("/api/solar-return-reading", {
+        void fetchAiReadingWithPolling("/api/solar-return-reading", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -474,7 +476,9 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
 
           {isLoadingReading && !solarData.cards?.length ? (
             <article className="mt-4 min-h-[160px] animate-pulse border border-black/10 bg-white p-6">
-              <div className="h-3 w-20 rounded bg-black/8" />
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                {solarCopy.readingLoading}
+              </p>
               <div className="mt-3 h-6 w-3/4 rounded bg-black/8" />
               <div className="mt-3 space-y-2">
                 <div className="h-3 w-full rounded bg-black/6" />
@@ -528,6 +532,9 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
             <p className="font-serif text-2xl text-ivory">{solarCopy.priorityTitle}</p>
             {isLoadingReading && !solarData.priorities?.length ? (
               <div className="mt-4 animate-pulse space-y-4">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                  {solarCopy.readingLoading}
+                </p>
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="flex gap-4 border-b border-black/[0.06] py-4">
                     <div className="h-7 w-8 rounded bg-black/8" />

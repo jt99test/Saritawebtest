@@ -14,6 +14,7 @@ import type {
   LunationType,
 } from "@/lib/lunar-report";
 import { hashNatalChart } from "@/lib/chart-hash";
+import { fetchAiReadingWithPolling } from "@/lib/ai-reading-client";
 import {
   getAllCachedLunarReports,
   setCachedLunarReport,
@@ -242,7 +243,7 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
       [type]: { prose: "", actions: null, loading: true, error: null },
     }));
 
-    const response = await fetch("/api/lunar-report", {
+    const response = await fetchAiReadingWithPolling("/api/lunar-report", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

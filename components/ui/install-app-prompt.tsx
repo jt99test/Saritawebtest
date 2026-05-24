@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
+import { safeGetStorageItem, safeSetStorageItem } from "@/lib/browser-storage";
 
 const INSTALL_PROMPT_DISMISSED_KEY = "sarita_install_prompt_dismissed_at";
 const INSTALL_PROMPT_INSTALLED_KEY = "sarita_install_prompt_installed";
@@ -48,7 +49,7 @@ const copy = {
 };
 
 function isRecentlyDismissed() {
-  const raw = window.localStorage.getItem(INSTALL_PROMPT_DISMISSED_KEY);
+  const raw = safeGetStorageItem("local", INSTALL_PROMPT_DISMISSED_KEY);
   if (!raw) return false;
   const dismissedAt = Number(raw);
   if (!Number.isFinite(dismissedAt)) return false;
@@ -82,7 +83,7 @@ export function InstallAppPrompt() {
   const body = useMemo(() => (ios && !canUseNativePrompt ? text.iosBody : text.body), [canUseNativePrompt, ios, text]);
 
   useEffect(() => {
-    if (window.localStorage.getItem(INSTALL_PROMPT_INSTALLED_KEY) || isStandaloneMode() || isRecentlyDismissed()) {
+    if (safeGetStorageItem("local", INSTALL_PROMPT_INSTALLED_KEY) || isStandaloneMode() || isRecentlyDismissed()) {
       return;
     }
 
@@ -102,7 +103,7 @@ export function InstallAppPrompt() {
     }
 
     function handleInstalled() {
-      window.localStorage.setItem(INSTALL_PROMPT_INSTALLED_KEY, "true");
+      safeSetStorageItem("local", INSTALL_PROMPT_INSTALLED_KEY, "true");
       setInstalled(true);
       setVisible(false);
     }
@@ -123,7 +124,7 @@ export function InstallAppPrompt() {
 
   useEffect(() => {
     function handleManualPrompt() {
-      if (window.localStorage.getItem(INSTALL_PROMPT_INSTALLED_KEY) || isStandaloneMode()) {
+      if (safeGetStorageItem("local", INSTALL_PROMPT_INSTALLED_KEY) || isStandaloneMode()) {
         return;
       }
 
@@ -141,16 +142,16 @@ export function InstallAppPrompt() {
     const choice = await installEvent.userChoice;
     setInstallEvent(null);
     if (choice.outcome === "accepted") {
-      window.localStorage.setItem(INSTALL_PROMPT_INSTALLED_KEY, "true");
+      safeSetStorageItem("local", INSTALL_PROMPT_INSTALLED_KEY, "true");
       setInstalled(true);
     } else {
-      window.localStorage.setItem(INSTALL_PROMPT_DISMISSED_KEY, String(Date.now()));
+      safeSetStorageItem("local", INSTALL_PROMPT_DISMISSED_KEY, String(Date.now()));
     }
     setVisible(false);
   }
 
   function dismiss() {
-    window.localStorage.setItem(INSTALL_PROMPT_DISMISSED_KEY, String(Date.now()));
+    safeSetStorageItem("local", INSTALL_PROMPT_DISMISSED_KEY, String(Date.now()));
     setVisible(false);
   }
 

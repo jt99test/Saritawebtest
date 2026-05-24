@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react";
 
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
+import { isStorageEventFor, safeGetStorageItem, safeRemoveStorageItem, safeSetStorageItem } from "@/lib/browser-storage";
 import { dictionaries } from "@/lib/i18n";
 
 type RoutineCompletionButtonProps = {
@@ -17,7 +18,7 @@ export function RoutineCompletionButton({
   const completed = useSyncExternalStore(
     (onStoreChange) => {
       const handleStorage = (event: StorageEvent) => {
-        if (event.storageArea === window.localStorage && event.key === storageKey) {
+        if (isStorageEventFor("local", event, storageKey)) {
           onStoreChange();
         }
       };
@@ -31,7 +32,7 @@ export function RoutineCompletionButton({
         window.removeEventListener("sarita-routine-completion", handleLocalChange);
       };
     },
-    () => window.localStorage.getItem(storageKey) === "completed",
+    () => safeGetStorageItem("local", storageKey) === "completed",
     () => false,
   );
 
@@ -39,9 +40,9 @@ export function RoutineCompletionButton({
     const nextCompleted = !completed;
 
     if (nextCompleted) {
-      window.localStorage.setItem(storageKey, "completed");
+      safeSetStorageItem("local", storageKey, "completed");
     } else {
-      window.localStorage.removeItem(storageKey);
+      safeRemoveStorageItem("local", storageKey);
     }
 
     window.dispatchEvent(new Event("sarita-routine-completion"));

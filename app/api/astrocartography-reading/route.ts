@@ -15,6 +15,7 @@ import {
 } from "@/lib/ai-reading-generations";
 import type { NatalChartData } from "@/lib/chart";
 import type { AstrocartographyNearbyLine } from "@/lib/astrocartography";
+import { assertGeneratedLanguage } from "@/lib/generated-language";
 import { jsonOnlyInstruction, nativeToneInstruction, promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -94,7 +95,7 @@ export async function POST(request: Request) {
   }
 
   const readingGender = normalizeReadingGender(gender);
-  const itemKey = `${cacheKey ?? `astrocartography:${location.lat.toFixed(3)},${location.lng.toFixed(3)}`}:${readingGender || "unspecified"}`;
+  const itemKey = `v2:${cacheKey ?? `astrocartography:${location.lat.toFixed(3)},${location.lng.toFixed(3)}`}:${readingGender || "unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 
@@ -240,6 +241,7 @@ ${promptLanguageInstruction(locale)}`;
       messages: [{ role: "user", content: prompt }],
     });
     parsed = JSON.parse(cleanJsonPayload(extractTextContent(message)));
+    assertGeneratedLanguage(parsed, locale);
   } catch (error) {
     console.error("Astrocartography reading JSON generation failed", error);
     await markAiReadingGenerationFailed({

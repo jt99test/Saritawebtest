@@ -32,6 +32,10 @@ const INNER_PLANET_LABEL_R = 320;
 const OUTER_SEP_R = 343;
 const OUTER_PLANET_R = 414;
 const OUTER_LABEL_R = 432;
+const CLUSTER_THRESHOLD_DEGREES = 8;
+const CLUSTER_SPACING = 58;
+const INNER_CLUSTER_CALLOUT_R = ZODIAC_OUTER_R + 38;
+const OUTER_CLUSTER_CALLOUT_R = ZODIAC_OUTER_R + 56;
 const HOUSE_OUTER_R = 252;
 const HOUSE_INNER_R = 142;
 const HOUSE_NUMBER_R = 208;
@@ -72,6 +76,52 @@ const POINT_SYMBOLS: Record<ChartPointId, string> = {
   lilith: "\u26b8",
   ceres: "\u26b3",
 };
+
+const PLANET_GLYPH_INK: Partial<Record<ChartPointId, string>> = {
+  sun: "#b56b00",
+  moon: "#4d4f7d",
+  mercury: "#027a8a",
+  venus: "#b33978",
+  mars: "#b5332f",
+  jupiter: "#4f55c8",
+  saturn: "#76619c",
+  uranus: "#007f91",
+  neptune: "#4c62b8",
+  pluto: "#9f407c",
+  northNode: "#7d7f98",
+  southNode: "#7d7f98",
+  chiron: "#8a5b31",
+  partOfFortune: "#9b6a00",
+  lilith: "#7f4f99",
+  ceres: "#8a5b31",
+};
+
+function planetGlyphInk(pointId: ChartPointId) {
+  return PLANET_GLYPH_INK[pointId] ?? "#061331";
+}
+
+const PLANET_GLYPH_OFFSETS: Partial<Record<ChartPointId, { x: number; y: number }>> = {
+  sun: { x: 0, y: 1 },
+  moon: { x: -0.5, y: 0.5 },
+  mercury: { x: 0, y: 1 },
+  venus: { x: 0, y: 1 },
+  mars: { x: 0.5, y: 1 },
+  jupiter: { x: 0, y: 1 },
+  saturn: { x: 0, y: 1 },
+  uranus: { x: 0, y: 1.5 },
+  neptune: { x: 0, y: 1 },
+  pluto: { x: 0, y: 1 },
+  northNode: { x: 0, y: 2.2 },
+  southNode: { x: 0, y: 2.2 },
+  chiron: { x: 0, y: 1.3 },
+  partOfFortune: { x: 0, y: 1.4 },
+  lilith: { x: 0, y: 1.4 },
+  ceres: { x: 0, y: 1.4 },
+};
+
+function planetGlyphOffset(pointId: ChartPointId) {
+  return PLANET_GLYPH_OFFSETS[pointId] ?? { x: 0, y: 0 };
+}
 
 const VARIANTS = {
   "solar-return": {
@@ -144,6 +194,21 @@ function circularDistance(left: number, right: number) {
   return Math.min(diff, 360 - diff);
 }
 
+function circularMean(values: number[]) {
+  if (!values.length) return 0;
+  const vector = values.reduce(
+    (sum, value) => {
+      const angle = (normalizeLongitude(value) * Math.PI) / 180;
+      return {
+        x: sum.x + Math.cos(angle),
+        y: sum.y + Math.sin(angle),
+      };
+    },
+    { x: 0, y: 0 },
+  );
+  return normalizeLongitude((Math.atan2(vector.y, vector.x) * 180) / Math.PI);
+}
+
 function visiblePoints(chart: NatalChartData) {
   return getAugmentedChartPoints(chart).filter((point) => DRAWABLE_IDS.has(point.id));
 }
@@ -167,7 +232,23 @@ function aspectStroke(type: string) {
   return "rgba(255,219,110,0.94)";
 }
 
-function planetLayouts(points: ChartPoint[], ascendant: number) {
+function planetLayouts({
+  points,
+  ascendant,
+  defaultRadius,
+  defaultConnectorStartRadius,
+  defaultConnectorEndRadius,
+  clusterStartRadius,
+  clusterGlyphRadius,
+}: {
+  points: ChartPoint[];
+  ascendant: number;
+  defaultRadius: number;
+  defaultConnectorStartRadius: number;
+  defaultConnectorEndRadius?: number;
+  clusterStartRadius: number;
+  clusterGlyphRadius: number;
+}) {
   const clusters: ChartPoint[][] = [];
   const sortedPoints = [...points].sort((left, right) => left.longitude - right.longitude);
   let currentCluster: ChartPoint[] = [];
@@ -175,7 +256,7 @@ function planetLayouts(points: ChartPoint[], ascendant: number) {
   for (const point of sortedPoints) {
     const previous = currentCluster[currentCluster.length - 1];
 
-    if (!previous || circularDistance(previous.longitude, point.longitude) <= 5) {
+    if (!previous || circularDistance(previous.longitude, point.longitude) <= CLUSTER_THRESHOLD_DEGREES) {
       currentCluster.push(point);
       continue;
     }
@@ -188,28 +269,69 @@ function planetLayouts(points: ChartPoint[], ascendant: number) {
     const firstCluster = clusters[0]?.[0];
     const lastCluster = currentCluster[currentCluster.length - 1];
 
-    if (clusters.length > 0 && firstCluster && lastCluster && circularDistance(firstCluster.longitude, lastCluster.longitude) <= 5) {
+    if (clusters.length > 0 && firstCluster && lastCluster && circularDistance(firstCluster.longitude, lastCluster.longitude) <= CLUSTER_THRESHOLD_DEGREES) {
       clusters[0] = [...currentCluster, ...clusters[0]];
     } else {
       clusters.push(currentCluster);
     }
   }
 
-  const layouts = new Map<ChartPointId, { x: number; y: number; connectorStart: { x: number; y: number }; hasConnector: boolean }>();
+  const layouts = new Map<ChartPointId, {
+    x: number;
+    y: number;
+    labelX: number;
+    labelY: number;
+    labelAnchor: "start" | "end";
+    connectorStart: { x: number; y: number };
+    connectorEnd: { x: number; y: number };
+    activeConnectorStart: { x: number; y: number };
+    activeConnectorEnd: { x: number; y: number };
+    hasConnector: boolean;
+    isClustered: boolean;
+    clusterPointIds: ChartPointId[];
+  }>();
 
   clusters.forEach((cluster) => {
     const sortedCluster = [...cluster].sort((left, right) => left.longitude - right.longitude);
+    const clusterLongitude = circularMean(sortedCluster.map((point) => point.longitude));
+    const clusterPointIds = sortedCluster.map((point) => point.id);
 
     sortedCluster.forEach((point, index) => {
+      const isClustered = sortedCluster.length > 1;
+      const calloutLongitude = isClustered ? clusterLongitude : point.longitude;
+      const angle = (pointAngle(calloutLongitude, ascendant) * Math.PI) / 180;
+      const radialX = Math.cos(angle);
+      const tangentX = -Math.sin(angle);
+      const tangentY = Math.cos(angle);
       const centeredIndex = index - (sortedCluster.length - 1) / 2;
-      const radialOffset = sortedCluster.length > 1 ? centeredIndex * 18 : 0;
-      const base = pointAtRadius(INNER_PLANET_LABEL_R + 8 + radialOffset, point.longitude, ascendant);
+      const tangentOffset = isClustered ? centeredIndex * CLUSTER_SPACING : 0;
+      const base = pointAtRadius(isClustered ? clusterGlyphRadius : defaultRadius, calloutLongitude, ascendant);
+
+      const x = base.x + tangentX * tangentOffset;
+      const y = base.y + tangentY * tangentOffset;
+      const connectorStart = pointAtRadius(isClustered ? clusterStartRadius : defaultConnectorStartRadius, isClustered ? point.longitude : calloutLongitude, ascendant);
+      const connectorEnd = isClustered
+        ? { x, y }
+        : pointAtRadius(defaultConnectorEndRadius ?? defaultRadius, calloutLongitude, ascendant);
+      const activeConnectorStart = pointAtRadius(isClustered ? clusterStartRadius : defaultConnectorStartRadius, point.longitude, ascendant);
+      const activeConnectorEnd = isClustered
+        ? { x, y }
+        : pointAtRadius(defaultConnectorEndRadius ?? defaultRadius, point.longitude, ascendant);
+      const labelSide = radialX >= 0 ? 1 : -1;
 
       layouts.set(point.id, {
-        x: base.x,
-        y: base.y,
-        connectorStart: pointAtRadius(INNER_PLANET_LABEL_R + 2, point.longitude, ascendant),
-        hasConnector: sortedCluster.length > 1,
+        x,
+        y,
+        labelX: x + labelSide * 28,
+        labelY: y + 10,
+        labelAnchor: labelSide > 0 ? "start" : "end",
+        connectorStart,
+        connectorEnd,
+        activeConnectorStart,
+        activeConnectorEnd,
+        hasConnector: isClustered,
+        isClustered,
+        clusterPointIds,
       });
     });
   });
@@ -511,7 +633,24 @@ export function BiWheelChart({
   const innerPoints = useMemo(() => filterPoints(visiblePoints(innerChart), innerPointIds), [innerChart, innerPointIds]);
   const outerPoints = useMemo(() => outerChart ? filterPoints(visiblePoints(outerChart), outerPointIds) : [], [outerChart, outerPointIds]);
   const ascendant = innerChart.meta.ascendant;
-  const innerLayouts = useMemo(() => planetLayouts(innerPoints, ascendant), [ascendant, innerPoints]);
+  const innerLayouts = useMemo(() => planetLayouts({
+    points: innerPoints,
+    ascendant,
+    defaultRadius: INNER_PLANET_LABEL_R + 8,
+    defaultConnectorStartRadius: INNER_PLANET_LABEL_R + 2,
+    defaultConnectorEndRadius: INNER_PLANET_LABEL_R + 8,
+    clusterStartRadius: ZODIAC_INNER_R,
+    clusterGlyphRadius: INNER_CLUSTER_CALLOUT_R,
+  }), [ascendant, innerPoints]);
+  const outerLayouts = useMemo(() => planetLayouts({
+    points: outerPoints,
+    ascendant,
+    defaultRadius: OUTER_PLANET_R,
+    defaultConnectorStartRadius: OUTER_SEP_R + 3,
+    defaultConnectorEndRadius: OUTER_PLANET_R - 21,
+    clusterStartRadius: ZODIAC_OUTER_R,
+    clusterGlyphRadius: OUTER_CLUSTER_CALLOUT_R,
+  }), [ascendant, outerPoints]);
   const selectedInner = selectedInnerPointId !== undefined ? selectedInnerPointId : uncontrolledSelectedInner;
   const selectedOuter = selectedOuterPointId !== undefined ? selectedOuterPointId : uncontrolledSelectedOuter;
   const outerActive = hoveredOuter || selectedOuter;
@@ -521,10 +660,20 @@ export function BiWheelChart({
   const activePoint = activeInner
     ? innerPoints.find((point) => point.id === activeInner)
     : outerPoints.find((point) => point.id === activeOuter);
+  const orderedInnerPoints = [...innerPoints].sort((left, right) => {
+    const leftActive = left.id === hoveredInner || left.id === selectedInner;
+    const rightActive = right.id === hoveredInner || right.id === selectedInner;
+    return Number(leftActive) - Number(rightActive);
+  });
+  const orderedOuterPoints = [...outerPoints].sort((left, right) => {
+    const leftActive = left.id === hoveredOuter || left.id === selectedOuter;
+    const rightActive = right.id === hoveredOuter || right.id === selectedOuter;
+    return Number(leftActive) - Number(rightActive);
+  });
 
   return (
-    <div className="relative mx-auto w-[min(100%,calc(100vw-1.5rem))] max-w-[860px]">
-      <svg viewBox="0 0 860 860" className="relative h-auto w-full overflow-visible" role="img" aria-label={outerChart ? `${innerLabel} / ${outerLabel}` : innerLabel}>
+    <div className="relative mx-auto w-[min(100%,calc(100vw-1.5rem))] max-w-[860px] pb-20 sm:pb-24">
+      <svg viewBox="0 0 860 860" className="relative mb-16 h-auto w-full overflow-visible sm:mb-20" role="img" aria-label={outerChart ? `${innerLabel} / ${outerLabel}` : innerLabel}>
         <defs>
           <radialGradient id="bw-field-glow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="rgba(216,194,122,0.08)" />
@@ -672,10 +821,11 @@ export function BiWheelChart({
           }) : null}
           <circle cx={CENTER} cy={CENTER} r="5" fill="rgba(30,26,46,0.62)" filter="url(#bw-glow)" />
 
-          {innerPoints.map((point) => {
+          {orderedInnerPoints.map((point) => {
             const layout = innerLayouts.get(point.id);
             if (!layout) return null;
             const active = hoveredInner === point.id || selectedInner === point.id;
+            const clusterActive = layout.clusterPointIds.some((pointId) => pointId === hoveredInner || pointId === selectedInner);
             const scale = hoveredInner === point.id ? 1.1 : selectedInner === point.id ? 1.08 : 1;
             const transform = scale !== 1 ? `translate(${layout.x} ${layout.y}) scale(${scale}) translate(${-layout.x} ${-layout.y})` : undefined;
             return (
@@ -699,10 +849,10 @@ export function BiWheelChart({
                   <line
                     x1={layout.connectorStart.x}
                     y1={layout.connectorStart.y}
-                    x2={layout.x}
-                    y2={layout.y}
-                    stroke="rgba(0,102,255,0.22)"
-                    strokeWidth="0.55"
+                    x2={layout.connectorEnd.x}
+                    y2={layout.connectorEnd.y}
+                    stroke={active ? colors.primary : clusterActive ? "rgba(245,215,130,0.72)" : "rgba(23,43,79,0.72)"}
+                    strokeWidth={active ? "3" : clusterActive ? "2.4" : "1.65"}
                     strokeLinecap="round"
                   />
                 ) : null}
@@ -720,36 +870,60 @@ export function BiWheelChart({
                 ) : null}
                 <circle cx={layout.x} cy={layout.y} r="20" fill="rgba(255,253,248,0.96)" stroke="rgba(0,102,255,0.24)" strokeWidth="0.9" filter="url(#bw-glow)" />
                 <text
-                  x={layout.x}
-                  y={layout.y}
+                  x={layout.x + planetGlyphOffset(point.id).x}
+                  y={layout.y + planetGlyphOffset(point.id).y}
                   textAnchor="middle"
                   dominantBaseline="central"
-                  fill={point.color}
+                  fill={planetGlyphInk(point.id)}
                   fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
                   fontSize="27"
                   fontWeight="700"
                   stroke="#fffdf8"
-                  strokeWidth="1.8"
+                  strokeWidth="1.35"
                   paintOrder="stroke fill"
                   style={{ filter: active ? "url(#bw-hover-glow)" : "url(#bw-glow)" }}
                 >
                   {POINT_SYMBOLS[point.id]}
                 </text>
+                {false ? (
+                  <text
+                    x={layout?.labelX ?? 0}
+                    y={layout?.labelY ?? 0}
+                    textAnchor={layout?.labelAnchor ?? "middle"}
+                    dominantBaseline="central"
+                    fill="#061331"
+                    fontFamily="'Inter', sans-serif"
+                    fontSize="10.5"
+                    fontWeight="700"
+                    letterSpacing="0.01em"
+                    stroke="#fffdf8"
+                    strokeWidth="2"
+                    paintOrder="stroke fill"
+                  >
+                    {degreeLabel(point)}
+                  </text>
+                ) : null}
               </g>
             );
           })}
         </g>
 
-        {outerPoints.map((point) => {
+        {orderedOuterPoints.map((point) => {
+          const layout = outerLayouts.get(point.id);
+          if (!layout) return null;
           const active = hoveredOuter === point.id || selectedOuter === point.id;
-          const tickStart = pointAtRadius(OUTER_SEP_R + 3, point.longitude, ascendant);
-          const tickEnd = pointAtRadius(OUTER_PLANET_R - 21, point.longitude, ascendant);
-          const position = pointAtRadius(OUTER_PLANET_R, point.longitude, ascendant);
+          const clusterActive = layout.clusterPointIds.some((pointId) => pointId === hoveredOuter || pointId === selectedOuter);
+          const tickStart = layout.connectorStart;
+          const tickEnd = layout.connectorEnd;
+          const position = { x: layout.x, y: layout.y };
+          const scale = hoveredOuter === point.id ? 1.1 : selectedOuter === point.id ? 1.08 : 1;
+          const transform = scale !== 1 ? `translate(${position.x} ${position.y}) scale(${scale}) translate(${-position.x} ${-position.y})` : undefined;
           return (
             <g
               key={point.id}
               role="button"
               tabIndex={0}
+              transform={transform}
               onMouseEnter={() => setHoveredOuter(point.id)}
               onMouseLeave={() => setHoveredOuter(null)}
               onClick={() => {
@@ -760,27 +934,47 @@ export function BiWheelChart({
               className="cursor-pointer outline-none"
               style={{ outline: "none" }}
             >
-              <line x1={tickStart.x} y1={tickStart.y} x2={tickEnd.x} y2={tickEnd.y} stroke={active ? colors.primary : "rgba(0,102,255,0.22)"} strokeWidth={active ? "1.4" : "0.7"} strokeLinecap="round" />
+              {layout.hasConnector || !layout.isClustered ? (
+                <line x1={tickStart.x} y1={tickStart.y} x2={tickEnd.x} y2={tickEnd.y} stroke={active ? colors.primary : clusterActive ? "rgba(245,215,130,0.72)" : "rgba(23,43,79,0.74)"} strokeWidth={active ? "3" : clusterActive ? "2.4" : "1.65"} strokeLinecap="round" />
+              ) : null}
               {active ? (
                 <circle cx={position.x} cy={position.y} r="28" fill="rgba(232,197,71,0.08)" stroke={colors.primary} strokeOpacity="0.55" strokeWidth="1.1" />
               ) : null}
               <circle cx={position.x} cy={position.y} r="20" fill="rgba(255,253,248,0.96)" stroke="rgba(0,102,255,0.24)" strokeWidth="0.9" filter="url(#bw-glow)" />
               <text
-                x={position.x}
-                y={position.y + 1}
+                x={position.x + planetGlyphOffset(point.id).x}
+                y={position.y + planetGlyphOffset(point.id).y}
                 textAnchor="middle"
                 dominantBaseline="central"
-                fill={point.color}
+                fill={planetGlyphInk(point.id)}
                 fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
                 fontSize="27"
                 fontWeight="700"
                 stroke="#fffdf8"
-                strokeWidth="1.8"
+                strokeWidth="1.35"
                 paintOrder="stroke fill"
                 style={{ filter: active ? "url(#bw-outer-glow)" : "url(#bw-glow)" }}
               >
                 {POINT_SYMBOLS[point.id]}
               </text>
+              {false ? (
+                <text
+                  x={layout?.labelX ?? 0}
+                  y={layout?.labelY ?? 0}
+                  textAnchor={layout?.labelAnchor ?? "middle"}
+                  dominantBaseline="central"
+                  fill="#061331"
+                  fontFamily="'Inter', sans-serif"
+                  fontSize="10.5"
+                  fontWeight="700"
+                  letterSpacing="0.01em"
+                  stroke="#fffdf8"
+                  strokeWidth="2"
+                  paintOrder="stroke fill"
+                >
+                  {degreeLabel(point)}
+                </text>
+              ) : null}
             </g>
           );
         })}

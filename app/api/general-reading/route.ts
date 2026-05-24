@@ -19,6 +19,7 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import { ANTHROPIC_STANDARD_READING_MODEL } from "@/lib/anthropic-models";
+import { assertGeneratedLanguage } from "@/lib/generated-language";
 import { nativeToneInstruction, promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -170,7 +171,7 @@ export async function POST(request: Request) {
       gender?: ReadingGender;
     };
     const readingGender = normalizeReadingGender(gender);
-    const itemKey = `v5:${theme}:${readingGender || "unspecified"}`;
+    const itemKey = `v6:${theme}:${readingGender || "unspecified"}`;
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
@@ -259,6 +260,7 @@ export async function POST(request: Request) {
         messages: [{ role: "user", content: prompt }],
       });
       content = normalizeGeneratedLanguage(extractTextContent(message), locale);
+      assertGeneratedLanguage(content, locale);
     } catch (error) {
       console.error("General reading generation failed", error);
       await markAiReadingGenerationFailed({

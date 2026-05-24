@@ -17,6 +17,7 @@ import {
   type AstrocartographyLine,
   type AstrocartographyNearbyLine,
 } from "@/lib/astrocartography";
+import { fetchAiReadingWithPolling } from "@/lib/ai-reading-client";
 import type { ChartPointId, NatalChartData } from "@/lib/chart";
 import { hashNatalChart } from "@/lib/chart-hash";
 import type { FormValues } from "@/lib/chart-session";
@@ -46,7 +47,7 @@ type AstrocartographyPlanetId = (typeof PLANETS)[number];
 const ANGLES: AstrocartographyAngle[] = ["AC", "DC", "MC", "IC"];
 const MAP_WIDTH = 1000;
 const MAP_HEIGHT = 500;
-const READING_TIMEOUT_MS = 45000;
+const READING_TIMEOUT_MS = 120000;
 const projection = geoEquirectangular()
   .scale(MAP_WIDTH / (2 * Math.PI))
   .translate([MAP_WIDTH / 2, MAP_HEIGHT / 2])
@@ -253,7 +254,7 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
     setReadingError(null);
     setIsLoadingReading(true);
 
-    void fetch("/api/astrocartography-reading", {
+    void fetchAiReadingWithPolling("/api/astrocartography-reading", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -475,6 +476,9 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
             </p>
             {isLoadingReading ? (
               <div className="mt-4 animate-pulse space-y-3">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                  {copy.readingLoading}
+                </p>
                 <div className="h-6 w-3/4 bg-black/8" />
                 <div className="h-3 w-full bg-black/6" />
                 <div className="h-3 w-5/6 bg-black/6" />

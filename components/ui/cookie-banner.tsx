@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
+import { safeGetStorageItem, safeSetStorageItem } from "@/lib/browser-storage";
 import { dictionaries } from "@/lib/i18n";
 
 const COOKIE_CONSENT_KEY = "sarita_cookie_consent";
@@ -14,11 +15,13 @@ export function CookieBanner() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    setVisible(!window.localStorage.getItem(COOKIE_CONSENT_KEY));
+    const showBanner = !safeGetStorageItem("local", COOKIE_CONSENT_KEY);
+    const timeout = window.setTimeout(() => setVisible(showBanner), 0);
+    return () => window.clearTimeout(timeout);
   }, []);
 
   function saveConsent(value: "accepted" | "declined") {
-    window.localStorage.setItem(COOKIE_CONSENT_KEY, value);
+    safeSetStorageItem("local", COOKIE_CONSENT_KEY, value);
     setVisible(false);
   }
 

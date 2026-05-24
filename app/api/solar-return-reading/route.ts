@@ -15,7 +15,8 @@ import {
 } from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData, SignId } from "@/lib/chart";
 import { getAspectLabel, getHouseArea, getPointLabel, getSignLabel } from "@/lib/chart-labels";
-import { promptLanguageInstruction } from "@/lib/prompt-i18n";
+import { assertGeneratedLanguage } from "@/lib/generated-language";
+import { jsonOnlyInstruction, nativeToneInstruction, promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { calculateSynastryAspects } from "@/lib/synastry";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -147,6 +148,111 @@ function buildContext(natal: NatalChartData, rs: NatalChartData, locale?: string
   ].filter(Boolean).join("\n");
 }
 
+function buildPrompt({
+  name,
+  context,
+  locale,
+  readingGender,
+}: {
+  name: string;
+  context: string;
+  locale?: string;
+  readingGender?: ReadingGender;
+}) {
+  if (locale === "en") {
+    return `You are Sarita, an astrologer speaking to ${name} like a very informed friend. Direct, clear, practical. No vague lines and no mysticism.
+
+${context}
+
+Solar Return reading logic:
+- The natal chart is the ground: deep memory, base patterns, and the main meaning.
+- The Solar Return does not replace or contradict the natal chart; it shows the yearly setting where that ground unfolds.
+- Always read the Solar Return in dialogue with the natal chart: Solar Return Sun, Moon, Ascendant, and angular planets show how and where the natal learning activates this year.
+- Do not present the reading as fatalistic prediction. Present it as a process, developmental climate, and awareness guide for living the year with more presence.
+- If a Solar Return house is emphasized, explain the yearly area; if a Solar Return planet is angular or highlighted, explain what experience wants to become visible.
+
+${genderPromptInstruction(readingGender, locale)}
+${grammarPromptInstruction(locale)}
+${nativeToneInstruction(locale)}
+${jsonOnlyInstruction(locale)}
+
+Important: the three cards[].body fields (theme, area, tone) must be long: 4-5 concrete sentences, about 70-95 words each, so they fill roughly 5-6 lines in the card.
+
+Exact shape:
+{"reading":"[ONE paragraph of 80-100 words about ${name}'s year. Use Solar Return Ascendant and Sun to name the central theme. Give a concrete example of how they may notice it in life. End with one or two practical things.]","cards":[{"key":"theme","title":"[Short title for the year's theme, max 6 words]","body":"[4-5 practical sentences about Solar Return Ascendant and the general tone. What changes, how it shows up, what to observe, and one concrete action.]"},{"key":"area","title":"[Short title for the main area, max 6 words]","body":"[4-5 practical sentences about Solar Return Sun: focus area, how it shows up, what it asks them to sustain, and a daily example.]"},{"key":"tone","title":"[Short title for the emotional tone, max 6 words]","body":"[4-5 practical sentences about Solar Return Moon: inner needs, possible emotional reaction, care, and concrete recommendation.]"}],"priorities":[{"title":"[Priority 1, max 7 words]","body":"[3-4 concrete sentences about what to do this year]"},{"title":"[Priority 2, max 7 words]","body":"[3-4 concrete sentences]"},{"title":"[Priority 3, max 7 words]","body":"[3-4 concrete sentences]"}]}
+
+Rules:
+- The 3 priorities come from Solar Return Ascendant, Sun, and Moon.
+- Nothing generic. Every field must use the data given.
+- The first character of every text field is uppercase.
+- "reading" is one paragraph, no lists and no headings.
+- Valid JSON: double quotes, no trailing commas.
+
+${langInstruction(locale)}`;
+  }
+
+  if (locale === "it") {
+    return `Sei Sarita, un'astrologa che parla con ${name} come un'amica molto preparata. Diretta, chiara, pratica. Niente frasi vaghe e niente misticismi.
+
+${context}
+
+Logica della lettura di Rivoluzione Solare:
+- La carta natale e il terreno: memoria profonda, schemi di base e significato principale.
+- La Rivoluzione Solare non sostituisce ne contraddice la carta natale; mostra lo scenario annuale in cui quel terreno si dispiega.
+- Leggi sempre la Rivoluzione Solare in dialogo con la carta natale: Sole RS, Luna RS, Ascendente RS e pianeti angolari mostrano come e dove si attiva l'apprendimento natale durante l'anno.
+- Non presentare la lettura come previsione fatalista. Presentala come processo, clima evolutivo e guida di consapevolezza per vivere l'anno con piu presenza.
+- Se una casa RS e enfatizzata, spiega l'area annuale; se un pianeta RS e angolare o forte, spiega quale esperienza cerca di diventare visibile.
+
+${genderPromptInstruction(readingGender, locale)}
+${grammarPromptInstruction(locale)}
+${nativeToneInstruction(locale)}
+${jsonOnlyInstruction(locale)}
+
+Importante: i tre campi cards[].body (theme, area e tone) devono essere lunghi: 4-5 frasi concrete, circa 70-95 parole ciascuno, cosi occupano circa 5-6 righe nella scheda.
+
+Forma esatta:
+{"reading":"[UN paragrafo di 80-100 parole sull'anno di ${name}. Usa Ascendente RS e Sole RS per dire il tema centrale. Dai un esempio concreto di come puo notarlo nella vita. Chiudi con una o due cose pratiche.]","cards":[{"key":"theme","title":"[Titolo breve del tema dell'anno, max 6 parole]","body":"[4-5 frasi pratiche sull'Ascendente RS e sul tono generale. Che cosa cambia, come si nota, che cosa osservare e un'azione concreta.]"},{"key":"area","title":"[Titolo breve dell'area principale, max 6 parole]","body":"[4-5 frasi pratiche sul Sole RS: area di focus, come si nota, che cosa chiede di sostenere e un esempio quotidiano.]"},{"key":"tone","title":"[Titolo breve del tono emotivo, max 6 parole]","body":"[4-5 frasi pratiche sulla Luna RS: bisogni interni, possibile reazione emotiva, cura e raccomandazione concreta.]"}],"priorities":[{"title":"[Priorita 1, max 7 parole]","body":"[3-4 frasi concrete su che cosa fare quest'anno]"},{"title":"[Priorita 2, max 7 parole]","body":"[3-4 frasi concrete]"},{"title":"[Priorita 3, max 7 parole]","body":"[3-4 frasi concrete]"}]}
+
+Regole:
+- Le 3 priorita nascono da Ascendente RS, Sole RS e Luna RS.
+- Nulla di generico. Ogni campo deve usare i dati forniti.
+- Il primo carattere di ogni campo di testo e maiuscolo.
+- "reading" e un solo paragrafo, senza liste ne titoli.
+- JSON valido: virgolette doppie, senza trailing comma.
+
+${langInstruction(locale)}`;
+  }
+
+  return `Eres Sarita, una astrÃ³loga que habla con ${name} como una amiga muy bien informada. Directa, clara, prÃ¡ctica. Sin frases vagas ni misticismos.
+
+${context}
+
+Logica de lectura de Revolucion Solar:
+- La carta natal es el terreno: memoria profunda, patrones de base y significado principal.
+- La Revolucion Solar no sustituye ni contradice la carta natal; muestra el escenario anual donde ese terreno se despliega.
+- Lee la RS siempre en dialogo con la carta natal: el Sol RS, la Luna RS, el Ascendente RS y los planetas angulares muestran como y donde se activa el aprendizaje natal durante este ano.
+- No presentes la lectura como prediccion fatalista. Presentala como proceso, clima evolutivo y guia de conciencia para vivir el ano con mas presencia.
+- Si una casa RS esta enfatizada, explica el area anual; si un planeta RS esta angular o destacado, explica que experiencia busca volverse visible.
+
+${genderPromptInstruction(readingGender, locale)}
+${grammarPromptInstruction(locale)}
+${jsonOnlyInstruction(locale)}
+
+Importante: los tres campos cards[].body (theme, area y tone) deben ser largos: 4-5 frases concretas, unas 70-95 palabras cada uno, para que ocupen aproximadamente 5-6 lineas en la tarjeta.
+
+Forma exacta:
+{"reading":"[UN parrafo de 80-100 palabras sobre el ano de ${name}. Usa Ascendente RS y Sol RS para decir el tema central. Da un ejemplo concreto de como puede notarlo en su vida. Termina con una o dos cosas practicas.]","cards":[{"key":"theme","title":"[Titulo breve del tema del ano, max 6 palabras]","body":"[4-5 frases practicas sobre el Ascendente RS y el tono general. Que cambia, como se nota, que observar y una accion concreta.]"},{"key":"area","title":"[Titulo breve del area principal, max 6 palabras]","body":"[4-5 frases practicas sobre el Sol RS: area de foco, como se nota, que pide sostener y un ejemplo cotidiano.]"},{"key":"tone","title":"[Titulo breve del tono emocional, max 6 palabras]","body":"[4-5 frases practicas sobre la Luna RS: necesidades internas, reaccion emocional posible, cuidado y recomendacion concreta.]"}],"priorities":[{"title":"[Prioridad 1, max 7 palabras]","body":"[3-4 frases concretas sobre que hacer este ano]"},{"title":"[Prioridad 2, max 7 palabras]","body":"[3-4 frases concretas]"},{"title":"[Prioridad 3, max 7 palabras]","body":"[3-4 frases concretas]"}]}
+
+Reglas:
+- Las 3 prioridades nacen de Ascendente RS, Sol RS y Luna RS.
+- Nada generico. Cada campo debe usar los datos dados.
+- El primer caracter de cada campo de texto siempre es mayuscula.
+- "reading" es un solo parrafo, sin listas ni subtitulos.
+- JSON valido: comillas dobles, sin trailing commas.
+
+${langInstruction(locale)}`;
+}
+
 export async function POST(request: Request) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -166,7 +272,7 @@ export async function POST(request: Request) {
   }
 
   const readingGender = normalizeReadingGender(gender);
-  const itemKey = `${cacheKey ?? `solar-return:${solarReturnData.meta.solarReturnYear ?? solarReturnData.event.title}`}:${readingGender || "unspecified"}`;
+  const itemKey = `v2:${cacheKey ?? `solar-return:${solarReturnData.meta.solarReturnYear ?? solarReturnData.event.title}`}:${readingGender || "unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 
@@ -213,35 +319,7 @@ export async function POST(request: Request) {
   const name = natalChartData.event.name;
   const context = buildContext(natalChartData, solarReturnData, locale);
 
-  const prompt = `Eres Sarita, una astróloga que habla con ${name} como una amiga muy bien informada. Directa, clara, práctica. Sin frases vagas ni misticismos.
-
-${context}
-
-Logica de lectura de Revolucion Solar:
-- La carta natal es el terreno: memoria profunda, patrones de base y significado principal.
-- La Revolucion Solar no sustituye ni contradice la carta natal; muestra el escenario anual donde ese terreno se despliega.
-- Lee la RS siempre en dialogo con la carta natal: el Sol RS, la Luna RS, el Ascendente RS y los planetas angulares muestran como y donde se activa el aprendizaje natal durante este ano.
-- No presentes la lectura como prediccion fatalista. Presentala como proceso, clima evolutivo y guia de conciencia para vivir el ano con mas presencia.
-- Si una casa RS esta enfatizada, explica el area anual; si un planeta RS esta angular o destacado, explica que experiencia busca volverse visible.
-
-${genderPromptInstruction(readingGender, locale)}
-${grammarPromptInstruction(locale)}
-
-Devuelve SOLO JSON válido. Sin markdown, sin bloque de código, sin texto antes ni después.
-
-Importante: los tres campos cards[].body (theme, area y tone) deben ser largos: 4-5 frases concretas, unas 70-95 palabras cada uno, para que ocupen aproximadamente 5-6 lineas en la tarjeta.
-
-Forma exacta:
-{"reading":"[UN párrafo de 80-100 palabras sobre el año de ${name}. Usa Ascendente RS y Sol RS para decir el tema central. Da un ejemplo concreto de cómo puede notarlo en su vida. Termina con una o dos cosas prácticas.]","cards":[{"key":"theme","title":"[Título breve del tema del año, máx 6 palabras]","body":"[4-5 frases prácticas sobre el Ascendente RS y el tono general. Qué cambia, cómo se nota, qué observar y una acción concreta.]"},{"key":"area","title":"[Título breve del área principal, máx 6 palabras]","body":"[4-5 frases prácticas sobre el Sol RS: área de foco, cómo se nota, qué pide sostener y un ejemplo cotidiano.]"},{"key":"tone","title":"[Título breve del tono emocional, máx 6 palabras]","body":"[4-5 frases prácticas sobre la Luna RS: necesidades internas, reacción emocional posible, cuidado y recomendación concreta.]"}],"priorities":[{"title":"[Prioridad 1, máx 7 palabras]","body":"[3-4 frases concretas sobre qué hacer este año]"},{"title":"[Prioridad 2, máx 7 palabras]","body":"[3-4 frases concretas]"},{"title":"[Prioridad 3, máx 7 palabras]","body":"[3-4 frases concretas]"}]}
-
-Reglas:
-- Las 3 prioridades nacen de Ascendente RS, Sol RS y Luna RS.
-- Nada genérico. Cada campo debe usar los datos dados.
-- El primer carácter de cada campo de texto siempre es mayúscula.
-- "reading" es un solo párrafo, sin listas ni subtítulos.
-- JSON válido: comillas dobles, sin trailing commas.
-
-${langInstruction(locale)}`;
+  const prompt = buildPrompt({ name, context, locale, readingGender });
 
   let parsed: unknown;
 
@@ -252,6 +330,7 @@ ${langInstruction(locale)}`;
       messages: [{ role: "user", content: prompt }],
     });
     parsed = JSON.parse(cleanJsonPayload(extractTextContent(message)));
+    assertGeneratedLanguage(parsed, locale);
   } catch (error) {
     console.error("Solar return reading JSON generation failed", error);
     await markAiReadingGenerationFailed({

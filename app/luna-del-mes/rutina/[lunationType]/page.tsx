@@ -11,6 +11,7 @@ import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { PremiumCard } from "@/components/ui/premium-card";
+import { isStorageEventFor, safeGetStorageItem } from "@/lib/browser-storage";
 import { CHART_RESULT_KEY, type ChartCalculationResult } from "@/lib/chart-session";
 import { dictionaries, type Dictionary } from "@/lib/i18n";
 import type { LunarReportMetadata, LunationType } from "@/lib/lunar-report";
@@ -32,7 +33,7 @@ let cachedParsedResult: ChartCalculationResult | null = null;
 
 function readStoredChartResult() {
   if (typeof window === "undefined") return null;
-  const raw = window.sessionStorage.getItem(CHART_RESULT_KEY);
+  const raw = safeGetStorageItem("session", CHART_RESULT_KEY);
   if (raw === cachedRawResult) return cachedParsedResult;
   cachedRawResult = raw;
   if (!raw) {
@@ -50,7 +51,7 @@ function readStoredChartResult() {
 function subscribeToChartResult(onStoreChange: () => void) {
   if (typeof window === "undefined") return () => undefined;
   const handleStorage = (event: StorageEvent) => {
-    if (event.storageArea === window.sessionStorage && event.key === CHART_RESULT_KEY) {
+    if (isStorageEventFor("session", event, CHART_RESULT_KEY)) {
       onStoreChange();
     }
   };

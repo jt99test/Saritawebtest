@@ -91,6 +91,7 @@ function fallbackCopy(dictionary: Dictionary) {
 }
 
 export function getGeneralReadingCards(chart: NatalChartData, dictionary: Dictionary): GeneralReadingCard[] {
+  const locale = localeFromDictionary(dictionary);
   const points = getAugmentedChartPoints(chart);
   const sun = points.find((point) => point.id === "sun");
   const moon = points.find((point) => point.id === "moon");
@@ -156,7 +157,11 @@ export function getGeneralReadingCards(chart: NatalChartData, dictionary: Dictio
       id: "mind",
       theme: "como-piensas",
       title: dictionary.result.generalReading.cards.mind.title,
-      oneLiner: `${dictionary.result.generalReading.cards.mind.oneLiner} ${mercurySign} y la casa 3.`,
+      oneLiner: locale === "en"
+        ? `${dictionary.result.generalReading.cards.mind.oneLiner} ${mercurySign} and house 3.`
+        : locale === "it"
+          ? `${dictionary.result.generalReading.cards.mind.oneLiner} ${mercurySign} e la casa 3.`
+          : `${dictionary.result.generalReading.cards.mind.oneLiner} ${mercurySign} y la casa 3.`,
       fullText: [
         fallback.mindLead(mercurySign),
         dictionary.result.generalReading.cards.mind.paragraphs[1],

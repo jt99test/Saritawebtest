@@ -1,4 +1,5 @@
 import type { ChartPointId } from "@/lib/chart";
+import { safeGetStorageItem, safeSetStorageItem } from "@/lib/browser-storage";
 
 const STORAGE_KEY = "sarita_planet_readings";
 const MAX_CHARTS = 5;
@@ -10,7 +11,7 @@ function readStore(): ReadingCacheStore {
     return {};
   }
 
-  const raw = window.localStorage.getItem(STORAGE_KEY);
+  const raw = safeGetStorageItem("local", STORAGE_KEY);
   if (!raw) {
     return {};
   }
@@ -27,7 +28,7 @@ function writeStore(store: ReadingCacheStore) {
     return;
   }
 
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
+  safeSetStorageItem("local", STORAGE_KEY, JSON.stringify(store));
 }
 
 function touchChartHash(store: ReadingCacheStore, chartHash: string) {

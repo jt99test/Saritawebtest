@@ -8,6 +8,7 @@ import { deleteReadingAction } from "@/app/lecturas/actions";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { illustrations } from "@/data/illustrations";
+import { safeSetStorageItem } from "@/lib/browser-storage";
 import { CHART_RESULT_KEY, type ChartCalculationResult } from "@/lib/chart-session";
 import { dictionaries } from "@/lib/i18n";
 
@@ -82,8 +83,9 @@ export function ReadingsList({ readings, isAdmin = false }: { readings: StoredRe
       return;
     }
 
-    window.sessionStorage.setItem(CHART_RESULT_KEY, JSON.stringify(result));
-    router.push("/resultado");
+    if (safeSetStorageItem("session", CHART_RESULT_KEY, JSON.stringify(result))) {
+      router.push("/resultado");
+    }
   }
 
   if (!readings.length) {

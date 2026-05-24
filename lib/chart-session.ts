@@ -1,4 +1,5 @@
 import type { NatalChartData } from "@/lib/chart";
+import { safeRemoveStorageItem } from "@/lib/browser-storage";
 import type { PlaceSuggestion } from "@/lib/geocoding";
 import type { ReadingGender } from "@/lib/reading-gender";
 
@@ -51,6 +52,6 @@ export function clearChartSession() {
     return;
   }
 
-  window.sessionStorage.removeItem(CHART_DRAFT_KEY);
-  window.sessionStorage.removeItem(CHART_RESULT_KEY);
+  safeRemoveStorageItem("session", CHART_DRAFT_KEY);
+  safeRemoveStorageItem("session", CHART_RESULT_KEY);
 }

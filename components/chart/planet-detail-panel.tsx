@@ -15,6 +15,7 @@ import {
   type NatalChartData,
 } from "@/lib/chart";
 import type { Dictionary } from "@/lib/i18n";
+import { fetchAiReadingWithPolling } from "@/lib/ai-reading-client";
 import type { ReadingGender } from "@/lib/reading-gender";
 import { normalizeReadingText } from "@/lib/reading-text";
 
@@ -189,7 +190,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
 
     (async () => {
       try {
-        const response = await fetch("/api/reading", {
+        const response = await fetchAiReadingWithPolling("/api/reading", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ chart, pointId: selectedPointId, locale, readingId, gender }),
@@ -525,6 +526,9 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
 
                     {loading ? (
                       <div className="mt-4 space-y-2">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                          {dictionary.result.generalReading.generating}
+                        </p>
                         {[88, 76, 91, 64].map((width) => (
                           <div
                             key={width}

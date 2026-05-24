@@ -26,7 +26,9 @@ export function LunationReadingCard({
         {loading ? (
           <PremiumCard className="sarita-glass-panel mx-auto animate-pulse p-5">
             <div className="mb-4 h-[3px] w-12 rounded-full bg-dusty-gold/50" />
-            <div className="h-3 w-24 rounded bg-black/8" />
+            <p className="sarita-section-label">
+              {dictionary.lunar.generatingReading}
+            </p>
             <div className="mt-3 h-6 w-3/4 rounded bg-black/8" />
             <div className="mt-3 space-y-2">
               <div className="h-3 w-full rounded bg-black/6" />
@@ -67,7 +69,9 @@ export function LunationReadingCard({
         ) : (
           <PremiumCard className="sarita-glass-panel mx-auto animate-pulse p-5">
             <div className="mb-4 h-[3px] w-12 rounded-full bg-dusty-gold/50" />
-            <div className="h-3 w-24 rounded bg-black/8" />
+            <p className="sarita-section-label">
+              {dictionary.lunar.generatingReading}
+            </p>
             <div className="mt-3 h-6 w-3/4 rounded bg-black/8" />
             <div className="mt-3 space-y-2">
               <div className="h-3 w-full rounded bg-black/6" />
