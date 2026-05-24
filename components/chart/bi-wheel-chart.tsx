@@ -33,9 +33,9 @@ const OUTER_SEP_R = 343;
 const OUTER_PLANET_R = 414;
 const OUTER_LABEL_R = 432;
 const CLUSTER_THRESHOLD_DEGREES = 8;
-const CLUSTER_SPACING = 58;
-const INNER_CLUSTER_CALLOUT_R = ZODIAC_OUTER_R + 38;
-const OUTER_CLUSTER_CALLOUT_R = ZODIAC_OUTER_R + 56;
+const CLUSTER_RADIAL_SPACING = 42;
+const INNER_CLUSTER_CALLOUT_R = ZODIAC_OUTER_R + 30;
+const OUTER_CLUSTER_CALLOUT_R = ZODIAC_OUTER_R + 34;
 const HOUSE_OUTER_R = 252;
 const HOUSE_INNER_R = 142;
 const HOUSE_NUMBER_R = 208;
@@ -194,21 +194,6 @@ function circularDistance(left: number, right: number) {
   return Math.min(diff, 360 - diff);
 }
 
-function circularMean(values: number[]) {
-  if (!values.length) return 0;
-  const vector = values.reduce(
-    (sum, value) => {
-      const angle = (normalizeLongitude(value) * Math.PI) / 180;
-      return {
-        x: sum.x + Math.cos(angle),
-        y: sum.y + Math.sin(angle),
-      };
-    },
-    { x: 0, y: 0 },
-  );
-  return normalizeLongitude((Math.atan2(vector.y, vector.x) * 180) / Math.PI);
-}
-
 function visiblePoints(chart: NatalChartData) {
   return getAugmentedChartPoints(chart).filter((point) => DRAWABLE_IDS.has(point.id));
 }
@@ -293,30 +278,26 @@ function planetLayouts({
 
   clusters.forEach((cluster) => {
     const sortedCluster = [...cluster].sort((left, right) => left.longitude - right.longitude);
-    const clusterLongitude = circularMean(sortedCluster.map((point) => point.longitude));
     const clusterPointIds = sortedCluster.map((point) => point.id);
 
     sortedCluster.forEach((point, index) => {
       const isClustered = sortedCluster.length > 1;
-      const calloutLongitude = isClustered ? clusterLongitude : point.longitude;
+      const calloutLongitude = point.longitude;
       const angle = (pointAngle(calloutLongitude, ascendant) * Math.PI) / 180;
       const radialX = Math.cos(angle);
-      const tangentX = -Math.sin(angle);
-      const tangentY = Math.cos(angle);
-      const centeredIndex = index - (sortedCluster.length - 1) / 2;
-      const tangentOffset = isClustered ? centeredIndex * CLUSTER_SPACING : 0;
-      const base = pointAtRadius(isClustered ? clusterGlyphRadius : defaultRadius, calloutLongitude, ascendant);
+      const radialOffset = isClustered ? index * CLUSTER_RADIAL_SPACING : 0;
+      const position = pointAtRadius(isClustered ? clusterGlyphRadius + radialOffset : defaultRadius, calloutLongitude, ascendant);
 
-      const x = base.x + tangentX * tangentOffset;
-      const y = base.y + tangentY * tangentOffset;
-      const connectorStart = pointAtRadius(isClustered ? clusterStartRadius : defaultConnectorStartRadius, isClustered ? point.longitude : calloutLongitude, ascendant);
+      const x = position.x;
+      const y = position.y;
+      const connectorStart = pointAtRadius(isClustered ? clusterStartRadius : defaultConnectorStartRadius, calloutLongitude, ascendant);
       const connectorEnd = isClustered
         ? { x, y }
         : pointAtRadius(defaultConnectorEndRadius ?? defaultRadius, calloutLongitude, ascendant);
-      const activeConnectorStart = pointAtRadius(isClustered ? clusterStartRadius : defaultConnectorStartRadius, point.longitude, ascendant);
+      const activeConnectorStart = pointAtRadius(isClustered ? clusterStartRadius : defaultConnectorStartRadius, calloutLongitude, ascendant);
       const activeConnectorEnd = isClustered
         ? { x, y }
-        : pointAtRadius(defaultConnectorEndRadius ?? defaultRadius, point.longitude, ascendant);
+        : pointAtRadius(defaultConnectorEndRadius ?? defaultRadius, calloutLongitude, ascendant);
       const labelSide = radialX >= 0 ? 1 : -1;
 
       layouts.set(point.id, {
@@ -851,8 +832,8 @@ export function BiWheelChart({
                     y1={layout.connectorStart.y}
                     x2={layout.connectorEnd.x}
                     y2={layout.connectorEnd.y}
-                    stroke={active ? colors.primary : clusterActive ? "rgba(245,215,130,0.72)" : "rgba(23,43,79,0.72)"}
-                    strokeWidth={active ? "3" : clusterActive ? "2.4" : "1.65"}
+                    stroke={active ? colors.primary : clusterActive ? "rgba(245,215,130,0.64)" : "rgba(23,43,79,0.44)"}
+                    strokeWidth={active ? "2.8" : clusterActive ? "1.65" : "1.05"}
                     strokeLinecap="round"
                   />
                 ) : null}
@@ -935,7 +916,7 @@ export function BiWheelChart({
               style={{ outline: "none" }}
             >
               {layout.hasConnector || !layout.isClustered ? (
-                <line x1={tickStart.x} y1={tickStart.y} x2={tickEnd.x} y2={tickEnd.y} stroke={active ? colors.primary : clusterActive ? "rgba(245,215,130,0.72)" : "rgba(23,43,79,0.74)"} strokeWidth={active ? "3" : clusterActive ? "2.4" : "1.65"} strokeLinecap="round" />
+                <line x1={tickStart.x} y1={tickStart.y} x2={tickEnd.x} y2={tickEnd.y} stroke={active ? colors.primary : clusterActive ? "rgba(245,215,130,0.64)" : "rgba(23,43,79,0.44)"} strokeWidth={active ? "2.8" : clusterActive ? "1.65" : "1.05"} strokeLinecap="round" />
               ) : null}
               {active ? (
                 <circle cx={position.x} cy={position.y} r="28" fill="rgba(232,197,71,0.08)" stroke={colors.primary} strokeOpacity="0.55" strokeWidth="1.1" />

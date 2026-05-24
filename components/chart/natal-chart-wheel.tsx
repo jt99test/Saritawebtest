@@ -37,8 +37,8 @@ const ZODIAC_INNER = 344;
 const DEGREE_TICK_OUTER = 400;
 const PLANET_RING_RADIUS = 286;
 const PLANET_LABEL_RADIUS = 320;
-const PLANET_CLUSTER_CALLOUT_RADIUS = ZODIAC_OUTER + 38;
-const PLANET_CLUSTER_SPACING = 58;
+const PLANET_CLUSTER_CALLOUT_RADIUS = ZODIAC_OUTER + 34;
+const PLANET_CLUSTER_RADIAL_SPACING = 42;
 const HOUSE_OUTER = 252;
 const HOUSE_INNER = 142;
 const HOUSE_NUMBER_RADIUS = 208;
@@ -186,21 +186,6 @@ function getTouchDistance(touches: { item(index: number): { clientX: number; cli
 function circularDistance(first: number, second: number) {
   const difference = Math.abs(first - second);
   return difference > 180 ? 360 - difference : difference;
-}
-
-function circularMean(values: number[]) {
-  if (!values.length) return 0;
-  const vector = values.reduce(
-    (sum, value) => {
-      const angle = (value * Math.PI) / 180;
-      return {
-        x: sum.x + Math.cos(angle),
-        y: sum.y + Math.sin(angle),
-      };
-    },
-    { x: 0, y: 0 },
-  );
-  return (Math.atan2(vector.y, vector.x) * 180 / Math.PI + 360) % 360;
 }
 
 function pointScaleTransform(x: number, y: number, scale: number) {
@@ -1165,24 +1150,17 @@ function ClearPlanetLayer({
 
   clusters.forEach((cluster) => {
     const sortedCluster = [...cluster].sort((left, right) => left.longitude - right.longitude);
-    const clusterLongitude = circularMean(sortedCluster.map((point) => point.longitude));
     const clusterPointIds = sortedCluster.map((point) => point.id);
 
     sortedCluster.forEach((point, index) => {
       const isClustered = sortedCluster.length > 1;
-      const calloutLongitude = isClustered ? clusterLongitude : point.longitude;
+      const calloutLongitude = point.longitude;
       const angle = pointAngle(calloutLongitude, ascendant);
       const radialX = Math.cos(angle);
-      const radialY = Math.sin(angle);
-      const tangentX = -radialY;
-      const tangentY = radialX;
-      const centeredIndex = index - (sortedCluster.length - 1) / 2;
-      const tangentOffset = isClustered ? centeredIndex * PLANET_CLUSTER_SPACING : 0;
-      const glyphRadius = isClustered ? PLANET_CLUSTER_CALLOUT_RADIUS : PLANET_LABEL_RADIUS + 8;
-      const [connectorX1, connectorY1] = pointAtRadius(ZODIAC_INNER, isClustered ? point.longitude : calloutLongitude, ascendant);
-      const [baseGlyphX, baseGlyphY] = pointAtRadius(glyphRadius, calloutLongitude, ascendant);
-      const glyphX = baseGlyphX + tangentX * tangentOffset;
-      const glyphY = baseGlyphY + tangentY * tangentOffset;
+      const radialOffset = isClustered ? index * PLANET_CLUSTER_RADIAL_SPACING : 0;
+      const glyphRadius = isClustered ? PLANET_CLUSTER_CALLOUT_RADIUS + radialOffset : PLANET_LABEL_RADIUS + 8;
+      const [connectorX1, connectorY1] = pointAtRadius(ZODIAC_INNER, calloutLongitude, ascendant);
+      const [glyphX, glyphY] = pointAtRadius(glyphRadius, calloutLongitude, ascendant);
       const labelSide = radialX >= 0 ? 1 : -1;
       const labelX = glyphX + labelSide * 28;
       const labelY = glyphY + 10;
@@ -1291,8 +1269,8 @@ function ClearPlanetLayer({
                   y1={round(layout.connectorY1)}
                   x2={round(layout.connectorX2)}
                   y2={round(layout.connectorY2)}
-                  stroke={active ? "rgba(245,215,130,0.96)" : clusterActive ? "rgba(245,215,130,0.72)" : "rgba(23,43,79,0.72)"}
-                  strokeWidth={active ? 3 : clusterActive ? 2.4 : 1.65}
+                  stroke={active ? "rgba(245,215,130,0.96)" : clusterActive ? "rgba(245,215,130,0.7)" : "rgba(23,43,79,0.6)"}
+                  strokeWidth={active ? 3 : clusterActive ? 2.1 : 1.35}
                   strokeLinecap="round"
                 />
               </>
@@ -1547,26 +1525,7 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
     };
   }, [viewerOpen, viewerMode]);
 
-  function isTouchLikeChart() {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia("(hover: none), (pointer: coarse)").matches;
-  }
-
-  function handleSelect(pointId: ChartPointId, nextTooltip?: TooltipState) {
-    if (isTouchLikeChart() && !panelOpen) {
-      setHoveredPointId(pointId);
-      setHoveredAspectVisualId(null);
-      setTooltip(nextTooltip ?? null);
-
-      if (selectedPointId === pointId) {
-        openPanel();
-        return;
-      }
-
-      selectPoint(pointId);
-      return;
-    }
-
+  function handleSelect(pointId: ChartPointId, _nextTooltip?: TooltipState) {
     setHoveredPointId(null);
     setHoveredAspectVisualId(null);
     setTooltip(null);
@@ -1712,7 +1671,7 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
     >
       {tooltip ? (
         <div
-          className="pointer-events-none absolute z-30 -translate-x-1/2 -translate-y-[calc(100%+0.85rem)] rounded-2xl border border-dusty-gold/45 bg-[#fffaf0] px-3 py-2 text-xs font-semibold leading-6 text-[#1e1a2e] shadow-[0_18px_45px_rgba(0,0,0,0.28)]"
+          className="pointer-events-none absolute z-30 hidden -translate-x-1/2 -translate-y-[calc(100%+0.85rem)] rounded-2xl border border-dusty-gold/45 bg-[#fffaf0] px-3 py-2 text-xs font-semibold leading-6 text-[#1e1a2e] shadow-[0_18px_45px_rgba(0,0,0,0.28)] md:block"
           style={{ left: `${tooltip.xPercent}%`, top: `${tooltip.yPercent}%` }}
         >
           {tooltip.content}
