@@ -43,6 +43,7 @@ const HOUSE_OUTER = 252;
 const HOUSE_INNER = 142;
 const HOUSE_NUMBER_RADIUS = 208;
 const ASPECT_RADIUS = 134;
+const PLANET_EDGE_MARGIN = 34;
 
 const SYMBOLIC_ASPECT_COLORS: Record<AspectId, string> = {
   conjunction: "rgba(255,219,110,0.98)",
@@ -162,6 +163,23 @@ function pointAtRadius(radius: number, longitude: number, ascendant: number): [n
 
 function pointAngle(longitude: number, ascendant: number) {
   return ((180 + ascendant - longitude) * Math.PI) / 180;
+}
+
+function radiusInsideChart(desiredRadius: number, angle: number) {
+  const radialX = Math.cos(angle);
+  const radialY = Math.sin(angle);
+  const maxX = radialX > 0
+    ? (SIZE - PLANET_EDGE_MARGIN - CX) / radialX
+    : radialX < 0
+      ? (PLANET_EDGE_MARGIN - CX) / radialX
+      : Number.POSITIVE_INFINITY;
+  const maxY = radialY > 0
+    ? (SIZE - PLANET_EDGE_MARGIN - CY) / radialY
+    : radialY < 0
+      ? (PLANET_EDGE_MARGIN - CY) / radialY
+      : Number.POSITIVE_INFINITY;
+
+  return Math.min(desiredRadius, maxX, maxY);
 }
 
 function round(value: number) {
@@ -1158,7 +1176,8 @@ function ClearPlanetLayer({
       const angle = pointAngle(calloutLongitude, ascendant);
       const radialX = Math.cos(angle);
       const radialOffset = isClustered ? index * PLANET_CLUSTER_RADIAL_SPACING : 0;
-      const glyphRadius = isClustered ? PLANET_CLUSTER_CALLOUT_RADIUS + radialOffset : PLANET_LABEL_RADIUS + 8;
+      const desiredGlyphRadius = isClustered ? PLANET_CLUSTER_CALLOUT_RADIUS + radialOffset : PLANET_LABEL_RADIUS + 8;
+      const glyphRadius = radiusInsideChart(desiredGlyphRadius, angle);
       const [connectorX1, connectorY1] = pointAtRadius(ZODIAC_INNER, calloutLongitude, ascendant);
       const [glyphX, glyphY] = pointAtRadius(glyphRadius, calloutLongitude, ascendant);
       const labelSide = radialX >= 0 ? 1 : -1;

@@ -39,6 +39,7 @@ const OUTER_CLUSTER_CALLOUT_R = ZODIAC_OUTER_R + 34;
 const HOUSE_OUTER_R = 252;
 const HOUSE_INNER_R = 142;
 const HOUSE_NUMBER_R = 208;
+const PLANET_EDGE_MARGIN = 34;
 const DRAWABLE_IDS = new Set<ChartPointId>([
   "sun",
   "moon",
@@ -155,6 +156,23 @@ function pointAtRadius(radius: number, longitude: number, ascendant: number) {
     x: CENTER + radius * Math.cos(angle),
     y: CENTER + radius * Math.sin(angle),
   };
+}
+
+function radiusInsideChart(desiredRadius: number, angle: number) {
+  const radialX = Math.cos(angle);
+  const radialY = Math.sin(angle);
+  const maxX = radialX > 0
+    ? (860 - PLANET_EDGE_MARGIN - CENTER) / radialX
+    : radialX < 0
+      ? (PLANET_EDGE_MARGIN - CENTER) / radialX
+      : Number.POSITIVE_INFINITY;
+  const maxY = radialY > 0
+    ? (860 - PLANET_EDGE_MARGIN - CENTER) / radialY
+    : radialY < 0
+      ? (PLANET_EDGE_MARGIN - CENTER) / radialY
+      : Number.POSITIVE_INFINITY;
+
+  return Math.min(desiredRadius, maxX, maxY);
 }
 
 function round(value: number) {
@@ -286,7 +304,8 @@ function planetLayouts({
       const angle = (pointAngle(calloutLongitude, ascendant) * Math.PI) / 180;
       const radialX = Math.cos(angle);
       const radialOffset = isClustered ? index * CLUSTER_RADIAL_SPACING : 0;
-      const position = pointAtRadius(isClustered ? clusterGlyphRadius + radialOffset : defaultRadius, calloutLongitude, ascendant);
+      const desiredRadius = isClustered ? clusterGlyphRadius + radialOffset : defaultRadius;
+      const position = pointAtRadius(radiusInsideChart(desiredRadius, angle), calloutLongitude, ascendant);
 
       const x = position.x;
       const y = position.y;
