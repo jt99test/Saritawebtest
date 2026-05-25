@@ -56,6 +56,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
+      translate="no"
       className={`${fontSans.variable} ${fontSerif.variable} h-full scroll-smooth antialiased`}
     >
       <body className="min-h-full bg-cosmic-950 font-sans text-ivory">
