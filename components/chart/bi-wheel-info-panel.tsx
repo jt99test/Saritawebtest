@@ -692,7 +692,7 @@ export function BiWheelInfoPanel({
           <div ref={panelRef} className="p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f5d782]">
+                <p className="notranslate text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f5d782]" translate="no">
                   {ringLabel(variant, ring, copy, innerName, outerName)}
                 </p>
                 <div className="mt-2 flex items-center gap-3">

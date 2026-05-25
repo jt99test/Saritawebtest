@@ -41,7 +41,7 @@ export default async function SharedChartPage({ params }: { params: Promise<{ id
           <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
             {dictionary.chart.shareTitle}
           </p>
-          <h1 className="mx-auto mt-2 max-w-[14ch] font-serif text-[clamp(2.5rem,12vw,4.25rem)] leading-tight text-ivory [overflow-wrap:normal] [word-break:normal]">
+          <h1 className="notranslate mx-auto mt-2 max-w-[14ch] font-serif text-[clamp(2.5rem,12vw,4.25rem)] leading-tight text-ivory [overflow-wrap:normal] [word-break:normal]" translate="no">
             {chart.event.name.split(/\s+/).map((word, index) => (
               <span key={`${word}-${index}`}>
                 {index > 0 ? " " : null}

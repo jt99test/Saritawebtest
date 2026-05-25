@@ -162,7 +162,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
           </div>
         </div>
         <Container className="relative z-10 flex min-h-screen flex-col px-4 pb-5 pt-[calc(env(safe-area-inset-top)+1rem)] sm:pb-10 sm:pt-6">
-          <div className="sarita-mobile-constellation-header flex items-center justify-between sm:hidden">
+          <div className="sarita-mobile-constellation-header flex items-center justify-between md:hidden">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
@@ -182,7 +182,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
           </div>
 
           {mobileMenuOpen ? (
-            <div className="fixed inset-0 z-[1200] bg-black/35 backdrop-blur-sm sm:hidden" onClick={() => setMobileMenuOpen(false)}>
+            <div className="fixed inset-0 z-[1200] bg-black/35 backdrop-blur-sm md:hidden" onClick={() => setMobileMenuOpen(false)}>
               <div
                 className="sarita-menu-panel absolute inset-x-3 top-4 p-5"
                 onClick={(event) => event.stopPropagation()}
@@ -251,15 +251,15 @@ export function HomePage({ moonStatus }: HomePageProps) {
             </div>
           ) : null}
 
-          <div className="sarita-night-nav mx-auto hidden w-full max-w-[75rem] grid-cols-[1fr_auto_1fr] items-center gap-5 rounded-full px-6 py-3.5 backdrop-blur-md sm:grid">
-            <div className="flex min-w-0 items-center gap-4 justify-self-start">
-              <span className="h-px w-14 shrink-0 bg-gradient-to-r from-dusty-gold to-transparent" />
+          <div className="sarita-night-nav mx-auto hidden w-full max-w-[75rem] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-4 overflow-hidden rounded-full px-5 py-3.5 backdrop-blur-md md:grid xl:gap-5 xl:px-6">
+            <div className="flex min-w-0 items-center gap-3 overflow-hidden justify-self-start xl:gap-4">
+              <span className="h-px w-8 shrink-0 bg-gradient-to-r from-dusty-gold to-transparent xl:w-14" />
               <p className="truncate text-[10px] font-semibold uppercase tracking-[0.28em] text-[#f5d782]">
                 {dictionary.home.eyebrow}
               </p>
             </div>
 
-            <div className="hidden items-center justify-center gap-6 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#fffaf0]/74 lg:flex">
+            <div className="hidden min-w-0 items-center justify-center gap-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#fffaf0]/74 xl:flex 2xl:gap-6 2xl:tracking-[0.2em]">
               <Link href="/form" className="transition hover:text-[#f5d782]">
                 {dictionary.common.newReading}
               </Link>
@@ -271,7 +271,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
               </Link>
             </div>
 
-            <div className="ml-auto flex items-center gap-3 justify-self-end sm:gap-4">
+            <div className="ml-auto flex min-w-0 items-center gap-2 justify-self-end sm:gap-3 xl:gap-4">
               <AccountButton tone="night" />
               <LanguageSelector
                 dictionary={dictionary}

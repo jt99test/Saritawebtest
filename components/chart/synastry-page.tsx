@@ -618,7 +618,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
           {partners.map((partner) => (
             <div key={partner.id} className="flex flex-wrap items-center justify-between gap-4 border-b border-black/10 py-4 last:border-b-0">
               <div>
-                <p className="font-serif text-xl text-ivory">{partner.name}</p>
+                <p className="notranslate font-serif text-xl text-ivory" translate="no">{partner.name}</p>
                 <p className="text-xs uppercase tracking-[0.18em] text-[#3a3048]">{partner.birth_date} · {partner.birth_city}</p>
               </div>
               <div className="flex gap-2">

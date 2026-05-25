@@ -358,7 +358,7 @@ export function NatalChartExperience({
             <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#d7bd6a]">
               {dictionary.result.readingContextLabel}
             </p>
-            <p className="mt-1 font-serif text-[19px] leading-6 text-[#fffaf0] sm:truncate sm:text-[18px]">
+            <p className="notranslate mt-1 font-serif text-[19px] leading-6 text-[#fffaf0] sm:truncate sm:text-[18px]" translate="no">
               {stickyTitle}
             </p>
           </div>
@@ -478,7 +478,7 @@ export function NatalChartExperience({
               <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-dusty-gold">
                 {dictionary.result.chartHeader.eyebrow}
               </p>
-              <h1 className={`mx-auto -mt-1 max-w-full whitespace-nowrap font-serif font-normal leading-none text-[#fffaf0] [overflow-wrap:normal] [word-break:normal] ${titleNameClass}`}>
+              <h1 className={`notranslate mx-auto -mt-1 max-w-full whitespace-nowrap font-serif font-normal leading-none text-[#fffaf0] [overflow-wrap:normal] [word-break:normal] ${titleNameClass}`} translate="no">
                 {firstName}
               </h1>
               <p className="mt-4 font-serif text-[14px] italic text-[#fffaf0]/72">
@@ -492,7 +492,7 @@ export function NatalChartExperience({
                   <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-dusty-gold">
                     {dictionary.result.chartHeader.eyebrow}
                   </p>
-                  <h1 className={`-mt-1 ml-auto max-w-[360px] whitespace-nowrap font-serif font-normal leading-none text-[#fffaf0] [overflow-wrap:normal] [word-break:normal] ${titleNameClass}`}>
+                  <h1 className={`notranslate -mt-1 ml-auto max-w-[360px] whitespace-nowrap font-serif font-normal leading-none text-[#fffaf0] [overflow-wrap:normal] [word-break:normal] ${titleNameClass}`} translate="no">
                     {firstName}
                   </h1>
                   <p className="ml-auto mt-4 max-w-[260px] font-serif text-[15px] italic leading-6 text-[#fffaf0]/72">

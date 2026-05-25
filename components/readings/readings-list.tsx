@@ -170,7 +170,7 @@ export function ReadingsList({ readings, isAdmin = false }: { readings: StoredRe
                 onClick={() => openReading(reading)}
                 className="min-w-0 text-left disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <p className="font-serif text-[21px] leading-tight text-ivory">
+                <p className="notranslate font-serif text-[21px] leading-tight text-ivory" translate="no">
                   {label}
                 </p>
                 <p className="mt-1 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#d7e7ff]/74">
@@ -178,7 +178,7 @@ export function ReadingsList({ readings, isAdmin = false }: { readings: StoredRe
                 </p>
                 {isAdmin ? (
                   <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#f5d782]">
-                    <span>{adminCopy.client}: {label}</span>
+                    <span>{adminCopy.client}: <span className="notranslate" translate="no">{label}</span></span>
                     <span>{adminCopy.account}: {reading.owner_email ?? reading.user_id ?? "-"}</span>
                   </div>
                 ) : null}

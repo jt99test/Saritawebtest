@@ -254,7 +254,7 @@ export default function FormPage() {
             <dl className="mt-5 grid gap-3 border-y border-black/10 py-4 text-sm">
               <div className="grid grid-cols-[0.8fr_1.2fr] gap-3">
                 <dt className="text-[#f5d782]">{dictionary.form.fields.name}</dt>
-                <dd className="text-right text-[#fffaf0]">{values.name}</dd>
+                <dd className="notranslate text-right text-[#fffaf0]" translate="no">{values.name}</dd>
               </div>
               <div className="grid grid-cols-[0.8fr_1.2fr] gap-3">
                 <dt className="text-[#f5d782]">{dictionary.form.fields.birthdate}</dt>

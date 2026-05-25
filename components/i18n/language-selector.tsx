@@ -28,7 +28,7 @@ export function LanguageSelector({
     >
       <span
         className={[
-          "hidden px-2 text-[12px] font-semibold uppercase tracking-[0.24em] min-[520px]:inline",
+          "hidden px-2 text-[12px] font-semibold uppercase tracking-[0.24em] xl:inline",
           night ? "text-[#d7e7ff]/72" : "text-[#d7e7ff]/72",
         ].join(" ")}
       >

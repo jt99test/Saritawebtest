@@ -1008,12 +1008,12 @@ export function BiWheelChart({
       ) : null}
 
       <div className="mx-auto mt-5 flex flex-wrap items-center justify-center gap-3 px-4">
-        <span className="inline-flex max-w-[min(22rem,86vw)] items-center justify-center gap-2 rounded-full border border-[#d7e7ff]/16 bg-[#061331]/60 px-4 py-2 text-center text-[12px] font-semibold uppercase tracking-[0.2em] text-[#fffaf0] shadow-[0_8px_24px_rgba(0,0,0,0.12)] backdrop-blur-md [overflow-wrap:normal] [word-break:normal]">
+        <span className="notranslate inline-flex max-w-[min(22rem,86vw)] items-center justify-center gap-2 rounded-full border border-[#d7e7ff]/16 bg-[#061331]/60 px-4 py-2 text-center text-[12px] font-semibold uppercase tracking-[0.2em] text-[#fffaf0] shadow-[0_8px_24px_rgba(0,0,0,0.12)] backdrop-blur-md [overflow-wrap:normal] [word-break:normal]" translate="no">
           <span className="h-2.5 w-2.5 rounded-full bg-[#fffaf0]" />
           {innerLabel}
         </span>
         {outerChart ? (
-          <span className="inline-flex max-w-[min(22rem,86vw)] items-center justify-center gap-2 rounded-full border border-[#d7e7ff]/16 bg-[#061331]/60 px-4 py-2 text-center text-[12px] font-semibold uppercase tracking-[0.2em] text-[#fffaf0] shadow-[0_8px_24px_rgba(0,0,0,0.12)] backdrop-blur-md [overflow-wrap:normal] [word-break:normal]">
+          <span className="notranslate inline-flex max-w-[min(22rem,86vw)] items-center justify-center gap-2 rounded-full border border-[#d7e7ff]/16 bg-[#061331]/60 px-4 py-2 text-center text-[12px] font-semibold uppercase tracking-[0.2em] text-[#fffaf0] shadow-[0_8px_24px_rgba(0,0,0,0.12)] backdrop-blur-md [overflow-wrap:normal] [word-break:normal]" translate="no">
             <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: colors.primary }} />
             {outerLabel}
           </span>
