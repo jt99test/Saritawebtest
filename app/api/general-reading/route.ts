@@ -125,6 +125,8 @@ Scrivi UN paragrafo di 60-80 parole su questo tema specifico della carta. Mostra
 
 Niente markdown. Niente intestazioni. Non iniziare con "#". Rispetta il limite in modo stretto: 60-80 parole.
 
+IMPORTANTE: Scrivi ESCLUSIVAMENTE in italiano. Non usare spagnolo. Non usare parole spagnole come "que", "como", "cuando", "trabajo", "relaciones", "vida" o simili. Solo italiano.
+
 ${nativeToneInstruction(locale)}
 ${promptLanguageInstruction(locale)}`;
   }
@@ -171,7 +173,7 @@ export async function POST(request: Request) {
       gender?: ReadingGender;
     };
     const readingGender = normalizeReadingGender(gender);
-    const itemKey = `v7:${theme}:${readingGender || "unspecified"}`;
+    const itemKey = `v8:${theme}:${readingGender || "unspecified"}`;
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
