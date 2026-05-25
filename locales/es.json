@@ -566,6 +566,20 @@
       "subtitle": "Lectura de vínculo",
       "body": "Aquí podrás comparar dos cartas como espejos de conciencia, sin reducir el vínculo a una puntuación."
     },
+    "chartSignatures": {
+      "eyebrow": "firmas de la carta",
+      "chartRuler": "Regente de la carta",
+      "retrogrades": "Retrógrados",
+      "majorPatterns": "Patrones mayores",
+      "patterns": {
+        "tSquare": "T-cuadrada con foco en {glyph}",
+        "grandTrine": "Gran trígono",
+        "grandTrineElement": "Gran trígono de {element}",
+        "yod": "Yod con ápice en {glyph}",
+        "stelliumSign": "Stellium en {sign}",
+        "stelliumHouse": "Stellium en casa {house}"
+      }
+    },
     "drawer": {
       "tabs": {
         "essence": "Esencia",
@@ -742,7 +756,8 @@
       "mockNotice": "Visualización base preparada para datos reales.",
       "missingResult": "Vuelve al formulario para generar tu carta natal con tus datos.",
       "noAspectMatrix": "Sin aspecto exacto",
-      "meanNodeNote": "Calculado según el Nodo Medio (Mean Node) — uso psicológico."
+      "meanNodeNote": "Calculado según el Nodo Medio (Mean Node) — uso psicológico.",
+      "houseTransitionNote": "Lectura aplicada a Casa {house} porque el planeta está a menos de 5 grados de esa cúspide."
     },
     "editorial": {
       "signFocus": "Esencia",

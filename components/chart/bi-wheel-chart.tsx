@@ -33,7 +33,7 @@ const OUTER_SEP_R = 343;
 const OUTER_PLANET_R = 414;
 const OUTER_LABEL_R = 432;
 const CLUSTER_THRESHOLD_DEGREES = 8;
-const CLUSTER_RADIAL_SPACING = 42;
+const CLUSTER_FAN_STEP = 14;
 const INNER_CLUSTER_CALLOUT_R = ZODIAC_OUTER_R + 30;
 const OUTER_CLUSTER_CALLOUT_R = ZODIAC_OUTER_R + 34;
 const HOUSE_OUTER_R = 252;
@@ -243,6 +243,7 @@ function planetLayouts({
   defaultConnectorEndRadius,
   clusterStartRadius,
   clusterGlyphRadius,
+  isInner = false,
 }: {
   points: ChartPoint[];
   ascendant: number;
@@ -251,6 +252,7 @@ function planetLayouts({
   defaultConnectorEndRadius?: number;
   clusterStartRadius: number;
   clusterGlyphRadius: number;
+  isInner?: boolean;
 }) {
   const clusters: ChartPoint[][] = [];
   const sortedPoints = [...points].sort((left, right) => left.longitude - right.longitude);
@@ -297,26 +299,35 @@ function planetLayouts({
   clusters.forEach((cluster) => {
     const sortedCluster = [...cluster].sort((left, right) => left.longitude - right.longitude);
     const clusterPointIds = sortedCluster.map((point) => point.id);
+    const firstLng = sortedCluster[0].longitude;
+    const adjustedLngs = sortedCluster.map((p) => {
+      let lng = p.longitude;
+      while (lng - firstLng > 180) lng -= 360;
+      while (firstLng - lng > 180) lng += 360;
+      return lng;
+    });
+    const centerLongitude = ((adjustedLngs.reduce((a, b) => a + b, 0) / sortedCluster.length) + 360) % 360;
 
     sortedCluster.forEach((point, index) => {
       const isClustered = sortedCluster.length > 1;
-      const calloutLongitude = point.longitude;
-      const angle = (pointAngle(calloutLongitude, ascendant) * Math.PI) / 180;
+      const fanLongitude = isClustered
+        ? centerLongitude + (index - (sortedCluster.length - 1) / 2) * CLUSTER_FAN_STEP
+        : point.longitude;
+      const angle = (pointAngle(fanLongitude, ascendant) * Math.PI) / 180;
       const radialX = Math.cos(angle);
-      const radialOffset = isClustered ? index * CLUSTER_RADIAL_SPACING : 0;
-      const desiredRadius = isClustered ? clusterGlyphRadius + radialOffset : defaultRadius;
-      const position = pointAtRadius(radiusInsideChart(desiredRadius, angle), calloutLongitude, ascendant);
+      const desiredRadius = isClustered && !isInner ? clusterGlyphRadius : defaultRadius;
+      const position = pointAtRadius(radiusInsideChart(desiredRadius, angle), fanLongitude, ascendant);
 
       const x = position.x;
       const y = position.y;
-      const connectorStart = pointAtRadius(isClustered ? clusterStartRadius : defaultConnectorStartRadius, calloutLongitude, ascendant);
-      const connectorEnd = isClustered
+      const connectorStart = pointAtRadius(isClustered && !isInner ? clusterStartRadius : defaultConnectorStartRadius, point.longitude, ascendant);
+      const connectorEnd = isClustered && !isInner
         ? { x, y }
-        : pointAtRadius(defaultConnectorEndRadius ?? defaultRadius, calloutLongitude, ascendant);
-      const activeConnectorStart = pointAtRadius(isClustered ? clusterStartRadius : defaultConnectorStartRadius, calloutLongitude, ascendant);
-      const activeConnectorEnd = isClustered
+        : pointAtRadius(defaultConnectorEndRadius ?? defaultRadius, point.longitude, ascendant);
+      const activeConnectorStart = pointAtRadius(isClustered && !isInner ? clusterStartRadius : defaultConnectorStartRadius, point.longitude, ascendant);
+      const activeConnectorEnd = isClustered && !isInner
         ? { x, y }
-        : pointAtRadius(defaultConnectorEndRadius ?? defaultRadius, calloutLongitude, ascendant);
+        : pointAtRadius(defaultConnectorEndRadius ?? defaultRadius, point.longitude, ascendant);
       const labelSide = radialX >= 0 ? 1 : -1;
 
       layouts.set(point.id, {
@@ -329,7 +340,7 @@ function planetLayouts({
         connectorEnd,
         activeConnectorStart,
         activeConnectorEnd,
-        hasConnector: isClustered,
+        hasConnector: isClustered && !isInner,
         isClustered,
         clusterPointIds,
       });
@@ -641,6 +652,7 @@ export function BiWheelChart({
     defaultConnectorEndRadius: INNER_PLANET_LABEL_R + 8,
     clusterStartRadius: ZODIAC_INNER_R,
     clusterGlyphRadius: INNER_CLUSTER_CALLOUT_R,
+    isInner: true,
   }), [ascendant, innerPoints]);
   const outerLayouts = useMemo(() => planetLayouts({
     points: outerPoints,
@@ -851,8 +863,8 @@ export function BiWheelChart({
                     y1={layout.connectorStart.y}
                     x2={layout.connectorEnd.x}
                     y2={layout.connectorEnd.y}
-                    stroke={active ? colors.primary : clusterActive ? "rgba(245,215,130,0.64)" : "rgba(23,43,79,0.44)"}
-                    strokeWidth={active ? "2.8" : clusterActive ? "1.65" : "1.05"}
+                    stroke={active ? colors.primary : clusterActive ? "rgba(245,215,130,0.64)" : "rgba(220,45,45,0.92)"}
+                    strokeWidth={active ? "2.8" : clusterActive ? "1.65" : "1.9"}
                     strokeLinecap="round"
                   />
                 ) : null}
@@ -935,7 +947,7 @@ export function BiWheelChart({
               style={{ outline: "none" }}
             >
               {layout.hasConnector || !layout.isClustered ? (
-                <line x1={tickStart.x} y1={tickStart.y} x2={tickEnd.x} y2={tickEnd.y} stroke={active ? colors.primary : clusterActive ? "rgba(245,215,130,0.64)" : "rgba(23,43,79,0.44)"} strokeWidth={active ? "2.8" : clusterActive ? "1.65" : "1.05"} strokeLinecap="round" />
+                <line x1={tickStart.x} y1={tickStart.y} x2={tickEnd.x} y2={tickEnd.y} stroke={active ? colors.primary : clusterActive ? "rgba(245,215,130,0.64)" : "rgba(220,45,45,0.92)"} strokeWidth={active ? "2.8" : clusterActive ? "1.65" : "1.9"} strokeLinecap="round" />
               ) : null}
               {active ? (
                 <circle cx={position.x} cy={position.y} r="28" fill="rgba(232,197,71,0.08)" stroke={colors.primary} strokeOpacity="0.55" strokeWidth="1.1" />

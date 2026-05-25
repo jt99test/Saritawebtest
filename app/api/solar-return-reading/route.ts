@@ -14,6 +14,7 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData, SignId } from "@/lib/chart";
+import { getPointInterpretiveHouse } from "@/lib/chart";
 import { getAspectLabel, getHouseArea, getPointLabel, getSignLabel } from "@/lib/chart-labels";
 import { assertGeneratedLanguage } from "@/lib/generated-language";
 import { jsonOnlyInstruction, nativeToneInstruction, promptLanguageInstruction } from "@/lib/prompt-i18n";
@@ -114,10 +115,11 @@ function buildContext(natal: NatalChartData, rs: NatalChartData, locale?: string
   const rsVenus = getPoint(rs, "venus");
   const natalSun = getPoint(natal, "sun");
   const natalMoon = getPoint(natal, "moon");
+  const houseOf = (chart: NatalChartData, point: NonNullable<ReturnType<typeof getPoint>>) => getPointInterpretiveHouse(point, chart.houses);
 
   const angulars = rs.points
-    .filter((point) => [1, 4, 7, 10].includes(point.house) && ["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn"].includes(point.id))
-    .map((point) => `${getSignLabel(point.sign, locale)} in house ${point.house}`);
+    .filter((point) => [1, 4, 7, 10].includes(houseOf(rs, point)) && ["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn"].includes(point.id))
+    .map((point) => `${getSignLabel(point.sign, locale)} in house ${houseOf(rs, point)}`);
   const rsAspects = rs.aspects
     .slice()
     .sort((left, right) => left.orb - right.orb)
@@ -132,19 +134,19 @@ function buildContext(natal: NatalChartData, rs: NatalChartData, locale?: string
     "",
     "REVOLUCION SOLAR:",
     `Ascendente RS: ${rsAsc} - tono de entrada al año`,
-    rsSun ? `Solar Return Sun: ${signLabel(rsSun.sign, locale)}, house ${rsSun.house} (${getHouseArea(rsSun.house, locale) || "-"}) - main yearly focus` : null,
-    rsMoon ? `Solar Return Moon: ${signLabel(rsMoon.sign, locale)}, house ${rsMoon.house} (${getHouseArea(rsMoon.house, locale) || "-"}) - emotional tone of the year` : null,
-    rsJupiter ? `Solar Return Jupiter: ${signLabel(rsJupiter.sign, locale)}, house ${rsJupiter.house}` : null,
-    rsSaturn ? `Solar Return Saturn: ${signLabel(rsSaturn.sign, locale)}, house ${rsSaturn.house}` : null,
-    rsMars ? `Solar Return Mars: ${signLabel(rsMars.sign, locale)}, house ${rsMars.house}` : null,
-    rsVenus ? `Solar Return Venus: ${signLabel(rsVenus.sign, locale)}, house ${rsVenus.house}` : null,
+    rsSun ? `Solar Return Sun: ${signLabel(rsSun.sign, locale)}, house ${houseOf(rs, rsSun)} (${getHouseArea(houseOf(rs, rsSun), locale) || "-"}) - main yearly focus` : null,
+    rsMoon ? `Solar Return Moon: ${signLabel(rsMoon.sign, locale)}, house ${houseOf(rs, rsMoon)} (${getHouseArea(houseOf(rs, rsMoon), locale) || "-"}) - emotional tone of the year` : null,
+    rsJupiter ? `Solar Return Jupiter: ${signLabel(rsJupiter.sign, locale)}, house ${houseOf(rs, rsJupiter)}` : null,
+    rsSaturn ? `Solar Return Saturn: ${signLabel(rsSaturn.sign, locale)}, house ${houseOf(rs, rsSaturn)}` : null,
+    rsMars ? `Solar Return Mars: ${signLabel(rsMars.sign, locale)}, house ${houseOf(rs, rsMars)}` : null,
+    rsVenus ? `Solar Return Venus: ${signLabel(rsVenus.sign, locale)}, house ${houseOf(rs, rsVenus)}` : null,
     angulars.length ? `Angulares RS: ${angulars.join(", ")}` : null,
     rsAspects.length ? `Aspectos principales RS: ${rsAspects.join("; ")}` : null,
     natalSolarAspects.length ? `Aspectos RS a carta natal: ${natalSolarAspects.join("; ")}` : null,
     "",
     "CARTA NATAL:",
-    natalSun ? `Natal Sun: ${signLabel(natalSun.sign, locale)}, house ${natalSun.house}` : null,
-    natalMoon ? `Natal Moon: ${signLabel(natalMoon.sign, locale)}, house ${natalMoon.house}` : null,
+    natalSun ? `Natal Sun: ${signLabel(natalSun.sign, locale)}, house ${houseOf(natal, natalSun)}` : null,
+    natalMoon ? `Natal Moon: ${signLabel(natalMoon.sign, locale)}, house ${houseOf(natal, natalMoon)}` : null,
   ].filter(Boolean).join("\n");
 }
 
@@ -272,7 +274,7 @@ export async function POST(request: Request) {
   }
 
   const readingGender = normalizeReadingGender(gender);
-  const itemKey = `v2:${cacheKey ?? `solar-return:${solarReturnData.meta.solarReturnYear ?? solarReturnData.event.title}`}:${readingGender || "unspecified"}`;
+  const itemKey = `v3:${cacheKey ?? `solar-return:${solarReturnData.meta.solarReturnYear ?? solarReturnData.event.title}`}:${readingGender || "unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 

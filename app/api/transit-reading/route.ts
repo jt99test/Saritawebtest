@@ -14,6 +14,7 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData } from "@/lib/chart";
+import { getPointInterpretiveHouse } from "@/lib/chart";
 import { getAspectLabel, getHouseArea, getPointLabel, getSignLabel } from "@/lib/chart-labels";
 import { assertGeneratedLanguage } from "@/lib/generated-language";
 import { jsonOnlyInstruction, nativeToneInstruction, promptLanguageInstruction } from "@/lib/prompt-i18n";
@@ -168,14 +169,14 @@ function formatNatalConditionLine(chart: NatalChartData, planetId: ChartPointId,
   );
 
   if (locale === "en") {
-    return `- ${getPointLabel(planetId, locale)} — natal ${getSignLabel(natalPoint.sign, locale)} house ${natalPoint.house}${retrogradeLabel}, aspects: ${aspectsLabel}.`;
+    return `- ${getPointLabel(planetId, locale)} — natal ${getSignLabel(natalPoint.sign, locale)} house ${getPointInterpretiveHouse(natalPoint, chart.houses)}${retrogradeLabel}, aspects: ${aspectsLabel}.`;
   }
 
   if (locale === "it") {
-    return `- ${getPointLabel(planetId, locale)} — natale in ${getSignLabel(natalPoint.sign, locale)} casa ${natalPoint.house}${retrogradeLabel}, aspetti: ${aspectsLabel}.`;
+    return `- ${getPointLabel(planetId, locale)} — natale in ${getSignLabel(natalPoint.sign, locale)} casa ${getPointInterpretiveHouse(natalPoint, chart.houses)}${retrogradeLabel}, aspetti: ${aspectsLabel}.`;
   }
 
-  return `- ${getPointLabel(planetId, locale)} — natal en ${getSignLabel(natalPoint.sign, locale)} casa ${natalPoint.house}${retrogradeLabel}, aspectos: ${aspectsLabel}.`;
+  return `- ${getPointLabel(planetId, locale)} — natal en ${getSignLabel(natalPoint.sign, locale)} casa ${getPointInterpretiveHouse(natalPoint, chart.houses)}${retrogradeLabel}, aspectos: ${aspectsLabel}.`;
 }
 
 export async function POST(request: Request) {
@@ -197,7 +198,7 @@ export async function POST(request: Request) {
   };
 
   const readingGender = normalizeReadingGender(gender);
-  const itemKey = `v2:${cacheKey ?? `transit:${transits.map((transit) => `${transit.transitingPlanet}-${transit.aspectType}-${transit.natalPlanet}`).join("|")}`}:${readingGender || "unspecified"}`;
+  const itemKey = `v3:${cacheKey ?? `transit:${transits.map((transit) => `${transit.transitingPlanet}-${transit.aspectType}-${transit.natalPlanet}`).join("|")}`}:${readingGender || "unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 
@@ -302,8 +303,8 @@ export async function POST(request: Request) {
 ${nativeToneInstruction(locale)}
 
 ${name}'s natal chart:
-- Natal Sun: ${natalSun ? `${natalSun.sign} house ${natalSun.house}` : "-"}
-- Natal Moon: ${natalMoon ? `${natalMoon.sign} house ${natalMoon.house}` : "-"}
+- Natal Sun: ${natalSun ? `${natalSun.sign} house ${getPointInterpretiveHouse(natalSun, chart.houses)}` : "-"}
+- Natal Moon: ${natalMoon ? `${natalMoon.sign} house ${getPointInterpretiveHouse(natalMoon, chart.houses)}` : "-"}
 
 Natal condition of active transiting planets:
 ${natalConditionSection}
@@ -346,8 +347,8 @@ ${promptLanguageInstruction(locale)}` : locale === "it" ? `Sei Sarita, un'astrol
 ${nativeToneInstruction(locale)}
 
 Carta natale di ${name}:
-- Sole natale: ${natalSun ? `${natalSun.sign} casa ${natalSun.house}` : "-"}
-- Luna natale: ${natalMoon ? `${natalMoon.sign} casa ${natalMoon.house}` : "-"}
+- Sole natale: ${natalSun ? `${natalSun.sign} casa ${getPointInterpretiveHouse(natalSun, chart.houses)}` : "-"}
+- Luna natale: ${natalMoon ? `${natalMoon.sign} casa ${getPointInterpretiveHouse(natalMoon, chart.houses)}` : "-"}
 
 Condizione natale dei pianeti in transito attivi:
 ${natalConditionSection}
@@ -388,8 +389,8 @@ Regole:
 ${promptLanguageInstruction(locale)}` : `Eres Sarita, una astrologa que habla con ${name} sobre lo que esta pasando en su cielo ahora mismo. Directa, concreta, util.
 
 Carta natal de ${name}:
-- Sol natal: ${natalSun ? `${natalSun.sign} casa ${natalSun.house}` : "-"}
-- Luna natal: ${natalMoon ? `${natalMoon.sign} casa ${natalMoon.house}` : "-"}
+- Sol natal: ${natalSun ? `${natalSun.sign} casa ${getPointInterpretiveHouse(natalSun, chart.houses)}` : "-"}
+- Luna natal: ${natalMoon ? `${natalMoon.sign} casa ${getPointInterpretiveHouse(natalMoon, chart.houses)}` : "-"}
 
 Condición natal de los planetas transitantes activos:
 ${natalConditionSection}
@@ -434,7 +435,7 @@ ${promptLanguageInstruction(locale)}`;
   try {
     const message = await client.messages.create({
       model: ANTHROPIC_PREMIUM_READING_MODEL,
-      max_tokens: 1100,
+      max_tokens: 2048,
       messages: [{ role: "user", content: prompt }],
     });
     parsed = JSON.parse(cleanJsonPayload(extractTextContent(message)));

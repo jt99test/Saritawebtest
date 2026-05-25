@@ -38,7 +38,7 @@ const DEGREE_TICK_OUTER = 400;
 const PLANET_RING_RADIUS = 286;
 const PLANET_LABEL_RADIUS = 320;
 const PLANET_CLUSTER_CALLOUT_RADIUS = ZODIAC_OUTER + 34;
-const PLANET_CLUSTER_RADIAL_SPACING = 42;
+const PLANET_CLUSTER_FAN_STEP = 14;
 const HOUSE_OUTER = 252;
 const HOUSE_INNER = 142;
 const HOUSE_NUMBER_RADIUS = 208;
@@ -1138,7 +1138,7 @@ function ClearPlanetLayer({
       clusters.length > 0 &&
       firstCluster &&
       lastCluster &&
-      circularDistance(firstCluster.longitude, lastCluster.longitude) <= 8
+      circularDistance(firstCluster.longitude, lastCluster.longitude) <= 12
     ) {
       clusters[0] = [...currentCluster, ...clusters[0]];
     } else {
@@ -1169,17 +1169,26 @@ function ClearPlanetLayer({
   clusters.forEach((cluster) => {
     const sortedCluster = [...cluster].sort((left, right) => left.longitude - right.longitude);
     const clusterPointIds = sortedCluster.map((point) => point.id);
+    const firstLng = sortedCluster[0].longitude;
+    const adjustedLngs = sortedCluster.map((p) => {
+      let lng = p.longitude;
+      while (lng - firstLng > 180) lng -= 360;
+      while (firstLng - lng > 180) lng += 360;
+      return lng;
+    });
+    const centerLongitude = ((adjustedLngs.reduce((a, b) => a + b, 0) / sortedCluster.length) + 360) % 360;
 
     sortedCluster.forEach((point, index) => {
       const isClustered = sortedCluster.length > 1;
-      const calloutLongitude = point.longitude;
-      const angle = pointAngle(calloutLongitude, ascendant);
+      const fanLongitude = isClustered
+        ? centerLongitude + (index - (sortedCluster.length - 1) / 2) * PLANET_CLUSTER_FAN_STEP
+        : point.longitude;
+      const angle = pointAngle(fanLongitude, ascendant);
       const radialX = Math.cos(angle);
-      const radialOffset = isClustered ? index * PLANET_CLUSTER_RADIAL_SPACING : 0;
-      const desiredGlyphRadius = isClustered ? PLANET_CLUSTER_CALLOUT_RADIUS + radialOffset : PLANET_LABEL_RADIUS + 8;
+      const desiredGlyphRadius = isClustered ? PLANET_CLUSTER_CALLOUT_RADIUS : PLANET_LABEL_RADIUS + 8;
       const glyphRadius = radiusInsideChart(desiredGlyphRadius, angle);
-      const [connectorX1, connectorY1] = pointAtRadius(ZODIAC_INNER, calloutLongitude, ascendant);
-      const [glyphX, glyphY] = pointAtRadius(glyphRadius, calloutLongitude, ascendant);
+      const [connectorX1, connectorY1] = pointAtRadius(ZODIAC_INNER, point.longitude, ascendant);
+      const [glyphX, glyphY] = pointAtRadius(glyphRadius, fanLongitude, ascendant);
       const labelSide = radialX >= 0 ? 1 : -1;
       const labelX = glyphX + labelSide * 28;
       const labelY = glyphY + 10;
@@ -1288,8 +1297,8 @@ function ClearPlanetLayer({
                   y1={round(layout.connectorY1)}
                   x2={round(layout.connectorX2)}
                   y2={round(layout.connectorY2)}
-                  stroke={active ? "rgba(245,215,130,0.96)" : clusterActive ? "rgba(245,215,130,0.7)" : "rgba(23,43,79,0.6)"}
-                  strokeWidth={active ? 3 : clusterActive ? 2.1 : 1.35}
+                  stroke={active ? "rgba(245,215,130,0.96)" : clusterActive ? "rgba(245,215,130,0.7)" : "rgba(220,45,45,0.92)"}
+                  strokeWidth={active ? 3 : clusterActive ? 2.1 : 2}
                   strokeLinecap="round"
                 />
               </>

@@ -6,12 +6,12 @@ import { AnimatePresence, motion } from "motion/react";
 import {
   formatSignPosition,
   getAugmentedChartPoints,
+  getApproachingHouseTransition,
+  getHouseForLongitude,
   getSignMeta,
-  normalizeLongitude,
   zodiacSigns,
   type Aspect,
   type ChartPointId,
-  type HouseCusp,
   type NatalChartData,
 } from "@/lib/chart";
 import type { Dictionary } from "@/lib/i18n";
@@ -20,7 +20,7 @@ import type { ReadingGender } from "@/lib/reading-gender";
 import { normalizeReadingText } from "@/lib/reading-text";
 
 import { useChartStore } from "@/components/chart/chart-store";
-import { formatHouseWithTransition } from "@/components/chart/chart-helpers";
+import { formatHouseWithTransition, getReadingHouseForDisplay } from "@/components/chart/chart-helpers";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { RenderedReading, splitReadingParagraphs } from "@/components/ui/rendered-reading";
 
@@ -90,26 +90,6 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 function houseArea(dictionary: Dictionary, house: number) {
   const key = String(house) as keyof typeof dictionary.result.houseMeanings;
   return dictionary.result.houseMeanings[key];
-}
-
-function getHouseForLongitude(longitude: number, houses: HouseCusp[]) {
-  const normalized = normalizeLongitude(longitude);
-
-  for (let index = 0; index < houses.length; index += 1) {
-    const current = houses[index]!;
-    const next = houses[(index + 1) % houses.length]!;
-    const start = normalizeLongitude(current.longitude);
-    const end = normalizeLongitude(next.longitude);
-    const inHouse = start <= end
-      ? normalized >= start && normalized < end
-      : normalized >= start || normalized < end;
-
-    if (inHouse) {
-      return current.house;
-    }
-  }
-
-  return houses[houses.length - 1]?.house ?? 12;
 }
 
 function formatAspectLabel(dictionary: Dictionary, aspect: Aspect, pointId: ChartPointId) {
@@ -290,7 +270,20 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
     house: displayHouse,
     houses: chart.houses,
   });
-  const selectedHouseArea = houseArea(dictionary, displayHouse);
+  const houseTransition = getApproachingHouseTransition({
+    longitude: point.longitude,
+    house: displayHouse,
+    houses: chart.houses,
+  });
+  const readingHouse = getReadingHouseForDisplay({
+    longitude: point.longitude,
+    house: displayHouse,
+    houses: chart.houses,
+  });
+  const selectedHouseArea = houseArea(dictionary, readingHouse);
+  const houseTransitionNote = houseTransition
+    ? dictionary.result.messages.houseTransitionNote.replace("{house}", String(houseTransition.nextHouse))
+    : null;
   const paragraphs = splitReadingParagraphs(reading);
   const previewParagraph = paragraphs[0] ?? "";
   const remainingParagraphs = paragraphs.slice(1);
@@ -300,7 +293,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
   ];
   const manifestationItems = [
     `${dictionary.result.fields.house} ${displayHouseLabel} · ${selectedHouseArea}`,
-    dictionary.result.editorial.housePrompts[String(displayHouse) as keyof typeof dictionary.result.editorial.housePrompts],
+    dictionary.result.editorial.housePrompts[String(readingHouse) as keyof typeof dictionary.result.editorial.housePrompts],
     point.retrograde
       ? dictionary.result.editorial.retrogradeActive
       : dictionary.result.editorial.retrogradeDirect,
@@ -385,6 +378,11 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
                   {dictionary.result.editorial.summarySuffix}{" "}
                   <span className="text-ivory">{selectedHouseArea}</span>.
                 </p>
+                {houseTransitionNote ? (
+                  <p className="mt-3 rounded-[1rem] border border-dusty-gold/20 bg-dusty-gold/8 px-3 py-2 text-xs leading-6 text-[#3a3048]">
+                    {houseTransitionNote}
+                  </p>
+                ) : null}
 
                 <div className="mt-5 flex flex-wrap gap-2">
                   {drawerTabs.map((tab) => {
@@ -432,6 +430,11 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
                       <section className="rounded-[1.6rem] border border-black/10 bg-white p-5 shadow-none">
                         <SectionLabel>{dictionary.result.editorial.houseFocus}</SectionLabel>
                         <h3 className="mt-4 font-serif text-2xl text-ivory">{selectedHouseArea}</h3>
+                        {houseTransitionNote ? (
+                          <p className="mt-3 rounded-[1rem] border border-dusty-gold/20 bg-dusty-gold/8 px-3 py-2 text-xs leading-6 text-[#3a3048]">
+                            {houseTransitionNote}
+                          </p>
+                        ) : null}
                         <ul className="mt-4 space-y-2 text-sm leading-7 text-[#3a3048]">
                           {manifestationItems.map((item) => (
                             <li key={item} className="flex gap-2">

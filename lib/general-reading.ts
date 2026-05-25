@@ -1,4 +1,4 @@
-import { getAugmentedChartPoints, zodiacSigns, type ChartPointId, type NatalChartData } from "@/lib/chart";
+import { getAugmentedChartPoints, getPointInterpretiveHouse, zodiacSigns, type ChartPointId, type NatalChartData } from "@/lib/chart";
 import { getChartRuler } from "@/lib/chart-insights";
 import { getAspectLabel, getPointLabel, getSignLabel } from "@/lib/chart-labels";
 import { aspectPhrase, housePhrase, noMajorAspects, placementPhrase, transitMotionLabel } from "@/lib/prompt-i18n";
@@ -111,7 +111,10 @@ function getHouseSign(chart: NatalChartData, houseNumber: number) {
 }
 
 export function getChartSummaryForPrompt(chart: NatalChartData, locale?: string) {
-  const points = getAugmentedChartPoints(chart);
+  const points = getAugmentedChartPoints(chart).map((point) => ({
+    ...point,
+    house: getPointInterpretiveHouse(point, chart.houses),
+  }));
   const mcSignId = zodiacSigns.find(
     (sign) => sign.start <= chart.meta.mc && chart.meta.mc < sign.start + 30,
   )?.id ?? "capricorn";
@@ -145,6 +148,7 @@ export function getChartSummaryForPrompt(chart: NatalChartData, locale?: string)
     })
     .join("\n");
   const ruler = getChartRuler(chart);
+  const rulerPrimaryHouse = ruler.primary ? getPointInterpretiveHouse(ruler.primary, chart.houses) : null;
   return [
     locale === "en"
       ? `Midheaven in ${getSignName(mcSignId, locale)} ${Math.floor(chart.meta.mc % 30)}° ${Math.round((chart.meta.mc % 1) * 60)
@@ -158,10 +162,10 @@ export function getChartSummaryForPrompt(chart: NatalChartData, locale?: string)
       .toString()
       .padStart(2, "0")}'`,
     locale === "en"
-      ? `Chart ruler: ${ruler.primary ? getPointLabel(ruler.primary.id, locale) : ruler.label}${ruler.primary ? ` in ${getSignName(ruler.primary.sign, locale)}, ${housePhrase(ruler.primary.house, locale)}` : ""}`
+      ? `Chart ruler: ${ruler.primary ? getPointLabel(ruler.primary.id, locale) : ruler.label}${ruler.primary && rulerPrimaryHouse ? ` in ${getSignName(ruler.primary.sign, locale)}, ${housePhrase(rulerPrimaryHouse, locale)}` : ""}`
       : locale === "it"
-        ? `Governatore della carta: ${ruler.primary ? getPointLabel(ruler.primary.id, locale) : ruler.label}${ruler.primary ? ` in ${getSignName(ruler.primary.sign, locale)}, ${housePhrase(ruler.primary.house, locale)}` : ""}`
-        : `Regente de la carta: ${ruler.label}${ruler.primary ? ` en ${getSignName(ruler.primary.sign, locale)}, ${housePhrase(ruler.primary.house, locale)}` : ""}`,
+        ? `Governatore della carta: ${ruler.primary ? getPointLabel(ruler.primary.id, locale) : ruler.label}${ruler.primary && rulerPrimaryHouse ? ` in ${getSignName(ruler.primary.sign, locale)}, ${housePhrase(rulerPrimaryHouse, locale)}` : ""}`
+        : `Regente de la carta: ${ruler.primary ? getPointLabel(ruler.primary.id, locale) : ruler.label}${ruler.primary && rulerPrimaryHouse ? ` en ${getSignName(ruler.primary.sign, locale)}, ${housePhrase(rulerPrimaryHouse, locale)}` : ""}`,
     locale === "en" ? "Main points:" : locale === "it" ? "Punti principali:" : "Puntos principales:",
     pointsSummary,
     locale === "en" ? "Key aspects:" : locale === "it" ? "Aspetti chiave:" : "Aspectos clave:",
@@ -170,7 +174,10 @@ export function getChartSummaryForPrompt(chart: NatalChartData, locale?: string)
 }
 
 export function getThemeInstruction(chart: NatalChartData, theme: GeneralReadingTheme, locale?: string) {
-  const points = getAugmentedChartPoints(chart);
+  const points = getAugmentedChartPoints(chart).map((point) => ({
+    ...point,
+    house: getPointInterpretiveHouse(point, chart.houses),
+  }));
   const sun = points.find((point) => point.id === "sun");
   const moon = points.find((point) => point.id === "moon");
   const venus = points.find((point) => point.id === "venus");

@@ -13,6 +13,7 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import type { ChartPointId, NatalChartData, SignId } from "@/lib/chart";
+import { getPointInterpretiveHouse } from "@/lib/chart";
 import { getAspectLabel, getPointLabel, getSignLabel } from "@/lib/chart-labels";
 import { assertGeneratedLanguage } from "@/lib/generated-language";
 import { nativeToneInstruction, promptLanguageInstruction } from "@/lib/prompt-i18n";
@@ -188,8 +189,8 @@ function keyPoints(chart: NatalChartData, locale?: string) {
   const mars = get("mars");
 
   return [
-    sun ? `${pl("sun", locale)} ${sl(sun.sign, locale)} house ${sun.house}` : null,
-    moon ? `${pl("moon", locale)} ${sl(moon.sign, locale)} house ${moon.house}` : null,
+    sun ? `${pl("sun", locale)} ${sl(sun.sign, locale)} house ${getPointInterpretiveHouse(sun, chart.houses)}` : null,
+    moon ? `${pl("moon", locale)} ${sl(moon.sign, locale)} house ${getPointInterpretiveHouse(moon, chart.houses)}` : null,
     venus ? `${pl("venus", locale)} ${sl(venus.sign, locale)}` : null,
     mars ? `${pl("mars", locale)} ${sl(mars.sign, locale)}` : null,
   ].filter(Boolean).join(" · ");
@@ -336,7 +337,7 @@ export async function POST(request: Request) {
 
   const readingGender = normalizeReadingGender(gender);
   const partnerReadingGender = normalizeReadingGender(partnerGender);
-  const itemKey = `v2:${cacheKey ?? `synastry:${partnerName}:${chartB.event.julianDay}`}:${readingGender || "unspecified"}:${partnerReadingGender || "partner-unspecified"}`;
+  const itemKey = `v3:${cacheKey ?? `synastry:${partnerName}:${chartB.event.julianDay}`}:${readingGender || "unspecified"}:${partnerReadingGender || "partner-unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 

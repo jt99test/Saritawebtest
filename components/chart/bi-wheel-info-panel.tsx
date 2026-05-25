@@ -4,7 +4,15 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 
 import type { ChartPoint, ChartPointId, HouseCusp, NatalChartData } from "@/lib/chart";
-import { formatSignPosition, getAugmentedChartPoints, getSignMeta, normalizeLongitude, zodiacSigns } from "@/lib/chart";
+import {
+  formatSignPosition,
+  getApproachingHouseTransition,
+  getAugmentedChartPoints,
+  getHouseForLongitude,
+  getInterpretiveHouse,
+  getSignMeta,
+  zodiacSigns,
+} from "@/lib/chart";
 import { getAspectLabel, getHouseArea, getPointLabel, getSignLabel } from "@/lib/chart-labels";
 import { formatHouseWithTransition } from "@/components/chart/chart-helpers";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
@@ -57,26 +65,6 @@ function selectedPoint(
 
   const chart = ring === "inner" ? innerChart : outerChart;
   return chart ? getAugmentedChartPoints(chart).find((point) => point.id === selectedId) ?? null : null;
-}
-
-function getHouseForLongitude(longitude: number, houses: HouseCusp[]) {
-  const normalized = normalizeLongitude(longitude);
-
-  for (let index = 0; index < houses.length; index += 1) {
-    const current = houses[index]!;
-    const next = houses[(index + 1) % houses.length]!;
-    const start = normalizeLongitude(current.longitude);
-    const end = normalizeLongitude(next.longitude);
-    const inHouse = start <= end
-      ? normalized >= start && normalized < end
-      : normalized >= start || normalized < end;
-
-    if (inHouse) {
-      return current.house;
-    }
-  }
-
-  return houses[houses.length - 1]?.house ?? 12;
 }
 
 function displayPointForPanel(
@@ -657,8 +645,22 @@ export function BiWheelInfoPanel({
   const signMeta = displayPoint ? getSignMeta(displayPoint.sign) : null;
   const signGlyph = displayPoint ? zodiacSigns.find((sign) => sign.id === displayPoint.sign)?.glyph ?? "" : "";
   const position = displayPoint ? formatSignPosition(displayPoint.longitude) : null;
-  const reading = displayPoint ? biWheelReading({ variant, ring, point: displayPoint, copy, innerName, outerName, locale }) : "";
+  const transition = displayPoint ? getApproachingHouseTransition({
+    longitude: displayPoint.longitude,
+    house: displayPoint.house,
+    houses: displayHouses,
+  }) : null;
+  const readingHouse = displayPoint ? getInterpretiveHouse({
+    longitude: displayPoint.longitude,
+    house: displayPoint.house,
+    houses: displayHouses,
+  }) : null;
+  const readingPoint = displayPoint && readingHouse ? { ...displayPoint, house: readingHouse } : displayPoint;
+  const reading = readingPoint ? biWheelReading({ variant, ring, point: readingPoint, copy, innerName, outerName, locale }) : "";
   const houseLabel = displayPoint ? displayHouseLabel(displayPoint, displayHouses) : "";
+  const houseNote = transition
+    ? dictionary.result.messages.houseTransitionNote.replace("{house}", String(transition.nextHouse))
+    : null;
 
   return (
     <AnimatePresence>
@@ -702,7 +704,7 @@ export function BiWheelInfoPanel({
                       {dictionary.result.points[selectedId]}
                     </h3>
                     <p className="mt-1.5 text-[13px] leading-6 text-[#d7e7ff]/66">
-                      {getSignLabel(displayPoint.sign, locale)} · {dictionary.result.transitPage.housePrefix} {houseLabel} · {getHouseArea(displayPoint.house, locale)}
+                      {getSignLabel(displayPoint.sign, locale)} · {dictionary.result.transitPage.housePrefix} {houseLabel} · {getHouseArea(readingHouse ?? displayPoint.house, locale)}
                     </p>
                   </div>
                 </div>
@@ -720,6 +722,11 @@ export function BiWheelInfoPanel({
             </div>
 
             <div className="mt-5 space-y-5 border-t border-[#d7e7ff]/10 pt-5">
+              {houseNote ? (
+                <p className="rounded-[1rem] border border-[#f5d782]/22 bg-[#f5d782]/10 px-3 py-2 text-xs leading-6 text-[#d7e7ff]/78">
+                  {houseNote}
+                </p>
+              ) : null}
               <section className="rounded-[1.45rem] border border-[#d7e7ff]/12 bg-[#d7e7ff]/7 p-4">
                 <SectionLabel>{sectionCopy.reading}</SectionLabel>
                 <p className="mt-3 text-sm leading-7 text-[#fffaf0]/78">{reading}</p>
@@ -739,7 +746,7 @@ export function BiWheelInfoPanel({
                     </li>
                     <li className="flex gap-2">
                       <span className="mt-3 h-1.5 w-1.5 rounded-full bg-ivory/35" />
-                      <span>{dictionary.result.transitPage.housePrefix} {houseLabel}{" \u00b7 "}{getHouseArea(displayPoint.house, locale)}</span>
+                      <span>{dictionary.result.transitPage.housePrefix} {houseLabel}{" \u00b7 "}{getHouseArea(readingHouse ?? displayPoint.house, locale)}</span>
                     </li>
                   </ul>
                 ) : null}
@@ -770,7 +777,7 @@ export function BiWheelInfoPanel({
               {variant === "transits" ? (
                 <TransitRows ring={ring} selectedId={selectedId} copy={copy} locale={locale} activeTransits={activeTransits} />
               ) : null}
-              {variant === "solar-return" ? <SolarReturnNote point={displayPoint} copy={copy} locale={locale} /> : null}
+              {variant === "solar-return" && readingPoint ? <SolarReturnNote point={readingPoint} copy={copy} locale={locale} /> : null}
               {variant === "synastry" ? (
                 <SynastryRows ring={ring} selectedId={selectedId} copy={copy} locale={locale} synastryAspects={synastryAspects} />
               ) : null}

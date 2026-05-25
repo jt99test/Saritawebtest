@@ -121,6 +121,93 @@ export function normalizeLongitude(longitude: number): number {
   return normalized < 0 ? normalized + 360 : normalized;
 }
 
+export function getHouseForLongitude(longitude: number, houses: HouseCusp[]) {
+  const normalized = normalizeLongitude(longitude);
+
+  for (let index = 0; index < houses.length; index += 1) {
+    const current = houses[index]!;
+    const next = houses[(index + 1) % houses.length]!;
+    const start = normalizeLongitude(current.longitude);
+    const end = normalizeLongitude(next.longitude);
+    const inHouse = start <= end
+      ? normalized >= start && normalized < end
+      : normalized >= start || normalized < end;
+
+    if (inHouse) {
+      return current.house;
+    }
+  }
+
+  return houses[houses.length - 1]?.house ?? 12;
+}
+
+export function getApproachingHouseTransition({
+  longitude,
+  house,
+  houses,
+  thresholdDegrees = 5,
+}: {
+  longitude: number;
+  house: number;
+  houses: HouseCusp[];
+  thresholdDegrees?: number;
+}) {
+  if (!houses.length) {
+    return null;
+  }
+
+  const currentIndex = houses.findIndex((entry) => entry.house === house);
+  if (currentIndex < 0) {
+    return null;
+  }
+
+  const nextHouse = houses[(currentIndex + 1) % houses.length];
+  if (!nextHouse) {
+    return null;
+  }
+
+  const distanceToNextCusp = normalizeLongitude(nextHouse.longitude - longitude);
+  if (distanceToNextCusp <= 0 || distanceToNextCusp > thresholdDegrees) {
+    return null;
+  }
+
+  return {
+    currentHouse: house,
+    nextHouse: nextHouse.house,
+    distanceToNextCusp,
+  };
+}
+
+export function getInterpretiveHouse({
+  longitude,
+  house,
+  houses,
+  thresholdDegrees,
+}: {
+  longitude: number;
+  house: number;
+  houses: HouseCusp[];
+  thresholdDegrees?: number;
+}) {
+  const transition = getApproachingHouseTransition({
+    longitude,
+    house,
+    houses,
+    thresholdDegrees,
+  });
+
+  return transition?.nextHouse ?? house;
+}
+
+export function getPointInterpretiveHouse(point: ChartPoint, houses: HouseCusp[], thresholdDegrees?: number) {
+  return getInterpretiveHouse({
+    longitude: point.longitude,
+    house: point.house,
+    houses,
+    thresholdDegrees,
+  });
+}
+
 export function getSignFromLongitude(longitude: number): SignId {
   const normalized = normalizeLongitude(longitude);
   return zodiacSigns[Math.floor(normalized / 30)]!.id;

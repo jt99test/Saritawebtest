@@ -20,17 +20,13 @@ const PATTERN_POINT_IDS = new Set<ChartPointId>([
   "sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn", "uranus", "neptune", "pluto",
 ]);
 
-const ELEMENT_LABELS = {
-  fire: "Fuego",
-  earth: "Tierra",
-  air: "Aire",
-  water: "Agua",
-} as const;
-
 export type ChartPattern = {
   type: "t-square" | "grand-trine" | "yod" | "stellium-sign" | "stellium-house";
-  title: string;
   points: ChartPointId[];
+  glyph?: string;
+  element?: (typeof zodiacSigns)[number]["element"];
+  sign?: SignId;
+  house?: number;
 };
 
 function pointById(points: ChartPoint[], id: ChartPointId) {
@@ -79,8 +75,8 @@ export function detectChartPatterns(chart: NatalChartData): ChartPattern[] {
         if (aspectBetween(chart.aspects, first.id, second.id, "opposition")) {
           patterns.push({
             type: "t-square",
-            title: `T-cuadrada con foco en ${focal.glyph}`,
             points: uniqueIds([focal.id, first.id, second.id]),
+            glyph: focal.glyph,
           });
         }
       }
@@ -99,8 +95,8 @@ export function detectChartPatterns(chart: NatalChartData): ChartPattern[] {
           const element = zodiacSigns.find((sign) => sign.id === trio[0].sign)?.element;
           patterns.push({
             type: "grand-trine",
-            title: `Gran trigono${element ? ` de ${ELEMENT_LABELS[element]}` : ""}`,
             points: trio.map((point) => point.id),
+            element,
           });
         }
       }
@@ -116,8 +112,8 @@ export function detectChartPatterns(chart: NatalChartData): ChartPattern[] {
         if (aspectBetween(chart.aspects, first.id, second.id, "sextile")) {
           patterns.push({
             type: "yod",
-            title: `Yod con apex en ${apex.glyph}`,
             points: uniqueIds([apex.id, first.id, second.id]),
+            glyph: apex.glyph,
           });
         }
       }
@@ -135,8 +131,8 @@ export function detectChartPatterns(chart: NatalChartData): ChartPattern[] {
     if (signPoints.length >= 3) {
       patterns.push({
         type: "stellium-sign",
-        title: `Stellium en ${sign}`,
         points: signPoints.map((point) => point.id),
+        sign,
       });
     }
   }
@@ -145,8 +141,8 @@ export function detectChartPatterns(chart: NatalChartData): ChartPattern[] {
     if (housePoints.length >= 3) {
       patterns.push({
         type: "stellium-house",
-        title: `Stellium en casa ${house}`,
         points: housePoints.map((point) => point.id),
+        house,
       });
     }
   }

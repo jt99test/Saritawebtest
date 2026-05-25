@@ -9,7 +9,7 @@ import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { calculateCurrentTransitsAction } from "@/lib/actions";
 import { fetchAiReadingWithPolling } from "@/lib/ai-reading-client";
 import type { ChartPoint, ChartPointId, HouseCusp, NatalChartData } from "@/lib/chart";
-import { normalizeLongitude } from "@/lib/chart";
+import { getInterpretiveHouse, getPointInterpretiveHouse, normalizeLongitude } from "@/lib/chart";
 import { hashNatalChart } from "@/lib/chart-hash";
 import type { FormValues } from "@/lib/chart-session";
 import type { PlaceSuggestion } from "@/lib/geocoding";
@@ -335,7 +335,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
   useEffect(() => {
     if (!result?.ok || result.transits.length === 0 || !chartHash || !aiCacheHash) return;
     let active = true;
-    const cacheKey = `transits:v3:${locale}:${request?.gender || "unspecified"}:${currentLocationKey}`;
+    const cacheKey = `transits:v4:${locale}:${request?.gender || "unspecified"}:${currentLocationKey}`;
     const cachedData = getCachedPremiumReading<TransitData>(aiCacheHash, cacheKey);
     if (cachedData) {
       setTransitReading("");
@@ -353,10 +353,19 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
       lifecycleEvent: t.lifecycleEvent,
       orb: t.orb,
       strength: t.strength,
-      natalHouse: findPoint(chart, t.natalPlanet)?.house,
+      natalHouse: (() => {
+        const natalPoint = findPoint(chart, t.natalPlanet);
+        return natalPoint ? getPointInterpretiveHouse(natalPoint, chart.houses) : undefined;
+      })(),
       transitingHouse: (() => {
         const transitingPoint = findPoint(result.chart, t.transitingPlanet);
-        return transitingPoint ? getHouseForLongitude(transitingPoint.longitude, chart.houses) : undefined;
+        if (!transitingPoint) return undefined;
+        const technicalHouse = getHouseForLongitude(transitingPoint.longitude, chart.houses);
+        return getInterpretiveHouse({
+          longitude: transitingPoint.longitude,
+          house: technicalHouse,
+          houses: chart.houses,
+        });
       })(),
       activatedNatalAspects: t.activatedNatalAspects,
     }));

@@ -4,7 +4,7 @@ import type { Message } from "@anthropic-ai/sdk/resources/messages";
 import { isAdminEmail } from "@/lib/admin";
 
 import type { ChartPointId, NatalChartData } from "@/lib/chart";
-import { zodiacSigns } from "@/lib/chart";
+import { getApproachingHouseTransition, getPointInterpretiveHouse, zodiacSigns } from "@/lib/chart";
 import { ANTHROPIC_STANDARD_READING_MODEL } from "@/lib/anthropic-models";
 import {
   aiGenerationStatusResponse,
@@ -45,15 +45,29 @@ function buildPrompt(chart: NatalChartData, pointId: ChartPointId, locale?: stri
   const signName = getSignLabel(point.sign, locale);
   const element = sign?.element ?? "";
   const modality = sign?.modality ?? "";
+  const pointReadingHouse = getPointInterpretiveHouse(point, chart.houses);
+  const pointTransition = getApproachingHouseTransition({
+    longitude: point.longitude,
+    house: point.house,
+    houses: chart.houses,
+  });
+  const pointHouseContext = pointTransition
+    ? locale === "en"
+      ? `Technically in house ${point.house}, but interpret it through house ${pointReadingHouse} because it is less than 5 degrees before that cusp.`
+      : locale === "it"
+        ? `Tecnicamente in casa ${point.house}, ma interpretalo attraverso la casa ${pointReadingHouse} perche e a meno di 5 gradi da quella cuspide.`
+        : `Tecnicamente esta en casa ${point.house}, pero interpretalo desde la casa ${pointReadingHouse} porque esta a menos de 5 grados de esa cuspide.`
+    : "";
 
   const allPoints = chart.points
     .map((entry) => {
       const signLabel = getSignLabel(entry.sign, locale);
+      const readingHouse = getPointInterpretiveHouse(entry, chart.houses);
       return `- ${placementPhrase({
         point: getPointLabel(entry.id, locale),
         sign: signLabel,
         degree: entry.degreeInSign,
-        house: entry.house,
+        house: readingHouse,
         retrograde: entry.retrograde,
         locale,
       })}`;
@@ -82,7 +96,7 @@ function buildPrompt(chart: NatalChartData, pointId: ChartPointId, locale?: stri
     return `You are ${chart.event.name}'s astrologer friend. Write directly, without filler and without poetic mist. Your aim is for ${chart.event.name} to read this and think, "yes, that is me."
 
 You are reading ${chart.event.name}'s ${getPointLabel(pointId, locale)}:
-${signName} ${point.degreeInSign}°, ${housePhrase(point.house, locale)} (${getHouseArea(point.house, locale)}).
+${signName} ${point.degreeInSign}°, ${housePhrase(pointReadingHouse, locale)} (${getHouseArea(pointReadingHouse, locale)}). ${pointHouseContext}
 ${point.retrograde ? "It is retrograde." : ""}
 
 Active aspects:
@@ -92,7 +106,7 @@ Full natal chart:
 ${allPoints}
 
 Write ONE paragraph of 60-80 words. Start with a direct observation about how this planet shows up in ${chart.event.name}'s daily life. Give one concrete example from work, home, relationships, or a typical reaction. End with something useful they can do with this information. No headings, no multiple paragraphs, no poetic metaphors.
-Do not start with "SARITA", with your own name, or with a technical formula like "${getPointLabel(pointId, locale)} in ${signName}, house ${point.house}". Make the first sentence sound like a friend speaking naturally.
+Do not start with "SARITA", with your own name, or with a technical formula like "${getPointLabel(pointId, locale)} in ${signName}, house ${pointReadingHouse}". Make the first sentence sound like a friend speaking naturally.
 
 Internal technical data if useful: ${element} / ${modality}.
 
@@ -106,7 +120,7 @@ ${promptLanguageInstruction(locale)}`;
     return `Sei l'astrologa amica di ${chart.event.name}. Scrivi in modo diretto, senza giri inutili e senza poesia nebulosa. L'obiettivo e che ${chart.event.name} legga e pensi: "si, sono proprio io."
 
 Stai leggendo ${getPointLabel(pointId, locale)} di ${chart.event.name}:
-${signName} ${point.degreeInSign}°, ${housePhrase(point.house, locale)} (${getHouseArea(point.house, locale)}).
+${signName} ${point.degreeInSign}°, ${housePhrase(pointReadingHouse, locale)} (${getHouseArea(pointReadingHouse, locale)}). ${pointHouseContext}
 ${point.retrograde ? "E retrogrado." : ""}
 
 Aspetti attivi:
@@ -116,7 +130,7 @@ Carta natale completa:
 ${allPoints}
 
 Scrivi UN paragrafo di 60-80 parole. Inizia con un'osservazione diretta su come questo pianeta si nota nella vita quotidiana di ${chart.event.name}. Fai un esempio concreto dal lavoro, dalla casa, dalle relazioni o da una reazione tipica. Chiudi con qualcosa di utile da farne. Niente titoli, niente paragrafi multipli, niente metafore poetiche.
-Non iniziare con "SARITA", con il tuo nome o con una formula tecnica tipo "${getPointLabel(pointId, locale)} in ${signName}, casa ${point.house}". La prima frase deve sembrare detta da un'amica, non da una scheda astrologica.
+Non iniziare con "SARITA", con il tuo nome o con una formula tecnica tipo "${getPointLabel(pointId, locale)} in ${signName}, casa ${pointReadingHouse}". La prima frase deve sembrare detta da un'amica, non da una scheda astrologica.
 
 Dati tecnici interni se aiutano: ${element} / ${modality}.
 
@@ -131,7 +145,7 @@ de forma directa, sin rodeos y sin poesía. Tu objetivo es que
 ${chart.event.name} lea esto y piense "claro, eso soy yo."
 
 Estás leyendo el ${getPointLabel(pointId, locale)} de ${chart.event.name}:
-${signName} ${point.degreeInSign}°, ${housePhrase(point.house, locale)} (${getHouseArea(point.house, locale)}).
+${signName} ${point.degreeInSign}°, ${housePhrase(pointReadingHouse, locale)} (${getHouseArea(pointReadingHouse, locale)}). ${pointHouseContext}
 ${point.retrograde ? "Está retrógrado." : ""}
 
 Aspectos activos:
@@ -145,7 +159,7 @@ sobre cómo se nota este planeta en el día a día de ${chart.event.name}. Da un
 concreto — una situación en el trabajo, en casa, en sus relaciones o en cómo
 reacciona ante algo. Termina con algo que le ayude a entender qué hacer con
 esto. Sin subtítulos. Sin párrafos múltiples. Sin metáforas poéticas.
-No empieces con "SARITA", con tu propio nombre ni con una fórmula técnica como "${getPointLabel(pointId, locale)} en ${signName}, casa ${point.house}". La primera frase debe sonar como una amiga hablando, no como una ficha astrológica.
+No empieces con "SARITA", con tu propio nombre ni con una fórmula técnica como "${getPointLabel(pointId, locale)} en ${signName}, casa ${pointReadingHouse}". La primera frase debe sonar como una amiga hablando, no como una ficha astrológica.
 
 Datos técnicos internos si ayudan: ${element} / ${modality}.
 
@@ -174,7 +188,7 @@ export async function POST(request: Request) {
       gender?: ReadingGender;
     };
     const readingGender = normalizeReadingGender(gender);
-    const itemKey = `v3:${pointId}:${readingGender || "unspecified"}`;
+    const itemKey = `v4:${pointId}:${readingGender || "unspecified"}`;
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });

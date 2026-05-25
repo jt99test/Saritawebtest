@@ -14,6 +14,7 @@ import {
   validateReadingGenerationAccess,
 } from "@/lib/ai-reading-generations";
 import type { NatalChartData } from "@/lib/chart";
+import { getPointInterpretiveHouse } from "@/lib/chart";
 import type { AstrocartographyNearbyLine } from "@/lib/astrocartography";
 import { assertGeneratedLanguage } from "@/lib/generated-language";
 import { jsonOnlyInstruction, nativeToneInstruction, promptLanguageInstruction } from "@/lib/prompt-i18n";
@@ -95,7 +96,7 @@ export async function POST(request: Request) {
   }
 
   const readingGender = normalizeReadingGender(gender);
-  const itemKey = `v2:${cacheKey ?? `astrocartography:${location.lat.toFixed(3)},${location.lng.toFixed(3)}`}:${readingGender || "unspecified"}`;
+  const itemKey = `v3:${cacheKey ?? `astrocartography:${location.lat.toFixed(3)},${location.lng.toFixed(3)}`}:${readingGender || "unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 
@@ -142,8 +143,8 @@ export async function POST(request: Request) {
 Carta natale:
 - Nome: ${chart.event.name}
 - Luogo di nascita: ${chart.event.locationLabel}
-- Sole: ${sun ? `${sun.sign}, casa ${sun.house}` : "-"}
-- Luna: ${moon ? `${moon.sign}, casa ${moon.house}` : "-"}
+- Sole: ${sun ? `${sun.sign}, casa ${getPointInterpretiveHouse(sun, chart.houses)}` : "-"}
+- Luna: ${moon ? `${moon.sign}, casa ${getPointInterpretiveHouse(moon, chart.houses)}` : "-"}
 
 Luogo selezionato:
 - ${location.displayName}
@@ -173,8 +174,8 @@ ${promptLanguageInstruction(locale)}` : locale === "es" || !locale ? `Eres Sarit
 Carta natal:
 - Nombre: ${chart.event.name}
 - Lugar de nacimiento: ${chart.event.locationLabel}
-- Sol: ${sun ? `${sun.sign}, casa ${sun.house}` : "-"}
-- Luna: ${moon ? `${moon.sign}, casa ${moon.house}` : "-"}
+- Sol: ${sun ? `${sun.sign}, casa ${getPointInterpretiveHouse(sun, chart.houses)}` : "-"}
+- Luna: ${moon ? `${moon.sign}, casa ${getPointInterpretiveHouse(moon, chart.houses)}` : "-"}
 
 Lugar seleccionado:
 - ${location.displayName}
@@ -204,8 +205,8 @@ ${promptLanguageInstruction(locale)}` : `You are Sarita, a practical astrologer 
 Birth chart:
 - Name: ${chart.event.name}
 - Birth place: ${chart.event.locationLabel}
-- Sun: ${sun ? `${sun.sign}, house ${sun.house}` : "-"}
-- Moon: ${moon ? `${moon.sign}, house ${moon.house}` : "-"}
+- Sun: ${sun ? `${sun.sign}, house ${getPointInterpretiveHouse(sun, chart.houses)}` : "-"}
+- Moon: ${moon ? `${moon.sign}, house ${getPointInterpretiveHouse(moon, chart.houses)}` : "-"}
 
 Selected location:
 - ${location.displayName}

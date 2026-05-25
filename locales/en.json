@@ -566,6 +566,20 @@
       "subtitle": "Relationship reading",
       "body": "Here you will compare two charts as mirrors of consciousness, without reducing the bond to a score."
     },
+    "chartSignatures": {
+      "eyebrow": "chart signatures",
+      "chartRuler": "Chart ruler",
+      "retrogrades": "Retrogrades",
+      "majorPatterns": "Major patterns",
+      "patterns": {
+        "tSquare": "T-square focused on {glyph}",
+        "grandTrine": "Grand trine",
+        "grandTrineElement": "Grand trine in {element}",
+        "yod": "Yod with apex at {glyph}",
+        "stelliumSign": "Stellium in {sign}",
+        "stelliumHouse": "Stellium in house {house}"
+      }
+    },
     "drawer": {
       "tabs": {
         "essence": "Essence",
@@ -742,7 +756,8 @@
       "mockNotice": "Base visualization ready for real data.",
       "missingResult": "Go back to the form to generate your natal chart from your details.",
       "noAspectMatrix": "No exact aspect",
-      "meanNodeNote": "Calculated using the Mean Node — psychological use."
+      "meanNodeNote": "Calculated using the Mean Node — psychological use.",
+      "houseTransitionNote": "Reading applied to House {house} because this planet is less than 5 degrees from that cusp."
     },
     "editorial": {
       "signFocus": "Essence",

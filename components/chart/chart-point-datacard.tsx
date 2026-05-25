@@ -3,6 +3,8 @@
 import type { Dictionary } from "@/lib/i18n";
 import {
   formatSignPosition,
+  getApproachingHouseTransition,
+  getPointInterpretiveHouse,
   getSignMeta,
   zodiacSigns,
   type ChartPoint,
@@ -80,12 +82,21 @@ export function ChartPointDataCard({
     .filter((aspect) => aspect.from === point.id || aspect.to === point.id)
     .sort((left, right) => left.orb - right.orb);
   const position = formatSignPosition(point.longitude);
-  const houseKey = String(point.house) as keyof typeof dictionary.result.houseMeanings;
   const displayHouse = formatHouseWithTransition({
     longitude: point.longitude,
     house: point.house,
     houses: chart.houses,
   });
+  const houseTransition = getApproachingHouseTransition({
+    longitude: point.longitude,
+    house: point.house,
+    houses: chart.houses,
+  });
+  const readingHouse = getPointInterpretiveHouse(point, chart.houses);
+  const houseKey = String(readingHouse) as keyof typeof dictionary.result.houseMeanings;
+  const houseTransitionNote = houseTransition
+    ? dictionary.result.messages.houseTransitionNote.replace("{house}", String(houseTransition.nextHouse))
+    : null;
 
   const signLens = [
     `${dictionary.result.signs[point.sign]} · ${dictionary.result.elements[signMeta.element]}`,
@@ -94,7 +105,7 @@ export function ChartPointDataCard({
   ];
 
   const houseLens = [
-    houseLabel(dictionary, point.house, displayHouse),
+    houseLabel(dictionary, readingHouse, displayHouse),
     dictionary.result.editorial.housePrompts[houseKey],
     point.retrograde
       ? dictionary.result.editorial.retrogradeActive
@@ -120,7 +131,7 @@ export function ChartPointDataCard({
                     {dictionary.result.points[point.id]}
                   </p>
                   <p className="mt-2 text-sm text-[#3a3048]">
-                    {dictionary.result.signs[point.sign]} · {houseLabel(dictionary, point.house, displayHouse)}
+                    {dictionary.result.signs[point.sign]} · {houseLabel(dictionary, readingHouse, displayHouse)}
                   </p>
                 </div>
               </div>
@@ -139,6 +150,11 @@ export function ChartPointDataCard({
                   {dictionary.result.houseMeanings[houseKey]}
                 </span>.
               </p>
+              {houseTransitionNote ? (
+                <p className="mt-3 rounded-[1rem] border border-dusty-gold/20 bg-dusty-gold/8 px-3 py-2 text-xs leading-6 text-[#3a3048]">
+                  {houseTransitionNote}
+                </p>
+              ) : null}
             </div>
 
             <div
@@ -157,7 +173,7 @@ export function ChartPointDataCard({
           </div>
           <div className="px-5 py-5">
             <SectionLabel>{dictionary.result.editorial.houseFocus}</SectionLabel>
-            <DetailList title={houseLabel(dictionary, point.house, displayHouse)} items={houseLens} />
+            <DetailList title={houseLabel(dictionary, readingHouse, displayHouse)} items={houseLens} />
           </div>
         </div>
       </section>
