@@ -139,18 +139,16 @@ function normalizeSynastryPayload(value: unknown): SynastryPayload | null {
   if (!value || typeof value !== "object") return null;
   const payload = value as Record<string, unknown>;
   const layers = normalizeLayerAliases(payload.layers);
-  const reading = payload.reading ?? payload.lettura;
   const compatibilityLabel = payload.compatibilityLabel ?? payload.compatibility_label ?? payload.etichettaCompatibilita;
   const compatibilityDescription =
     payload.compatibilityDescription ?? payload.compatibility_description ?? payload.descrizioneCompatibilita;
 
   if (
-    typeof reading === "string" &&
     typeof compatibilityLabel === "string" &&
     typeof compatibilityDescription === "string" &&
     layers
   ) {
-    return { reading, compatibilityLabel, compatibilityDescription, layers };
+    return { compatibilityLabel, compatibilityDescription, layers };
   }
 
   return null;
