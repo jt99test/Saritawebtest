@@ -757,7 +757,8 @@
       "missingResult": "Go back to the form to generate your natal chart from your details.",
       "noAspectMatrix": "No exact aspect",
       "meanNodeNote": "Calculated using the Mean Node — psychological use.",
-      "houseTransitionNote": "Reading applied to House {house} because this planet is less than 5 degrees from that cusp."
+      "houseTransitionNote": "Reading applied to House {house} because this planet is less than 5 degrees from that cusp.",
+      "signTransitionNote": "Reading applied to {sign} because this planet is at 29 degrees of the previous sign."
     },
     "editorial": {
       "signFocus": "Essence",

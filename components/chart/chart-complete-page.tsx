@@ -283,7 +283,6 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
   const [result, setResult] = useState<TransitResult | null>(null);
   const [currentLocationInput, setCurrentLocationInput] = useState(initialTransitLocation?.displayName ?? request?.location ?? "");
   const [currentLocation, setCurrentLocation] = useState<PlaceSuggestion | null>(initialTransitLocation);
-  const [transitReading, setTransitReading] = useState("");
   const [transitData, setTransitData] = useState<TransitData>({});
   const [transitReadingError, setTransitReadingError] = useState<string | null>(null);
   const [isLoadingTransitReading, setIsLoadingTransitReading] = useState(false);
@@ -338,7 +337,6 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
     const cacheKey = `transits:v4:${locale}:${request?.gender || "unspecified"}:${currentLocationKey}`;
     const cachedData = getCachedPremiumReading<TransitData>(aiCacheHash, cacheKey);
     if (cachedData) {
-      setTransitReading("");
       setTransitData(normalizeTransitData(cachedData));
       setTransitReadingError(null);
       setIsLoadingTransitReading(false);
@@ -369,7 +367,6 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
       })(),
       activatedNatalAspects: t.activatedNatalAspects,
     }));
-    setTransitReading("");
     setTransitData({});
     setTransitReadingError(null);
     setIsLoadingTransitReading(true);
@@ -394,7 +391,6 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
         const { done, value } = await reader.read();
         if (done) break;
         accumulated += decoder.decode(value);
-        if (active) setTransitReading(accumulated.split(SARITA_DATA_MARKER)[0] ?? accumulated);
       }
       if (active) {
         const markerIdx = accumulated.indexOf(SARITA_DATA_MARKER);

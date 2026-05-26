@@ -1,5 +1,6 @@
 import {
   getApproachingHouseTransition,
+  getApproachingSignTransition,
   getInterpretiveHouse,
   type ChartPoint,
   type HouseCusp,
@@ -113,4 +114,23 @@ export function formatHouseWithTransition({
   return transition
     ? `${house} -> ${transition.nextHouse} (${formatTransitionDistance(transition.distanceToNextCusp)})`
     : String(house);
+}
+
+export function formatSignWithTransition({
+  longitude,
+  signLabel,
+  nextSignLabel,
+  thresholdDegrees,
+}: {
+  longitude: number;
+  signLabel: string;
+  nextSignLabel: string;
+  thresholdDegrees?: number;
+}) {
+  const transition = getApproachingSignTransition({
+    longitude,
+    thresholdDegrees,
+  });
+
+  return transition ? `${signLabel} -> ${nextSignLabel}` : signLabel;
 }

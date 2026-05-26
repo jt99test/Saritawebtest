@@ -25,7 +25,6 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const SARITA_DATA_MARKER = "__SARITA_DATA__";
 
 type SynastryPayload = {
-  reading: string;
   compatibilityLabel: string;
   compatibilityDescription: string;
   layers: Record<"fisico" | "sexual" | "emocional" | "mental" | "profesional" | "evolutivo", string>;
@@ -38,12 +37,8 @@ const SYNASTRY_READING_TOOL: Tool = {
   input_schema: {
     type: "object",
     additionalProperties: false,
-    required: ["reading", "compatibilityLabel", "compatibilityDescription", "layers"],
+    required: ["compatibilityLabel", "compatibilityDescription", "layers"],
     properties: {
-      reading: {
-        type: "string",
-        description: "One practical paragraph of 80-100 words about the relationship.",
-      },
       compatibilityLabel: {
         type: "string",
         description: "Short relationship label, maximum six words.",
@@ -337,7 +332,7 @@ export async function POST(request: Request) {
 
   const readingGender = normalizeReadingGender(gender);
   const partnerReadingGender = normalizeReadingGender(partnerGender);
-  const itemKey = `v3:${cacheKey ?? `synastry:${partnerName}:${chartB.event.julianDay}`}:${readingGender || "unspecified"}:${partnerReadingGender || "partner-unspecified"}`;
+  const itemKey = `v4:${cacheKey ?? `synastry:${partnerName}:${chartB.event.julianDay}`}:${readingGender || "unspecified"}:${partnerReadingGender || "partner-unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 
@@ -468,7 +463,7 @@ ${firstText}`,
     content: data,
   });
 
-  return new Response(`${parsed.reading}\n\n${SARITA_DATA_MARKER}\n${JSON.stringify(data)}`, {
+  return new Response(`${SARITA_DATA_MARKER}${JSON.stringify(data)}`, {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
       "Cache-Control": "no-cache",

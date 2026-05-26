@@ -4,14 +4,16 @@ import type { Dictionary } from "@/lib/i18n";
 import {
   formatSignPosition,
   getApproachingHouseTransition,
+  getApproachingSignTransition,
   getPointInterpretiveHouse,
+  getPointInterpretiveSign,
   getSignMeta,
   zodiacSigns,
   type ChartPoint,
   type ChartPointId,
   type NatalChartData,
 } from "@/lib/chart";
-import { formatHouseWithTransition } from "@/components/chart/chart-helpers";
+import { formatHouseWithTransition, formatSignWithTransition } from "@/components/chart/chart-helpers";
 
 type ChartPointDataCardProps = {
   chart: NatalChartData;
@@ -76,8 +78,15 @@ export function ChartPointDataCard({
   dictionary,
   onSelectPoint,
 }: ChartPointDataCardProps) {
-  const signMeta = getSignMeta(point.sign);
+  const readingSign = getPointInterpretiveSign(point);
+  const signTransition = getApproachingSignTransition({ longitude: point.longitude });
+  const signMeta = getSignMeta(readingSign);
   const signGlyph = zodiacSigns.find((sign) => sign.id === point.sign)?.glyph ?? "";
+  const displaySignLabel = formatSignWithTransition({
+    longitude: point.longitude,
+    signLabel: dictionary.result.signs[point.sign],
+    nextSignLabel: dictionary.result.signs[readingSign],
+  });
   const pointAspects = chart.aspects
     .filter((aspect) => aspect.from === point.id || aspect.to === point.id)
     .sort((left, right) => left.orb - right.orb);
@@ -97,11 +106,14 @@ export function ChartPointDataCard({
   const houseTransitionNote = houseTransition
     ? dictionary.result.messages.houseTransitionNote.replace("{house}", String(houseTransition.nextHouse))
     : null;
+  const signTransitionNote = signTransition
+    ? dictionary.result.messages.signTransitionNote.replace("{sign}", dictionary.result.signs[signTransition.nextSign])
+    : null;
 
   const signLens = [
-    `${dictionary.result.signs[point.sign]} · ${dictionary.result.elements[signMeta.element]}`,
+    `${displaySignLabel} · ${dictionary.result.elements[signMeta.element]}`,
     `${dictionary.result.fields.modality}: ${dictionary.result.modalities[signMeta.modality]}`,
-    dictionary.result.editorial.signPrompts[point.sign],
+    dictionary.result.editorial.signPrompts[readingSign],
   ];
 
   const houseLens = [
@@ -131,7 +143,7 @@ export function ChartPointDataCard({
                     {dictionary.result.points[point.id]}
                   </p>
                   <p className="mt-2 text-sm text-[#3a3048]">
-                    {dictionary.result.signs[point.sign]} · {houseLabel(dictionary, readingHouse, displayHouse)}
+                    {displaySignLabel} · {houseLabel(dictionary, readingHouse, displayHouse)}
                   </p>
                 </div>
               </div>
@@ -143,7 +155,7 @@ export function ChartPointDataCard({
                 </span>{" "}
                 {dictionary.result.editorial.summaryMiddle}{" "}
                 <span className="text-ivory">
-                  {dictionary.result.signs[point.sign]}
+                  {dictionary.result.signs[readingSign]}
                 </span>{" "}
                 {dictionary.result.editorial.summarySuffix}{" "}
                 <span className="text-ivory">
@@ -153,6 +165,11 @@ export function ChartPointDataCard({
               {houseTransitionNote ? (
                 <p className="mt-3 rounded-[1rem] border border-dusty-gold/20 bg-dusty-gold/8 px-3 py-2 text-xs leading-6 text-[#3a3048]">
                   {houseTransitionNote}
+                </p>
+              ) : null}
+              {signTransitionNote ? (
+                <p className="mt-3 rounded-[1rem] border border-dusty-gold/20 bg-dusty-gold/8 px-3 py-2 text-xs leading-6 text-[#3a3048]">
+                  {signTransitionNote}
                 </p>
               ) : null}
             </div>
@@ -169,7 +186,7 @@ export function ChartPointDataCard({
         <div className="grid gap-0 md:grid-cols-2">
           <div className="border-b border-black/10 px-5 py-5 md:border-b-0 md:border-r">
             <SectionLabel>{dictionary.result.editorial.signFocus}</SectionLabel>
-            <DetailList title={dictionary.result.signs[point.sign]} items={signLens} />
+            <DetailList title={dictionary.result.signs[readingSign]} items={signLens} />
           </div>
           <div className="px-5 py-5">
             <SectionLabel>{dictionary.result.editorial.houseFocus}</SectionLabel>
@@ -188,7 +205,7 @@ export function ChartPointDataCard({
               value={`${position.degreeInSign}° ${String(position.minutesInSign).padStart(2, "0")}′ ${signGlyph}`}
             />
             <InfoRow label={dictionary.result.fields.eclipticLongitude} value={point.absoluteLongitudeLabel} />
-            <InfoRow label={dictionary.result.fields.sign} value={dictionary.result.signs[point.sign]} />
+            <InfoRow label={dictionary.result.fields.sign} value={displaySignLabel} />
             <InfoRow label={dictionary.result.fields.house} value={displayHouse} />
             <InfoRow label={dictionary.result.fields.element} value={dictionary.result.elements[signMeta.element]} />
             <InfoRow

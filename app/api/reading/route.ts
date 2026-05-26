@@ -4,7 +4,7 @@ import type { Message } from "@anthropic-ai/sdk/resources/messages";
 import { isAdminEmail } from "@/lib/admin";
 
 import type { ChartPointId, NatalChartData } from "@/lib/chart";
-import { getApproachingHouseTransition, getPointInterpretiveHouse, zodiacSigns } from "@/lib/chart";
+import { getApproachingHouseTransition, getApproachingSignTransition, getPointInterpretiveHouse, getPointInterpretiveSign, zodiacSigns } from "@/lib/chart";
 import { ANTHROPIC_STANDARD_READING_MODEL } from "@/lib/anthropic-models";
 import {
   aiGenerationStatusResponse,
@@ -41,8 +41,11 @@ function buildPrompt(chart: NatalChartData, pointId: ChartPointId, locale?: stri
     return "";
   }
 
-  const sign = zodiacSigns.find((entry) => entry.id === point.sign);
-  const signName = getSignLabel(point.sign, locale);
+  const readingSign = getPointInterpretiveSign(point);
+  const signTransition = getApproachingSignTransition({ longitude: point.longitude });
+  const sign = zodiacSigns.find((entry) => entry.id === readingSign);
+  const signName = getSignLabel(readingSign, locale);
+  const technicalSignName = getSignLabel(point.sign, locale);
   const element = sign?.element ?? "";
   const modality = sign?.modality ?? "";
   const pointReadingHouse = getPointInterpretiveHouse(point, chart.houses);
@@ -58,10 +61,17 @@ function buildPrompt(chart: NatalChartData, pointId: ChartPointId, locale?: stri
         ? `Tecnicamente in casa ${point.house}, ma interpretalo attraverso la casa ${pointReadingHouse} perche e a meno di 5 gradi da quella cuspide.`
         : `Tecnicamente esta en casa ${point.house}, pero interpretalo desde la casa ${pointReadingHouse} porque esta a menos de 5 grados de esa cuspide.`
     : "";
+  const pointSignContext = signTransition
+    ? locale === "en"
+      ? `Technically in ${technicalSignName}, but interpret it through ${signName} because it is at 29 degrees of the previous sign.`
+      : locale === "it"
+        ? `Tecnicamente in ${technicalSignName}, ma interpretalo attraverso ${signName} perche si trova al grado 29 del segno precedente.`
+        : `Tecnicamente esta en ${technicalSignName}, pero interpretalo desde ${signName} porque esta en el grado 29 del signo anterior.`
+    : "";
 
   const allPoints = chart.points
     .map((entry) => {
-      const signLabel = getSignLabel(entry.sign, locale);
+      const signLabel = getSignLabel(getPointInterpretiveSign(entry), locale);
       const readingHouse = getPointInterpretiveHouse(entry, chart.houses);
       return `- ${placementPhrase({
         point: getPointLabel(entry.id, locale),
@@ -96,7 +106,7 @@ function buildPrompt(chart: NatalChartData, pointId: ChartPointId, locale?: stri
     return `You are ${chart.event.name}'s astrologer friend. Write directly, without filler and without poetic mist. Your aim is for ${chart.event.name} to read this and think, "yes, that is me."
 
 You are reading ${chart.event.name}'s ${getPointLabel(pointId, locale)}:
-${signName} ${point.degreeInSign}°, ${housePhrase(pointReadingHouse, locale)} (${getHouseArea(pointReadingHouse, locale)}). ${pointHouseContext}
+${technicalSignName} ${point.degreeInSign}°, interpreted through ${signName}. ${housePhrase(pointReadingHouse, locale)} (${getHouseArea(pointReadingHouse, locale)}). ${pointSignContext} ${pointHouseContext}
 ${point.retrograde ? "It is retrograde." : ""}
 
 Active aspects:
@@ -120,7 +130,7 @@ ${promptLanguageInstruction(locale)}`;
     return `Sei l'astrologa amica di ${chart.event.name}. Scrivi in modo diretto, senza giri inutili e senza poesia nebulosa. L'obiettivo e che ${chart.event.name} legga e pensi: "si, sono proprio io."
 
 Stai leggendo ${getPointLabel(pointId, locale)} di ${chart.event.name}:
-${signName} ${point.degreeInSign}°, ${housePhrase(pointReadingHouse, locale)} (${getHouseArea(pointReadingHouse, locale)}). ${pointHouseContext}
+${technicalSignName} ${point.degreeInSign}°, interpretato attraverso ${signName}. ${housePhrase(pointReadingHouse, locale)} (${getHouseArea(pointReadingHouse, locale)}). ${pointSignContext} ${pointHouseContext}
 ${point.retrograde ? "E retrogrado." : ""}
 
 Aspetti attivi:
@@ -145,7 +155,7 @@ de forma directa, sin rodeos y sin poesía. Tu objetivo es que
 ${chart.event.name} lea esto y piense "claro, eso soy yo."
 
 Estás leyendo el ${getPointLabel(pointId, locale)} de ${chart.event.name}:
-${signName} ${point.degreeInSign}°, ${housePhrase(pointReadingHouse, locale)} (${getHouseArea(pointReadingHouse, locale)}). ${pointHouseContext}
+${technicalSignName} ${point.degreeInSign}°, interpretado desde ${signName}. ${housePhrase(pointReadingHouse, locale)} (${getHouseArea(pointReadingHouse, locale)}). ${pointSignContext} ${pointHouseContext}
 ${point.retrograde ? "Está retrógrado." : ""}
 
 Aspectos activos:
@@ -188,7 +198,7 @@ export async function POST(request: Request) {
       gender?: ReadingGender;
     };
     const readingGender = normalizeReadingGender(gender);
-    const itemKey = `v4:${pointId}:${readingGender || "unspecified"}`;
+    const itemKey = `v5:${pointId}:${readingGender || "unspecified"}`;
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });

@@ -7,14 +7,16 @@ import type { ChartPoint, ChartPointId, HouseCusp, NatalChartData } from "@/lib/
 import {
   formatSignPosition,
   getApproachingHouseTransition,
+  getApproachingSignTransition,
   getAugmentedChartPoints,
   getHouseForLongitude,
   getInterpretiveHouse,
+  getPointInterpretiveSign,
   getSignMeta,
   zodiacSigns,
 } from "@/lib/chart";
 import { getAspectLabel, getHouseArea, getPointLabel, getSignLabel } from "@/lib/chart-labels";
-import { formatHouseWithTransition } from "@/components/chart/chart-helpers";
+import { formatHouseWithTransition, formatSignWithTransition } from "@/components/chart/chart-helpers";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { dictionaries } from "@/lib/i18n";
 import type { SynastryAspect } from "@/lib/synastry";
@@ -642,8 +644,15 @@ export function BiWheelInfoPanel({
     };
   }, [onClose, point, selectedId]);
 
-  const signMeta = displayPoint ? getSignMeta(displayPoint.sign) : null;
+  const readingSign = displayPoint ? getPointInterpretiveSign(displayPoint) : null;
+  const signTransition = displayPoint ? getApproachingSignTransition({ longitude: displayPoint.longitude }) : null;
+  const signMeta = readingSign ? getSignMeta(readingSign) : null;
   const signGlyph = displayPoint ? zodiacSigns.find((sign) => sign.id === displayPoint.sign)?.glyph ?? "" : "";
+  const signLabel = displayPoint && readingSign ? formatSignWithTransition({
+    longitude: displayPoint.longitude,
+    signLabel: getSignLabel(displayPoint.sign, locale),
+    nextSignLabel: getSignLabel(readingSign, locale),
+  }) : "";
   const position = displayPoint ? formatSignPosition(displayPoint.longitude) : null;
   const transition = displayPoint ? getApproachingHouseTransition({
     longitude: displayPoint.longitude,
@@ -655,11 +664,14 @@ export function BiWheelInfoPanel({
     house: displayPoint.house,
     houses: displayHouses,
   }) : null;
-  const readingPoint = displayPoint && readingHouse ? { ...displayPoint, house: readingHouse } : displayPoint;
+  const readingPoint = displayPoint && readingHouse && readingSign ? { ...displayPoint, house: readingHouse, sign: readingSign } : displayPoint;
   const reading = readingPoint ? biWheelReading({ variant, ring, point: readingPoint, copy, innerName, outerName, locale }) : "";
   const houseLabel = displayPoint ? displayHouseLabel(displayPoint, displayHouses) : "";
   const houseNote = transition
     ? dictionary.result.messages.houseTransitionNote.replace("{house}", String(transition.nextHouse))
+    : null;
+  const signNote = signTransition
+    ? dictionary.result.messages.signTransitionNote.replace("{sign}", getSignLabel(signTransition.nextSign, locale))
     : null;
 
   return (
@@ -704,7 +716,7 @@ export function BiWheelInfoPanel({
                       {dictionary.result.points[selectedId]}
                     </h3>
                     <p className="mt-1.5 text-[13px] leading-6 text-[#d7e7ff]/66">
-                      {getSignLabel(displayPoint.sign, locale)} · {dictionary.result.transitPage.housePrefix} {houseLabel} · {getHouseArea(readingHouse ?? displayPoint.house, locale)}
+                      {signLabel} · {dictionary.result.transitPage.housePrefix} {houseLabel} · {getHouseArea(readingHouse ?? displayPoint.house, locale)}
                     </p>
                   </div>
                 </div>
@@ -727,6 +739,11 @@ export function BiWheelInfoPanel({
                   {houseNote}
                 </p>
               ) : null}
+              {signNote ? (
+                <p className="rounded-[1rem] border border-[#f5d782]/22 bg-[#f5d782]/10 px-3 py-2 text-xs leading-6 text-[#d7e7ff]/78">
+                  {signNote}
+                </p>
+              ) : null}
               <section className="rounded-[1.45rem] border border-[#d7e7ff]/12 bg-[#d7e7ff]/7 p-4">
                 <SectionLabel>{sectionCopy.reading}</SectionLabel>
                 <p className="mt-3 text-sm leading-7 text-[#fffaf0]/78">{reading}</p>
@@ -738,11 +755,11 @@ export function BiWheelInfoPanel({
                   <ul className="mt-3 space-y-2 text-sm leading-7 text-[#fffaf0]/78">
                     <li className="flex gap-2">
                       <span className="mt-3 h-1.5 w-1.5 rounded-full bg-ivory/35" />
-                      <span>{getSignLabel(displayPoint.sign, locale)}{" \u00b7 "}{dictionary.result.elements[signMeta.element]}</span>
+                      <span>{signLabel}{" \u00b7 "}{dictionary.result.elements[signMeta.element]}</span>
                     </li>
                     <li className="flex gap-2">
                       <span className="mt-3 h-1.5 w-1.5 rounded-full bg-ivory/35" />
-                      <span>{dictionary.result.editorial.signPrompts[displayPoint.sign]}</span>
+                      <span>{dictionary.result.editorial.signPrompts[readingSign ?? displayPoint.sign]}</span>
                     </li>
                     <li className="flex gap-2">
                       <span className="mt-3 h-1.5 w-1.5 rounded-full bg-ivory/35" />
@@ -762,7 +779,7 @@ export function BiWheelInfoPanel({
                       value={`${position.degreeInSign}\u00b0 ${String(position.minutesInSign).padStart(2, "0")}\u2032 ${signGlyph}`}
                     />
                     <InfoRow label={dictionary.result.fields.eclipticLongitude} value={formatAbsoluteLongitude(displayPoint)} />
-                    <InfoRow label={dictionary.result.fields.sign} value={getSignLabel(displayPoint.sign, locale)} />
+                    <InfoRow label={dictionary.result.fields.sign} value={signLabel} />
                     <InfoRow label={dictionary.result.fields.house} value={houseLabel} />
                     <InfoRow label={dictionary.result.fields.element} value={dictionary.result.elements[signMeta.element]} />
                     <InfoRow label={dictionary.result.fields.modality} value={dictionary.result.modalities[signMeta.modality]} />

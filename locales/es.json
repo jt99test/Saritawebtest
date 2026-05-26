@@ -757,7 +757,8 @@
       "missingResult": "Vuelve al formulario para generar tu carta natal con tus datos.",
       "noAspectMatrix": "Sin aspecto exacto",
       "meanNodeNote": "Calculado según el Nodo Medio (Mean Node) — uso psicológico.",
-      "houseTransitionNote": "Lectura aplicada a Casa {house} porque el planeta está a menos de 5 grados de esa cúspide."
+      "houseTransitionNote": "Lectura aplicada a Casa {house} porque el planeta está a menos de 5 grados de esa cúspide.",
+      "signTransitionNote": "Lectura aplicada a {sign} porque el planeta está en el grado 29 del signo anterior."
     },
     "editorial": {
       "signFocus": "Esencia",

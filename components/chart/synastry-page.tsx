@@ -228,7 +228,6 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [flipped, setFlipped] = useState(false);
-  const [synastryReading, setSynastryReading] = useState("");
   const [synastryData, setSynastryData] = useState<SynastryData>({});
   const [synastryReadingError, setSynastryReadingError] = useState<string | null>(null);
   const [isLoadingReading, setIsLoadingReading] = useState(false);
@@ -313,7 +312,6 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
     const otherHash = flipped ? natalHash : partnerHash;
     const cacheKey = `synastry:${otherHash}:${flipped ? "flipped" : "normal"}:${locale}:${subjectGender || "unspecified"}:${otherGender || "partner-unspecified"}`;
     const cachedData = getCachedPremiumReading<SynastryData>(readingSubjectHash, cacheKey);
-    setSynastryReading("");
     setSynastryData({});
     setSynastryReadingError(null);
     if (cachedData) {
@@ -355,7 +353,6 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
         const { done, value } = await reader.read();
         if (done) break;
         accumulated += decoder.decode(value);
-        if (active) setSynastryReading(accumulated.split(SARITA_DATA_MARKER)[0] ?? accumulated);
       }
       if (active) {
         const rawPayload = accumulated.split(SARITA_DATA_MARKER)[1]?.trim() ?? "";

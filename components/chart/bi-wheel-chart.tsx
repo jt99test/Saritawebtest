@@ -32,10 +32,11 @@ const INNER_PLANET_LABEL_R = 320;
 const OUTER_SEP_R = 343;
 const OUTER_PLANET_R = 414;
 const OUTER_LABEL_R = 432;
-const CLUSTER_THRESHOLD_DEGREES = 8;
+const CLUSTER_THRESHOLD_DEGREES = 5;
 const CLUSTER_FAN_STEP = 14;
-const INNER_CLUSTER_CALLOUT_R = ZODIAC_OUTER_R + 30;
-const OUTER_CLUSTER_CALLOUT_R = ZODIAC_OUTER_R + 34;
+const CONFLICT_DEGREES = 4;
+const INNER_CLUSTER_CALLOUT_R = ZODIAC_OUTER_R + 16;
+const OUTER_CLUSTER_CALLOUT_R = ZODIAC_OUTER_R + 20;
 const HOUSE_OUTER_R = 252;
 const HOUSE_INNER_R = 142;
 const HOUSE_NUMBER_R = 208;
@@ -298,51 +299,66 @@ function planetLayouts({
 
   clusters.forEach((cluster) => {
     const sortedCluster = [...cluster].sort((left, right) => left.longitude - right.longitude);
-    const clusterPointIds = sortedCluster.map((point) => point.id);
-    const firstLng = sortedCluster[0].longitude;
-    const adjustedLngs = sortedCluster.map((p) => {
-      let lng = p.longitude;
-      while (lng - firstLng > 180) lng -= 360;
-      while (firstLng - lng > 180) lng += 360;
-      return lng;
-    });
-    const centerLongitude = ((adjustedLngs.reduce((a, b) => a + b, 0) / sortedCluster.length) + 360) % 360;
 
-    sortedCluster.forEach((point, index) => {
-      const isClustered = sortedCluster.length > 1;
-      const fanLongitude = isClustered
-        ? centerLongitude + (index - (sortedCluster.length - 1) / 2) * CLUSTER_FAN_STEP
-        : point.longitude;
-      const angle = (pointAngle(fanLongitude, ascendant) * Math.PI) / 180;
-      const radialX = Math.cos(angle);
-      const desiredRadius = isClustered && !isInner ? clusterGlyphRadius : defaultRadius;
-      const position = pointAtRadius(radiusInsideChart(desiredRadius, angle), fanLongitude, ascendant);
+    const conflictGroups: ChartPoint[][] = [];
+    let subGroup: ChartPoint[] = [sortedCluster[0]];
+    for (let i = 1; i < sortedCluster.length; i++) {
+      if (circularDistance(sortedCluster[i - 1].longitude, sortedCluster[i].longitude) < CONFLICT_DEGREES) {
+        subGroup.push(sortedCluster[i]);
+      } else {
+        conflictGroups.push(subGroup);
+        subGroup = [sortedCluster[i]];
+      }
+    }
+    conflictGroups.push(subGroup);
 
-      const x = position.x;
-      const y = position.y;
-      const connectorStart = pointAtRadius(isClustered && !isInner ? clusterStartRadius : defaultConnectorStartRadius, point.longitude, ascendant);
-      const connectorEnd = isClustered && !isInner
-        ? { x, y }
-        : pointAtRadius(defaultConnectorEndRadius ?? defaultRadius, point.longitude, ascendant);
-      const activeConnectorStart = pointAtRadius(isClustered && !isInner ? clusterStartRadius : defaultConnectorStartRadius, point.longitude, ascendant);
-      const activeConnectorEnd = isClustered && !isInner
-        ? { x, y }
-        : pointAtRadius(defaultConnectorEndRadius ?? defaultRadius, point.longitude, ascendant);
-      const labelSide = radialX >= 0 ? 1 : -1;
+    conflictGroups.forEach((conflictGroup) => {
+      const clusterPointIds = conflictGroup.map((point) => point.id);
+      const isClustered = conflictGroup.length > 1;
+      const firstLng = conflictGroup[0].longitude;
+      const adjustedLngs = conflictGroup.map((p) => {
+        let lng = p.longitude;
+        while (lng - firstLng > 180) lng -= 360;
+        while (firstLng - lng > 180) lng += 360;
+        return lng;
+      });
+      const centerLongitude = ((adjustedLngs.reduce((a, b) => a + b, 0) / conflictGroup.length) + 360) % 360;
 
-      layouts.set(point.id, {
-        x,
-        y,
-        labelX: x + labelSide * 28,
-        labelY: y + 10,
-        labelAnchor: labelSide > 0 ? "start" : "end",
-        connectorStart,
-        connectorEnd,
-        activeConnectorStart,
-        activeConnectorEnd,
-        hasConnector: isClustered && !isInner,
-        isClustered,
-        clusterPointIds,
+      conflictGroup.forEach((point, index) => {
+        const fanLongitude = isClustered
+          ? centerLongitude + (index - (conflictGroup.length - 1) / 2) * CLUSTER_FAN_STEP
+          : point.longitude;
+        const angle = (pointAngle(fanLongitude, ascendant) * Math.PI) / 180;
+        const radialX = Math.cos(angle);
+        const desiredRadius = isClustered && !isInner ? clusterGlyphRadius : defaultRadius;
+        const position = pointAtRadius(radiusInsideChart(desiredRadius, angle), fanLongitude, ascendant);
+
+        const x = position.x;
+        const y = position.y;
+        const connectorStart = pointAtRadius(isClustered && !isInner ? clusterStartRadius : defaultConnectorStartRadius, point.longitude, ascendant);
+        const connectorEnd = isClustered && !isInner
+          ? { x, y }
+          : pointAtRadius(defaultConnectorEndRadius ?? defaultRadius, point.longitude, ascendant);
+        const activeConnectorStart = pointAtRadius(isClustered && !isInner ? clusterStartRadius : defaultConnectorStartRadius, point.longitude, ascendant);
+        const activeConnectorEnd = isClustered && !isInner
+          ? { x, y }
+          : pointAtRadius(defaultConnectorEndRadius ?? defaultRadius, point.longitude, ascendant);
+        const labelSide = radialX >= 0 ? 1 : -1;
+
+        layouts.set(point.id, {
+          x,
+          y,
+          labelX: x + labelSide * 28,
+          labelY: y + 10,
+          labelAnchor: labelSide > 0 ? "start" : "end",
+          connectorStart,
+          connectorEnd,
+          activeConnectorStart,
+          activeConnectorEnd,
+          hasConnector: isClustered && !isInner,
+          isClustered,
+          clusterPointIds,
+        });
       });
     });
   });

@@ -80,7 +80,6 @@ function getLifecycleLabel(lifecycleEvent: TransitInput["lifecycleEvent"], local
 }
 
 type TransitReadingPayload = {
-  reading: string;
   dominantTitle: string;
   dominantBody: string;
   planetLanguage: string;
@@ -133,7 +132,6 @@ function isTransitReadingPayload(value: unknown): value is TransitReadingPayload
   const payload = value as Partial<TransitReadingPayload>;
 
   return (
-    typeof payload.reading === "string" &&
     typeof payload.dominantTitle === "string" &&
     typeof payload.dominantBody === "string" &&
     typeof payload.planetLanguage === "string" &&
@@ -198,7 +196,7 @@ export async function POST(request: Request) {
   };
 
   const readingGender = normalizeReadingGender(gender);
-  const itemKey = `v3:${cacheKey ?? `transit:${transits.map((transit) => `${transit.transitingPlanet}-${transit.aspectType}-${transit.natalPlanet}`).join("|")}`}:${readingGender || "unspecified"}`;
+  const itemKey = `v4:${cacheKey ?? `transit:${transits.map((transit) => `${transit.transitingPlanet}-${transit.aspectType}-${transit.natalPlanet}`).join("|")}`}:${readingGender || "unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 
@@ -321,7 +319,7 @@ Reading logic:
 - Process the natal aspects listed as "Reactivates natal memory". Challenging natal aspects can show discomfort, pressure, anxiety, conflict, or old coping patterns; flowing natal aspects can show resources and support. Do not ignore either.
 - Use the natal condition of the active transiting planet to calibrate tone: if it is well-aspected natally, lean toward its constructive expression; if it is stressed, acknowledge the friction while framing it as growth.
 - Avoid punishment or fixed fate. Present the activation as a chance for awareness, integration, and a freer response.
-- If there is "Reactivates natal memory", use that information in dominantBody and reading.
+- If there is "Reactivates natal memory", use that information in dominantBody.
 
 ${genderPromptInstruction(readingGender, locale)}
 ${grammarPromptInstruction(locale)}
@@ -331,14 +329,13 @@ ${jsonOnlyInstruction(locale)}
 Important: dominantBody, planetLanguage, and each houses[].body must be fuller: 3-5 concrete sentences, around 55-85 words each, so they fill roughly 3-5 lines in the card.
 
 Exact shape:
-{"reading":"[ONE paragraph of 80-110 words. Name the strongest transit, say which area of ${name}'s life it will affect, and give a real example of how it may appear in the next few days. End with one concrete recommendation.]","dominantTitle":"[Transiting planet name + verb, max 10 words]","dominantBody":"[3-5 sentences about this transit. What it activates. How it shows up. What helps. No mysticism.]","planetLanguage":"[3-4 sentences about the character of this transiting planet. What it asks for. How it works. How it feels in practice.]","houses":[{"house":[house number],"title":"[Evocative title for this house now, max 8 words]","body":"[3-5 sentences about what this area asks of ${name} now. Concrete, everyday, based on the given transits.]"}]}
+{"dominantTitle":"[Transiting planet name + verb, max 10 words]","dominantBody":"[3-5 sentences about this transit. What it activates. How it shows up. What helps. No mysticism.]","planetLanguage":"[3-4 sentences about the character of this transiting planet. What it asks for. How it works. How it feels in practice.]","houses":[{"house":[house number],"title":"[Evocative title for this house now, max 8 words]","body":"[3-5 sentences about what this area asks of ${name} now. Concrete, everyday, based on the given transits.]"}]}
 
 The "house" values in the array must be these numbers: ${houseHint}.
 
 Rules:
 - SARITA tone: direct, practical, like a friend who knows astrology. No solemnity.
 - The first character of every text field is uppercase.
-- "reading" must be a single paragraph, with no lists or subtitles.
 - No vague phrases or mysticism.
 - Valid JSON: double quotes, no trailing commas.
 
@@ -365,7 +362,7 @@ Logica di lettura:
 - Elabora gli aspetti natali indicati come "Riattiva memoria natale". Gli aspetti natali difficili possono mostrare disagio, pressione, ansia, conflitto o vecchi automatismi; quelli fluidi possono mostrare risorse e sostegno. Non ignorare nessuno dei due.
 - Usa la condizione natale del pianeta in transito attivo per calibrare il tono: se e ben aspettato nella carta natale, privilegia l'espressione costruttiva; se e sotto tensione, riconosci l'attrito mantenendolo come crescita.
 - Evita punizione o destino fisso. Presenta l'attivazione come occasione di consapevolezza, integrazione e risposta piu libera.
-- Se c'e "Riattiva memoria natale", usa quell'informazione in dominantBody e in reading.
+- Se c'e "Riattiva memoria natale", usa quell'informazione in dominantBody.
 
 ${genderPromptInstruction(readingGender, locale)}
 ${grammarPromptInstruction(locale)}
@@ -375,14 +372,13 @@ ${jsonOnlyInstruction(locale)}
 Importante: dominantBody, planetLanguage e ogni houses[].body devono essere piu sviluppati: 3-5 frasi concrete, circa 55-85 parole ciascuno, per occupare circa 3-5 righe nella card.
 
 Forma esatta:
-{"reading":"[UN paragrafo di 80-110 parole. Nomina il transito piu forte, di quale area della vita di ${name} si sentira e fai un esempio reale di come puo apparire nei prossimi giorni. Chiudi con una raccomandazione concreta.]","dominantTitle":"[Nome del pianeta in transito + verbo, max 10 parole]","dominantBody":"[3-5 frasi su questo transito concreto. Cosa attiva. Come si nota. Cosa conviene fare. Niente misticismo.]","planetLanguage":"[3-4 frasi sul carattere del pianeta in transito. Cosa chiede. Come lavora. Come si sente nella pratica.]","houses":[{"house":[numero di casa],"title":"[Titolo evocativo per questa casa ora, max 8 parole]","body":"[3-5 frasi su cosa chiede ora quest'area a ${name}. Concreto, quotidiano e basato sui transiti dati.]"}]}
+{"dominantTitle":"[Nome del pianeta in transito + verbo, max 10 parole]","dominantBody":"[3-5 frasi su questo transito concreto. Cosa attiva. Come si nota. Cosa conviene fare. Niente misticismo.]","planetLanguage":"[3-4 frasi sul carattere del pianeta in transito. Cosa chiede. Come lavora. Come si sente nella pratica.]","houses":[{"house":[numero di casa],"title":"[Titolo evocativo per questa casa ora, max 8 parole]","body":"[3-5 frasi su cosa chiede ora quest'area a ${name}. Concreto, quotidiano e basato sui transiti dati.]"}]}
 
 I valori "house" nell'array devono essere questi numeri: ${houseHint}.
 
 Regole:
 - Tono SARITA: diretto, pratico, come un'amica che conosce l'astrologia. Senza solennita.
 - Il primo carattere di ogni campo testuale e sempre maiuscolo.
-- "reading" e un solo paragrafo, senza liste ne sottotitoli.
 - Niente frasi vaghe ne misticismo.
 - JSON valido: virgolette doppie, nessuna trailing comma.
 
@@ -407,7 +403,7 @@ Logica de lectura:
 - Procesa los aspectos natales indicados como "Reactiva memoria natal". Los aspectos natales tensos pueden mostrar malestar, presion, ansiedad, conflicto o patrones antiguos; los aspectos fluidos pueden mostrar recursos y apoyo. No ignores ninguno.
 - Usa la condicion natal del planeta transitante activo para calibrar el tono: si esta bien aspectado natalmente, inclinate hacia su expresion constructiva; si esta tensionado, reconoce la friccion sin dejar de enmarcarla como crecimiento.
 - Evita hablar de castigo o destino fijo. Presenta la activacion como oportunidad de conciencia, integracion y respuesta mas libre.
-- Si hay "Reactiva memoria natal", usa esa informacion en dominantBody y en reading.
+- Si hay "Reactiva memoria natal", usa esa informacion en dominantBody.
 
 ${genderPromptInstruction(readingGender, locale)}
 ${grammarPromptInstruction(locale)}
@@ -417,14 +413,13 @@ Devuelve SOLO JSON valido. Sin markdown, sin bloque de codigo, sin texto antes n
 Importante: dominantBody, planetLanguage y cada houses[].body deben ser mas desarrollados: 3-5 frases concretas, unas 55-85 palabras cada uno, para que ocupen aproximadamente 3-5 lineas en la tarjeta.
 
 Forma exacta:
-{"reading":"[UN parrafo de 80-110 palabras. Nombra el transito mas fuerte, di en que area de la vida de ${name} se va a notar y da un ejemplo real de como puede aparecer en los proximos dias. Termina con una recomendacion concreta.]","dominantTitle":"[Nombre del planeta transito + verbo, max 10 palabras]","dominantBody":"[3-5 frases sobre este transito concreto. Que activa. Como se nota. Que conviene hacer. Sin misticismos.]","planetLanguage":"[3-4 frases sobre el caracter de este planeta transitante. Que pide. Como trabaja. Como se siente en la practica.]","houses":[{"house":[numero de casa],"title":"[Titulo evocador para esta casa en este momento, max 8 palabras]","body":"[3-5 frases sobre que pide esta area ahora mismo para ${name}. Concreto, cotidiano y basado en los transitos dados.]"}]}
+{"dominantTitle":"[Nombre del planeta transito + verbo, max 10 palabras]","dominantBody":"[3-5 frases sobre este transito concreto. Que activa. Como se nota. Que conviene hacer. Sin misticismos.]","planetLanguage":"[3-4 frases sobre el caracter de este planeta transitante. Que pide. Como trabaja. Como se siente en la practica.]","houses":[{"house":[numero de casa],"title":"[Titulo evocador para esta casa en este momento, max 8 palabras]","body":"[3-5 frases sobre que pide esta area ahora mismo para ${name}. Concreto, cotidiano y basado en los transitos dados.]"}]}
 
 Los valores "house" en el array deben ser los numeros: ${houseHint}.
 
 Reglas:
 - Tono SARITA: directo, practico, como una amiga que sabe astrologia. Sin solemnidad.
 - El primer caracter de cada campo de texto es siempre mayuscula.
-- "reading" debe ser un solo parrafo, sin listas ni subtitulos.
 - Sin frases vagas ni misticismos.
 - JSON valido: comillas dobles, sin trailing commas.
 
@@ -492,7 +487,7 @@ ${promptLanguageInstruction(locale)}`;
     readingGeneratedAt,
   };
 
-  return new Response(`${parsed.reading}\n\n${SARITA_DATA_MARKER}\n${JSON.stringify(data)}`, {
+  return new Response(`${SARITA_DATA_MARKER}${JSON.stringify(data)}`, {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
       "Cache-Control": "no-cache",

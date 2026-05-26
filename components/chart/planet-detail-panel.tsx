@@ -7,7 +7,9 @@ import {
   formatSignPosition,
   getAugmentedChartPoints,
   getApproachingHouseTransition,
+  getApproachingSignTransition,
   getHouseForLongitude,
+  getPointInterpretiveSign,
   getSignMeta,
   zodiacSigns,
   type Aspect,
@@ -20,7 +22,7 @@ import type { ReadingGender } from "@/lib/reading-gender";
 import { normalizeReadingText } from "@/lib/reading-text";
 
 import { useChartStore } from "@/components/chart/chart-store";
-import { formatHouseWithTransition, getReadingHouseForDisplay } from "@/components/chart/chart-helpers";
+import { formatHouseWithTransition, formatSignWithTransition, getReadingHouseForDisplay } from "@/components/chart/chart-helpers";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { RenderedReading, splitReadingParagraphs } from "@/components/ui/rendered-reading";
 
@@ -122,7 +124,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
   const panelRef = useRef<HTMLDivElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const isDesktop = useDesktopBreakpoint();
-  const readingCacheKey = `${locale}:${gender || "unspecified"}:${selectedPointId ?? "none"}`;
+  const readingCacheKey = `v5:${locale}:${gender || "unspecified"}:${selectedPointId ?? "none"}`;
 
   const augmentedPoints = useMemo(() => getAugmentedChartPoints(chart), [chart]);
   const point = augmentedPoints.find((entry) => entry.id === selectedPointId) ?? null;
@@ -260,8 +262,15 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
     return null;
   }
 
-  const signMeta = getSignMeta(point.sign);
+  const readingSign = getPointInterpretiveSign(point);
+  const signTransition = getApproachingSignTransition({ longitude: point.longitude });
+  const signMeta = getSignMeta(readingSign);
   const signGlyph = zodiacSigns.find((sign) => sign.id === point.sign)?.glyph ?? "";
+  const displaySignLabel = formatSignWithTransition({
+    longitude: point.longitude,
+    signLabel: dictionary.result.signs[point.sign],
+    nextSignLabel: dictionary.result.signs[readingSign],
+  });
   const pointColor = PANEL_POINT_COLORS[point.id] ?? point.color;
   const position = formatSignPosition(point.longitude);
   const displayHouse = getHouseForLongitude(point.longitude, chart.houses);
@@ -284,12 +293,15 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
   const houseTransitionNote = houseTransition
     ? dictionary.result.messages.houseTransitionNote.replace("{house}", String(houseTransition.nextHouse))
     : null;
+  const signTransitionNote = signTransition
+    ? dictionary.result.messages.signTransitionNote.replace("{sign}", dictionary.result.signs[signTransition.nextSign])
+    : null;
   const paragraphs = splitReadingParagraphs(reading);
   const previewParagraph = paragraphs[0] ?? "";
   const remainingParagraphs = paragraphs.slice(1);
   const essenceItems = [
-    `${dictionary.result.signs[point.sign]} · ${dictionary.result.elements[signMeta.element]}`,
-    dictionary.result.editorial.signPrompts[point.sign],
+    `${displaySignLabel} · ${dictionary.result.elements[signMeta.element]}`,
+    dictionary.result.editorial.signPrompts[readingSign],
   ];
   const manifestationItems = [
     `${dictionary.result.fields.house} ${displayHouseLabel} · ${selectedHouseArea}`,
@@ -351,7 +363,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
                           {dictionary.result.points[point.id]}
                         </h2>
                         <p className="mt-2 text-sm text-[#3a3048]">
-                          {dictionary.result.signs[point.sign]} · {dictionary.result.fields.house} {displayHouseLabel} ·{" "}
+                          {displaySignLabel} · {dictionary.result.fields.house} {displayHouseLabel} ·{" "}
                           {selectedHouseArea}
                         </p>
                       </div>
@@ -374,13 +386,18 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
                 <p className="mt-4 text-sm leading-7 text-[#3a3048]">
                   <span className="text-ivory">{dictionary.result.points[point.id]}</span>{" "}
                   {dictionary.result.editorial.summaryMiddle}{" "}
-                  <span className="text-ivory">{dictionary.result.signs[point.sign]}</span>{" "}
+                  <span className="text-ivory">{dictionary.result.signs[readingSign]}</span>{" "}
                   {dictionary.result.editorial.summarySuffix}{" "}
                   <span className="text-ivory">{selectedHouseArea}</span>.
                 </p>
                 {houseTransitionNote ? (
                   <p className="mt-3 rounded-[1rem] border border-dusty-gold/20 bg-dusty-gold/8 px-3 py-2 text-xs leading-6 text-[#3a3048]">
                     {houseTransitionNote}
+                  </p>
+                ) : null}
+                {signTransitionNote ? (
+                  <p className="mt-3 rounded-[1rem] border border-dusty-gold/20 bg-dusty-gold/8 px-3 py-2 text-xs leading-6 text-[#3a3048]">
+                    {signTransitionNote}
                   </p>
                 ) : null}
 
@@ -415,8 +432,13 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
                       <section className="rounded-[1.6rem] border border-black/10 bg-white p-5 shadow-none">
                         <SectionLabel>{dictionary.result.editorial.signFocus}</SectionLabel>
                         <h3 className="mt-4 font-serif text-2xl text-ivory">
-                          {dictionary.result.signs[point.sign]}
+                          {dictionary.result.signs[readingSign]}
                         </h3>
+                        {signTransitionNote ? (
+                          <p className="mt-3 rounded-[1rem] border border-dusty-gold/20 bg-dusty-gold/8 px-3 py-2 text-xs leading-6 text-[#3a3048]">
+                            {signTransitionNote}
+                          </p>
+                        ) : null}
                         <ul className="mt-4 space-y-2 text-sm leading-7 text-[#3a3048]">
                           {essenceItems.map((item) => (
                             <li key={item} className="flex gap-2">
@@ -466,7 +488,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
                         value={`${position.degreeInSign}° ${String(position.minutesInSign).padStart(2, "0")}′ ${signGlyph}`}
                       />
                       <InfoRow label={dictionary.result.fields.eclipticLongitude} value={point.absoluteLongitudeLabel} />
-                      <InfoRow label={dictionary.result.fields.sign} value={dictionary.result.signs[point.sign]} />
+                      <InfoRow label={dictionary.result.fields.sign} value={displaySignLabel} />
                       <InfoRow label={dictionary.result.fields.house} value={displayHouseLabel} />
                       <InfoRow label={dictionary.result.fields.element} value={dictionary.result.elements[signMeta.element]} />
                       <InfoRow

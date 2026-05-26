@@ -26,7 +26,6 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 const SARITA_DATA_MARKER = "__SARITA_DATA__";
 
 type SolarReturnPayload = {
-  reading: string;
   cards: Array<{ key: string; title: string; body: string }>;
   priorities: Array<{ title: string; body: string }>;
 };
@@ -95,7 +94,6 @@ function isSolarReturnPayload(value: unknown): value is SolarReturnPayload {
   if (!value || typeof value !== "object") return false;
   const payload = value as Partial<SolarReturnPayload>;
   return (
-    typeof payload.reading === "string" &&
     Array.isArray(payload.cards) &&
     payload.cards.length === 3 &&
     payload.cards.every(isTextCard) &&
@@ -181,13 +179,12 @@ ${jsonOnlyInstruction(locale)}
 Important: the three cards[].body fields (theme, area, tone) must be long: 4-5 concrete sentences, about 70-95 words each, so they fill roughly 5-6 lines in the card.
 
 Exact shape:
-{"reading":"[ONE paragraph of 80-100 words about ${name}'s year. Use Solar Return Ascendant and Sun to name the central theme. Give a concrete example of how they may notice it in life. End with one or two practical things.]","cards":[{"key":"theme","title":"[Short title for the year's theme, max 6 words]","body":"[4-5 practical sentences about Solar Return Ascendant and the general tone. What changes, how it shows up, what to observe, and one concrete action.]"},{"key":"area","title":"[Short title for the main area, max 6 words]","body":"[4-5 practical sentences about Solar Return Sun: focus area, how it shows up, what it asks them to sustain, and a daily example.]"},{"key":"tone","title":"[Short title for the emotional tone, max 6 words]","body":"[4-5 practical sentences about Solar Return Moon: inner needs, possible emotional reaction, care, and concrete recommendation.]"}],"priorities":[{"title":"[Priority 1, max 7 words]","body":"[3-4 concrete sentences about what to do this year]"},{"title":"[Priority 2, max 7 words]","body":"[3-4 concrete sentences]"},{"title":"[Priority 3, max 7 words]","body":"[3-4 concrete sentences]"}]}
+{"cards":[{"key":"theme","title":"[Short title for the year's theme, max 6 words]","body":"[4-5 practical sentences about Solar Return Ascendant and the general tone. What changes, how it shows up, what to observe, and one concrete action.]"},{"key":"area","title":"[Short title for the main area, max 6 words]","body":"[4-5 practical sentences about Solar Return Sun: focus area, how it shows up, what it asks them to sustain, and a daily example.]"},{"key":"tone","title":"[Short title for the emotional tone, max 6 words]","body":"[4-5 practical sentences about Solar Return Moon: inner needs, possible emotional reaction, care, and concrete recommendation.]"}],"priorities":[{"title":"[Priority 1, max 7 words]","body":"[3-4 concrete sentences about what to do this year]"},{"title":"[Priority 2, max 7 words]","body":"[3-4 concrete sentences]"},{"title":"[Priority 3, max 7 words]","body":"[3-4 concrete sentences]"}]}
 
 Rules:
 - The 3 priorities come from Solar Return Ascendant, Sun, and Moon.
 - Nothing generic. Every field must use the data given.
 - The first character of every text field is uppercase.
-- "reading" is one paragraph, no lists and no headings.
 - Valid JSON: double quotes, no trailing commas.
 
 ${langInstruction(locale)}`;
@@ -213,13 +210,12 @@ ${jsonOnlyInstruction(locale)}
 Importante: i tre campi cards[].body (theme, area e tone) devono essere lunghi: 4-5 frasi concrete, circa 70-95 parole ciascuno, cosi occupano circa 5-6 righe nella scheda.
 
 Forma esatta:
-{"reading":"[UN paragrafo di 80-100 parole sull'anno di ${name}. Usa Ascendente RS e Sole RS per dire il tema centrale. Dai un esempio concreto di come puo notarlo nella vita. Chiudi con una o due cose pratiche.]","cards":[{"key":"theme","title":"[Titolo breve del tema dell'anno, max 6 parole]","body":"[4-5 frasi pratiche sull'Ascendente RS e sul tono generale. Che cosa cambia, come si nota, che cosa osservare e un'azione concreta.]"},{"key":"area","title":"[Titolo breve dell'area principale, max 6 parole]","body":"[4-5 frasi pratiche sul Sole RS: area di focus, come si nota, che cosa chiede di sostenere e un esempio quotidiano.]"},{"key":"tone","title":"[Titolo breve del tono emotivo, max 6 parole]","body":"[4-5 frasi pratiche sulla Luna RS: bisogni interni, possibile reazione emotiva, cura e raccomandazione concreta.]"}],"priorities":[{"title":"[Priorita 1, max 7 parole]","body":"[3-4 frasi concrete su che cosa fare quest'anno]"},{"title":"[Priorita 2, max 7 parole]","body":"[3-4 frasi concrete]"},{"title":"[Priorita 3, max 7 parole]","body":"[3-4 frasi concrete]"}]}
+{"cards":[{"key":"theme","title":"[Titolo breve del tema dell'anno, max 6 parole]","body":"[4-5 frasi pratiche sull'Ascendente RS e sul tono generale. Che cosa cambia, come si nota, che cosa osservare e un'azione concreta.]"},{"key":"area","title":"[Titolo breve dell'area principale, max 6 parole]","body":"[4-5 frasi pratiche sul Sole RS: area di focus, come si nota, che cosa chiede di sostenere e un esempio quotidiano.]"},{"key":"tone","title":"[Titolo breve del tono emotivo, max 6 parole]","body":"[4-5 frasi pratiche sulla Luna RS: bisogni interni, possibile reazione emotiva, cura e raccomandazione concreta.]"}],"priorities":[{"title":"[Priorita 1, max 7 parole]","body":"[3-4 frasi concrete su che cosa fare quest'anno]"},{"title":"[Priorita 2, max 7 parole]","body":"[3-4 frasi concrete]"},{"title":"[Priorita 3, max 7 parole]","body":"[3-4 frasi concrete]"}]}
 
 Regole:
 - Le 3 priorita nascono da Ascendente RS, Sole RS e Luna RS.
 - Nulla di generico. Ogni campo deve usare i dati forniti.
 - Il primo carattere di ogni campo di testo e maiuscolo.
-- "reading" e un solo paragrafo, senza liste ne titoli.
 - JSON valido: virgolette doppie, senza trailing comma.
 
 ${langInstruction(locale)}`;
@@ -243,13 +239,12 @@ ${jsonOnlyInstruction(locale)}
 Importante: los tres campos cards[].body (theme, area y tone) deben ser largos: 4-5 frases concretas, unas 70-95 palabras cada uno, para que ocupen aproximadamente 5-6 lineas en la tarjeta.
 
 Forma exacta:
-{"reading":"[UN parrafo de 80-100 palabras sobre el ano de ${name}. Usa Ascendente RS y Sol RS para decir el tema central. Da un ejemplo concreto de como puede notarlo en su vida. Termina con una o dos cosas practicas.]","cards":[{"key":"theme","title":"[Titulo breve del tema del ano, max 6 palabras]","body":"[4-5 frases practicas sobre el Ascendente RS y el tono general. Que cambia, como se nota, que observar y una accion concreta.]"},{"key":"area","title":"[Titulo breve del area principal, max 6 palabras]","body":"[4-5 frases practicas sobre el Sol RS: area de foco, como se nota, que pide sostener y un ejemplo cotidiano.]"},{"key":"tone","title":"[Titulo breve del tono emocional, max 6 palabras]","body":"[4-5 frases practicas sobre la Luna RS: necesidades internas, reaccion emocional posible, cuidado y recomendacion concreta.]"}],"priorities":[{"title":"[Prioridad 1, max 7 palabras]","body":"[3-4 frases concretas sobre que hacer este ano]"},{"title":"[Prioridad 2, max 7 palabras]","body":"[3-4 frases concretas]"},{"title":"[Prioridad 3, max 7 palabras]","body":"[3-4 frases concretas]"}]}
+{"cards":[{"key":"theme","title":"[Titulo breve del tema del ano, max 6 palabras]","body":"[4-5 frases practicas sobre el Ascendente RS y el tono general. Que cambia, como se nota, que observar y una accion concreta.]"},{"key":"area","title":"[Titulo breve del area principal, max 6 palabras]","body":"[4-5 frases practicas sobre el Sol RS: area de foco, como se nota, que pide sostener y un ejemplo cotidiano.]"},{"key":"tone","title":"[Titulo breve del tono emocional, max 6 palabras]","body":"[4-5 frases practicas sobre la Luna RS: necesidades internas, reaccion emocional posible, cuidado y recomendacion concreta.]"}],"priorities":[{"title":"[Prioridad 1, max 7 palabras]","body":"[3-4 frases concretas sobre que hacer este ano]"},{"title":"[Prioridad 2, max 7 palabras]","body":"[3-4 frases concretas]"},{"title":"[Prioridad 3, max 7 palabras]","body":"[3-4 frases concretas]"}]}
 
 Reglas:
 - Las 3 prioridades nacen de Ascendente RS, Sol RS y Luna RS.
 - Nada generico. Cada campo debe usar los datos dados.
 - El primer caracter de cada campo de texto siempre es mayuscula.
-- "reading" es un solo parrafo, sin listas ni subtitulos.
 - JSON valido: comillas dobles, sin trailing commas.
 
 ${langInstruction(locale)}`;
@@ -274,7 +269,7 @@ export async function POST(request: Request) {
   }
 
   const readingGender = normalizeReadingGender(gender);
-  const itemKey = `v3:${cacheKey ?? `solar-return:${solarReturnData.meta.solarReturnYear ?? solarReturnData.event.title}`}:${readingGender || "unspecified"}`;
+  const itemKey = `v4:${cacheKey ?? `solar-return:${solarReturnData.meta.solarReturnYear ?? solarReturnData.event.title}`}:${readingGender || "unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 
@@ -377,7 +372,7 @@ export async function POST(request: Request) {
     content: data,
   });
 
-  return new Response(`${parsed.reading}\n\n${SARITA_DATA_MARKER}\n${JSON.stringify(data)}`, {
+  return new Response(`${SARITA_DATA_MARKER}${JSON.stringify(data)}`, {
     headers: {
       "Content-Type": "text/plain; charset=utf-8",
       "Cache-Control": "no-cache",

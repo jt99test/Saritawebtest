@@ -196,7 +196,6 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
   const [selectedLocation, setSelectedLocation] = useState<PlaceSuggestion | null>(request?.selectedLocation ?? null);
   const [solarChart, setSolarChart] = useState<NatalChartData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [, setAiReading] = useState("");
   const [solarData, setSolarData] = useState<SolarData>({});
   const [readingError, setReadingError] = useState<string | null>(null);
   const [isLoadingReading, setIsLoadingReading] = useState(false);
@@ -283,7 +282,6 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
 
     setSolarChart(cachedReading.chart);
     setSolarData(normalizeSolarData(cachedReading.data));
-    setAiReading("");
     setReadingError(null);
     setSelectedCardKey("theme");
     setIsLoadingReading(false);
@@ -298,7 +296,6 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
         safeSetStorageItem("local", SOLAR_RETURN_SELECTION_KEY, JSON.stringify({ targetYear, city, selectedLocation }));
         setSolarChart(cachedReading.chart);
         setSolarData(normalizeSolarData(cachedReading.data));
-        setAiReading("");
         setReadingError(null);
         setSelectedCardKey("theme");
         setIsLoadingReading(false);
@@ -319,7 +316,6 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
       if (result.ok) {
         safeSetStorageItem("local", SOLAR_RETURN_SELECTION_KEY, JSON.stringify({ targetYear, city, selectedLocation }));
         setSolarChart(result.chart);
-        setAiReading("");
         setSolarData({});
         setReadingError(null);
         setSelectedCardKey("theme");
@@ -354,7 +350,6 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
             const { done, value } = await reader.read();
             if (done) break;
             accumulated += decoder.decode(value);
-            setAiReading(accumulated.split(SARITA_DATA_MARKER)[0] ?? accumulated);
           }
 
           const rawPayload = accumulated.split(SARITA_DATA_MARKER)[1]?.trim() ?? "";
@@ -571,7 +566,6 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
               setIsChoosingSolarReturn(true);
               setSolarChart(null);
               setSolarData({});
-              setAiReading("");
               setReadingError(null);
               setSelectedCardKey("theme");
               setIsLoadingReading(false);

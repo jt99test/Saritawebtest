@@ -178,6 +178,38 @@ export function getApproachingHouseTransition({
   };
 }
 
+export function getApproachingSignTransition({
+  longitude,
+  thresholdDegrees = 1,
+}: {
+  longitude: number;
+  thresholdDegrees?: number;
+}) {
+  const normalized = normalizeLongitude(longitude);
+  const signIndex = Math.floor(normalized / 30);
+  const nextSign = zodiacSigns[(signIndex + 1) % zodiacSigns.length];
+  const nextSignStart = signIndex === zodiacSigns.length - 1 ? 360 : (signIndex + 1) * 30;
+  const distanceToNextSign = nextSignStart - normalized;
+
+  if (!nextSign || distanceToNextSign <= 0 || distanceToNextSign > thresholdDegrees) {
+    return null;
+  }
+
+  return {
+    currentSign: zodiacSigns[signIndex]!.id,
+    nextSign: nextSign.id,
+    distanceToNextSign,
+  };
+}
+
+export function getInterpretiveSign(longitude: number, thresholdDegrees?: number) {
+  return getApproachingSignTransition({ longitude, thresholdDegrees })?.nextSign ?? getSignFromLongitude(longitude);
+}
+
+export function getPointInterpretiveSign(point: ChartPoint, thresholdDegrees?: number) {
+  return getInterpretiveSign(point.longitude, thresholdDegrees);
+}
+
 export function getInterpretiveHouse({
   longitude,
   house,
