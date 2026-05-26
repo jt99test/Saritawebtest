@@ -160,7 +160,6 @@ function isSynastryPayload(value: unknown): value is SynastryPayload {
   const layers = payload.layers as Partial<SynastryPayload["layers"]> | undefined;
 
   return (
-    typeof payload.reading === "string" &&
     typeof payload.compatibilityLabel === "string" &&
     typeof payload.compatibilityDescription === "string" &&
     typeof layers === "object" &&
