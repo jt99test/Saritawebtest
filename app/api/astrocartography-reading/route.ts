@@ -96,7 +96,7 @@ export async function POST(request: Request) {
   }
 
   const readingGender = normalizeReadingGender(gender);
-  const itemKey = `v3:${cacheKey ?? `astrocartography:${location.lat.toFixed(3)},${location.lng.toFixed(3)}`}:${readingGender || "unspecified"}`;
+  const itemKey = `v4:${cacheKey ?? `astrocartography:${location.lat.toFixed(3)},${location.lng.toFixed(3)}`}:${readingGender || "unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 

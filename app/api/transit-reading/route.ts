@@ -196,7 +196,7 @@ export async function POST(request: Request) {
   };
 
   const readingGender = normalizeReadingGender(gender);
-  const itemKey = `v4:${cacheKey ?? `transit:${transits.map((transit) => `${transit.transitingPlanet}-${transit.aspectType}-${transit.natalPlanet}`).join("|")}`}:${readingGender || "unspecified"}`;
+  const itemKey = `v5:${cacheKey ?? `transit:${transits.map((transit) => `${transit.transitingPlanet}-${transit.aspectType}-${transit.natalPlanet}`).join("|")}`}:${readingGender || "unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 

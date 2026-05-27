@@ -269,7 +269,7 @@ export async function POST(request: Request) {
   }
 
   const readingGender = normalizeReadingGender(gender);
-  const itemKey = `v4:${cacheKey ?? `solar-return:${solarReturnData.meta.solarReturnYear ?? solarReturnData.event.title}`}:${readingGender || "unspecified"}`;
+  const itemKey = `v5:${cacheKey ?? `solar-return:${solarReturnData.meta.solarReturnYear ?? solarReturnData.event.title}`}:${readingGender || "unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 

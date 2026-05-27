@@ -329,7 +329,7 @@ export async function POST(request: Request) {
 
   const readingGender = normalizeReadingGender(gender);
   const partnerReadingGender = normalizeReadingGender(partnerGender);
-  const itemKey = `v4:${cacheKey ?? `synastry:${partnerName}:${chartB.event.julianDay}`}:${readingGender || "unspecified"}:${partnerReadingGender || "partner-unspecified"}`;
+  const itemKey = `v5:${cacheKey ?? `synastry:${partnerName}:${chartB.event.julianDay}`}:${readingGender || "unspecified"}:${partnerReadingGender || "partner-unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 

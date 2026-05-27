@@ -549,7 +549,7 @@ export async function POST(request: Request) {
       return Response.json(metadata);
     }
 
-    const itemKey = `v2:${cacheKey ?? `lunar:${locale ?? "es"}:${year}-${month}-${lunationType}`}:${readingGender || "unspecified"}`;
+    const itemKey = `v3:${cacheKey ?? `lunar:${locale ?? "es"}:${year}-${month}-${lunationType}`}:${readingGender || "unspecified"}`;
     const access = await validateReadingGenerationAccess({ supabase, user, readingId });
     if (!access.ok) {
       return access.response;
