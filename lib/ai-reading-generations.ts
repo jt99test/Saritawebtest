@@ -20,7 +20,7 @@ type AiReadingGenerationRow = {
 const GENERATION_STATUS_KEY = "__saritaGenerationStatus";
 const GENERATING_CONTENT = { [GENERATION_STATUS_KEY]: "generating" };
 const FAILED_CONTENT = { [GENERATION_STATUS_KEY]: "failed" };
-const DEFAULT_DAILY_AI_READING_LIMIT = 75;
+const DEFAULT_DAILY_AI_READING_LIMIT = 150;
 const STALE_GENERATION_MS = 2 * 60 * 1000;
 
 type AiReadingCacheInput = {
@@ -284,7 +284,7 @@ export async function reserveAiReadingGeneration({
     return { ok: true, reserved: false, content };
   }
 
-  if (!isAdminEmail(user.email)) {
+  if (!isAdminEmail(user.email) && status !== "failed" && !staleGenerating) {
     const limit = dailyAiReadingLimit();
     const dayStart = new Date();
     dayStart.setUTCHours(0, 0, 0, 0);
