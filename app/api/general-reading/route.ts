@@ -199,7 +199,7 @@ export async function POST(request: Request) {
     });
 
     const cachedStatus = getAiGenerationStatus(cachedContent);
-    if (cachedStatus) {
+    if (cachedStatus === "generating") {
       return aiGenerationStatusResponse(cachedStatus);
     }
 

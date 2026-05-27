@@ -284,7 +284,7 @@ export async function POST(request: Request) {
   });
 
   const cachedStatus = getAiGenerationStatus(cachedContent);
-  if (cachedStatus) return aiGenerationStatusResponse(cachedStatus);
+  if (cachedStatus === "generating") return aiGenerationStatusResponse(cachedStatus);
 
   if (cachedContent) {
     return new Response(`${SARITA_DATA_MARKER}${JSON.stringify(cachedContent)}`, {
