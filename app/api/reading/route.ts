@@ -147,7 +147,9 @@ Dati tecnici interni se aiutano: ${element} / ${modality}.
 Varia gli inizi. Non aprire con una frase riempitiva fissa.
 
 ${nativeToneInstruction(locale)}
-${promptLanguageInstruction(locale)}`;
+${promptLanguageInstruction(locale)}
+
+IMPORTANTE: Scrivi ESCLUSIVAMENTE in italiano. Non usare spagnolo. Non usare parole spagnole come "que", "como", "cuando", "trabajo", "relaciones", "vida" o simili. Solo italiano.`;
   }
 
   return `Eres la astróloga amiga de ${chart.event.name}. Escribes
@@ -198,7 +200,7 @@ export async function POST(request: Request) {
       gender?: ReadingGender;
     };
     const readingGender = normalizeReadingGender(gender);
-    const itemKey = `v5:${pointId}:${readingGender || "unspecified"}`;
+    const itemKey = `v6:${pointId}:${readingGender || "unspecified"}`;
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return new Response("ANTHROPIC_API_KEY not configured", { status: 500 });
