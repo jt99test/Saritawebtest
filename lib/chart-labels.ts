@@ -1,4 +1,4 @@
-import type { ChartPointId, SignId } from "@/lib/chart";
+import type { AnglePointId, ChartPointId, ChartReferencePointId, SignId } from "@/lib/chart";
 
 export const SIGN_LABELS: Record<SignId, string> = {
   aries: "Aries",
@@ -32,6 +32,13 @@ export const POINT_LABELS: Record<ChartPointId, string> = {
   partOfFortune: "Parte de la Fortuna",
   lilith: "Lilith",
   ceres: "Ceres",
+};
+
+const ANGLE_LABELS: Record<AnglePointId, string> = {
+  ascendant: "Ascendente",
+  descendant: "Descendente",
+  mc: "Medio Cielo",
+  ic: "Fondo del Cielo",
 };
 
 export const ASPECT_LABELS: Record<string, string> = {
@@ -130,6 +137,22 @@ const LOCALIZED_POINT_LABELS: Record<string, Record<ChartPointId, string>> = {
   },
 };
 
+const LOCALIZED_ANGLE_LABELS: Record<string, Record<AnglePointId, string>> = {
+  es: ANGLE_LABELS,
+  en: {
+    ascendant: "Ascendant",
+    descendant: "Descendant",
+    mc: "Midheaven",
+    ic: "Imum Coeli",
+  },
+  it: {
+    ascendant: "Ascendente",
+    descendant: "Discendente",
+    mc: "Medio Cielo",
+    ic: "Fondo Cielo",
+  },
+};
+
 const LOCALIZED_ASPECT_LABELS: Record<string, Record<string, string>> = {
   es: ASPECT_LABELS,
   en: {
@@ -190,8 +213,13 @@ export function getSignLabel(sign: SignId, locale?: string) {
   return LOCALIZED_SIGN_LABELS[localeKey(locale)][sign] ?? SIGN_LABELS[sign] ?? sign;
 }
 
-export function getPointLabel(point: ChartPointId, locale?: string) {
-  return LOCALIZED_POINT_LABELS[localeKey(locale)][point] ?? POINT_LABELS[point] ?? point;
+export function getPointLabel(point: ChartReferencePointId, locale?: string) {
+  const key = localeKey(locale);
+  return LOCALIZED_POINT_LABELS[key][point as ChartPointId]
+    ?? LOCALIZED_ANGLE_LABELS[key][point as AnglePointId]
+    ?? POINT_LABELS[point as ChartPointId]
+    ?? ANGLE_LABELS[point as AnglePointId]
+    ?? point;
 }
 
 export function getAspectLabel(aspect: string, locale?: string) {

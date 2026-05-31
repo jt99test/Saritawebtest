@@ -309,6 +309,62 @@ export type SynastryPartnerInput = {
   selectedLocation: PlaceSuggestion | null;
 };
 
+export type SavedSynastryNatalReading = {
+  id: string;
+  name: string;
+  birthDate: string;
+  birthTime: string | null;
+  gender?: ReadingGender | "";
+  locationLabel: string;
+  createdAt: string;
+  chart: NatalChartData;
+};
+
+function savedNatalReadingFromRow(row: {
+  id: string;
+  chart_data: unknown;
+  created_at: string;
+}): SavedSynastryNatalReading | null {
+  if (!row.chart_data || typeof row.chart_data !== "object") return null;
+  const data = row.chart_data as Partial<ChartCalculationResult>;
+  const chart = data.chart;
+  if (!chart?.event || !Array.isArray(chart.points) || !Array.isArray(chart.houses)) return null;
+
+  return {
+    id: row.id,
+    name: chart.event.name,
+    birthDate: data.request?.birthDate ?? chart.event.dateLabel,
+    birthTime: data.request?.birthTime ?? null,
+    gender: data.request?.gender,
+    locationLabel: chart.event.locationLabel,
+    createdAt: row.created_at,
+    chart,
+  };
+}
+
+export async function getSavedNatalReadingsAction(): Promise<SavedSynastryNatalReading[]> {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return [];
+  }
+
+  const { data } = await supabase
+    .from("readings")
+    .select("id,chart_data,created_at")
+    .eq("user_id", user.id)
+    .eq("type", "natal")
+    .order("created_at", { ascending: false })
+    .limit(30);
+
+  return (data ?? [])
+    .map((row) => savedNatalReadingFromRow(row))
+    .filter((reading): reading is SavedSynastryNatalReading => Boolean(reading));
+}
+
 export async function getSynastryPartnersAction() {
   const supabase = await createServerSupabaseClient();
   const {

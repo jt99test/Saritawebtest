@@ -10,7 +10,7 @@ import {
   aiGenerationStatusResponse,
   getAiGenerationStatus,
   getCachedAiReading,
-  markAiReadingGenerationFailed,
+  markAiReadingGenerationFailedWithReason,
   reserveAiReadingGeneration,
   setCachedAiReading,
   validateReadingGenerationAccess,
@@ -278,7 +278,7 @@ export async function POST(request: Request) {
     const basePrompt = buildPrompt(chart, pointId, locale);
 
     if (!basePrompt) {
-      await markAiReadingGenerationFailed({
+      await markAiReadingGenerationFailedWithReason({
         supabase,
         user,
         readingId,
@@ -286,6 +286,7 @@ export async function POST(request: Request) {
         itemKey,
         locale,
         cacheUserId: access.cacheUserId,
+        reason: "unknown_point",
       });
       return new Response("Unknown point", { status: 400 });
     }
@@ -304,7 +305,7 @@ export async function POST(request: Request) {
       assertGeneratedLanguage(content, locale);
     } catch (error) {
       console.error("Planet reading generation failed", error);
-      await markAiReadingGenerationFailed({
+      await markAiReadingGenerationFailedWithReason({
         supabase,
         user,
         readingId,
@@ -312,12 +313,13 @@ export async function POST(request: Request) {
         itemKey,
         locale,
         cacheUserId: access.cacheUserId,
+        reason: "model_or_language_error",
       });
       return new Response("Planet reading generation failed", { status: 502 });
     }
 
     if (!content) {
-      await markAiReadingGenerationFailed({
+      await markAiReadingGenerationFailedWithReason({
         supabase,
         user,
         readingId,
@@ -325,6 +327,7 @@ export async function POST(request: Request) {
         itemKey,
         locale,
         cacheUserId: access.cacheUserId,
+        reason: "empty_model_response",
       });
       return new Response("Empty model response", { status: 502 });
     }

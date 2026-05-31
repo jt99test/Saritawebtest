@@ -8,7 +8,7 @@ import {
   aiGenerationStatusResponse,
   getAiGenerationStatus,
   getCachedAiReading,
-  markAiReadingGenerationFailed,
+  markAiReadingGenerationFailedWithReason,
   reserveAiReadingGeneration,
   setCachedAiReading,
   validateReadingGenerationAccess,
@@ -245,7 +245,7 @@ ${promptLanguageInstruction(locale)}`;
     assertGeneratedLanguage(parsed, locale);
   } catch (error) {
     console.error("Astrocartography reading JSON generation failed", error);
-    await markAiReadingGenerationFailed({
+    await markAiReadingGenerationFailedWithReason({
       supabase,
       user,
       readingId,
@@ -253,13 +253,14 @@ ${promptLanguageInstruction(locale)}`;
       itemKey,
       locale,
       cacheUserId: access.cacheUserId,
+      reason: "json_generation_or_language_error",
     });
     return new Response("Astrocartography reading JSON could not be parsed", { status: 502 });
   }
 
   if (!isAstrocartographyReadingPayload(parsed)) {
     console.error("Astrocartography reading JSON shape invalid", parsed);
-    await markAiReadingGenerationFailed({
+    await markAiReadingGenerationFailedWithReason({
       supabase,
       user,
       readingId,
@@ -267,6 +268,7 @@ ${promptLanguageInstruction(locale)}`;
       itemKey,
       locale,
       cacheUserId: access.cacheUserId,
+      reason: "invalid_json_shape",
     });
     return new Response("Astrocartography reading JSON shape invalid", { status: 502 });
   }

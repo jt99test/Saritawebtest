@@ -37,6 +37,9 @@ export type ChartPointId =
   | "lilith"
   | "ceres";
 
+export type AnglePointId = "ascendant" | "descendant" | "mc" | "ic";
+export type ChartReferencePointId = ChartPointId | AnglePointId;
+
 export type AspectId =
   | "conjunction"
   | "sextile"

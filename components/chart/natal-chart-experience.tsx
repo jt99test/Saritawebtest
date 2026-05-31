@@ -90,17 +90,16 @@ function getCity(locationLabel: string) {
   return locationLabel.split(",")[0]?.trim() || locationLabel;
 }
 
-function nameSizeClass(name: string) {
-  if (name.length >= 14) return "text-[24px] sm:text-[34px] lg:text-[42px]";
-  if (name.length >= 10) return "text-[30px] sm:text-[40px] lg:text-[48px]";
-  if (name.length >= 6) return "text-[40px] sm:text-[50px] lg:text-[56px]";
-  return "text-[44px] sm:text-[52px] lg:text-[72px]";
-}
-
 function stickyChartTitle(eyebrow: string, name: string) {
   const withoutArticle = eyebrow.replace(/^(la|the)\s+/i, "").trim();
   const normalized = withoutArticle || eyebrow.trim();
   return `${normalized.charAt(0).toUpperCase()}${normalized.slice(1)} ${name}`;
+}
+
+function compactNameSizeClass(name: string) {
+  if (name.length >= 14) return "text-[22px] sm:text-[26px]";
+  if (name.length >= 10) return "text-[25px] sm:text-[30px]";
+  return "text-[30px] sm:text-[36px]";
 }
 
 function formatHeaderDate(dateLabel: string) {
@@ -210,7 +209,7 @@ export function NatalChartExperience({
   ].filter(Boolean).join(" · ");
   const firstName = getFirstName(chart.event.name);
   const stickyTitle = stickyChartTitle(dictionary.result.chartHeader.eyebrow, firstName);
-  const titleNameClass = nameSizeClass(firstName);
+  const compactTitleNameClass = compactNameSizeClass(firstName);
   const activeRequiredPlan = TAB_REQUIREMENTS[pageTab];
   const activeTabLocked = !planLoading && !hasPlanAccess(plan, activeRequiredPlan);
   const introVideoUrl = INTRO_VIDEO_URLS[locale];
@@ -459,13 +458,7 @@ export function NatalChartExperience({
 
       {pageTab === "natal" && !activeTabLocked ? (
         <>
-          <div className="mx-auto mt-7 max-w-2xl text-center sm:mt-8">
-            <p className="text-[13px] leading-6 text-[#fffaf0]/74 sm:text-sm sm:leading-7">
-              {dictionary.result.chartHeader.intro}
-            </p>
-          </div>
-
-          <section className="sarita-chart-stage pt-8">
+          <section className="sarita-chart-stage pt-4 sm:pt-5">
             <div className="flex flex-wrap items-center justify-center gap-3">
               {isMock ? (
                 <div className="rounded-full border border-dusty-gold/18 bg-dusty-gold/8 px-4 py-2 text-xs uppercase tracking-[0.24em] text-[#5c4a24]">
@@ -474,37 +467,33 @@ export function NatalChartExperience({
               ) : null}
             </div>
 
-            <div className="mb-7 mt-8 text-center sm:mb-10 sm:mt-10 lg:hidden">
-              <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-dusty-gold">
-                {dictionary.result.chartHeader.eyebrow}
-              </p>
-              <h1 className={`notranslate mx-auto -mt-1 max-w-full whitespace-nowrap font-serif font-normal leading-none text-[#fffaf0] [overflow-wrap:normal] [word-break:normal] ${titleNameClass}`} translate="no">
-                {firstName}
-              </h1>
-              <p className="mt-4 font-serif text-[14px] italic text-[#fffaf0]/72">
-                {headerSubtitle}
-              </p>
-            </div>
-
-            <div className="relative mx-auto max-w-[56rem] py-4 sm:py-6 lg:max-w-[1180px]">
-              <div className="space-y-6 lg:grid lg:grid-cols-[minmax(220px,1fr)_minmax(500px,640px)_minmax(180px,0.75fr)] lg:items-center lg:gap-8 lg:space-y-0">
-                <div className="hidden min-w-0 text-right lg:block">
-                  <p className="font-serif text-[13px] font-light italic lowercase tracking-[0.15em] text-dusty-gold">
-                    {dictionary.result.chartHeader.eyebrow}
-                  </p>
-                  <h1 className={`notranslate -mt-1 ml-auto max-w-[360px] whitespace-nowrap font-serif font-normal leading-none text-[#fffaf0] [overflow-wrap:normal] [word-break:normal] ${titleNameClass}`} translate="no">
-                    {firstName}
-                  </h1>
-                  <p className="ml-auto mt-4 max-w-[260px] font-serif text-[15px] italic leading-6 text-[#fffaf0]/72">
-                    {headerSubtitle}
-                  </p>
-                </div>
-
-                <div className="sarita-natal-chart relative z-10 flex justify-center">
-                  <NatalChartWheel chart={chart} />
-                </div>
-                <div className="min-w-0 lg:self-center">
+            <div className="relative mx-auto max-w-[1120px] py-0">
+              <div className="mx-auto mb-4 max-w-2xl border border-[#f5d782]/24 bg-[#061331]/76 px-4 py-3 text-center shadow-[0_14px_36px_rgba(0,0,0,0.22)] backdrop-blur-md">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#f5d782]">
+                  {locale === "en" ? "Your natal chart" : locale === "it" ? "La tua carta natale" : "Tu carta natal"}
+                </p>
+                <p className="mt-2 text-sm leading-6 text-[#fffaf0]/86">
+                  {locale === "en"
+                    ? "This is the map of the sky at your birth: planets, signs, houses, and aspects showing your inner architecture."
+                    : locale === "it"
+                      ? "Questa e la mappa del cielo al momento della tua nascita: pianeti, segni, case e aspetti della tua architettura interiore."
+                      : "Este es el mapa del cielo en el momento en que naciste: planetas, signos, casas y aspectos que muestran tu arquitectura interior."}
+                </p>
+              </div>
+              <div className="mx-auto mb-2 max-w-[940px] text-center">
+                <p className="font-serif text-[11px] font-light italic lowercase tracking-[0.15em] text-dusty-gold">
+                  {dictionary.result.chartHeader.eyebrow}
+                </p>
+                <h1 className={`notranslate mx-auto -mt-1 max-w-full whitespace-nowrap font-serif font-normal leading-none text-[#fffaf0] [overflow-wrap:normal] [word-break:normal] ${compactTitleNameClass}`} translate="no">
+                  {firstName}
+                </h1>
+                <div className="mx-auto mt-2 max-w-[860px]">
                   <ChartLayerRail />
+                </div>
+              </div>
+              <div className="flex flex-col items-center gap-1">
+                <div className="sarita-natal-chart relative z-10 flex w-full justify-center">
+                  <NatalChartWheel chart={chart} />
                 </div>
               </div>
             </div>
@@ -591,57 +580,59 @@ export function NatalChartExperience({
         <AstrocartographyPage chart={chart} request={request} dictionary={dictionary} readingId={readingId} gender={request?.gender || undefined} />
       ) : null}
 
-      <div className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+0.55rem)] z-[80] md:hidden">
-        <nav className="sarita-mobile-tabbar grid grid-cols-5 items-center gap-1 rounded-[1.5rem] border border-[#d7e7ff]/16 px-1.5 py-1.5 shadow-[0_18px_60px_rgba(0,0,0,0.42),0_0_34px_rgba(0,102,255,0.18)] backdrop-blur-xl">
-          {MOBILE_PRIMARY_TABS.map((tab) => {
-            const active = pageTab === tab;
-            const requiredPlan = TAB_REQUIREMENTS[tab];
-            const locked = !planLoading && !hasPlanAccess(plan, requiredPlan);
-            return (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => {
-                  setPageTab(tab);
-                  if (locked && requiredPlan) {
-                    openPricing(requiredPlan);
-                  }
-                }}
-                className={[
-                  "flex min-w-0 flex-col items-center justify-center gap-1 rounded-[1.05rem] px-1 py-2 transition",
-                  active
-                    ? "bg-[#f5d782]/12 text-[#f5d782] shadow-[inset_0_0_0_1px_rgba(245,215,130,0.24),0_0_18px_rgba(245,215,130,0.08)]"
-                    : "text-[#e8f3ff]/72",
-                ].join(" ")}
-                aria-label={dictionary.result.primaryTabs[tab]}
-              >
-                <span className="font-serif text-[19px] leading-none">{TAB_ICONS[tab]}</span>
-                <span className="max-w-full truncate text-[8.5px] font-semibold uppercase leading-none tracking-[0.08em]">
-                  {dictionary.result.primaryTabs[tab]}
-                </span>
-              </button>
-            );
-          })}
-          <button
-            type="button"
-            onClick={() => setSectionMenuOpen(true)}
-            className={[
-              "flex min-w-0 flex-col items-center justify-center gap-1 rounded-[1.05rem] px-1 py-2 transition",
-              MOBILE_PRIMARY_TABS.includes(pageTab)
-                ? "text-[#e8f3ff]/72"
-                : "bg-[#f5d782]/12 text-[#f5d782] shadow-[inset_0_0_0_1px_rgba(245,215,130,0.24),0_0_18px_rgba(245,215,130,0.08)]",
-            ].join(" ")}
-            aria-haspopup="dialog"
-            aria-expanded={sectionMenuOpen}
-            aria-label="Mas"
-          >
-            <span className="text-[18px] leading-none">{"\u22ef"}</span>
-            <span className="max-w-full truncate text-[8.5px] font-semibold uppercase leading-none tracking-[0.08em]">
-              Mas
-            </span>
-          </button>
-        </nav>
-      </div>
+      {!panelOpen ? (
+        <div className="fixed inset-x-3 bottom-[calc(env(safe-area-inset-bottom)+0.55rem)] z-[80] md:hidden">
+          <nav className="sarita-mobile-tabbar grid grid-cols-5 items-center gap-1 rounded-[1.5rem] border border-[#d7e7ff]/16 px-1.5 py-1.5 shadow-[0_18px_60px_rgba(0,0,0,0.42),0_0_34px_rgba(0,102,255,0.18)] backdrop-blur-xl">
+            {MOBILE_PRIMARY_TABS.map((tab) => {
+              const active = pageTab === tab;
+              const requiredPlan = TAB_REQUIREMENTS[tab];
+              const locked = !planLoading && !hasPlanAccess(plan, requiredPlan);
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => {
+                    setPageTab(tab);
+                    if (locked && requiredPlan) {
+                      openPricing(requiredPlan);
+                    }
+                  }}
+                  className={[
+                    "flex min-w-0 flex-col items-center justify-center gap-1 rounded-[1.05rem] px-1 py-2 transition",
+                    active
+                      ? "bg-[#f5d782]/12 text-[#f5d782] shadow-[inset_0_0_0_1px_rgba(245,215,130,0.24),0_0_18px_rgba(245,215,130,0.08)]"
+                      : "text-[#e8f3ff]/72",
+                  ].join(" ")}
+                  aria-label={dictionary.result.primaryTabs[tab]}
+                >
+                  <span className="font-serif text-[19px] leading-none">{TAB_ICONS[tab]}</span>
+                  <span className="max-w-full truncate text-[8.5px] font-semibold uppercase leading-none tracking-[0.08em]">
+                    {dictionary.result.primaryTabs[tab]}
+                  </span>
+                </button>
+              );
+            })}
+            <button
+              type="button"
+              onClick={() => setSectionMenuOpen(true)}
+              className={[
+                "flex min-w-0 flex-col items-center justify-center gap-1 rounded-[1.05rem] px-1 py-2 transition",
+                MOBILE_PRIMARY_TABS.includes(pageTab)
+                  ? "text-[#e8f3ff]/72"
+                  : "bg-[#f5d782]/12 text-[#f5d782] shadow-[inset_0_0_0_1px_rgba(245,215,130,0.24),0_0_18px_rgba(245,215,130,0.08)]",
+              ].join(" ")}
+              aria-haspopup="dialog"
+              aria-expanded={sectionMenuOpen}
+              aria-label="Mas"
+            >
+              <span className="text-[18px] leading-none">{"\u22ef"}</span>
+              <span className="max-w-full truncate text-[8.5px] font-semibold uppercase leading-none tracking-[0.08em]">
+                Mas
+              </span>
+            </button>
+          </nav>
+        </div>
+      ) : null}
 
       <PricingModal
         open={pricingOpen}

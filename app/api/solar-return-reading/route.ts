@@ -8,7 +8,7 @@ import {
   aiGenerationStatusResponse,
   getAiGenerationStatus,
   getCachedAiReading,
-  markAiReadingGenerationFailed,
+  markAiReadingGenerationFailedWithReason,
   reserveAiReadingGeneration,
   setCachedAiReading,
   validateReadingGenerationAccess,
@@ -330,7 +330,7 @@ export async function POST(request: Request) {
     assertGeneratedLanguage(parsed, locale);
   } catch (error) {
     console.error("Solar return reading JSON generation failed", error);
-    await markAiReadingGenerationFailed({
+    await markAiReadingGenerationFailedWithReason({
       supabase,
       user,
       readingId,
@@ -338,13 +338,14 @@ export async function POST(request: Request) {
       itemKey,
       locale,
       cacheUserId: access.cacheUserId,
+      reason: "json_generation_or_language_error",
     });
     return new Response("Solar return reading JSON could not be parsed", { status: 502 });
   }
 
   if (!isSolarReturnPayload(parsed)) {
     console.error("Solar return reading JSON shape invalid", parsed);
-    await markAiReadingGenerationFailed({
+    await markAiReadingGenerationFailedWithReason({
       supabase,
       user,
       readingId,
@@ -352,6 +353,7 @@ export async function POST(request: Request) {
       itemKey,
       locale,
       cacheUserId: access.cacheUserId,
+      reason: "invalid_json_shape",
     });
     return new Response("Solar return reading JSON shape invalid", { status: 502 });
   }

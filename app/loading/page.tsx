@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { Container } from "@/components/ui/container";
 import { Reveal } from "@/components/ui/reveal";
+import { prepareChartReadings } from "@/components/chart/chart-preparation-gate";
 import { calculateChartAction } from "@/lib/actions";
 import { safeGetStorageItem, safeSetStorageItem } from "@/lib/browser-storage";
 import {
@@ -96,6 +97,7 @@ export default function LoadingPage() {
   const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
   const [stepIndex, setStepIndex] = useState(0);
+  const [preparationStep, setPreparationStep] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [limitReached, setLimitReached] = useState<ChartLimitReachedResult | null>(null);
 
@@ -143,6 +145,23 @@ export default function LoadingPage() {
           return;
         }
 
+        await prepareChartReadings({
+          chart: result.chart,
+          request: result.request,
+          locale,
+          readingId: result.readingId,
+          plan: result.usage?.plan ?? "free",
+          onStep: (label) => {
+            if (!cancelled) {
+              setPreparationStep(label);
+            }
+          },
+        });
+
+        if (cancelled) {
+          return;
+        }
+
         const stored = safeSetStorageItem("session", CHART_RESULT_KEY, JSON.stringify(result satisfies ChartCalculationResult));
         if (!stored) {
           setError(dictionary.loading.errorFallback);
@@ -168,7 +187,7 @@ export default function LoadingPage() {
       window.clearInterval(timer);
       window.clearTimeout(timeout);
     };
-  }, [dictionary.loading.errorFallback, dictionary.loading.steps.length, dictionary.standalonePages.loadingTimeout, router]);
+  }, [dictionary.loading.errorFallback, dictionary.loading.steps.length, dictionary.standalonePages.loadingTimeout, locale, router]);
 
   return (
     <main className="sarita-home-atmosphere premium-noise relative isolate min-h-screen overflow-hidden">
@@ -203,7 +222,7 @@ export default function LoadingPage() {
 
               <div className="space-y-4" aria-live="polite">
                 <p className="sarita-sheen inline-block max-w-[24rem] font-serif text-3xl leading-tight text-[#fffaf0] drop-shadow-[0_0_28px_rgba(124,191,255,0.18)] sm:max-w-[34rem] sm:text-5xl">
-                  {dictionary.loading.steps[stepIndex] ?? dictionary.standalonePages.loadingFallback}
+                  {preparationStep ?? dictionary.loading.steps[stepIndex] ?? dictionary.standalonePages.loadingFallback}
                 </p>
                 <div className="flex items-center justify-center gap-2" aria-hidden="true">
                   {[0, 1, 2].map((dot) => (

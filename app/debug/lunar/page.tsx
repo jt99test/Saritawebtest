@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { DateTime } from "luxon";
 
 import { DebugLunarLoader } from "@/components/debug/debug-lunar-loader";
-import type { AspectId, ChartPointId, SignId } from "@/lib/chart";
+import type { AspectId, ChartPointId, ChartReferencePointId, SignId } from "@/lib/chart";
 import { calculateNatalChart } from "@/lib/ephemeris.server";
 import { getMonthlyLunarData, type MonthlyLunarData } from "@/lib/lunar.server";
 import { getActiveTransits, type ActiveTransit } from "@/lib/transits.server";
@@ -64,6 +64,17 @@ const POINT_LABELS: Record<ChartPointId, string> = {
   lilith: "Lilith",
   ceres: "Ceres",
 };
+
+const ANGLE_LABELS: Partial<Record<ChartReferencePointId, string>> = {
+  ascendant: "Ascendente",
+  descendant: "Descendente",
+  mc: "Medio Cielo",
+  ic: "Fondo del Cielo",
+};
+
+function pointLabel(id: ChartReferencePointId) {
+  return POINT_LABELS[id as ChartPointId] ?? ANGLE_LABELS[id] ?? id;
+}
 
 const ASPECT_LABELS: Record<AspectId, string> = {
   conjunction: "Conjunci\u00f3n",
@@ -303,8 +314,8 @@ export default async function DebugLunarPage({ searchParams }: DebugPageProps) {
                   ) : (
                     transits.map((transit) => (
                       <tr key={`${transit.transitingPlanet}-${transit.natalPlanet}-${transit.aspectType}-${transit.exactnessDate}`}>
-                        {renderCell(POINT_LABELS[transit.transitingPlanet])}
-                        {renderCell(POINT_LABELS[transit.natalPlanet])}
+                        {renderCell(pointLabel(transit.transitingPlanet))}
+                        {renderCell(pointLabel(transit.natalPlanet))}
                         {renderCell(ASPECT_LABELS[transit.aspectType])}
                         {renderCell(transit.orb.toFixed(2))}
                         {renderCell(transit.exactnessDate)}
@@ -321,7 +332,7 @@ export default async function DebugLunarPage({ searchParams }: DebugPageProps) {
               <ul className="mt-4 space-y-2">
                 {dominantTransits(transits).map((transit) => (
                   <li key={`${transit.transitingPlanet}-${transit.natalPlanet}-${transit.aspectType}-dominant`}>
-                    {POINT_LABELS[transit.transitingPlanet]} \u2192 {POINT_LABELS[transit.natalPlanet]} \u00b7 {ASPECT_LABELS[transit.aspectType]} \u00b7 orbe {transit.orb.toFixed(2)} \u00b7 exacto {transit.exactnessDate}
+                    {pointLabel(transit.transitingPlanet)} \u2192 {pointLabel(transit.natalPlanet)} \u00b7 {ASPECT_LABELS[transit.aspectType]} \u00b7 orbe {transit.orb.toFixed(2)} \u00b7 exacto {transit.exactnessDate}
                   </li>
                 ))}
                 {dominantTransits(transits).length === 0 ? (

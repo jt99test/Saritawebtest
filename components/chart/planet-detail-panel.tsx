@@ -119,6 +119,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
   const [readingExpanded, setReadingExpanded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [retryNonce, setRetryNonce] = useState(0);
   const abortRef = useRef<AbortController | null>(null);
   const prevPointRef = useRef<ChartPointId | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
@@ -213,7 +214,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
     })();
 
     return () => controller.abort();
-  }, [chart, dictionary.chart.lockedBody, dictionary.loading.errorFallback, gender, hoverAspect, locale, panelOpen, readingCacheKey, readingId, readingsByPoint, selectedPointId]);
+  }, [chart, dictionary.chart.lockedBody, dictionary.loading.errorFallback, gender, hoverAspect, locale, panelOpen, readingCacheKey, readingId, readingsByPoint, retryNonce, selectedPointId]);
 
   useEffect(() => {
     if (!panelOpen) {
@@ -339,14 +340,14 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
               "fixed z-40 overflow-hidden border-black/10 bg-cosmic-950/97 text-ivory backdrop-blur-[12px]",
               isDesktop
                 ? "right-4 top-[104px] h-[calc(100vh-120px)] w-[360px] rounded-[1.4rem] border shadow-[-18px_18px_70px_rgba(0,0,0,0.16)]"
-                : "inset-x-0 bottom-[env(safe-area-inset-bottom)] h-[min(74svh,calc(100svh-4.5rem))] rounded-t-[1.5rem] border-t shadow-[0_-24px_90px_rgba(0,0,0,0.18)]",
+                : "inset-x-0 bottom-0 z-[95] h-[calc(100svh-env(safe-area-inset-top)-3.75rem)] rounded-t-[1.5rem] border-t shadow-[0_-24px_90px_rgba(0,0,0,0.28)]",
             ].join(" ")}
             aria-modal="false"
             role="dialog"
             aria-label={dictionary.result.panels.selectedPoint}
           >
             <div ref={panelRef} className="flex h-full flex-col">
-              <div className="border-b border-black/10 px-5 pb-4 pt-4 sm:px-6">
+              <div className="shrink-0 border-b border-black/10 px-5 pb-4 pt-4 sm:px-6">
                 {!isDesktop ? <div className="mx-auto mb-4 h-1.5 w-14 rounded-full bg-black/12" /> : null}
 
                 <div className="flex items-start justify-between gap-4">
@@ -425,7 +426,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-5 sm:px-6">
+              <div className="flex-1 overflow-y-auto overscroll-contain px-5 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-5 sm:px-6">
                 {detailTab === "essence" ? (
                   <div className="space-y-6">
                     <div className="grid gap-4">
@@ -552,7 +553,7 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
                     {loading ? (
                       <div className="mt-4 space-y-2">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
-                          {dictionary.result.generalReading.generating}
+                          {dictionary.result.generalReading.generating} {dictionary.result.points[point.id]}
                         </p>
                         {[88, 76, 91, 64].map((width) => (
                           <div
@@ -565,7 +566,22 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
                     ) : null}
 
                     {error ? (
-                      <p className="mt-4 text-sm leading-7 text-[#3a3048]">{error}</p>
+                      <div className="mt-4">
+                        <p className="text-sm leading-7 text-[#3a3048]">
+                          {error}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            prevPointRef.current = null;
+                            setError(null);
+                            setRetryNonce((current) => current + 1);
+                          }}
+                          className="mt-4 rounded-full border border-dusty-gold/24 px-4 py-2 text-[12px] font-semibold uppercase tracking-[0.22em] text-[#5c4a24] transition hover:border-dusty-gold/42 hover:text-ivory"
+                        >
+                          {dictionary.chart.retry}
+                        </button>
+                      </div>
                     ) : null}
 
                     {!loading && !error && previewParagraph ? (

@@ -10,7 +10,6 @@ import {
   getApproachingSignTransition,
   getAugmentedChartPoints,
   getHouseForLongitude,
-  getInterpretiveHouse,
   getPointInterpretiveSign,
   getSignMeta,
   zodiacSigns,
@@ -87,6 +86,13 @@ function displayPointForPanel(
     return {
       ...point,
       house: getHouseForLongitude(point.longitude, innerChart.houses),
+    };
+  }
+
+  if (variant === "solar-return" && ring === "outer" && outerChart) {
+    return {
+      ...point,
+      house: getHouseForLongitude(point.longitude, outerChart.houses),
     };
   }
 
@@ -659,11 +665,7 @@ export function BiWheelInfoPanel({
     house: displayPoint.house,
     houses: displayHouses,
   }) : null;
-  const readingHouse = displayPoint ? getInterpretiveHouse({
-    longitude: displayPoint.longitude,
-    house: displayPoint.house,
-    houses: displayHouses,
-  }) : null;
+  const readingHouse = displayPoint?.house ?? null;
   const readingPoint = displayPoint && readingHouse && readingSign ? { ...displayPoint, house: readingHouse, sign: readingSign } : displayPoint;
   const reading = readingPoint ? biWheelReading({ variant, ring, point: readingPoint, copy, innerName, outerName, locale }) : "";
   const houseLabel = displayPoint ? displayHouseLabel(displayPoint, displayHouses) : "";

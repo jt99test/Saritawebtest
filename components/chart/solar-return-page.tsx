@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 
 import { BiWheelChart } from "@/components/chart/bi-wheel-chart";
+import { BiWheelAspectToggle } from "@/components/chart/bi-wheel-aspect-toggle";
 import { BiWheelInfoPanel } from "@/components/chart/bi-wheel-info-panel";
+import { ReadingPreparationScreen } from "@/components/chart/reading-preparation-screen";
 import { LocationAutocomplete } from "@/components/form/location-autocomplete";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { PrimaryButton } from "@/components/ui/primary-button";
@@ -202,6 +204,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
   const [selectedCardKey, setSelectedCardKey] = useState("theme");
   const [biWheelSelected, setBiWheelSelected] = useState<{ id: ChartPointId; ring: "inner" | "outer" } | null>(null);
   const [solarWheelMode, setSolarWheelMode] = useState<SolarWheelMode>("all");
+  const [showSolarAspectLines, setShowSolarAspectLines] = useState(false);
   const [chartHash, setChartHash] = useState<string | null>(null);
   const [isChoosingSolarReturn, setIsChoosingSolarReturn] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -385,16 +388,87 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
     });
   }
 
+  if (isPending || (solarChart && isLoadingReading && !solarData.cards?.length && !solarData.priorities?.length)) {
+    return (
+      <ReadingPreparationScreen
+        title={locale === "en" ? "Generating Solar Return..." : locale === "it" ? "Genero la Rivoluzione Solare..." : "Generando Revolucion Solar..."}
+        body={locale === "en"
+          ? "We are preparing the wheel and its reading before opening this section."
+          : locale === "it"
+            ? "Stiamo preparando la ruota e la lettura prima di aprire questa sezione."
+            : "Estamos preparando la rueda y la lectura antes de abrir esta seccion."}
+        detail={`${targetYear} · ${city}`}
+      />
+    );
+  }
+
   if (solarChart) {
     return (
-      <section className="py-10">
+      <section className="py-6 sm:py-8">
+        <div className="mx-auto mb-5 grid max-w-5xl gap-4 border-b border-[#d7e7ff]/14 pb-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f5d782]">
+              {solarCopy.eyebrow}
+            </p>
+            <h2 className="mt-1 break-words font-serif text-[28px] leading-tight text-ivory sm:text-[36px]">
+              {solarCopy.title}
+            </h2>
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#d7e7ff]/70">
+              <span>{formatSolarReturnMoment(solarChart, locale)}</span>
+              <span className="notranslate" translate="no">{solarChart.event.locationLabel}</span>
+            </div>
+          </div>
+          <PrimaryButton
+            type="button"
+            variant="ghostGold"
+            className="px-5 py-3 text-[12px] uppercase tracking-[0.2em]"
+            onClick={() => {
+              setIsChoosingSolarReturn(true);
+              setSolarChart(null);
+              setSolarData({});
+              setReadingError(null);
+              setSelectedCardKey("theme");
+              setIsLoadingReading(false);
+              setBiWheelSelected(null);
+            }}
+          >
+            {solarCopy.changeYear}
+          </PrimaryButton>
+        </div>
         <WheelModeToggle
           mode={solarWheelMode}
           onChange={setSolarWheelMode}
           focusCount={solarFocusIds.length}
           copy={solarCopy}
         />
-        <div className="mx-auto mb-6 grid max-w-5xl gap-3 border-y border-black/10 py-4 sm:grid-cols-3">
+        <BiWheelAspectToggle enabled={showSolarAspectLines} onChange={setShowSolarAspectLines} locale={locale} />
+        <div className="hidden">
+          <button
+            type="button"
+            onClick={() => setShowSolarAspectLines((current) => !current)}
+            className={[
+              "inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] transition",
+              showSolarAspectLines
+                ? "border-[#f5d782]/46 bg-[#f5d782]/14 text-[#5c4a24]"
+                : "border-black/12 bg-white/60 text-[#3a3048] hover:border-black/22",
+            ].join(" ")}
+            aria-pressed={showSolarAspectLines}
+          >
+            <span
+              className={[
+                "h-2.5 w-2.5 rounded-full",
+                showSolarAspectLines ? "bg-[#5c4a24]" : "border border-[#5c4a24]/60 bg-transparent",
+              ].join(" ")}
+              aria-hidden="true"
+            />
+            {locale === "en"
+              ? "Aspect lines"
+              : locale === "it"
+                ? "Linee aspetti"
+                : "Líneas de aspectos"}
+          </button>
+        </div>
+        <div className="hidden mx-auto mb-6 max-w-5xl gap-3 border-y border-black/10 py-4 sm:grid-cols-3">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
               {solarCopy.exactMomentLabel}
@@ -426,15 +500,16 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
           innerLabel={natalChart.event.name}
           outerLabel={`RS ${targetYear}`}
           variant="solar-return"
+          context="solar-return"
           innerPointIds={solarWheelMode === "focus" ? solarFocusIds : undefined}
           outerPointIds={solarWheelMode === "focus" ? solarFocusIds : undefined}
           interAspects={natalSolarAspects}
-          showOuterAspects
-          showInterAspects
+          showOuterAspects={showSolarAspectLines}
+          showInterAspects={showSolarAspectLines}
           selectedInnerPointId={biWheelSelected?.ring === "inner" ? biWheelSelected.id : null}
           selectedOuterPointId={biWheelSelected?.ring === "outer" ? biWheelSelected.id : null}
-          onInnerPlanetSelect={(id) => setBiWheelSelected({ id, ring: "inner" })}
-          onOuterPlanetSelect={(id) => setBiWheelSelected({ id, ring: "outer" })}
+          onInnerPlanetSelect={(id) => setBiWheelSelected(id ? { id, ring: "inner" } : null)}
+          onOuterPlanetSelect={(id) => setBiWheelSelected(id ? { id, ring: "outer" } : null)}
         />
         {biWheelSelected ? (
           <BiWheelInfoPanel
@@ -561,7 +636,7 @@ export function SolarReturnPage({ natalChart, request, dictionary, readingId }: 
           <PrimaryButton
             type="button"
             variant="ghostGold"
-            className="mt-6 px-5 py-3 text-[12px] uppercase tracking-[0.2em]"
+            className="hidden mt-6 px-5 py-3 text-[12px] uppercase tracking-[0.2em]"
             onClick={() => {
               setIsChoosingSolarReturn(true);
               setSolarChart(null);

@@ -24,7 +24,7 @@
   "home": {
     "eyebrow": "Carta natale · Tema natale",
     "subtitle": "Il cielo del giorno in cui sei nato",
-    "cta": "Vedi la mia carta natale",
+    "cta": "Crea la mia carta natale",
     "scrollCue": "Scopri di più",
     "currentMoon": {
       "eyebrow": "Stato lunare attuale",
@@ -50,7 +50,7 @@
           "title": "Se è la tua prima volta",
           "description": "Inizia dalla tua carta natale e comprendi la struttura di base della tua energia.",
           "href": "/form",
-          "cta": "Vedi la mia carta natale"
+          "cta": "Crea la mia carta natale"
         },
         {
           "title": "Se vuoi leggere il momento attuale",
@@ -151,7 +151,7 @@
     "submit": "Vedi la mia carta natale",
     "confirmEyebrow": "prima di generare",
     "confirmTitle": "Controlla i tuoi dati",
-    "confirmBody": "Una volta generata questa carta, i dati non potranno essere modificati nella stessa lettura. Se qualcosa Ã¨ sbagliato, dovrai creare una nuova lettura e conterÃ  nel tuo limite mensile.",
+    "confirmBody": "Una volta generata questa carta, i dati non potranno essere modificati nella stessa lettura. Se qualcosa è sbagliato, dovrai creare una nuova lettura, che verrà conteggiata nel tuo limite mensile.",
     "confirmEdit": "Correggi dati",
     "confirmContinue": "Genera carta"
   },
@@ -288,7 +288,7 @@
     "signs": "Segni",
     "houses": "Case",
     "chakra": "Chakra",
-    "pranayamaAfter": "Pranayama ? dopo la sequenza",
+    "pranayamaAfter": "Pranayama - dopo la sequenza",
     "savasana": "Savasana",
     "bijaMantra": "Mantra bija",
     "asanaFallbackBody": "Pratica questa posizione lentamente e mantieni il respiro stabile. Resta in un range chiaro, stabile e disponibile oggi.",
@@ -394,6 +394,11 @@
       "eyebrow": "sinastria",
       "title": "Due carte, un campo.",
       "intro": "La sinastria confronta due carte natali per vedere come si incastrano. Non è un punteggio di compatibilità: è una mappa di come funziona il legame tra due persone, dove scorre facilmente, dove c'è tensione e cosa quella relazione viene a insegnare. Inserisci i dati di nascita dell'altra persona per vedere l'analisi.",
+      "savedChartsTitle": "Usa una carta salvata",
+      "savedChartsBody": "Scegli una carta natale che hai gia generato nel tuo account e confrontala senza reinserire i dati.",
+      "savedChartCreated": "Creata:",
+      "savedPeopleTitle": "Persone salvate",
+      "savedPeopleBody": "Persone che hai gia aggiunto dalla sinastria. Puoi confrontarle di nuovo o eliminarle da questa lista.",
       "addPerson": "Aggiungi nuova persona",
       "saving": "Salvando...",
       "saveAndCompare": "Salva e confronta",
@@ -1025,6 +1030,7 @@
     "read": "Leggi +",
     "retry": "Riprova",
     "generateError": "Generazione fallita. Riprova.",
+    "dailyLimitError": "Hai raggiunto il limite giornaliero di letture. Riprova domani.",
     "lockedEyebrow": "Lettura bloccata",
     "lockedTitle": "Questa lettura richiede un piano attivo",
     "lockedBody": "La tua carta è salvata. Migliora il piano per generare questa lettura e tornarci quando vuoi.",
@@ -1095,23 +1101,23 @@
   },
   "helpPage": {
     "faqs": [
-      { "question": "Come calcolo la mia carta natale?", "answer": "Apri il modulo, inserisci data, ora esatta e citta di nascita, e SARITA calcolera la tua carta." },
-      { "question": "Mi serve l'ora esatta di nascita?", "answer": "Si. Piu l'orario e preciso, migliore sara la lettura di Ascendente e case, perche cambiano rapidamente." },
+      { "question": "Come calcolo la mia carta natale?", "answer": "Apri il modulo, inserisci data, ora esatta e città di nascita, e SARITA calcolerà la tua carta." },
+      { "question": "Mi serve l'ora esatta di nascita?", "answer": "Sì. Più l'orario è preciso, migliore sarà la lettura di Ascendente e case, perché cambiano rapidamente." },
       { "question": "Cosa include il piano gratuito?", "answer": "Il piano gratuito include la carta natale completa e 1 lettura al mese. Pro include 5 letture mensili. Avanzato ne include 20 e sblocca Transiti, Rivoluzione Solare, Sinastria e Astrocartografia." },
       { "question": "Come cancello il mio abbonamento?", "answer": "Entra nel tuo account e usa il pulsante per la gestione della fatturazione." },
-      { "question": "Che cos'e la Rivoluzione Solare?", "answer": "E la carta del momento in cui il Sole torna alla posizione natale. Evidenzia i temi principali dell'anno." },
-      { "question": "Che cos'e il Lavaggio Intestinale?", "answer": "E una guida digitale a Laghoo Shankhaprakshala, una pratica breve di pulizia intestinale." },
+      { "question": "Che cos'è la Rivoluzione Solare?", "answer": "È la carta del momento in cui il Sole torna alla posizione natale. Evidenzia i temi principali dell'anno." },
+      { "question": "Che cos'è il Lavaggio Intestinale?", "answer": "È una guida digitale a Laghoo Shankhaprakshala, una pratica breve di pulizia intestinale." },
       { "question": "I miei dati sono al sicuro?", "answer": "Usiamo Supabase per proteggere account e dati, e Whop per i pagamenti. Puoi chiedere l'eliminazione quando vuoi." },
       { "question": "Come contatto il supporto?", "answer": "Scrivici a contacto@saritaastrology.com." }
     ]
   },
   "lavadoPage": {
     "eyebrow": "Kriya e pulizia",
-    "subtitle": "Laghoo Shankhaprakshala ? Una pratica delicata di pulizia intestinale",
+    "subtitle": "Laghoo Shankhaprakshala - una pratica delicata di pulizia intestinale",
     "importantPrecaution": "Precauzione importante",
     "preparation": "Preparazione",
     "protocol": "Protocollo passo dopo passo",
-    "asanasTitle": "Le 5 asana ? 8 ripetizioni ciascuna",
+    "asanasTitle": "Le 5 asana - 8 ripetizioni ciascuna",
     "precaution": "Precauzione",
     "timing": {
       "momento": "Momento",
@@ -1121,9 +1127,9 @@
     },
     "precautions": "Precauzioni",
     "benefits": "Benefici",
-    "dietTitle": "Dieta ricca di fibre ? 3 giorni di supporto",
+    "dietTitle": "Dieta ricca di fibre - 3 giorni di supporto",
     "day": "Giorno {day}",
     "alternative": "Alternativa: {text}",
-    "footer": "Metodo S.A.R.I.T.A.? ? Sarita Shakti"
+    "footer": "Metodo S.A.R.I.T.A. - Sarita Shakti"
   }
 }

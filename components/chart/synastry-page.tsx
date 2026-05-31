@@ -3,13 +3,18 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 
 import { BiWheelChart } from "@/components/chart/bi-wheel-chart";
+import { BiWheelAspectToggle } from "@/components/chart/bi-wheel-aspect-toggle";
 import { BiWheelInfoPanel } from "@/components/chart/bi-wheel-info-panel";
+import { ReadingPreparationScreen } from "@/components/chart/reading-preparation-screen";
 import { LocationAutocomplete } from "@/components/form/location-autocomplete";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import {
   deleteSynastryPartnerAction,
+  getSavedNatalReadingsAction,
+  getSynastryPartnersAction,
   saveAndCalculateSynastryPartnerAction,
+  type SavedSynastryNatalReading,
   type SynastryPartnerInput,
 } from "@/lib/actions";
 import { fetchAiReadingWithPolling } from "@/lib/ai-reading-client";
@@ -160,6 +165,29 @@ function localPartnerFromForm(form: SynastryPartnerInput, chart: NatalChartData)
   };
 }
 
+function partnerFromSavedReading(reading: SavedSynastryNatalReading): PartnerRow {
+  return {
+    id: `reading-${reading.id}`,
+    name: reading.name,
+    birth_date: reading.birthDate,
+    birth_time: reading.birthTime,
+    birth_time_unknown: !reading.birthTime,
+    gender: reading.gender,
+    birth_city: reading.locationLabel,
+    chart_data: reading.chart,
+  };
+}
+
+function formatSavedReadingDate(value: string, locale: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat(locale === "en" || locale === "it" ? locale : "es", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
+
 function pointLabel(id: ChartPointId, dictionary: Dictionary) {
   return dictionary.result.points[id] ?? id;
 }
@@ -213,6 +241,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
   const locale = useStoredLocale();
   const synastryCopy = dictionary.result.synastryPage;
   const [partners, setPartners] = useState<PartnerRow[]>([]);
+  const [savedNatalReadings, setSavedNatalReadings] = useState<SavedSynastryNatalReading[]>([]);
   const [selectedPartner, setSelectedPartner] = useState<PartnerRow | null>(null);
   const [form, setForm] = useState<SynastryPartnerInput>({
     name: "",
@@ -234,6 +263,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
   const [selectedLayerId, setSelectedLayerId] = useState<SynastryLayerId>("fisico");
   const [biWheelSelected, setBiWheelSelected] = useState<{ id: ChartPointId; ring: "inner" | "outer" } | null>(null);
   const [synastryWheelMode, setSynastryWheelMode] = useState<SynastryWheelMode>("all");
+  const [showSynastryAspectLines, setShowSynastryAspectLines] = useState(true);
   const [natalHash, setNatalHash] = useState<string | null>(null);
   const [partnerHash, setPartnerHash] = useState<string | null>(null);
   const partnerChart = selectedPartner?.chart_data ?? null;
@@ -267,11 +297,34 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
       ? "La lettura dettagliata non e disponibile ora."
       : "La lectura detallada no pudo cargar ahora.";
   const hasAiCompatibility = Boolean(synastryData.compatibilityLabel && synastryData.compatibilityDescription);
+  const selectableSavedNatalReadings = useMemo(() => (
+    savedNatalReadings.filter((reading) => reading.chart.event.julianDay !== natalChart.event.julianDay)
+  ), [natalChart.event.julianDay, savedNatalReadings]);
 
   useEffect(() => {
     LEGACY_SELECTED_PARTNER_STORAGE_KEYS.forEach((key) => {
       safeRemoveStorageItem("local", key);
     });
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    startTransition(async () => {
+      const [storedPartners, storedReadings] = await Promise.all([
+        getSynastryPartnersAction(),
+        getSavedNatalReadingsAction(),
+      ]);
+      if (!active) return;
+      setPartners((storedPartners as PartnerRow[]).map((partner) => ({
+        ...partner,
+        gender: "",
+        birth_time_unknown: false,
+      })));
+      setSavedNatalReadings(storedReadings);
+    });
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -420,9 +473,50 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
 
   if (selectedPartner && partnerChart) {
     const wheelOuterChart = outerChart ?? undefined;
+    if (isLoadingReading && !hasAiCompatibility && !synastryReadingError) {
+      return (
+        <ReadingPreparationScreen
+          title={locale === "en" ? "Generating synastry..." : locale === "it" ? "Genero la sinastria..." : "Generando sinastria..."}
+          body={locale === "en"
+            ? "We are preparing the comparison before opening the wheel."
+            : locale === "it"
+              ? "Stiamo preparando il confronto prima di aprire la ruota."
+              : "Estamos preparando la comparacion antes de abrir la rueda."}
+          detail={`${innerName} + ${outerName}`}
+        />
+      );
+    }
     return (
-      <section className="py-10">
-        <div className="mx-auto max-w-3xl text-center">
+      <section className="py-6 sm:py-8">
+        <div className="mx-auto mb-5 grid max-w-5xl gap-4 border-b border-[#d7e7ff]/14 pb-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f5d782]">{synastryCopy.eyebrow}</p>
+            <h2 className="mt-1 break-words font-serif text-[28px] leading-tight text-ivory sm:text-[36px]">
+              {synastryData.compatibilityLabel ?? `${innerName} / ${outerName}`}
+            </h2>
+            <p className="notranslate mt-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#d7e7ff]/70" translate="no">
+              {innerName} + {outerName}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+            <button
+              type="button"
+              onClick={() => setFlipped((current) => !current)}
+              className="inline-flex min-h-10 items-center border border-[#d7e7ff]/18 bg-[#061331]/54 px-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#fffaf0] transition hover:border-[#f5d782]/42"
+            >
+              {synastryCopy.flipCharts}
+            </button>
+            <PrimaryButton
+              type="button"
+              variant="ghostGold"
+              className="px-5 py-3 text-[12px] uppercase tracking-[0.2em]"
+              onClick={() => setSelectedPartner(null)}
+            >
+              {synastryCopy.compareAnother}
+            </PrimaryButton>
+          </div>
+        </div>
+        <div className="hidden mx-auto max-w-3xl text-center">
           <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">{synastryCopy.eyebrow}</p>
           {synastryData.compatibilityLabel ? (
             <h2 className="mt-2 break-words font-serif text-[28px] leading-tight text-[#1e1a2e] sm:text-[48px]">{synastryData.compatibilityLabel}</h2>
@@ -449,18 +543,22 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
             activeCount={aspectedInnerIds.length + aspectedOuterIds.length}
             copy={synastryCopy}
           />
+          <BiWheelAspectToggle enabled={showSynastryAspectLines} onChange={setShowSynastryAspectLines} locale={locale} />
           <BiWheelChart
             innerChart={innerChart}
             outerChart={wheelOuterChart}
             innerLabel={innerName}
             outerLabel={outerName}
             variant="synastry"
+            context="synastry"
             innerPointIds={synastryWheelMode === "aspected" ? aspectedInnerIds : undefined}
             outerPointIds={synastryWheelMode === "aspected" ? aspectedOuterIds : undefined}
+            interAspects={aspects}
+            showInterAspects={showSynastryAspectLines}
             selectedInnerPointId={biWheelSelected?.ring === "inner" ? biWheelSelected.id : null}
             selectedOuterPointId={biWheelSelected?.ring === "outer" ? biWheelSelected.id : null}
-            onInnerPlanetSelect={(id) => setBiWheelSelected({ id, ring: "inner" })}
-            onOuterPlanetSelect={(id) => setBiWheelSelected({ id, ring: "outer" })}
+            onInnerPlanetSelect={(id) => setBiWheelSelected(id ? { id, ring: "inner" } : null)}
+            onOuterPlanetSelect={(id) => setBiWheelSelected(id ? { id, ring: "outer" } : null)}
           />
           {biWheelSelected ? (
             <BiWheelInfoPanel
@@ -476,7 +574,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
             />
           ) : null}
         </div>
-        <div className="mt-4 flex justify-center">
+        <div className="hidden mt-4 justify-center">
           <button
             type="button"
             onClick={() => setFlipped((current) => !current)}
@@ -591,7 +689,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
           <PrimaryButton
             type="button"
             variant="ghostGold"
-            className="mt-6 px-5 py-3 text-[12px] uppercase tracking-[0.2em]"
+            className="hidden mt-6 px-5 py-3 text-[12px] uppercase tracking-[0.2em]"
             onClick={() => setSelectedPartner(null)}
           >
             {synastryCopy.compareAnother}
@@ -602,7 +700,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
   }
 
   return (
-    <section className="mx-auto max-w-3xl py-16">
+    <section className="mx-auto flex max-w-3xl flex-col py-16">
       <div className="mx-auto mb-8 max-w-2xl text-center">
         <p className="text-sm leading-7 text-[#3a3048]">
           {synastryCopy.intro}
@@ -610,8 +708,56 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
       </div>
       <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">{synastryCopy.eyebrow}</p>
       <h2 className="mt-2 break-words font-serif text-[32px] leading-tight text-ivory sm:text-[52px]">{synastryCopy.title}</h2>
+      {selectableSavedNatalReadings.length ? (
+        <div className="order-2 mt-8 border-y border-black/10 py-5">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+                {synastryCopy.savedChartsTitle}
+              </p>
+              <p className="mt-2 text-sm leading-6 text-[#3a3048]">
+                {synastryCopy.savedChartsBody}
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 grid gap-3">
+            {selectableSavedNatalReadings.map((reading) => (
+              <div key={reading.id} className="flex flex-wrap items-center justify-between gap-4 border border-black/10 bg-white/60 px-4 py-3">
+                <div className="min-w-0">
+                  <p className="notranslate truncate font-serif text-xl text-ivory" translate="no">{reading.name}</p>
+                  <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[#3a3048]">
+                    {reading.birthDate} - {reading.locationLabel}
+                  </p>
+                  <p className="mt-1 text-[11px] uppercase tracking-[0.16em] text-[#3a3048]/72">
+                    {synastryCopy.savedChartCreated} {formatSavedReadingDate(reading.createdAt, locale)}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="border border-black/20 bg-transparent px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory transition hover:bg-black/[0.05]"
+                  onClick={() => {
+                    setSelectedPartner(partnerFromSavedReading(reading));
+                    setFlipped(false);
+                  }}
+                >
+                  {synastryCopy.compare}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
       {partners.length ? (
-        <div className="mt-8 border-y border-black/10">
+        <div className="order-3 mt-8 border-y border-black/10 py-5">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+              {synastryCopy.savedPeopleTitle}
+            </p>
+            <p className="mt-2 text-sm leading-6 text-[#3a3048]">
+              {synastryCopy.savedPeopleBody}
+            </p>
+          </div>
+          <div className="mt-4 grid gap-3">
           {partners.map((partner) => (
             <div key={partner.id} className="flex flex-wrap items-center justify-between gap-4 border-b border-black/10 py-4 last:border-b-0">
               <div>
@@ -637,10 +783,11 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
               </div>
             </div>
           ))}
+          </div>
         </div>
       ) : null}
 
-      <div className="mt-10 grid gap-5 border-t border-dusty-gold/14 pt-8">
+      <div className="order-1 mt-10 grid gap-5 border-t border-dusty-gold/14 pt-8">
         <p className="font-serif text-2xl text-ivory">{synastryCopy.addPerson}</p>
         <div className="grid gap-3 sm:grid-cols-2">
           <input

@@ -7,7 +7,7 @@ import {
   aiGenerationStatusResponse,
   getAiGenerationStatus,
   getCachedAiReading,
-  markAiReadingGenerationFailed,
+  markAiReadingGenerationFailedWithReason,
   reserveAiReadingGeneration,
   setCachedAiReading,
   validateReadingGenerationAccess,
@@ -66,7 +66,7 @@ const SYNASTRY_READING_TOOL: Tool = {
 
 function langInstruction(locale?: string): string {
   if (locale === "en") return "Write entirely in English. Do not output Spanish words unless they are proper names.";
-  if (locale === "it") return "Write entirely in Italian. Do not output Spanish words unless they are proper names.";
+  if (locale === "it") return "Write entirely in Italian. Do not output Spanish words unless they are proper names. Use only the informal second person singular: tu, ti, tuo/tua/tuoi/tue. Never use Lei, la Sua, le Sue, voi, vostro/vostra, or formal address.";
   return promptLanguageInstruction(locale);
 }
 
@@ -263,6 +263,8 @@ ${nativeToneInstruction(locale)}
 Usa lo strumento synastry_reading per restituire la lettura strutturata.
 Le chiavi dello strumento devono restare esattamente come sono definite, anche se il contenuto e in un'altra lingua.
 
+Trattamento: dai sempre del tu a ${name}. Usa solo la seconda persona singolare informale: tu, ti, tuo/tua/tuoi/tue. Non usare mai Lei, la Sua, le Sue, voi, vostro/vostra o formule di cortesia. Non alternare tra tono formale e informale.
+
 Importante: compatibilityDescription e ogni campo layers.* devono essere sviluppati: 3-5 frasi concrete, circa 60-95 parole ciascuno, cosi occupano circa 3-5 righe nella scheda.
 
 Forma esatta:
@@ -271,6 +273,7 @@ Forma esatta:
 Regole:
 - Ogni valore usa aspetti reali. Nulla di generico.
 - Parla sempre direttamente a ${name}.
+- Usa sempre il tu informale con ${name}; mai Lei/voi o forme di cortesia.
 - Il primo carattere di ogni campo di testo e maiuscolo.
 - "reading" e un solo paragrafo, senza liste ne titoli.
 - Niente misticismi ne linguaggio New Age.
@@ -329,7 +332,7 @@ export async function POST(request: Request) {
 
   const readingGender = normalizeReadingGender(gender);
   const partnerReadingGender = normalizeReadingGender(partnerGender);
-  const itemKey = `v5:${cacheKey ?? `synastry:${partnerName}:${chartB.event.julianDay}`}:${readingGender || "unspecified"}:${partnerReadingGender || "partner-unspecified"}`;
+  const itemKey = `v6:${cacheKey ?? `synastry:${partnerName}:${chartB.event.julianDay}`}:${readingGender || "unspecified"}:${partnerReadingGender || "partner-unspecified"}`;
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 
@@ -417,7 +420,7 @@ ${firstText}`,
     assertGeneratedLanguage(parsed, locale);
   } catch (error) {
     console.error("Synastry reading JSON generation failed", error);
-    await markAiReadingGenerationFailed({
+    await markAiReadingGenerationFailedWithReason({
       supabase,
       user,
       readingId,
@@ -425,13 +428,14 @@ ${firstText}`,
       itemKey,
       locale,
       cacheUserId: access.cacheUserId,
+      reason: "json_generation_or_language_error",
     });
     return new Response("Synastry reading JSON could not be parsed", { status: 502 });
   }
 
   if (!parsed || !isSynastryPayload(parsed)) {
     console.error("Synastry reading JSON shape invalid", parsed);
-    await markAiReadingGenerationFailed({
+    await markAiReadingGenerationFailedWithReason({
       supabase,
       user,
       readingId,
@@ -439,6 +443,7 @@ ${firstText}`,
       itemKey,
       locale,
       cacheUserId: access.cacheUserId,
+      reason: "invalid_json_shape",
     });
     return new Response("Synastry reading JSON shape invalid", { status: 502 });
   }

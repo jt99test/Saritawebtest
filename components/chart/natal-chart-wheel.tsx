@@ -10,6 +10,7 @@ import {
   type AspectId,
   type ChartPoint,
   type ChartPointId,
+  type HouseCusp,
   type NatalChartData,
 } from "@/lib/chart";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
@@ -34,15 +35,16 @@ const CY = 430;
 
 const ZODIAC_OUTER = 402;
 const ZODIAC_INNER = 344;
-const DEGREE_TICK_OUTER = 400;
 const PLANET_RING_RADIUS = 286;
-const PLANET_LABEL_RADIUS = 320;
-const PLANET_CLUSTER_CALLOUT_RADIUS = ZODIAC_OUTER + 20;
-const PLANET_CLUSTER_FAN_STEP = 14;
-const PLANET_CONFLICT_DEGREES = 4;
+const PLANET_LABEL_RADIUS = 314;
+const PLANET_CLUSTER_CALLOUT_RADIUS = 314;
+const PLANET_CLUSTER_FAN_STEP = 6.5;
+const PLANET_CLUSTER_THRESHOLD_DEGREES = 11;
+const PLANET_CONFLICT_DEGREES = 11;
 const HOUSE_OUTER = 252;
 const HOUSE_INNER = 142;
-const HOUSE_NUMBER_RADIUS = 208;
+const HOUSE_NUMBER_RADIUS = 162;
+const HOUSE_NUMBER_LABEL_RADIUS = 152;
 const ASPECT_RADIUS = 134;
 const PLANET_EDGE_MARGIN = 34;
 
@@ -148,6 +150,10 @@ const POINT_SYMBOLS: Record<ChartPointId, string> = {
   ceres: "\u26b3",
 };
 
+function pointSignGlyph(point: ChartPoint) {
+  return zodiacSigns.find((sign) => sign.id === point.sign)?.glyph ?? "";
+}
+
 const DISPLAY_ASPECTS: Array<{ type: AspectId; angle: number; orb: number; major: boolean }> = [
   { type: "conjunction", angle: 0, orb: 7, major: true },
   { type: "sextile", angle: 60, orb: 7, major: true },
@@ -207,6 +213,34 @@ function circularDistance(first: number, second: number) {
   return difference > 180 ? 360 - difference : difference;
 }
 
+function normalizeLongitude(longitude: number) {
+  const normalized = longitude % 360;
+  return normalized < 0 ? normalized + 360 : normalized;
+}
+
+function houseSpan(houseNumber: number, houses: HouseCusp[], paddingDegrees = 2) {
+  const index = houses.findIndex((entry) => entry.house === houseNumber);
+  if (index < 0) return null;
+
+  const current = houses[index]!;
+  const next = houses[(index + 1) % houses.length] ?? houses[0]!;
+  const start = normalizeLongitude(current.longitude);
+  const span = normalizeLongitude(next.longitude - current.longitude) || 360;
+  const min = start + Math.min(paddingDegrees, span / 2);
+  const max = start + Math.max(span - paddingDegrees, span / 2);
+
+  return { start, min, max };
+}
+
+function unwrapLongitudeFromStart(longitude: number, start: number) {
+  const normalized = normalizeLongitude(longitude);
+  return normalized < start ? normalized + 360 : normalized;
+}
+
+function clampedLongitude(longitude: number, min: number, max: number) {
+  return normalizeLongitude(Math.min(Math.max(longitude, min), max));
+}
+
 function pointScaleTransform(x: number, y: number, scale: number) {
   return `translate(${round(x)} ${round(y)}) scale(${scale}) translate(${-round(x)} ${-round(y)})`;
 }
@@ -231,84 +265,12 @@ function getAspectDefinition(type: AspectId) {
   return DISPLAY_ASPECTS.find((entry) => entry.type === type)!;
 }
 
-function TickRing({
-  ascendant,
-  showDegrees,
-  points,
-}: {
+function TickRing(_: {
   ascendant: number;
   showDegrees: boolean;
   points: ChartPoint[];
 }) {
-  const marks = [];
-  const labels = [];
-
-  for (let signIndex = 0; signIndex < 12; signIndex += 1) {
-    const signStart = signIndex * 30;
-
-    for (let degree = 0; degree < 30; degree += 1) {
-      const longitude = signStart + degree;
-      const isFifteen = degree === 15;
-      const isLabelDegree = degree === 0 || isFifteen;
-      const isFive = degree % 5 === 0 && !isLabelDegree;
-      const innerRadius = isLabelDegree ? 328 : isFive ? 334 : 338;
-      const [x1, y1] = pointAtRadius(DEGREE_TICK_OUTER, longitude, ascendant);
-      const [x2, y2] = pointAtRadius(innerRadius, longitude, ascendant);
-
-      marks.push(
-        <line
-          key={`tick-${longitude}`}
-          x1={round(x1)}
-          y1={round(y1)}
-          x2={round(x2)}
-          y2={round(y2)}
-          stroke={
-            isLabelDegree
-              ? "rgba(8,42,120,0.38)"
-              : isFive
-                ? "rgba(8,42,120,0.24)"
-                : "rgba(8,42,120,0.12)"
-          }
-          strokeWidth={isLabelDegree ? 0.9 : isFive ? 0.7 : 0.48}
-        />,
-      );
-
-      if (showDegrees && isLabelDegree) {
-        const hasNearbyPlanet = points.some((point) => circularDistance(point.longitude, longitude) <= 3);
-
-        if (hasNearbyPlanet) {
-          continue;
-        }
-
-        const [labelX, labelY] = pointAtRadius(321, longitude + 1.2, ascendant);
-        labels.push(
-          <g key={`degree-label-${longitude}`}>
-            <circle cx={round(labelX)} cy={round(labelY)} r="8" fill="rgba(255,253,248,0.82)" />
-            <text
-              x={round(labelX)}
-              y={round(labelY)}
-              textAnchor="middle"
-              dominantBaseline="central"
-              fill="rgba(6,19,49,0.86)"
-              fontFamily="'Inter', sans-serif"
-              fontSize="10.5"
-              fontWeight="700"
-              letterSpacing="0"
-            >
-              {degree}
-            </text>
-          </g>,
-        );
-      }
-    }
-  }
-
-  return (
-    <>
-      <g>{marks}</g>
-      {showDegrees ? <g>{labels}</g> : null}
-    </>
-  );
+  return null;
 }
 
 function SymbolicWheelFrame({ ascendant }: { ascendant: number }) {
@@ -335,11 +297,11 @@ function SymbolicWheelFrame({ ascendant }: { ascendant: number }) {
       <circle cx={CX} cy={CY} r={ZODIAC_OUTER - 12} fill="none" stroke="rgba(245,215,130,0.24)" strokeWidth="0.8" />
       <circle cx={CX} cy={CY} r={ZODIAC_INNER + 12} fill="none" stroke="rgba(124,191,255,0.18)" strokeWidth="0.8" />
       <circle cx={CX} cy={CY} r={ZODIAC_INNER} fill="none" stroke="rgba(8,42,120,0.42)" strokeWidth="1.3" />
-      <circle cx={CX} cy={CY} r={HOUSE_OUTER} fill="none" stroke="rgba(8,42,120,0.16)" strokeWidth="0.9" />
-      <circle cx={CX} cy={CY} r={HOUSE_INNER} fill="none" stroke="rgba(8,42,120,0.12)" strokeWidth="0.8" />
+      <circle cx={CX} cy={CY} r={HOUSE_INNER} fill="none" stroke="rgba(5,7,12,0.28)" strokeWidth="0.9" />
 
       {zodiacSigns.map((sign) => {
         const [x, y] = pointAtRadius((ZODIAC_OUTER + ZODIAC_INNER) / 2, sign.start + 15, ascendant);
+
         return (
           <text
             key={`sign-glyph-${sign.id}`}
@@ -406,32 +368,39 @@ function HouseGeometry({ chart, ascendant }: { chart: NatalChartData; ascendant:
             y1={round(outerY)}
             x2={round(innerX)}
             y2={round(innerY)}
-            stroke="rgba(8,42,120,0.28)"
-            strokeWidth={house.house === 1 || house.house === 4 || house.house === 7 || house.house === 10 ? 1.6 : 0.9}
+            stroke={house.house === 1 || house.house === 4 || house.house === 7 || house.house === 10 ? "rgba(5,7,12,0.68)" : "rgba(5,7,12,0.48)"}
+            strokeWidth={house.house === 1 || house.house === 4 || house.house === 7 || house.house === 10 ? 1.8 : 1.15}
           />
         );
       })}
+
+      <circle cx={CX} cy={CY} r={HOUSE_NUMBER_RADIUS} fill="none" stroke="rgba(5,7,12,0.36)" strokeWidth="0.85" />
 
       {chart.houses.map((house, index) => {
         const current = house.longitude;
         const next = chart.houses[(index + 1) % 12]!.longitude;
         const midpoint = current + ((next - current + 360) % 360) / 2;
-        const [x, y] = pointAtRadius(HOUSE_NUMBER_RADIUS, midpoint, ascendant);
+        const [x, y] = pointAtRadius(HOUSE_NUMBER_LABEL_RADIUS, midpoint, ascendant);
 
         return (
-          <text
-            key={`house-number-${house.house}`}
-            x={round(x)}
-            y={round(y)}
-            textAnchor="middle"
-            dominantBaseline="central"
-            fill="rgba(6,19,49,0.66)"
-            fontFamily="'Inter', sans-serif"
-            fontSize="13"
-            fontWeight="500"
-          >
-            {house.house}
-          </text>
+          <g key={`house-number-${house.house}`}>
+            <text
+              x={round(x)}
+              y={round(y)}
+              textAnchor="middle"
+              dominantBaseline="central"
+              fill="#05070c"
+              fontFamily="'Inter', sans-serif"
+              fontSize="11"
+              fontWeight="900"
+              letterSpacing="0"
+              stroke="rgba(255,253,248,0.95)"
+              strokeWidth="1.8"
+              paintOrder="stroke fill"
+            >
+              {house.house}
+            </text>
+          </g>
         );
       })}
     </>
@@ -517,9 +486,28 @@ function AxisLines({ chart, ascendant }: { chart: NatalChartData; ascendant: num
   );
 }
 
+type ClearPointLayout = {
+  glyphX: number;
+  glyphY: number;
+  visualLongitude: number;
+  labelX: number;
+  labelY: number;
+  labelAnchor: "start" | "end" | "middle";
+  retrogradeX: number;
+  retrogradeY: number;
+  connectorX1: number;
+  connectorY1: number;
+  connectorX2: number;
+  connectorY2: number;
+  hasConnector: boolean;
+  isClustered: boolean;
+  clusterPointIds: ChartPointId[];
+};
+
 function SymbolicAspects({
   aspects,
   pointsById,
+  pointLayouts,
   dictionary,
   ascendant,
   activePointId,
@@ -532,6 +520,7 @@ function SymbolicAspects({
 }: {
   aspects: Aspect[];
   pointsById: Map<ChartPointId, ChartPoint>;
+  pointLayouts?: Map<ChartPointId, ClearPointLayout>;
   dictionary: Dictionary;
   ascendant: number;
   activePointId: ChartPointId | null;
@@ -542,7 +531,7 @@ function SymbolicAspects({
   onHoverAspect: (tooltip: TooltipState | null, aspectId?: string | null) => void;
   onClickAspect: (aspect: Aspect) => void;
 }) {
-  const focusPointId = hoveredPointId ?? activePointId;
+  const focusPointId = activePointId;
 
   return (
     <>
@@ -554,12 +543,17 @@ function SymbolicAspects({
           return null;
         }
 
-        const [x1, y1] = pointAtRadius(ASPECT_RADIUS, fromPoint.longitude, ascendant);
-        const [x2, y2] = pointAtRadius(ASPECT_RADIUS, toPoint.longitude, ascendant);
+        const fromLayout = pointLayouts?.get(aspect.from);
+        const toLayout = pointLayouts?.get(aspect.to);
+        const [x1, y1] = pointAtRadius(ASPECT_RADIUS, fromLayout?.visualLongitude ?? fromPoint.longitude, ascendant);
+        const [x2, y2] = pointAtRadius(ASPECT_RADIUS, toLayout?.visualLongitude ?? toPoint.longitude, ascendant);
         const mx = (x1 + x2) / 2;
         const my = (y1 + y2) / 2;
         const definition = getAspectDefinition(aspect.type);
         const focused = focusPointId ? aspect.from === focusPointId || aspect.to === focusPointId : true;
+        if (focusPointId && !focused) {
+          return null;
+        }
         const highlighted = highlightedAspectId === aspect.id;
         const hovered = hoveredAspectId === aspect.id;
         const selected = selectedAspectId === aspect.id;
@@ -593,7 +587,10 @@ function SymbolicAspects({
             tabIndex={0}
             aria-label={tooltip}
             style={{ cursor: "pointer" }}
-            onClick={() => onClickAspect(aspect)}
+            onClick={(event) => {
+              event.stopPropagation();
+              onClickAspect(aspect);
+            }}
             onMouseEnter={() =>
               onHoverAspect(
                 {
@@ -647,19 +644,6 @@ function SymbolicAspects({
               strokeLinecap="round"
               filter={strokeOpacity > 0.18 ? "url(#aspect-neon-glow)" : undefined}
             />
-            <text
-              x={round(mx)}
-              y={round(my)}
-              textAnchor="middle"
-              dominantBaseline="central"
-              fill={SYMBOLIC_ASPECT_COLORS[aspect.type]}
-              fillOpacity={strokeOpacity * 1.2 > 1 ? 1 : strokeOpacity * 1.2}
-              fontSize="11"
-              fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', serif"
-              filter={strokeOpacity > 0.18 ? "url(#aspect-neon-glow)" : undefined}
-            >
-              {ASPECT_SYMBOLS[aspect.type]}
-            </text>
           </g>
         );
       })}
@@ -695,7 +679,11 @@ function _PlanetLayer({
 
   return (
     <>
-      {points.map((point) => {
+      {[...points].sort((left, right) => {
+        const leftActive = left.id === hoveredPointId || left.id === selectedPointId;
+        const rightActive = right.id === hoveredPointId || right.id === selectedPointId;
+        return Number(leftActive) - Number(rightActive);
+      }).map((point) => {
         const [glyphX, glyphY] = pointAtRadius(PLANET_RING_RADIUS, point.longitude, ascendant);
         const [labelX, labelY] = pointAtRadius(PLANET_LABEL_RADIUS, point.longitude, ascendant);
         const angle = ((180 + ascendant - point.longitude) * Math.PI) / 180;
@@ -717,7 +705,7 @@ function _PlanetLayer({
             ? 1
             : 0.6
           : 1;
-        const tooltip = `${dictionary.result.points[point.id]} - ${String(point.degreeInSign).padStart(2, "0")}° ${String(point.minutesInSign).padStart(2, "0")}'`;
+        const tooltip = dictionary.result.points[point.id];
 
         return (
           <g
@@ -959,7 +947,7 @@ function _AstroSeekPlanetLayer({
             ? 1
             : 0.6
           : 1;
-        const tooltip = `${dictionary.result.points[point.id]} - ${String(point.degreeInSign).padStart(2, "0")}° ${String(point.minutesInSign).padStart(2, "0")}'`;
+        const tooltip = dictionary.result.points[point.id];
         const tangentX = -Math.sin(layout.angle);
         const tangentY = Math.cos(layout.angle);
         const rxX = labelX + tangentX * 20;
@@ -1093,6 +1081,8 @@ function _AstroSeekPlanetLayer({
 
 function ClearPlanetLayer({
   points,
+  houses,
+  aspects,
   dictionary,
   ascendant,
   selectedPointId,
@@ -1100,10 +1090,16 @@ function ClearPlanetLayer({
   panelOpen,
   showDegrees,
   hoveredAspectId,
+  hoveredAspectVisualId,
+  selectedAspectId,
   onSelect,
   onHover,
+  onHoverAspect,
+  onClickAspect,
 }: {
   points: ChartPoint[];
+  houses: HouseCusp[];
+  aspects: Aspect[];
   dictionary: Dictionary;
   ascendant: number;
   selectedPointId: ChartPointId | null;
@@ -1111,10 +1107,22 @@ function ClearPlanetLayer({
   panelOpen: boolean;
   showDegrees: boolean;
   hoveredAspectId: string | null;
+  hoveredAspectVisualId: string | null;
+  selectedAspectId: string | null;
   onSelect: (pointId: ChartPointId, tooltip?: TooltipState) => void;
   onHover: (tooltip: TooltipState | null, pointId?: ChartPointId | null) => void;
+  onHoverAspect: (tooltip: TooltipState | null, aspectId?: string | null) => void;
+  onClickAspect: (aspect: Aspect) => void;
 }) {
   const highlightedAspect = hoveredAspectId ? hoveredAspectId.split("-") : null;
+  const connectedPointIds = new Set<ChartPointId>();
+  if (selectedPointId) {
+    connectedPointIds.add(selectedPointId);
+    aspects.forEach((aspect) => {
+      if (aspect.from === selectedPointId) connectedPointIds.add(aspect.to);
+      if (aspect.to === selectedPointId) connectedPointIds.add(aspect.from);
+    });
+  }
   const clusters: ChartPoint[][] = [];
   const sortedPoints = [...points].sort((left, right) => left.longitude - right.longitude);
   let currentCluster: ChartPoint[] = [];
@@ -1122,7 +1130,7 @@ function ClearPlanetLayer({
   for (const point of sortedPoints) {
     const previous = currentCluster[currentCluster.length - 1];
 
-    if (!previous || circularDistance(previous.longitude, point.longitude) <= 5) {
+    if (!previous || circularDistance(previous.longitude, point.longitude) <= PLANET_CLUSTER_THRESHOLD_DEGREES) {
       currentCluster.push(point);
       continue;
     }
@@ -1139,7 +1147,7 @@ function ClearPlanetLayer({
       clusters.length > 0 &&
       firstCluster &&
       lastCluster &&
-      circularDistance(firstCluster.longitude, lastCluster.longitude) <= 5
+      circularDistance(firstCluster.longitude, lastCluster.longitude) <= PLANET_CLUSTER_THRESHOLD_DEGREES
     ) {
       clusters[0] = [...currentCluster, ...clusters[0]];
     } else {
@@ -1147,25 +1155,8 @@ function ClearPlanetLayer({
     }
   }
 
-  const pointLayouts = new Map<
-    ChartPointId,
-    {
-      glyphX: number;
-      glyphY: number;
-      labelX: number;
-      labelY: number;
-      labelAnchor: "start" | "end";
-      retrogradeX: number;
-      retrogradeY: number;
-      connectorX1: number;
-      connectorY1: number;
-      connectorX2: number;
-      connectorY2: number;
-      hasConnector: boolean;
-      isClustered: boolean;
-      clusterPointIds: ChartPointId[];
-    }
-  >();
+  const pointLayouts = new Map<ChartPointId, ClearPointLayout>();
+  const pointsById = new Map(points.map((point) => [point.id, point] as const));
 
   clusters.forEach((cluster) => {
     const sortedCluster = [...cluster].sort((left, right) => left.longitude - right.longitude);
@@ -1193,32 +1184,31 @@ function ClearPlanetLayer({
         return lng;
       });
       const centerLongitude = ((adjustedLngs.reduce((a, b) => a + b, 0) / conflictGroup.length) + 360) % 360;
-
+      const centerIndex = (conflictGroup.length - 1) / 2;
       conflictGroup.forEach((point, index) => {
-        const fanLongitude = isClustered
-          ? centerLongitude + (index - (conflictGroup.length - 1) / 2) * PLANET_CLUSTER_FAN_STEP
+        const rawFanLongitude = isClustered
+          ? centerLongitude + (index - centerIndex) * PLANET_CLUSTER_FAN_STEP
           : point.longitude;
+        const fanLongitude = normalizeLongitude(rawFanLongitude);
         const angle = pointAngle(fanLongitude, ascendant);
-        const radialX = Math.cos(angle);
-        const desiredGlyphRadius = isClustered ? PLANET_CLUSTER_CALLOUT_RADIUS : PLANET_LABEL_RADIUS + 8;
+        const desiredGlyphRadius = isClustered ? PLANET_CLUSTER_CALLOUT_RADIUS : PLANET_LABEL_RADIUS;
         const glyphRadius = radiusInsideChart(desiredGlyphRadius, angle);
-        const [connectorX1, connectorY1] = pointAtRadius(ZODIAC_INNER, point.longitude, ascendant);
         const [glyphX, glyphY] = pointAtRadius(glyphRadius, fanLongitude, ascendant);
-        const labelSide = radialX >= 0 ? 1 : -1;
 
         pointLayouts.set(point.id, {
           glyphX,
           glyphY,
-          labelX: glyphX + labelSide * 28,
-          labelY: glyphY + 10,
-          labelAnchor: labelSide > 0 ? "start" : "end",
-          retrogradeX: glyphX + labelSide * 28,
-          retrogradeY: glyphY - 10,
-          connectorX1,
-          connectorY1,
+          visualLongitude: normalizeLongitude(fanLongitude),
+          labelX: glyphX,
+          labelY: glyphY + 18,
+          labelAnchor: "middle",
+          retrogradeX: glyphX,
+          retrogradeY: glyphY + 42,
+          connectorX1: glyphX,
+          connectorY1: glyphY,
           connectorX2: glyphX,
           connectorY2: glyphY,
-          hasConnector: isClustered,
+          hasConnector: false,
           isClustered,
           clusterPointIds,
         });
@@ -1228,6 +1218,20 @@ function ClearPlanetLayer({
 
   return (
     <>
+      <SymbolicAspects
+        aspects={aspects}
+        pointsById={pointsById}
+        pointLayouts={pointLayouts}
+        dictionary={dictionary}
+        ascendant={ascendant}
+        activePointId={selectedPointId}
+        hoveredPointId={hoveredPointId}
+        highlightedAspectId={hoveredAspectId}
+        hoveredAspectId={hoveredAspectVisualId}
+        selectedAspectId={selectedAspectId}
+        onHoverAspect={onHoverAspect}
+        onClickAspect={onClickAspect}
+      />
       {points.map((point) => {
         const layout = pointLayouts.get(point.id);
         if (!layout) {
@@ -1245,24 +1249,27 @@ function ClearPlanetLayer({
               : "url(#planet-glow)";
         const partOfHighlightedAspect =
           highlightedAspect && (highlightedAspect[0] === point.id || highlightedAspect[1] === point.id);
-        const opacity = panelOpen && selectedPointId
-          ? selectedPointId === point.id || partOfHighlightedAspect
-            ? 1
-            : 0.6
-          : 1;
-        const tooltip = `${dictionary.result.points[point.id]} - ${String(point.degreeInSign).padStart(2, "0")}° ${String(point.minutesInSign).padStart(2, "0")}'`;
+        const pointFocusVisible = !selectedPointId || connectedPointIds.has(point.id) || Boolean(partOfHighlightedAspect);
+        if (!pointFocusVisible) {
+          return null;
+        }
+        const opacity = 1;
+        const tooltip = dictionary.result.points[point.id];
 
         return (
           <g
             key={`clear-point-${point.id}`}
             data-chart-point={point.id}
             transform={scale !== 1 ? pointScaleTransform(layout.glyphX, layout.glyphY, scale) : undefined}
-            onClick={() => onSelect(point.id, {
-              id: point.id,
-              xPercent: (layout.glyphX / SIZE) * 100,
-              yPercent: (layout.glyphY / SIZE) * 100,
-              content: tooltip,
-            })}
+            onClick={(event) => {
+              event.stopPropagation();
+              onSelect(point.id, {
+                id: point.id,
+                xPercent: (layout.glyphX / SIZE) * 100,
+                yPercent: (layout.glyphY / SIZE) * 100,
+                content: tooltip,
+              });
+            }}
             onMouseEnter={() =>
               onHover(
                 {
@@ -1330,15 +1337,17 @@ function ClearPlanetLayer({
               />
             ) : null}
 
-            <circle
-              cx={round(layout.glyphX)}
-              cy={round(layout.glyphY)}
-              r={20}
-              fill="rgba(255,253,248,0.96)"
-              stroke="rgba(0,102,255,0.24)"
-              strokeWidth={0.9}
-              filter="url(#planet-glow)"
-            />
+            {selectedPointId && connectedPointIds.has(point.id) && !active ? (
+              <circle
+                cx={round(layout.glyphX)}
+                cy={round(layout.glyphY)}
+                r={point.id === selectedPointId ? 31 : 24}
+                fill="none"
+                stroke={point.id === selectedPointId ? "rgba(245,215,130,0.82)" : "rgba(124,191,255,0.46)"}
+                strokeWidth={point.id === selectedPointId ? 1.5 : 1}
+                filter="url(#planet-hover-glow)"
+              />
+            ) : null}
 
             <text
               x={round(layout.glyphX + planetGlyphOffset(point.id).x)}
@@ -1348,7 +1357,7 @@ function ClearPlanetLayer({
               fill={planetGlyphInk(point.id)}
               fillOpacity="1"
               fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
-              fontSize="27"
+              fontSize="38"
               fontWeight="700"
               stroke="#fffdf8"
               strokeWidth={1.35}
@@ -1357,6 +1366,57 @@ function ClearPlanetLayer({
             >
               {POINT_SYMBOLS[point.id] ?? POINT_GLYPHS[point.id] ?? point.glyph}
             </text>
+
+            {showDegrees ? (
+              <>
+                <text
+                  x={round(layout.glyphX + ((CX - layout.glyphX) / (Math.hypot(layout.glyphX - CX, layout.glyphY - CY) || 1)) * 40)}
+                  y={round(layout.glyphY + ((CY - layout.glyphY) / (Math.hypot(layout.glyphX - CX, layout.glyphY - CY) || 1)) * 40)}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  fill="#061331"
+                  fontFamily="'Inter', sans-serif"
+                  fontSize="19"
+                  fontWeight="800"
+                  letterSpacing="0"
+                  stroke="#fffdf8"
+                  strokeWidth={2.2}
+                  paintOrder="stroke fill"
+                >
+                  {String(point.degreeInSign).padStart(2, "0")}°
+                </text>
+                <text
+                  x={round(layout.glyphX + ((CX - layout.glyphX) / (Math.hypot(layout.glyphX - CX, layout.glyphY - CY) || 1)) * 72)}
+                  y={round(layout.glyphY + ((CY - layout.glyphY) / (Math.hypot(layout.glyphX - CX, layout.glyphY - CY) || 1)) * 72)}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  fill={planetGlyphInk(point.id)}
+                  fontFamily="'Segoe UI Symbol', 'Noto Sans Symbols 2', 'Arial Unicode MS', serif"
+                  fontSize="14"
+                  fontWeight="800"
+                  stroke="#fffdf8"
+                  strokeWidth={1.9}
+                  paintOrder="stroke fill"
+                >
+                  {pointSignGlyph(point)}
+                </text>
+                <text
+                  x={round(layout.glyphX + ((CX - layout.glyphX) / (Math.hypot(layout.glyphX - CX, layout.glyphY - CY) || 1)) * 94)}
+                  y={round(layout.glyphY + ((CY - layout.glyphY) / (Math.hypot(layout.glyphX - CX, layout.glyphY - CY) || 1)) * 94)}
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  fill="#061331"
+                  fontFamily="'Inter', sans-serif"
+                  fontSize="10.5"
+                  fontWeight="800"
+                  stroke="#fffdf8"
+                  strokeWidth={1.8}
+                  paintOrder="stroke fill"
+                >
+                  {String(point.minutesInSign).padStart(2, "0")}'
+                </text>
+              </>
+            ) : null}
 
             {false ? (
               <text
@@ -1441,28 +1501,22 @@ export function ChartLayerRail() {
       onClick: toggleDegrees,
     },
   ];
-  const swipeHintLabel =
-    locale === "en" ? "Swipe to see more" : locale === "it" ? "Scorri per vedere di piu" : "Desliza para ver mas";
-
   return (
-    <div className="sarita-chart-layer-rail mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col overflow-hidden bg-transparent py-3 sm:max-w-[34rem] sm:p-4 lg:mx-0 lg:w-auto lg:min-w-[12rem]">
-      <p className="mb-3 text-center font-serif text-[14px] italic lowercase tracking-[0.15em] text-[#5c4a24] lg:text-left">
+    <div className="sarita-chart-layer-rail flex w-full flex-wrap items-center justify-center gap-2 bg-transparent py-1">
+      <p className="sr-only">
         {dictionary.result.toggles.view}
       </p>
-      <p className="mb-2 text-center text-[10px] font-medium uppercase tracking-[0.2em] text-[#8a7a4e] sm:hidden">
-        {swipeHintLabel} {"\u2192"}
-      </p>
-      <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [-webkit-overflow-scrolling:touch] sm:grid sm:grid-cols-2 sm:gap-x-3 sm:gap-y-3 sm:overflow-visible sm:pb-0 lg:flex lg:flex-col lg:gap-3 [&::-webkit-scrollbar]:hidden">
+      <div className="flex flex-wrap justify-center gap-2 sm:justify-end">
         {controls.map((control) => (
           <button
             key={control.id}
             type="button"
             onClick={control.onClick}
             className={[
-              "flex min-h-10 shrink-0 items-center gap-2 border px-3 py-2 text-left transition focus-visible:outline-none sm:min-h-0 sm:min-w-0 sm:border-0 sm:px-0 sm:py-1 sm:gap-3",
+              "inline-flex h-8 shrink-0 items-center gap-2 rounded-full border px-3 text-left transition focus-visible:outline-none",
               control.active
-                ? "border-[#f5d782]/34 bg-[#f5d782]/10 text-[#fffaf0]"
-                : "border-[#d7e7ff]/16 bg-transparent text-[#d7e7ff]/72",
+                ? "border-[#f5d782]/42 bg-[#f5d782]/12 text-[#fffaf0] shadow-[0_0_18px_rgba(245,215,130,0.08)]"
+                : "border-[#d7e7ff]/16 bg-[#061331]/28 text-[#d7e7ff]/72",
             ].join(" ")}
             aria-pressed={control.active}
             aria-label={control.label}
@@ -1478,7 +1532,7 @@ export function ChartLayerRail() {
             />
             <span
               className={[
-                "whitespace-nowrap text-[11px] font-semibold uppercase leading-4 tracking-[0.12em] sm:min-w-0 sm:whitespace-normal sm:break-words sm:text-[13px] sm:normal-case sm:tracking-normal sm:leading-5",
+                "whitespace-nowrap text-[9.5px] font-semibold uppercase leading-4 tracking-[0.12em] sm:text-[10px]",
                 control.active ? "text-[#fffaf0]" : "text-[#d7e7ff]/72",
               ].join(" ")}
             >
@@ -1506,6 +1560,7 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
     selectPoint,
     selectAspect,
     openPanel,
+    closePanel,
   } = useChartStore();
   const [hoveredPointId, setHoveredPointId] = useState<ChartPointId | null>(null);
   const [tooltip, setTooltip] = useState<TooltipState | null>(null);
@@ -1570,6 +1625,10 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
     setHoveredPointId(null);
     setHoveredAspectVisualId(null);
     setTooltip(null);
+    if (selectedPointId === pointId) {
+      closePanel();
+      return;
+    }
     selectPoint(pointId);
     openPanel();
   }
@@ -1705,7 +1764,7 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
   return (
     <div
       className={[
-        "relative aspect-square w-[min(100%,calc(100vw-1.5rem))] max-w-[54rem] rounded-full bg-transparent drop-shadow-[0_18px_42px_rgba(30,26,46,0.18)] lg:w-[640px]",
+        "relative aspect-square w-[min(100%,calc(100vw-1.5rem))] max-w-[58rem] rounded-full bg-transparent drop-shadow-[0_18px_42px_rgba(30,26,46,0.18)] lg:w-[760px] xl:w-[820px]",
         viewerMode ? "w-full max-w-none lg:w-full" : "",
         !viewerMode ? "mb-28 sm:mb-32" : "",
       ].join(" ")}
@@ -1719,7 +1778,17 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
         </div>
       ) : null}
 
-      <svg viewBox={`0 0 ${SIZE} ${SIZE}`} className="relative h-full w-full overflow-visible" role="img" aria-label="Carta natal interactiva">
+      <svg
+        viewBox={`0 0 ${SIZE} ${SIZE}`}
+        className="relative h-full w-full overflow-visible"
+        role="img"
+        aria-label="Carta natal interactiva"
+        onClick={() => {
+          if (selectedPointId) {
+            closePanel();
+          }
+        }}
+      >
         <defs>
           <radialGradient id="wheel-bg" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="rgba(255,250,240,0.36)" />
@@ -1762,24 +1831,12 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
             <TickRing ascendant={ascendant} showDegrees={showDegrees} points={displayPoints} />
             <HouseGeometry chart={displayChart} ascendant={ascendant} />
             <AxisLines chart={displayChart} ascendant={ascendant} />
-            <SymbolicAspects
-              aspects={displayAspects}
-              pointsById={pointsById}
-              dictionary={dictionary}
-              ascendant={ascendant}
-              activePointId={selectedPointId}
-              hoveredPointId={hoveredPointId}
-              highlightedAspectId={hoveredAspectId}
-              hoveredAspectId={hoveredAspectVisualId}
-              selectedAspectId={selectedAspect?.id ?? null}
-              onHoverAspect={handleAspectHover}
-              onClickAspect={handleAspectClick}
-            />
-
             <circle cx={CX} cy={CY} r={12} fill="none" stroke="rgba(181,163,110,0.5)" strokeWidth={0.5} />
 
             <ClearPlanetLayer
               points={displayPoints}
+              houses={chart.houses}
+              aspects={displayAspects}
               dictionary={dictionary}
               ascendant={ascendant}
               selectedPointId={selectedPointId}
@@ -1787,8 +1844,12 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
               panelOpen={panelOpen}
               showDegrees={showDegrees}
               hoveredAspectId={hoveredAspectId}
+              hoveredAspectVisualId={hoveredAspectVisualId}
+              selectedAspectId={selectedAspect?.id ?? null}
               onSelect={handleSelect}
               onHover={handlePointHover}
+              onHoverAspect={handleAspectHover}
+              onClickAspect={handleAspectClick}
             />
         </>
       </svg>
@@ -1805,4 +1866,3 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
     </div>
   );
 }
-

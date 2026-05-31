@@ -24,7 +24,7 @@
   "home": {
     "eyebrow": "Natal chart · Birth chart",
     "subtitle": "The sky on the day you were born",
-    "cta": "See my natal chart",
+    "cta": "Create my natal chart",
     "scrollCue": "Discover more",
     "currentMoon": {
       "eyebrow": "Current moon",
@@ -50,7 +50,7 @@
           "title": "If this is your first time",
           "description": "Begin with your natal chart and understand the basic structure of your energy.",
           "href": "/form",
-          "cta": "See my natal chart"
+          "cta": "Create my natal chart"
         },
         {
           "title": "If you want the current moment",
@@ -394,6 +394,11 @@
       "eyebrow": "synastry",
       "title": "Two charts, one field.",
       "intro": "Synastry compares two natal charts to see how they fit together. It is not a compatibility score: it is a map of how the bond works between two people, where it flows easily, where there is tension, and what the relationship is here to teach. Enter the other person's birth details to see the analysis.",
+      "savedChartsTitle": "Use a saved chart",
+      "savedChartsBody": "Choose a natal chart you have already generated in your account and compare it without entering the data again.",
+      "savedChartCreated": "Created:",
+      "savedPeopleTitle": "Saved people",
+      "savedPeopleBody": "People you previously added from synastry. You can compare them again or remove them from this list.",
       "addPerson": "Add new person",
       "saving": "Saving...",
       "saveAndCompare": "Save and compare",
@@ -1025,6 +1030,7 @@
     "read": "Read +",
     "retry": "Try again",
     "generateError": "Could not generate. Try again.",
+    "dailyLimitError": "You have reached your daily reading limit. Try again tomorrow.",
     "lockedEyebrow": "Locked reading",
     "lockedTitle": "This reading requires an active plan",
     "lockedBody": "Your chart is saved. Upgrade your plan to generate this reading and come back to it anytime.",

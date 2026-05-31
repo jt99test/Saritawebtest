@@ -1,11 +1,12 @@
 "use client";
 
-import { Suspense, useEffect, useState, useSyncExternalStore } from "react";
+import { Suspense, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 import { AccountButton } from "@/components/auth/account-button";
 import { NatalChartExperience } from "@/components/chart/natal-chart-experience";
+import { preloadRemainingLunarReadings } from "@/components/chart/chart-preparation-gate";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
@@ -66,6 +67,7 @@ function ResultPageContent() {
   const [banner, setBanner] = useState<"success" | "cancelled" | null>(
     checkoutStatus === "success" || checkoutStatus === "cancelled" ? checkoutStatus : null,
   );
+  const lunarPreloadKeyRef = useRef<string | null>(null);
   const result = useSyncExternalStore(
     subscribeToChartResult,
     readStoredChartResult,
@@ -84,6 +86,26 @@ function ResultPageContent() {
 
     return undefined;
   }, [checkoutStatus]);
+
+  useEffect(() => {
+    const plan = result?.usage?.plan;
+    if (!result || (plan !== "pro" && plan !== "avanzado")) {
+      return;
+    }
+
+    const preloadKey = `${result.readingId ?? "unsaved"}:${locale}:${result.request?.gender ?? "unspecified"}`;
+    if (lunarPreloadKeyRef.current === preloadKey) {
+      return;
+    }
+
+    lunarPreloadKeyRef.current = preloadKey;
+    void preloadRemainingLunarReadings({
+      chart: result.chart,
+      locale,
+      readingId: result.readingId,
+      gender: result.request?.gender || undefined,
+    });
+  }, [locale, result]);
 
   return (
     <main className="sarita-result-observatory premium-noise relative isolate min-h-screen overflow-hidden bg-cosmic-950">
@@ -105,10 +127,10 @@ function ResultPageContent() {
           ) : null}
 
           <div className="sarita-result-topbar pointer-events-none fixed inset-x-0 top-0 z-[60]">
-            <div className="mx-auto grid min-h-[calc(env(safe-area-inset-top)+4rem)] max-w-[1180px] grid-cols-[2.75rem_1fr_2.75rem] items-end gap-2 px-5 pb-3 sm:min-h-14 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-4 sm:px-6 sm:pb-0 lg:px-8">
+            <div className="mx-auto grid min-h-[calc(env(safe-area-inset-top)+4rem)] max-w-[1180px] grid-cols-[2.75rem_1fr_2.75rem] items-end gap-2 px-5 pb-3 sm:h-14 sm:min-h-14 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-4 sm:px-6 sm:pb-0 lg:px-8">
             <Link
               href="/"
-              className="sarita-result-float-control pointer-events-auto flex h-10 w-10 items-center justify-center justify-self-start overflow-hidden rounded-full text-[1.6rem] leading-none text-[#fffdf8] transition hover:text-[#f5d782] sm:h-auto sm:w-auto sm:truncate sm:rounded-none sm:border-0 sm:bg-transparent sm:text-xs sm:font-medium sm:uppercase sm:tracking-[0.24em] sm:shadow-none"
+              className="sarita-result-float-control pointer-events-auto flex h-10 w-10 items-center justify-center justify-self-start overflow-hidden rounded-full text-[1.6rem] leading-none text-[#fffdf8] transition hover:text-[#f5d782] sm:w-auto sm:truncate sm:rounded-none sm:border-0 sm:bg-transparent sm:text-xs sm:font-medium sm:uppercase sm:tracking-[0.24em] sm:shadow-none"
               aria-label={dictionary.result.back}
             >
               <span className="sm:hidden">{"\u2039"}</span>
@@ -120,10 +142,10 @@ function ResultPageContent() {
               <span className="hidden sm:inline">{result?.saved ? dictionary.standalonePages.savedReading : ""}</span>
             </p>
 
-            <div className="pointer-events-auto flex min-w-0 items-center gap-2 justify-self-end sm:gap-4 sm:border-l sm:border-[#fffaf0]/14 sm:pl-4">
+            <div className="pointer-events-auto flex h-10 min-w-0 items-center gap-2 justify-self-end sm:gap-4 sm:border-l sm:border-[#fffaf0]/14 sm:pl-4 [&_button]:flex [&_button]:h-10 [&_button]:items-center">
               <Link
                 href="/form"
-                className="hidden text-right text-[10px] font-medium uppercase tracking-[0.16em] text-[#fffaf0]/72 transition hover:text-[#d7bd6a] min-[430px]:inline sm:text-xs sm:tracking-[0.24em]"
+                className="hidden h-10 items-center text-right text-[10px] font-medium uppercase tracking-[0.16em] text-[#fffaf0]/72 transition hover:text-[#d7bd6a] min-[430px]:inline-flex sm:text-xs sm:tracking-[0.24em]"
               >
                 {dictionary.form.back}
               </Link>

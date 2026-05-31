@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { getGeneralReadingCards } from "@/data/chart-readings";
+import { fetchAiReadingWithPolling } from "@/lib/ai-reading-client";
 import { hashNatalChart } from "@/lib/chart-hash";
 import { GENERAL_READING_THEMES, type GeneralReadingTheme } from "@/lib/general-reading";
 import { getAllCachedReadings, setCachedReading } from "@/lib/general-reading-cache";
@@ -22,23 +23,6 @@ type ChartGeneralReadingProps = {
 };
 
 const PLAN_REQUIRED_ERROR = "SARITA_PLAN_REQUIRED";
-const GENERATION_POLL_DELAY_MS = 2500;
-const GENERATION_POLL_ATTEMPTS = 36;
-
-function waitForGeneration(signal: AbortSignal) {
-  return new Promise<void>((resolve, reject) => {
-    const timeout = window.setTimeout(resolve, GENERATION_POLL_DELAY_MS);
-    signal.addEventListener(
-      "abort",
-      () => {
-        window.clearTimeout(timeout);
-        reject(new DOMException("Aborted", "AbortError"));
-      },
-      { once: true },
-    );
-  });
-}
-
 function isQuestionHeading(value: string) {
   const trimmed = value.trim();
   return trimmed.startsWith("¿") || trimmed.endsWith("?") || trimmed.includes("?");
@@ -174,25 +158,12 @@ export function ChartGeneralReading({ chart, dictionary, readingId, gender }: Ch
       setReadings((current) => ({ ...current, [theme]: current[theme] ?? "" }));
 
       try {
-        let response: Response | null = null;
-
-        for (let attempt = 0; attempt < GENERATION_POLL_ATTEMPTS; attempt += 1) {
-          response = await fetch("/api/general-reading", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ chart, theme, locale, readingId, gender }),
-            signal: controller.signal,
-          });
-
-          if (
-            response.status !== 409 ||
-            response.headers.get("X-Sarita-Generation-Status") !== "generating"
-          ) {
-            break;
-          }
-
-          await waitForGeneration(controller.signal);
-        }
+        const response = await fetchAiReadingWithPolling("/api/general-reading", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chart, theme, locale, readingId, gender }),
+          signal: controller.signal,
+        });
 
         if (!response) {
           throw new Error(dictionary.chart.generateError);

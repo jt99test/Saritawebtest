@@ -7,6 +7,7 @@ import worldLand from "world-atlas/land-110m.json";
 import worldCountries from "world-atlas/countries-110m.json";
 
 import { LocationAutocomplete } from "@/components/form/location-autocomplete";
+import { ReadingPreparationScreen } from "@/components/chart/reading-preparation-screen";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import {
   astrocartographyCacheKey,
@@ -309,6 +310,20 @@ export function AstrocartographyPage({ chart, request = null, dictionary, readin
       else next.add(angle);
       return next;
     });
+  }
+
+  if (selectedLocation && isLoadingReading && !reading && !readingError) {
+    return (
+      <ReadingPreparationScreen
+        title={locale === "en" ? "Generating astrocartography..." : locale === "it" ? "Genero l'astrocartografia..." : "Generando astrocartografia..."}
+        body={locale === "en"
+          ? "We are reading the strongest lines for this location before opening the map."
+          : locale === "it"
+            ? "Stiamo leggendo le linee principali di questo luogo prima di aprire la mappa."
+            : "Estamos leyendo las lineas principales de esta ubicacion antes de abrir el mapa."}
+        detail={selectedLocation.displayName}
+      />
+    );
   }
 
   return (

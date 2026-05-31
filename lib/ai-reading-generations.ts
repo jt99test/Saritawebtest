@@ -18,6 +18,7 @@ type AiReadingGenerationRow = {
 };
 
 const GENERATION_STATUS_KEY = "__saritaGenerationStatus";
+const GENERATION_REASON_KEY = "__saritaGenerationReason";
 const GENERATING_CONTENT = { [GENERATION_STATUS_KEY]: "generating" };
 const FAILED_CONTENT = { [GENERATION_STATUS_KEY]: "failed" };
 const DEFAULT_DAILY_AI_READING_LIMIT = 150;
@@ -158,6 +159,44 @@ export function aiGenerationStatusResponse(status: "generating" | "failed") {
       "X-Sarita-Generation-Status": status,
     },
   });
+}
+
+async function updateAiReadingGenerationStatus({
+  supabase,
+  user,
+  readingId,
+  scope,
+  itemKey,
+  locale,
+  cacheUserId,
+  content,
+}: SetAiReadingCacheInput) {
+  const normalized = normalizedLocale(locale);
+  const ownerId = getCacheUserId({ user, cacheUserId });
+  const client = getCacheSupabase({ supabase, user, cacheUserId });
+  let { error } = await client
+    .from("ai_reading_generations")
+    .update({ content, created_at: new Date().toISOString() })
+    .eq("user_id", ownerId)
+    .eq("reading_id", readingId)
+    .eq("scope", scope)
+    .eq("item_key", itemKey)
+    .eq("locale", normalized);
+
+  if (isMissingCreatedAtColumn(error)) {
+    const fallback = await client
+      .from("ai_reading_generations")
+      .update({ content })
+      .eq("user_id", ownerId)
+      .eq("reading_id", readingId)
+      .eq("scope", scope)
+      .eq("item_key", itemKey)
+      .eq("locale", normalized);
+
+    error = fallback.error;
+  }
+
+  return error;
 }
 
 export async function validateReadingGenerationAccess({
@@ -335,27 +374,16 @@ export async function reserveAiReadingGeneration({
 
   const normalized = normalizedLocale(locale);
   if (status === "failed" || staleGenerating) {
-    let { error } = await client
-      .from("ai_reading_generations")
-      .update({ content: GENERATING_CONTENT, created_at: new Date().toISOString() })
-      .eq("user_id", ownerId)
-      .eq("reading_id", readingId)
-      .eq("scope", scope)
-      .eq("item_key", itemKey)
-      .eq("locale", normalized);
-
-    if (isMissingCreatedAtColumn(error)) {
-      const fallback = await client
-        .from("ai_reading_generations")
-        .update({ content: GENERATING_CONTENT })
-        .eq("user_id", ownerId)
-        .eq("reading_id", readingId)
-        .eq("scope", scope)
-        .eq("item_key", itemKey)
-        .eq("locale", normalized);
-
-      error = fallback.error;
-    }
+    const error = await updateAiReadingGenerationStatus({
+      supabase,
+      user,
+      readingId,
+      scope,
+      itemKey,
+      locale,
+      cacheUserId,
+      content: GENERATING_CONTENT,
+    });
 
     if (error) {
       console.warn("AI reading generation reservation update failed; generating without cache reservation.", error.message);
@@ -378,7 +406,26 @@ export async function reserveAiReadingGeneration({
   if (error) {
     const latestContent = await getCachedAiReading({ supabase, user, readingId, scope, itemKey, locale, cacheUserId });
     const latestStatus = getAiGenerationStatus(latestContent);
-    if (latestStatus === "generating" || latestStatus === "failed") {
+    if (latestStatus === "failed") {
+      const updateError = await updateAiReadingGenerationStatus({
+        supabase,
+        user,
+        readingId,
+        scope,
+        itemKey,
+        locale,
+        cacheUserId,
+        content: GENERATING_CONTENT,
+      });
+
+      if (updateError) {
+        console.warn("AI reading failed-cache retry reservation failed.", updateError.message);
+        return { ok: false, response: aiGenerationStatusResponse(latestStatus) };
+      }
+
+      return { ok: true, reserved: true };
+    }
+    if (latestStatus === "generating") {
       return { ok: false, response: aiGenerationStatusResponse(latestStatus) };
     }
     if (latestContent) {
@@ -446,4 +493,16 @@ export async function setCachedAiReading({
 
 export async function markAiReadingGenerationFailed(input: AiReadingCacheInput) {
   await setCachedAiReading({ ...input, content: FAILED_CONTENT });
+}
+
+export async function markAiReadingGenerationFailedWithReason(
+  input: AiReadingCacheInput & { reason: string },
+) {
+  await setCachedAiReading({
+    ...input,
+    content: {
+      [GENERATION_STATUS_KEY]: "failed",
+      [GENERATION_REASON_KEY]: input.reason,
+    },
+  });
 }

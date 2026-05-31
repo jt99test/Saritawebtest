@@ -271,8 +271,10 @@ export function HomePage({ moonStatus }: HomePageProps) {
               </Link>
             </div>
 
-            <div className="ml-auto flex min-w-0 items-center gap-2 justify-self-end sm:gap-3 xl:gap-4">
-              <AccountButton tone="night" />
+            <div className="ml-auto flex h-12 min-w-0 items-center gap-2 justify-self-end sm:gap-3 xl:gap-4 [&_button]:inline-flex [&_button]:h-10 [&_button]:items-center [&_button]:leading-none">
+              <span className="inline-flex h-10 items-center">
+                <AccountButton tone="night" />
+              </span>
               <LanguageSelector
                 dictionary={dictionary}
                 locale={locale}

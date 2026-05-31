@@ -13,7 +13,7 @@ import {
   aiGenerationStatusResponse,
   getAiGenerationStatus,
   getCachedAiReading,
-  markAiReadingGenerationFailed,
+  markAiReadingGenerationFailedWithReason,
   reserveAiReadingGeneration,
   setCachedAiReading,
   validateReadingGenerationAccess,
@@ -265,7 +265,7 @@ export async function POST(request: Request) {
       assertGeneratedLanguage(content, locale);
     } catch (error) {
       console.error("General reading generation failed", error);
-      await markAiReadingGenerationFailed({
+      await markAiReadingGenerationFailedWithReason({
         supabase,
         user,
         readingId,
@@ -273,12 +273,13 @@ export async function POST(request: Request) {
         itemKey,
         locale,
         cacheUserId: access.cacheUserId,
+        reason: "model_or_language_error",
       });
       return new Response("General reading generation failed", { status: 502 });
     }
 
     if (!content) {
-      await markAiReadingGenerationFailed({
+      await markAiReadingGenerationFailedWithReason({
         supabase,
         user,
         readingId,
@@ -286,6 +287,7 @@ export async function POST(request: Request) {
         itemKey,
         locale,
         cacheUserId: access.cacheUserId,
+        reason: "empty_model_response",
       });
       return new Response("Empty model response", { status: 502 });
     }

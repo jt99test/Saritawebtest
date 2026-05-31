@@ -20,7 +20,7 @@ import {
   aiGenerationStatusResponse,
   getAiGenerationStatus,
   getCachedAiReading,
-  markAiReadingGenerationFailed,
+  markAiReadingGenerationFailedWithReason,
   reserveAiReadingGeneration,
   setCachedAiReading,
   validateReadingGenerationAccess,
@@ -700,7 +700,7 @@ ${localizedActionsPrompt}`;
       rawContent = extractTextContent(message);
     } catch (error) {
       console.error("Lunar report generation failed:", error);
-      await markAiReadingGenerationFailed({
+      await markAiReadingGenerationFailedWithReason({
         supabase,
         user,
         readingId,
@@ -708,6 +708,7 @@ ${localizedActionsPrompt}`;
         itemKey,
         locale,
         cacheUserId: access.cacheUserId,
+        reason: "model_error",
       });
       return new Response("Lunar report generation failed", { status: 502 });
     }
@@ -725,7 +726,7 @@ ${localizedActionsPrompt}`;
     }
 
     if (!prose) {
-      await markAiReadingGenerationFailed({
+      await markAiReadingGenerationFailedWithReason({
         supabase,
         user,
         readingId,
@@ -733,6 +734,7 @@ ${localizedActionsPrompt}`;
         itemKey,
         locale,
         cacheUserId: access.cacheUserId,
+        reason: "empty_model_response",
       });
       return new Response("Empty model response", { status: 502 });
     }
@@ -741,7 +743,7 @@ ${localizedActionsPrompt}`;
       assertGeneratedLanguage({ prose, actions: finalActions }, locale);
     } catch (error) {
       console.error("Lunar report language validation failed:", error);
-      await markAiReadingGenerationFailed({
+      await markAiReadingGenerationFailedWithReason({
         supabase,
         user,
         readingId,
@@ -749,6 +751,7 @@ ${localizedActionsPrompt}`;
         itemKey,
         locale,
         cacheUserId: access.cacheUserId,
+        reason: "language_validation_error",
       });
       return new Response("Lunar report language validation failed", { status: 502 });
     }

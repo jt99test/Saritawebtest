@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { DateTime } from "luxon";
 
@@ -46,6 +46,10 @@ type StreamState = {
 };
 
 type PreviewMap = Partial<Record<LunationType, LunarReportMetadata>>;
+type LoadReportOptions = {
+  background?: boolean;
+};
+type LoadReportResult = "loaded" | "skipped" | "rate-limited" | "failed";
 
 const REPORT_MONTH_FORMAT = "yyyy-LL";
 const REPORT_TYPES: LunationType[] = ["nueva", "llena", "nueva-2", "llena-2"];
@@ -144,6 +148,8 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
   const [previewLoading, setPreviewLoading] = useState(true);
   const [cachedReports, setCachedReports] = useState<Record<string, LunarReportCacheEntry>>({});
   const [streamState, setStreamState] = useState<Record<LunationType, StreamState>>(EMPTY_STREAM_STATE);
+  const inFlightReportsRef = useRef(new Set<LunationType>());
+  const preloadingRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -161,6 +167,8 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
       setPreviewError(null);
       setPreviewLoading(true);
       setStreamState(EMPTY_STREAM_STATE);
+      inFlightReportsRef.current.clear();
+      preloadingRef.current = false;
     })();
 
     return () => {
@@ -223,20 +231,20 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
   const prose = normalizeReadingText(activeStream.prose || cachedEntry?.prose || "");
   const actions = activeStream.actions ?? cachedEntry?.actions ?? null;
 
-  useEffect(() => {
-    if (!chartHash || !selectedMetadata || prose || activeStream.loading || activeStream.error) {
-      return;
-    }
-
-    void loadReport(selectedType);
-  }, [activeStream.error, activeStream.loading, chartHash, prose, selectedMetadata, selectedType]);
-
-  async function loadReport(type: LunationType) {
-    if (!chartHash) {
-      return;
+  const loadReport = useCallback(async (
+    type: LunationType,
+    options: LoadReportOptions = {},
+  ): Promise<LoadReportResult> => {
+    if (!chartHash || inFlightReportsRef.current.has(type)) {
+      return "skipped";
     }
 
     const cacheKey = reportKeyFor(year, month, type, locale, gender);
+    if (cachedReports[cacheKey]) {
+      return "skipped";
+    }
+
+    inFlightReportsRef.current.add(type);
 
     setStreamState((current) => ({
       ...current,
@@ -259,16 +267,18 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
     }).catch(() => null);
 
     if (!response?.ok || !response.body) {
+      const isRateLimited = response?.status === 429;
       setStreamState((current) => ({
         ...current,
         [type]: {
           prose: "",
           actions: null,
           loading: false,
-          error: dictionary.chart.generateError,
+          error: options.background ? null : isRateLimited ? dictionary.chart.dailyLimitError : dictionary.chart.generateError,
         },
       }));
-      return;
+      inFlightReportsRef.current.delete(type);
+      return isRateLimited ? "rate-limited" : "failed";
     }
 
     const reader = response.body.getReader();
@@ -336,10 +346,11 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
           prose: "",
           actions: null,
           loading: false,
-          error: dictionary.chart.generateError,
+          error: options.background ? null : dictionary.chart.generateError,
         },
       }));
-      return;
+      inFlightReportsRef.current.delete(type);
+      return "failed";
     }
 
     const nextEntry = {
@@ -363,7 +374,83 @@ export function LunaDelMesPage({ chart, dictionary, readingId, gender }: LunaDel
         error: null,
       },
     }));
-  }
+    inFlightReportsRef.current.delete(type);
+    return "loaded";
+  }, [
+    cachedReports,
+    chart,
+    chartHash,
+    dictionary.chart.dailyLimitError,
+    dictionary.chart.generateError,
+    gender,
+    locale,
+    month,
+    previews,
+    readingId,
+    year,
+  ]);
+
+  useEffect(() => {
+    if (!chartHash || !selectedMetadata || prose || activeStream.loading || activeStream.error) {
+      return;
+    }
+
+    void loadReport(selectedType);
+  }, [activeStream.error, activeStream.loading, chartHash, loadReport, prose, selectedMetadata, selectedType]);
+
+  useEffect(() => {
+    if (!chartHash || previewLoading || preloadingRef.current || !prose) {
+      return;
+    }
+
+    const availableTypes = REPORT_TYPES
+      .filter((type) => type !== selectedType && previews[type])
+      .sort((left, right) => lunationTime(previews[left]!, timezone) - lunationTime(previews[right]!, timezone));
+
+    if (availableTypes.length === 0) {
+      return;
+    }
+
+    let cancelled = false;
+    preloadingRef.current = true;
+
+    (async () => {
+      for (const type of availableTypes) {
+        if (cancelled) {
+          break;
+        }
+
+        const cacheKey = reportKeyFor(year, month, type, locale, gender);
+        if (cachedReports[cacheKey]) {
+          continue;
+        }
+
+        const result = await loadReport(type, { background: true });
+        if (result === "rate-limited") {
+          break;
+        }
+      }
+    })().finally(() => {
+      preloadingRef.current = false;
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    cachedReports,
+    chartHash,
+    gender,
+    loadReport,
+    locale,
+    month,
+    prose,
+    previewLoading,
+    previews,
+    selectedType,
+    timezone,
+    year,
+  ]);
 
   const toggleOptions = REPORT_TYPES.flatMap((type) => {
     const metadata = previews[type];

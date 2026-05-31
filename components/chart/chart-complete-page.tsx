@@ -2,13 +2,14 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 
-import { BiWheelChart } from "@/components/chart/bi-wheel-chart";
+import { BiWheelChart, type BiWheelInterAspect } from "@/components/chart/bi-wheel-chart";
+import { BiWheelAspectToggle } from "@/components/chart/bi-wheel-aspect-toggle";
 import { BiWheelInfoPanel } from "@/components/chart/bi-wheel-info-panel";
 import { LocationAutocomplete } from "@/components/form/location-autocomplete";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { calculateCurrentTransitsAction } from "@/lib/actions";
 import { fetchAiReadingWithPolling } from "@/lib/ai-reading-client";
-import type { ChartPoint, ChartPointId, HouseCusp, NatalChartData } from "@/lib/chart";
+import type { ChartPoint, ChartPointId, ChartReferencePointId, HouseCusp, NatalChartData } from "@/lib/chart";
 import { getInterpretiveHouse, getPointInterpretiveHouse, normalizeLongitude } from "@/lib/chart";
 import { hashNatalChart } from "@/lib/chart-hash";
 import type { FormValues } from "@/lib/chart-session";
@@ -55,6 +56,7 @@ const POINT_LABELS: Partial<Record<ChartPointId, string>> = {
   northNode: "Nodo norte",
   southNode: "Nodo sur",
   chiron: "Quirón",
+  lilith: "Lilith",
 };
 
 const ASPECT_LABELS: Record<ActiveTransit["aspectType"], string> = {
@@ -97,7 +99,7 @@ function ReadingSkeleton({ label }: { label: string }) {
   );
 }
 
-function pointLabel(id: ChartPointId, locale?: string) {
+function pointLabel(id: ChartReferencePointId, locale?: string) {
   return getPointLabel(id, locale);
 }
 
@@ -184,8 +186,22 @@ function normalizeTransitData(data: TransitData): TransitData {
   };
 }
 
-function findPoint(chart: NatalChartData, id: ChartPointId) {
+function isChartPointId(id: ChartReferencePointId): id is ChartPointId {
+  return id !== "ascendant" && id !== "descendant" && id !== "mc" && id !== "ic";
+}
+
+function findPoint(chart: NatalChartData, id: ChartReferencePointId) {
+  if (!isChartPointId(id)) return null;
   return chart.points.find((point) => point.id === id) ?? chart.extendedPoints?.find((point) => point.id === id);
+}
+
+function referenceHouse(chart: NatalChartData, id: ChartReferencePointId) {
+  if (id === "ascendant") return getHouseForLongitude(chart.meta.ascendant, chart.houses);
+  if (id === "descendant") return getHouseForLongitude(chart.meta.descendant, chart.houses);
+  if (id === "mc") return getHouseForLongitude(chart.meta.mc, chart.houses);
+  if (id === "ic") return getHouseForLongitude(chart.meta.ic, chart.houses);
+  const point = findPoint(chart, id);
+  return point ? getPointInterpretiveHouse(point, chart.houses) : undefined;
 }
 
 function getHouseForLongitude(longitude: number, houses: HouseCusp[]) {
@@ -212,6 +228,10 @@ function transitWeight(transit: ActiveTransit) {
     jupiter: 4,
     mars: 3,
     venus: 2,
+    northNode: 3,
+    southNode: 3,
+    chiron: 3,
+    lilith: 2,
   };
   const aspectWeight: Record<ActiveTransit["aspectType"], number> = {
     conjunction: 3,
@@ -229,6 +249,22 @@ function transitWeight(transit: ActiveTransit) {
 
 function topTransits(transits: ActiveTransit[]) {
   return [...transits].sort((a, b) => transitWeight(b) - transitWeight(a)).slice(0, 6);
+}
+
+function sortTransitsByRelevance(transits: ActiveTransit[]) {
+  return [...transits].sort((a, b) => transitWeight(b) - transitWeight(a));
+}
+
+function transitAspectQuality(type: ActiveTransit["aspectType"]): BiWheelInterAspect["quality"] {
+  if (type === "trine" || type === "sextile") {
+    return "harmonious";
+  }
+
+  if (type === "square" || type === "opposition" || type === "quincunx") {
+    return "tense";
+  }
+
+  return "neutral";
 }
 
 function activatedHouses(chart: NatalChartData, transits: ActiveTransit[], transitChart?: NatalChartData) {
@@ -289,6 +325,8 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
   const [selectedHouse, setSelectedHouse] = useState<number | null>(null);
   const [biWheelSelected, setBiWheelSelected] = useState<{ id: ChartPointId; ring: "inner" | "outer" } | null>(null);
   const [transitWheelMode, setTransitWheelMode] = useState<TransitWheelMode>("all");
+  const [showTransitAspectLines, setShowTransitAspectLines] = useState(true);
+  const [isLocationPanelOpen, setIsLocationPanelOpen] = useState(false);
   const [chartHash, setChartHash] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const aiCacheHash = chartHash ? (readingId ? `reading:${readingId}:${chartHash}` : chartHash) : null;
@@ -352,8 +390,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
       orb: t.orb,
       strength: t.strength,
       natalHouse: (() => {
-        const natalPoint = findPoint(chart, t.natalPlanet);
-        return natalPoint ? getPointInterpretiveHouse(natalPoint, chart.houses) : undefined;
+        return referenceHouse(chart, t.natalPlanet);
       })(),
       transitingHouse: (() => {
         const transitingPoint = findPoint(result.chart, t.transitingPlanet);
@@ -430,8 +467,23 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
     if (!result?.ok) return [];
     return topTransits(result.transits);
   }, [result]);
-  const activeTransitInnerIds = useMemo(() => [...new Set(activeTransits.map((transit) => transit.natalPlanet))], [activeTransits]);
-  const activeTransitOuterIds = useMemo(() => [...new Set(activeTransits.map((transit) => transit.transitingPlanet))], [activeTransits]);
+  const visibleTransits = useMemo(() => {
+    if (!result?.ok) return [];
+    return sortTransitsByRelevance(result.transits);
+  }, [result]);
+  const transitInterAspects = useMemo<BiWheelInterAspect[]>(() => (
+    visibleTransits.map((transit) => ({
+      pointA: transit.natalPlanet,
+      pointB: transit.transitingPlanet,
+      type: transit.aspectType,
+      orb: transit.orb,
+      quality: transitAspectQuality(transit.aspectType),
+    }))
+  ), [visibleTransits]);
+  const activeTransitInnerIds = useMemo(() => (
+    [...new Set(visibleTransits.map((transit) => transit.natalPlanet).filter(isChartPointId))]
+  ), [visibleTransits]);
+  const activeTransitOuterIds = useMemo(() => [...new Set(visibleTransits.map((transit) => transit.transitingPlanet))], [visibleTransits]);
 
   const houses = useMemo(() => activatedHouses(chart, activeTransits, result?.ok ? result.chart : undefined), [chart, activeTransits, result]);
   const dominantTransit = activeTransits[0];
@@ -460,18 +512,80 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
   }, [transitWheelMode]);
 
   return (
-    <section className="mx-auto max-w-6xl py-10">
-      <div className="text-center">
-        <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">
-          {transitCopy.eyebrow}
-        </p>
-        <h2 className="mt-2 break-words font-serif text-[34px] leading-tight text-ivory sm:text-[42px] md:text-[56px]">
-          {transitCopy.title}
-        </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[#3a3048]">
-          {transitCopy.description}
-        </p>
-        <div className="mx-auto mt-8 max-w-3xl border-y border-[#d7e7ff]/14 bg-[#061331]/36 px-4 py-5 text-left shadow-[0_18px_54px_rgba(0,0,0,0.26),0_0_34px_rgba(0,102,255,0.12)] backdrop-blur-sm sm:px-6 sm:py-6">
+    <section className="mx-auto max-w-6xl py-6 sm:py-8">
+      <div className="mx-auto max-w-5xl">
+        <div className="grid gap-4 border-b border-[#d7e7ff]/14 pb-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f5d782]">
+              {transitCopy.eyebrow}
+            </p>
+            <h2 className="mt-1 break-words font-serif text-[28px] leading-tight text-ivory sm:text-[36px]">
+              {transitCopy.title}
+            </h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-[#d7e7ff]/78">
+              {transitCopy.description}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+            <span className="inline-flex min-h-10 items-center border border-[#d7e7ff]/16 bg-[#061331]/52 px-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#fffaf0]">
+              {result?.ok ? dateLabel(result.generatedAt, locale) : transitCopy.nowLabel ?? "Now"}
+            </span>
+            <button
+              type="button"
+              onClick={() => setIsLocationPanelOpen((current) => !current)}
+              className="inline-flex min-h-10 items-center border border-[#f5d782]/36 bg-[#f5d782]/10 px-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#f5d782] transition hover:border-[#f5d782]/58 hover:bg-[#f5d782]/16"
+              aria-expanded={isLocationPanelOpen}
+            >
+              {isLocationPanelOpen ? "Cerrar ubicacion" : transitCopy.changeCurrentLocation}
+            </button>
+          </div>
+        </div>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-b border-[#d7e7ff]/10 pb-3">
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
+              {transitCopy.currentSkyFor}
+            </p>
+            <p className="notranslate mt-1 truncate text-sm font-semibold text-[#fffaf0]" translate="no">
+              {currentLocation?.displayName ?? request?.location ?? chart.event.locationLabel}
+            </p>
+          </div>
+          {result?.ok ? (
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#d7e7ff]/68">
+              {transitCopy.calculatedAt} {dateLabel(result.generatedAt, locale)}
+            </p>
+          ) : null}
+        </div>
+
+        {isLocationPanelOpen ? (
+          <div className="mt-4 border border-[#d7e7ff]/16 bg-[#061331]/54 p-4 shadow-[0_16px_42px_rgba(0,0,0,0.18)] backdrop-blur-sm">
+            <label className="block">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#f5d782]">
+                {transitCopy.changeCurrentLocation}
+              </span>
+              <div className="mt-2 [&_input]:min-h-[3.5rem] [&_input]:border-[#d7e7ff]/18 [&_input]:bg-[#030814]/54 [&_input]:shadow-[0_0_24px_rgba(0,102,255,0.1)]">
+                <LocationAutocomplete
+                  value={currentLocationInput}
+                  selectedLocation={currentLocation}
+                  onInputChange={(value) => {
+                    setCurrentLocationInput(value);
+                    if (currentLocation?.displayName !== value) setCurrentLocation(null);
+                  }}
+                  onSelect={(place) => {
+                    setCurrentLocationInput(place.displayName);
+                    setCurrentLocation(place);
+                    setIsLocationPanelOpen(false);
+                  }}
+                  dictionary={dictionary}
+                />
+              </div>
+            </label>
+            <p className="mt-3 text-xs leading-5 text-[#d7e7ff]/70">
+              {transitCopy.currentLocationNote}
+            </p>
+          </div>
+        ) : null}
+
+        <div className="hidden mx-auto mt-8 max-w-3xl border-y border-[#d7e7ff]/14 bg-[#061331]/36 px-4 py-5 text-left shadow-[0_18px_54px_rgba(0,0,0,0.26),0_0_34px_rgba(0,102,255,0.12)] backdrop-blur-sm sm:px-6 sm:py-6">
           <div className="grid gap-5 md:grid-cols-[0.82fr_1.18fr] md:items-start">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#8a7a4e]">
@@ -512,7 +626,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
           </div>
         </div>
         {result?.ok ? (
-          <p className="mt-4 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24]">
+          <p className="hidden mt-4 text-[12px] font-semibold uppercase tracking-[0.2em] text-[#5c4a24]">
             {transitCopy.calculatedAt} {dateLabel(result.generatedAt, locale)}
             {currentLocation ? ` · ${currentLocation.displayName}` : ""}
           </p>
@@ -526,7 +640,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
         ) : null}
       </div>
 
-      <div className="mt-10">
+      <div className="mt-6">
         {result?.ok ? (
           <>
             <WheelModeToggle
@@ -535,18 +649,22 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
               activeCount={activeTransitInnerIds.length + activeTransitOuterIds.length}
               copy={transitCopy}
             />
+            <BiWheelAspectToggle enabled={showTransitAspectLines} onChange={setShowTransitAspectLines} locale={locale} />
             <BiWheelChart
               innerChart={chart}
               outerChart={result.chart}
               innerLabel={chart.event.name}
               outerLabel={dictionary.result.primaryTabs.complete}
               variant="synastry"
+              context="transits"
               innerPointIds={transitWheelMode === "active" ? activeTransitInnerIds : undefined}
               outerPointIds={transitWheelMode === "active" ? activeTransitOuterIds : undefined}
+              interAspects={transitInterAspects}
+              showInterAspects={showTransitAspectLines}
               selectedInnerPointId={biWheelSelected?.ring === "inner" ? biWheelSelected.id : null}
               selectedOuterPointId={biWheelSelected?.ring === "outer" ? biWheelSelected.id : null}
-              onInnerPlanetSelect={(id) => setBiWheelSelected({ id, ring: "inner" })}
-              onOuterPlanetSelect={(id) => setBiWheelSelected({ id, ring: "outer" })}
+              onInnerPlanetSelect={(id) => setBiWheelSelected(id ? { id, ring: "inner" } : null)}
+              onOuterPlanetSelect={(id) => setBiWheelSelected(id ? { id, ring: "outer" } : null)}
             />
             {biWheelSelected ? (
               <BiWheelInfoPanel
@@ -555,7 +673,7 @@ export function ChartCompletePage({ chart, request, dictionary, readingId }: Cha
                 ring={biWheelSelected.ring}
                 innerChart={chart}
                 outerChart={result.chart}
-                activeTransits={activeTransits}
+                activeTransits={visibleTransits}
                 onClose={() => setBiWheelSelected(null)}
               />
             ) : null}

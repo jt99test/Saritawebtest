@@ -1,5 +1,9 @@
 .claude
+.git
+.next
+node_modules
 swisseph-source
+data/swisseph
 tmp-*.txt
 tmp_*.png
 *.tsbuildinfo

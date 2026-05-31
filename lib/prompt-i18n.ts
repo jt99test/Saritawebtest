@@ -12,7 +12,7 @@ export function promptLanguageInstruction(locale?: string) {
   }
 
   if (nextLocale === "it") {
-    return "Scrivi interamente in italiano naturale. Non usare parole spagnole o inglesi, salvo nomi propri o chiavi JSON stabili. IMPORTANTE: Scrivi ESCLUSIVAMENTE in italiano. Non usare parole spagnole come \"que\", \"como\", \"cuando\", \"trabajo\", \"relaciones\", \"vida\" o simili. Solo italiano.";
+    return "Scrivi interamente in italiano naturale. Non usare parole spagnole o inglesi, salvo nomi propri o chiavi JSON stabili. Usa il tu informale, mai Lei/voi o formule di cortesia. IMPORTANTE: Scrivi ESCLUSIVAMENTE in italiano. Non usare parole spagnole come \"que\", \"como\", \"cuando\", \"trabajo\", \"relaciones\", \"vida\" o simili. Solo italiano.";
   }
 
   return "Escribe en espanol de Espana, con trato de tu. No uses ingles ni italiano salvo nombres propios o claves JSON estables.";
