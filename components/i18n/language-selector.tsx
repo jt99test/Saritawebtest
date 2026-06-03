@@ -20,7 +20,7 @@ export function LanguageSelector({
   return (
     <div
       className={[
-        "inline-flex min-w-0 shrink items-center gap-1 rounded-full px-1.5 py-1.5 backdrop-blur-md sm:gap-1.5 sm:px-2 sm:py-2",
+        "inline-flex min-w-0 shrink items-center gap-1 rounded-full px-1.5 py-1.5 backdrop-blur-md sm:gap-1 sm:px-2 sm:py-2",
         night
           ? "border border-[#d7e7ff]/14 bg-[#071437]/70 shadow-[0_10px_28px_rgba(0,0,0,0.14)]"
           : "border border-[#d7e7ff]/16 bg-[#071437]/78 shadow-[0_10px_28px_rgba(0,0,0,0.18),0_0_22px_rgba(0,102,255,0.1)]",
@@ -28,7 +28,7 @@ export function LanguageSelector({
     >
       <span
         className={[
-          "hidden px-2 text-[12px] font-semibold uppercase tracking-[0.24em] xl:inline",
+          "hidden px-2 text-[11px] font-semibold uppercase tracking-[0.18em] 2xl:inline",
           night ? "text-[#d7e7ff]/72" : "text-[#d7e7ff]/72",
         ].join(" ")}
       >
@@ -45,7 +45,7 @@ export function LanguageSelector({
               onClick={() => onChange(option)}
               aria-pressed={isActive}
               className={[
-                "rounded-full px-2.5 py-1.5 text-[11px] font-semibold tracking-[0.16em] transition sm:px-3 sm:text-[12px] sm:tracking-[0.2em]",
+                "rounded-full px-2.5 py-1.5 text-[11px] font-semibold tracking-[0.12em] transition sm:px-2.5 sm:text-[12px] sm:tracking-[0.14em] 2xl:px-3 2xl:tracking-[0.18em]",
                 isActive
                   ? night
                     ? "border border-[#f5d782]/42 bg-[#f5d782]/16 text-[#f5d782] shadow-[0_6px_14px_rgba(0,0,0,0.18)]"

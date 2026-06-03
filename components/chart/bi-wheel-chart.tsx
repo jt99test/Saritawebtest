@@ -143,7 +143,7 @@ const PLANET_GLYPH_OFFSETS: Partial<Record<ChartPointId, { x: number; y: number 
   northNode: { x: 0, y: 2.2 },
   southNode: { x: 0, y: 2.2 },
   chiron: { x: 0, y: 1.3 },
-  partOfFortune: { x: 0, y: 1.4 },
+  partOfFortune: { x: 0, y: -1 },
   lilith: { x: 0, y: 1.4 },
   ceres: { x: 0, y: 1.4 },
 };
@@ -921,6 +921,7 @@ export function BiWheelChart({
     onOuterPlanetSelect?.(null);
   };
   const selectInnerPoint = (pointId: ChartPointId) => {
+    setHoveredPointTag(null);
     if (selectedInner === pointId) {
       clearSelection();
       return;
@@ -931,6 +932,7 @@ export function BiWheelChart({
     onInnerPlanetSelect?.(pointId);
   };
   const selectOuterPoint = (pointId: ChartPointId) => {
+    setHoveredPointTag(null);
     if (selectedOuter === pointId) {
       clearSelection();
       return;
@@ -979,7 +981,6 @@ export function BiWheelChart({
         className="relative mb-16 h-auto w-full overflow-visible sm:mb-20"
         role="img"
         aria-label={outerChart ? `${innerLabel} / ${outerLabel}` : innerLabel}
-        onClick={clearSelection}
       >
         <defs>
           <radialGradient id="bw-field-glow" cx="50%" cy="50%" r="50%">
@@ -1450,7 +1451,7 @@ export function BiWheelChart({
 
         {outerChart && variant === "solar-return" ? <SolarReturnAngleMarkers chart={outerChart} ascendant={ascendant} /> : null}
 
-        {hoveredPointTag ? (
+        {hoveredPointTag && !activePoint ? (
           <g pointerEvents="none" transform={`translate(${round(hoveredTagX)} ${round(hoveredTagY)})`}>
             <rect
               x={round(-hoveredTagWidth / 2)}

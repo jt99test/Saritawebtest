@@ -680,14 +680,6 @@ export function BiWheelInfoPanel({
     <AnimatePresence>
       {selectedId && point && displayPoint ? (
         <>
-        {!isDesktop ? (
-          <button
-            type="button"
-            aria-label={sectionCopy.close}
-            onClick={onClose}
-            className="fixed inset-x-0 top-0 z-30 h-[28vh] bg-black/0"
-          />
-        ) : null}
         <motion.aside
           key={`${ring}-${selectedId}`}
           initial={isDesktop ? { x: "100%", opacity: 0.92 } : { y: "100%", opacity: 0.92 }}

@@ -322,14 +322,6 @@ export function PlanetDetailPanel({ chart, dictionary, readingId, gender }: Prop
     <AnimatePresence>
       {panelOpen ? (
         <>
-          {!isDesktop ? (
-            <button
-              type="button"
-              aria-label={dictionary.common.close}
-              onClick={closePanel}
-              className="fixed inset-x-0 top-0 z-30 h-[32vh] bg-black/0"
-            />
-          ) : null}
           <motion.aside
             key="drawer-panel"
             initial={isDesktop ? { x: "100%", opacity: 0.92 } : { y: "100%", opacity: 0.92 }}

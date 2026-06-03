@@ -123,6 +123,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
     { href: "/lecturas", label: dictionary.common.viewReadings },
     { href: "/cuenta", label: dictionary.nav.account },
     { href: "/precios", label: dictionary.nav.pricing },
+    { href: "/sarita-shakti", label: dictionary.nav.saritaShakti },
     { href: "/ayuda", label: dictionary.nav.help },
   ];
   const revealTransition = { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as const };
@@ -163,21 +164,22 @@ export function HomePage({ moonStatus }: HomePageProps) {
         </div>
         <Container className="relative z-10 flex min-h-screen flex-col px-4 pb-5 pt-[calc(env(safe-area-inset-top)+1rem)] sm:pb-10 sm:pt-6">
           <div className="sarita-mobile-constellation-header flex items-center justify-between sm:hidden">
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(true)}
+            <Link
+              href="/sarita-shakti"
               className="sarita-floating-mark flex h-11 w-11 items-center justify-center rounded-full font-serif text-[1.7rem] text-[#fffaf0]"
-              aria-label="Menu"
+              aria-label={dictionary.nav.saritaShakti}
             >
               S
-            </button>
+            </Link>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="sarita-night-pill ml-auto mr-1 flex h-11 w-11 items-center justify-center rounded-full text-lg"
-              aria-label={dictionary.common.account}
+              className="sarita-night-pill ml-auto mr-1 flex h-11 w-11 flex-col items-center justify-center gap-1.5 rounded-full"
+              aria-label="Menu"
             >
-              ♙
+              <span className="h-[2px] w-5 rounded-full bg-[#fffaf0] shadow-[0_0_8px_rgba(255,250,240,0.45)]" />
+              <span className="h-[2px] w-5 rounded-full bg-[#fffaf0] shadow-[0_0_8px_rgba(255,250,240,0.45)]" />
+              <span className="h-[2px] w-5 rounded-full bg-[#fffaf0] shadow-[0_0_8px_rgba(255,250,240,0.45)]" />
             </button>
           </div>
 
@@ -251,27 +253,27 @@ export function HomePage({ moonStatus }: HomePageProps) {
             </div>
           ) : null}
 
-          <div className="sarita-night-nav mx-auto hidden w-full max-w-[75rem] grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 overflow-hidden rounded-full px-4 py-3.5 backdrop-blur-md sm:grid xl:gap-5 xl:px-6">
-            <div className="flex min-w-0 items-center gap-3 overflow-hidden justify-self-start xl:gap-4">
-              <span className="h-px w-8 shrink-0 bg-gradient-to-r from-dusty-gold to-transparent xl:w-14" />
-              <p className="truncate text-[10px] font-semibold uppercase tracking-[0.28em] text-[#f5d782]">
-                {dictionary.home.eyebrow}
-              </p>
+          <div className="sarita-night-nav mx-auto hidden h-[4.9rem] w-full max-w-[82rem] flex-nowrap items-center gap-3 overflow-hidden rounded-full px-4 backdrop-blur-md sm:flex xl:px-5">
+            <div className="flex shrink-0 items-center gap-3 xl:gap-4">
+              <span className="h-px w-10 shrink-0 bg-gradient-to-r from-dusty-gold to-transparent xl:w-16" />
             </div>
 
-            <div className="hidden min-w-0 max-w-full items-center justify-center gap-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#fffaf0]/74 lg:flex xl:gap-5 xl:tracking-[0.18em] 2xl:gap-6 2xl:tracking-[0.2em]">
-              <Link href="/form" className="max-w-[13rem] truncate transition hover:text-[#f5d782]">
+            <div className="hidden min-w-0 flex-1 items-center justify-center gap-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-[#fffaf0]/74 lg:flex xl:gap-4 2xl:gap-6 2xl:text-[11px] 2xl:tracking-[0.18em]">
+              <Link href="/form" className="max-w-[12rem] truncate transition hover:text-[#f5d782]">
                 {dictionary.common.newReading}
               </Link>
-              <Link href="#lecturas" className="max-w-[9rem] truncate transition hover:text-[#f5d782]">
+              <Link href="#lecturas" className="max-w-[8rem] truncate transition hover:text-[#f5d782]">
                 {dictionary.common.viewReadings}
               </Link>
-              <Link href="/precios" className="max-w-[7rem] truncate transition hover:text-[#f5d782]">
+              <Link href="/precios" className="max-w-[6rem] truncate transition hover:text-[#f5d782]">
                 {dictionary.nav.pricing}
+              </Link>
+              <Link href="/sarita-shakti" className="max-w-[8rem] truncate transition hover:text-[#f5d782]">
+                {dictionary.nav.saritaShakti}
               </Link>
             </div>
 
-            <div className="ml-auto flex h-12 min-w-0 items-center gap-2 justify-self-end sm:gap-3 xl:gap-4 [&_button]:inline-flex [&_button]:h-10 [&_button]:items-center [&_button]:leading-none">
+            <div className="ml-auto flex h-12 shrink-0 items-center gap-2 sm:gap-3 xl:gap-4 [&_button]:inline-flex [&_button]:h-10 [&_button]:items-center [&_button]:leading-none">
               <span className="inline-flex h-10 items-center">
                 <AccountButton tone="night" />
               </span>
@@ -509,6 +511,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
             <div className="mt-20 flex flex-wrap justify-center gap-x-4 gap-y-2 text-[10px] uppercase tracking-[0.14em] text-[#fffaf0]/62 sm:mt-5 sm:gap-x-5 sm:text-[12px] sm:tracking-[0.18em]">
               <span className="basis-full text-center text-[10px] tracking-[0.18em] text-[#f5d782] sm:hidden">© 2026 SARITA</span>
               <Link href="/precios" className="transition hover:text-dusty-gold">{dictionary.nav.pricing}</Link>
+              <Link href="/sarita-shakti" className="transition hover:text-dusty-gold">{dictionary.nav.saritaShakti}</Link>
               <Link href="/ayuda" className="transition hover:text-dusty-gold">{dictionary.nav.help}</Link>
               <Link href="/privacidad" className="transition hover:text-dusty-gold">{dictionary.legal.privacy}</Link>
               <Link href="/terminos" className="transition hover:text-dusty-gold">{dictionary.legal.terms}</Link>

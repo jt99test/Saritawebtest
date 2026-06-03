@@ -122,7 +122,7 @@ const PLANET_GLYPH_OFFSETS: Partial<Record<ChartPointId, { x: number; y: number 
   northNode: { x: 0, y: 2.2 },
   southNode: { x: 0, y: 2.2 },
   chiron: { x: 0, y: 1.3 },
-  partOfFortune: { x: 0, y: 1.4 },
+  partOfFortune: { x: 0, y: -1 },
   lilith: { x: 0, y: 1.4 },
   ceres: { x: 0, y: 1.4 },
 };
@@ -586,7 +586,7 @@ function SymbolicAspects({
             role="button"
             tabIndex={0}
             aria-label={tooltip}
-            style={{ cursor: "pointer" }}
+            style={{ cursor: "pointer", outline: "none" }}
             onClick={(event) => {
               event.stopPropagation();
               onClickAspect(aspect);
@@ -745,7 +745,7 @@ function _PlanetLayer({
             role="button"
             aria-label={tooltip}
             tabIndex={0}
-            style={{ cursor: "pointer", opacity }}
+            style={{ cursor: "pointer", opacity, outline: "none" }}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
@@ -992,7 +992,7 @@ function _AstroSeekPlanetLayer({
             role="button"
             aria-label={tooltip}
             tabIndex={0}
-            style={{ cursor: "pointer", opacity }}
+            style={{ cursor: "pointer", opacity, outline: "none" }}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
@@ -1297,7 +1297,7 @@ function ClearPlanetLayer({
             role="button"
             aria-label={tooltip}
             tabIndex={0}
-            style={{ cursor: "pointer", opacity }}
+            style={{ cursor: "pointer", opacity, outline: "none" }}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
                 event.preventDefault();
@@ -1769,7 +1769,7 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
         !viewerMode ? "mb-28 sm:mb-32" : "",
       ].join(" ")}
     >
-      {tooltip ? (
+      {tooltip && !panelOpen ? (
         <div
           className="pointer-events-none absolute z-30 hidden -translate-x-1/2 -translate-y-[calc(100%+0.85rem)] rounded-2xl border border-dusty-gold/45 bg-[#fffaf0] px-3 py-2 text-xs font-semibold leading-6 text-[#1e1a2e] shadow-[0_18px_45px_rgba(0,0,0,0.28)] md:block"
           style={{ left: `${tooltip.xPercent}%`, top: `${tooltip.yPercent}%` }}
@@ -1783,11 +1783,6 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
         className="relative h-full w-full overflow-visible"
         role="img"
         aria-label="Carta natal interactiva"
-        onClick={() => {
-          if (selectedPointId) {
-            closePanel();
-          }
-        }}
       >
         <defs>
           <radialGradient id="wheel-bg" cx="50%" cy="50%" r="50%">
