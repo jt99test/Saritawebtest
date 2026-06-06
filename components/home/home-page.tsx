@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import type { User } from "@supabase/supabase-js";
 
@@ -11,14 +12,22 @@ import { setStoredLocale, useStoredLocale } from "@/components/i18n/use-stored-l
 import { Container } from "@/components/ui/container";
 import { showNotice } from "@/components/ui/notice-provider";
 import { PrimaryButton } from "@/components/ui/primary-button";
+import { safeSetStorageItem } from "@/lib/browser-storage";
 import { getSignLabel } from "@/lib/chart-labels";
-import { clearChartSession } from "@/lib/chart-session";
+import { CHART_RESULT_KEY, clearChartSession, type ChartCalculationResult } from "@/lib/chart-session";
 import { dictionaries, type Locale } from "@/lib/i18n";
 import type { CurrentMoonStatus } from "@/lib/lunar.server";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
 type HomePageProps = {
   moonStatus: CurrentMoonStatus;
+  latestReading: {
+    id: string;
+    name: string;
+    type: string | null;
+    created_at: string;
+    chart_data: ChartCalculationResult;
+  } | null;
 };
 
 const FEATURE_SYMBOLS = ["\u263d", "\u2609", "\u2644", "\u260c", "\u2609", "\u26ad", "\u2641"] as const;
@@ -27,13 +36,38 @@ const INTRO_VIDEO_URLS: Partial<Record<Locale, string>> = {
   it: "https://www.loom.com/share/4ac67c6bae7b4656a31d76e63d3b9fac",
 };
 
+function latestReadingCopy(locale: Locale) {
+  if (locale === "en") {
+    return {
+      eyebrow: "Saved reading",
+      title: "Open your last chart",
+      cta: "View previous reading",
+    };
+  }
+
+  if (locale === "it") {
+    return {
+      eyebrow: "Lettura salvata",
+      title: "Apri la tua ultima carta",
+      cta: "Vedi lettura precedente",
+    };
+  }
+
+  return {
+    eyebrow: "Lectura guardada",
+    title: "Abrir tu última carta",
+    cta: "Ver lectura anterior",
+  };
+}
+
 function introHelpLabel(locale: Locale) {
   if (locale === "en") return "First time here? See how SARITA works";
   if (locale === "it") return "Prima volta qui? Guarda come funziona SARITA";
   return "¿Primera vez aquí? Mira cómo funciona SARITA";
 }
 
-export function HomePage({ moonStatus }: HomePageProps) {
+export function HomePage({ moonStatus, latestReading }: HomePageProps) {
+  const router = useRouter();
   const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
@@ -106,9 +140,24 @@ export function HomePage({ moonStatus }: HomePageProps) {
     setMobileMenuOpen(false);
   }
 
+  function openLatestReading() {
+    if (!latestReading) {
+      router.push("/lecturas");
+      return;
+    }
+
+    if (safeSetStorageItem("session", CHART_RESULT_KEY, JSON.stringify(latestReading.chart_data))) {
+      router.push("/resultado");
+      return;
+    }
+
+    router.push("/lecturas");
+  }
+
   const mobileFeaturedItems = showAllFeatures ? features : features.slice(0, 3);
   const moonCopy = dictionary.home.currentMoon;
   const startHereCopy = dictionary.home.startHere;
+  const savedReadingCopy = latestReadingCopy(locale);
   const moonPhaseLabel = moonCopy.phases[moonStatus.phase];
   const moonPhaseDescription = moonCopy.descriptions[moonStatus.phase];
   const moonSignLabel = getSignLabel(moonStatus.sign, locale);
@@ -288,7 +337,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
 
           <div className="relative z-10 mx-auto flex min-h-[calc(100svh-6.5rem)] w-full max-w-5xl items-center justify-center pb-40 pt-8 text-center sm:min-h-[calc(100svh-10.5rem)] sm:pb-32 sm:pt-8">
             <motion.div
-              className="mx-auto mb-14 flex w-full max-w-[42rem] flex-col items-center gap-4 sm:mb-0 sm:gap-6"
+              className="mx-auto mb-14 flex w-full max-w-[42rem] translate-y-12 flex-col items-center gap-4 sm:mb-0 sm:translate-y-0 sm:gap-6"
               initial="hidden"
               animate="show"
               variants={{ hidden: {}, show: {} }}
@@ -325,7 +374,7 @@ export function HomePage({ moonStatus }: HomePageProps) {
 
               <motion.a
                 href="#empieza"
-                className="absolute bottom-24 left-1/2 -translate-x-1/2 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#fffaf0]/58 sm:bottom-20"
+                className="hidden"
                 variants={{
                   hidden: { opacity: 0, y: 12 },
                   show: { opacity: 1, y: 0 },
@@ -349,6 +398,15 @@ export function HomePage({ moonStatus }: HomePageProps) {
               >
                 {dictionary.home.cta}
               </PrimaryButton>
+              {latestReading ? (
+                <PrimaryButton
+                  type="button"
+                  onClick={openLatestReading}
+                  className="min-h-12 w-[min(22rem,calc(100vw-3rem))] px-5 py-3 text-[0.68rem] uppercase tracking-[0.16em] sm:w-[min(24rem,calc(100vw-3rem))]"
+                >
+                  {savedReadingCopy.cta}: <span className="notranslate" translate="no">{latestReading.name}</span>
+                </PrimaryButton>
+              ) : null}
               {introVideoUrl ? (
                 <a
                   href={introVideoUrl}
@@ -359,7 +417,14 @@ export function HomePage({ moonStatus }: HomePageProps) {
                   {introHelpLabel(locale)}
                 </a>
               ) : null}
+              <a
+                href="#empieza"
+                className="text-center text-[10px] font-semibold uppercase tracking-[0.22em] text-[#fffaf0]/58 transition hover:text-[#f5d782] sm:text-[11px]"
+              >
+                {dictionary.home.scrollCue} ↓
+              </a>
             </motion.div>
+
           </div>
 
           <div id="empieza" className="relative z-10 -mx-4 mt-6 px-4 pt-8 pb-3 sm:mx-0 sm:mt-0 sm:px-0 sm:py-4">

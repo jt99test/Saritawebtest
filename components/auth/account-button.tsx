@@ -172,7 +172,7 @@ export function AccountButton({ compact = false, tone = "light" }: AccountButton
     ? "sarita-night-pill flex h-10 w-10 items-center justify-center rounded-full text-lg transition"
     : "sarita-night-pill flex h-10 w-10 items-center justify-center rounded-full text-lg transition";
   const textClassName = tone === "night"
-    ? "max-w-[6.8rem] truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[#d7e7ff]/84 transition hover:text-[#f5d782] min-[430px]:text-xs min-[430px]:tracking-[0.2em]"
+    ? "whitespace-nowrap text-[10px] font-semibold uppercase tracking-[0.14em] text-[#d7e7ff]/84 transition hover:text-[#f5d782] min-[430px]:text-xs min-[430px]:tracking-[0.2em]"
     : "max-w-[6.8rem] truncate text-[10px] font-semibold uppercase tracking-[0.14em] text-[#d7e7ff]/84 transition hover:text-[#f5d782] min-[430px]:text-xs min-[430px]:tracking-[0.2em]";
 
   if (!user) {
