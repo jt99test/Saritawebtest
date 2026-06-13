@@ -64,6 +64,7 @@ function ResultPageContent() {
   const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
   const checkoutStatus = searchParams.get("checkout");
+  const backHref = searchParams.get("from") === "lecturas" ? "/lecturas" : "/";
   const [banner, setBanner] = useState<"success" | "cancelled" | null>(
     checkoutStatus === "success" || checkoutStatus === "cancelled" ? checkoutStatus : null,
   );
@@ -129,7 +130,7 @@ function ResultPageContent() {
           <div className="sarita-result-topbar pointer-events-none fixed inset-x-0 top-0 z-[60]">
             <div className="mx-auto grid min-h-[calc(env(safe-area-inset-top)+4rem)] max-w-[1180px] grid-cols-[2.75rem_1fr_2.75rem] items-end gap-2 px-5 pb-3 sm:h-14 sm:min-h-14 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-4 sm:px-6 sm:pb-0 lg:px-8">
             <Link
-              href="/"
+              href={backHref}
               className="sarita-result-float-control pointer-events-auto flex h-10 w-10 items-center justify-center justify-self-start overflow-hidden rounded-full text-[1.6rem] leading-none text-[#fffdf8] transition hover:text-[#f5d782] sm:w-auto sm:truncate sm:rounded-none sm:border-0 sm:bg-transparent sm:text-xs sm:font-medium sm:uppercase sm:tracking-[0.24em] sm:shadow-none"
               aria-label={dictionary.result.back}
             >

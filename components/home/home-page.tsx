@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import type { User } from "@supabase/supabase-js";
 
@@ -12,9 +11,8 @@ import { setStoredLocale, useStoredLocale } from "@/components/i18n/use-stored-l
 import { Container } from "@/components/ui/container";
 import { showNotice } from "@/components/ui/notice-provider";
 import { PrimaryButton } from "@/components/ui/primary-button";
-import { safeSetStorageItem } from "@/lib/browser-storage";
 import { getSignLabel } from "@/lib/chart-labels";
-import { CHART_RESULT_KEY, clearChartSession, type ChartCalculationResult } from "@/lib/chart-session";
+import { clearChartSession, type ChartCalculationResult } from "@/lib/chart-session";
 import { dictionaries, type Locale } from "@/lib/i18n";
 import type { CurrentMoonStatus } from "@/lib/lunar.server";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
@@ -40,23 +38,23 @@ function latestReadingCopy(locale: Locale) {
   if (locale === "en") {
     return {
       eyebrow: "Saved reading",
-      title: "Open your last chart",
-      cta: "View previous reading",
+      title: "Open your saved charts",
+      cta: "View readings",
     };
   }
 
   if (locale === "it") {
     return {
       eyebrow: "Lettura salvata",
-      title: "Apri la tua ultima carta",
-      cta: "Vedi lettura precedente",
+      title: "Apri le tue carte salvate",
+      cta: "Vedi letture",
     };
   }
 
   return {
     eyebrow: "Lectura guardada",
-    title: "Abrir tu última carta",
-    cta: "Ver lectura anterior",
+    title: "Abrir tus cartas guardadas",
+    cta: "Ver lecturas",
   };
 }
 
@@ -67,7 +65,6 @@ function introHelpLabel(locale: Locale) {
 }
 
 export function HomePage({ moonStatus, latestReading }: HomePageProps) {
-  const router = useRouter();
   const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
@@ -138,20 +135,6 @@ export function HomePage({ moonStatus, latestReading }: HomePageProps) {
   function showInstallPrompt() {
     window.dispatchEvent(new Event("sarita:show-install-prompt"));
     setMobileMenuOpen(false);
-  }
-
-  function openLatestReading() {
-    if (!latestReading) {
-      router.push("/lecturas");
-      return;
-    }
-
-    if (safeSetStorageItem("session", CHART_RESULT_KEY, JSON.stringify(latestReading.chart_data))) {
-      router.push("/resultado");
-      return;
-    }
-
-    router.push("/lecturas");
   }
 
   const mobileFeaturedItems = showAllFeatures ? features : features.slice(0, 3);
@@ -400,11 +383,10 @@ export function HomePage({ moonStatus, latestReading }: HomePageProps) {
               </PrimaryButton>
               {latestReading ? (
                 <PrimaryButton
-                  type="button"
-                  onClick={openLatestReading}
+                  href="/lecturas"
                   className="min-h-12 w-[min(22rem,calc(100vw-3rem))] px-5 py-3 text-[0.68rem] uppercase tracking-[0.16em] sm:w-[min(24rem,calc(100vw-3rem))]"
                 >
-                  {savedReadingCopy.cta}: <span className="notranslate" translate="no">{latestReading.name}</span>
+                  {savedReadingCopy.cta}
                 </PrimaryButton>
               ) : null}
               {introVideoUrl ? (

@@ -35,7 +35,13 @@ function getStoredResult(reading: StoredReading): ChartCalculationResult | null 
   } as ChartCalculationResult;
 }
 
-export function ReadingsList({ readings, isAdmin = false }: { readings: StoredReading[]; isAdmin?: boolean }) {
+export function ReadingsList({
+  readings,
+  isAdmin = false,
+}: {
+  readings: StoredReading[];
+  isAdmin?: boolean;
+}) {
   const router = useRouter();
   const locale = useStoredLocale();
   const dictionary = dictionaries[locale];
@@ -84,7 +90,7 @@ export function ReadingsList({ readings, isAdmin = false }: { readings: StoredRe
     }
 
     if (safeSetStorageItem("session", CHART_RESULT_KEY, JSON.stringify(result))) {
-      router.push("/resultado");
+      router.push("/resultado?from=lecturas");
     }
   }
 
