@@ -104,6 +104,18 @@ function chartSummaryLabels(locale?: string) {
   return labels[localeKey(locale)];
 }
 
+function angleTransitLanguageRule(locale?: string): string {
+  if (locale === "en") {
+    return `When mentioning transits to the Ascendant, Descendant, MC, or IC, preserve the exact aspect from the transit list. Do not say "near" or "close to" an angle unless the aspect is a conjunction. For trine, sextile, square, or opposition, name that aspect instead.`;
+  }
+
+  if (locale === "it") {
+    return `Quando citi transiti all'Ascendente, al Discendente, al MC o all'IC, conserva l'aspetto esatto indicato nella lista. Non dire "vicino" a un angolo salvo che l'aspetto sia una congiunzione. Per trigono, sestile, quadratura o opposizione, nomina quell'aspetto.`;
+  }
+
+  return `Cuando menciones tránsitos al Ascendente, Descendente, Medio Cielo o Fondo del Cielo, conserva el aspecto exacto de la lista. No digas "cerca" de un ángulo salvo que el aspecto sea una conjunción. Si es trígono, sextil, cuadratura u oposición, nombra ese aspecto.`;
+}
+
 function buildChartSummary(chart: NatalChartData, locale?: string) {
   const labels = chartSummaryLabels(locale);
   const pointLines = chart.points.map((point) => {
@@ -210,11 +222,13 @@ async function enrichTransitSummaries({
 - 1-2 short sentences. Maximum 34 words total.
 - Explain what the transit activates in the person's concrete life and close with one practical cue.
 - You may name the planet or aspect if useful, but avoid heavy jargon.
+- ${angleTransitLanguageRule(locale)}
 - Tone: a direct astrologer friend, clear and useful.`
         : `Ogni testo:
 - 1-2 frasi brevi. Massimo 34 parole totali.
 - Spiega che cosa attiva il transito nella vita concreta della persona e chiudi con una pista pratica.
 - Puoi nominare il pianeta o l'aspetto se aiuta, ma senza gergo pesante.
+- ${angleTransitLanguageRule(locale)}
 - Tono: amica diretta che conosce l'astrologia, chiaro e utile.`;
     const transitsLabel = locale === "en" ? "Transits:" : "Transiti:";
     const topicLabel = locale === "en" ? "Theme" : "Tema";
@@ -270,6 +284,7 @@ Cada texto:
 - 1-2 frases cortas. Total máximo 34 palabras.
 - Explica qué activa ese tránsito en la vida concreta de la persona y cierra con una pista práctica.
 - Puede nombrar el planeta o el aspecto si ayuda, pero sin jerga pesada.
+- ${angleTransitLanguageRule(locale)}
 - Tono: amiga directa que sabe astrología, claro y útil.
 
 Tránsitos:
@@ -364,6 +379,8 @@ ${buildChartSummary(chart, locale)}
 YOUR TASK:
 Write ONE paragraph of 80-100 words. Start with which Moon it is and which house it activates. Say how it may show up this month in ${name}'s life with one real example. Briefly mention the most relevant transit if there is one. End with something concrete to do or avoid. No headings. No multiple paragraphs.
 
+${angleTransitLanguageRule(locale)}
+
 Do not rewrite Sarita's message: use it as a base and express it in a friendly tone. Sarita is the astrological authority; you translate it into a close conversation.
 
 ${genderPromptInstruction(gender, locale)}
@@ -392,6 +409,8 @@ ${buildChartSummary(chart, locale)}
 
 COMPITO:
 Scrivi UN paragrafo di 80-100 parole. Inizia dicendo che Luna e e quale casa attiva. Spiega come si fara notare questo mese nella vita di ${name} con un esempio reale. Cita brevemente il transito piu rilevante, se c'e. Chiudi con qualcosa di concreto da fare o evitare. Niente titoli. Niente paragrafi multipli.
+
+${angleTransitLanguageRule(locale)}
 
 Non riscrivere il messaggio di Sarita: usalo come base ed esprimilo in tono amico. L'autorita astrologica e Sarita; tu la traduci in una conversazione vicina.
 
@@ -423,6 +442,8 @@ Escribe UN párrafo de 80-100 palabras. Empieza con qué Luna es y qué casa
 activa. Di cómo se va a notar ese mes en la vida de ${name} con un ejemplo
 real. Menciona brevemente el tránsito más relevante si lo hay. Termina con
 algo concreto que hacer o evitar. Sin subtítulos. Sin párrafos múltiples.
+
+${angleTransitLanguageRule(locale)}
 
 No reescribas el mensaje de Sarita: úsalo como base y exprésalo en el tono amigo. La autoridad astrológica es de Sarita; tú la traduces a una conversación cercana.
 
