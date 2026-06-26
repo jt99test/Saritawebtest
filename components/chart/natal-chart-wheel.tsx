@@ -1159,7 +1159,8 @@ function ClearPlanetLayer({
   const pointsById = new Map(points.map((point) => [point.id, point] as const));
 
   clusters.forEach((cluster) => {
-    const sortedCluster = [...cluster].sort((left, right) => left.longitude - right.longitude);
+    const crossesZodiacStart = Math.max(...cluster.map((point) => point.longitude)) - Math.min(...cluster.map((point) => point.longitude)) > 180;
+    const sortedCluster = crossesZodiacStart ? cluster : [...cluster].sort((left, right) => left.longitude - right.longitude);
 
     const conflictGroups: ChartPoint[][] = [];
     let subGroup: ChartPoint[] = [sortedCluster[0]];
