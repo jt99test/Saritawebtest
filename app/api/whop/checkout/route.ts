@@ -8,6 +8,19 @@ function getOrigin(request: Request) {
   return request.headers.get("origin") ?? process.env.NEXT_PUBLIC_SITE_URL ?? "https://saritaastrology.com";
 }
 
+async function getCurrentWhopMembershipId(
+  supabase: Awaited<ReturnType<typeof createServerSupabaseClient>>,
+  userId: string,
+) {
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("whop_membership_id")
+    .eq("id", userId)
+    .maybeSingle();
+
+  return profile?.whop_membership_id ?? null;
+}
+
 export async function POST(request: Request) {
   const supabase = await createServerSupabaseClient();
   const {
@@ -26,6 +39,7 @@ export async function POST(request: Request) {
 
   const whop = getWhopClient();
   const productId = getWhopProductForPriceKey(priceKey);
+  const previousWhopMembershipId = priceKey === "lavado" ? null : await getCurrentWhopMembershipId(supabase, user.id);
 
   try {
     const product = await whop.products.retrieve(productId);
@@ -47,6 +61,7 @@ export async function POST(request: Request) {
         supabase_user_id: user.id,
         price_key: priceKey,
         product_id: productId,
+        previous_whop_membership_id: previousWhopMembershipId,
         type: priceKey === "lavado" ? "lavado" : "subscription",
         provider: "whop",
       },

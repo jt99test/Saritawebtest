@@ -18,6 +18,7 @@ type WhopMetadata = {
   supabase_user_id?: unknown;
   price_key?: unknown;
   product_id?: unknown;
+  previous_whop_membership_id?: unknown;
   type?: unknown;
 };
 
@@ -32,6 +33,9 @@ function productIdFromEventData(data: Record<string, unknown>) {
     return product.id;
   }
 
+  const payment = paymentFromEventData(data);
+  if (payment) return productIdFromEventData(payment);
+
   return null;
 }
 
@@ -42,11 +46,21 @@ function membershipIdFromEventData(data: Record<string, unknown>) {
     return membership.id;
   }
 
+  const payment = paymentFromEventData(data);
+  if (payment) return membershipIdFromEventData(payment);
+
   return typeof data.membership_id === "string" ? data.membership_id : null;
 }
 
 function paymentIdFromEventData(data: Record<string, unknown>) {
-  return typeof data.id === "string" && data.id.startsWith("pay_") ? data.id : null;
+  if (typeof data.id === "string" && data.id.startsWith("pay_")) return data.id;
+  const payment = paymentFromEventData(data);
+  return typeof payment?.id === "string" && payment.id.startsWith("pay_") ? payment.id : null;
+}
+
+function paymentFromEventData(data: Record<string, unknown>) {
+  const payment = data.payment;
+  return payment && typeof payment === "object" ? payment as Record<string, unknown> : null;
 }
 
 function whopUserIdFromEventData(data: Record<string, unknown>) {
@@ -81,10 +95,19 @@ function normalizeWhopEventType(eventType: string) {
 }
 
 async function metadataForEventData(data: Record<string, unknown>) {
-  const metadata = data.metadata && typeof data.metadata === "object" ? data.metadata as WhopMetadata : null;
+  const payment = paymentFromEventData(data);
+  const metadataSource = data.metadata && typeof data.metadata === "object" ? data : payment;
+  const metadata = metadataSource?.metadata && typeof metadataSource.metadata === "object"
+    ? metadataSource.metadata as WhopMetadata
+    : null;
   if (metadataValue(metadata, "supabase_user_id")) return metadata;
 
-  const checkoutConfigurationId = typeof data.checkout_configuration_id === "string" ? data.checkout_configuration_id : null;
+  const checkoutConfigurationId =
+    typeof data.checkout_configuration_id === "string"
+      ? data.checkout_configuration_id
+      : typeof payment?.checkout_configuration_id === "string"
+        ? payment.checkout_configuration_id
+        : null;
   if (!checkoutConfigurationId) return metadata;
 
   try {
@@ -132,6 +155,20 @@ async function sendLavadoReceipt(userId: string, amount: string) {
   });
 }
 
+async function cancelPreviousWhopMembership(metadata: WhopMetadata | null | undefined, currentMembershipId: string | null) {
+  const previousMembershipId = metadataValue(metadata, "previous_whop_membership_id");
+
+  if (!previousMembershipId || previousMembershipId === currentMembershipId) {
+    return;
+  }
+
+  try {
+    await getWhopClient().memberships.cancel(previousMembershipId, { cancellation_mode: "immediate" });
+  } catch (error) {
+    console.error("Whop previous membership cancellation error", error);
+  }
+}
+
 async function activateProfile(eventType: string, data: Record<string, unknown>, metadata: WhopMetadata | null | undefined) {
   const userId = metadataValue(metadata, "supabase_user_id");
   const metadataProductId = metadataValue(metadata, "product_id");
@@ -154,6 +191,7 @@ async function activateProfile(eventType: string, data: Record<string, unknown>,
   }
 
   const supabase = createServiceSupabaseClient();
+  const membershipId = membershipIdFromEventData(data);
   await supabase
     .from("profiles")
     .update({
@@ -161,7 +199,7 @@ async function activateProfile(eventType: string, data: Record<string, unknown>,
       billing_period: plan.billing_period,
       whop_user_id: whopUserIdFromEventData(data),
       whop_product_id: productId,
-      whop_membership_id: membershipIdFromEventData(data),
+      whop_membership_id: membershipId,
       whop_payment_id: paymentIdFromEventData(data),
       whop_status: typeof data.status === "string" ? data.status : "active",
       whop_current_period_end: dateFromWhopTimestamp(
@@ -171,11 +209,14 @@ async function activateProfile(eventType: string, data: Record<string, unknown>,
       ),
     })
     .eq("id", userId);
+
+  await cancelPreviousWhopMembership(metadata, membershipId);
 }
 
 async function deactivateProfile(data: Record<string, unknown>, metadata: WhopMetadata | null | undefined) {
   const userId = metadataValue(metadata, "supabase_user_id");
   const membershipId = membershipIdFromEventData(data);
+  const paymentId = paymentIdFromEventData(data);
   const productId = metadataValue(metadata, "product_id") ?? productIdFromEventData(data);
   const priceKey = priceKeyFromMetadataOrProduct(metadata, productId);
   const supabase = createServiceSupabaseClient();
@@ -195,6 +236,23 @@ async function deactivateProfile(data: Record<string, unknown>, metadata: WhopMe
   };
 
   if (userId) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("whop_membership_id,whop_payment_id")
+      .eq("id", userId)
+      .maybeSingle<{ whop_membership_id: string | null; whop_payment_id: string | null }>();
+
+    if (!profile) {
+      return;
+    }
+
+    const matchesActiveMembership = Boolean(membershipId && profile.whop_membership_id === membershipId);
+    const matchesActivePayment = Boolean(paymentId && profile.whop_payment_id === paymentId);
+
+    if (!matchesActiveMembership && !matchesActivePayment) {
+      return;
+    }
+
     await supabase.from("profiles").update(update).eq("id", userId);
     return;
   }
