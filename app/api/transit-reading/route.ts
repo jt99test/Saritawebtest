@@ -1,8 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { Message } from "@anthropic-ai/sdk/resources/messages";
 
-import { isAdminEmail } from "@/lib/admin";
-
 import { ANTHROPIC_PREMIUM_READING_MODEL } from "@/lib/anthropic-models";
 import {
   aiGenerationStatusResponse,
@@ -18,6 +16,7 @@ import { getPointInterpretiveHouse } from "@/lib/chart";
 import { getAspectLabel, getHouseArea, getPointLabel, getSignLabel } from "@/lib/chart-labels";
 import { assertGeneratedLanguage } from "@/lib/generated-language";
 import { jsonOnlyInstruction, nativeToneInstruction, promptLanguageInstruction } from "@/lib/prompt-i18n";
+import { getEffectivePlan } from "@/lib/plan-access";
 import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -220,7 +219,7 @@ export async function POST(request: Request) {
   }
 
   const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).maybeSingle();
-  if (!isAdminEmail(user.email) && profile?.plan !== "avanzado") return new Response("Advanced plan required", { status: 403 });
+  if (getEffectivePlan(profile, user) !== "avanzado") return new Response("Advanced plan required", { status: 403 });
 
   const reservation = await reserveAiReadingGeneration({
     supabase,

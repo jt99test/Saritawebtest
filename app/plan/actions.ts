@@ -1,6 +1,6 @@
 "use server";
 
-import { isAdminEmail } from "@/lib/admin";
+import { getEffectivePlan } from "@/lib/plan-access";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export async function getCurrentPlanAction() {
@@ -24,11 +24,7 @@ export async function getCurrentPlanAction() {
     .maybeSingle();
 
   return {
-    plan: isAdminEmail(user.email)
-      ? "avanzado" as const
-      : data?.plan === "pro" || data?.plan === "avanzado"
-        ? data.plan
-        : "free" as const,
+    plan: getEffectivePlan(data, user),
     billing_period: data?.billing_period === "monthly" || data?.billing_period === "yearly" ? data.billing_period : null,
     lavado_purchased: Boolean(data?.lavado_purchased),
   };

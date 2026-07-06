@@ -7,6 +7,7 @@ import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { isAdminEmail } from "@/lib/admin";
 import { createServerSupabaseClient, createServiceSupabaseClient } from "@/lib/supabase/server";
+import { getEffectivePlan } from "@/lib/plan-access";
 import { getPlanReadingLimit } from "@/lib/reading-limits";
 
 type ReadingRow = {
@@ -60,7 +61,7 @@ export default async function ReadingsPage() {
     .select("id", { count: "exact", head: true })
     .eq("user_id", user.id)
     .gte("created_at", startOfMonth.toISOString());
-  const plan = profile?.plan ?? "free";
+  const plan = getEffectivePlan(profile, user);
   const limit = getPlanReadingLimit(plan);
 
   return (

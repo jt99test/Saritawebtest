@@ -1,7 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { Message } from "@anthropic-ai/sdk/resources/messages";
 
-import { isAdminEmail } from "@/lib/admin";
 import { DateTime } from "luxon";
 
 import { getSignFromLongitude, getSignMeta, type NatalChartData } from "@/lib/chart";
@@ -27,6 +26,7 @@ import {
 } from "@/lib/ai-reading-generations";
 import { assertGeneratedLanguage } from "@/lib/generated-language";
 import { getAspectLabel, getPointLabel, getSignLabel } from "@/lib/chart-labels";
+import { getEffectivePlan } from "@/lib/plan-access";
 import { noRelevantTransits, promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { genderPromptInstruction, grammarPromptInstruction, normalizeReadingGender, type ReadingGender } from "@/lib/reading-gender";
 
@@ -502,7 +502,7 @@ export async function POST(request: Request) {
       .eq("id", user.id)
       .maybeSingle();
 
-    if (!isAdminEmail(user.email) && (profile?.plan ?? "free") === "free") {
+    if (getEffectivePlan(profile, user) === "free") {
       return new Response("Plan required", { status: 403 });
     }
 
