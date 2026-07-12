@@ -40,6 +40,12 @@ export type ChartPointId =
 export type AnglePointId = "ascendant" | "descendant" | "mc" | "ic";
 export type ChartReferencePointId = ChartPointId | AnglePointId;
 
+export const anglePointIds: AnglePointId[] = ["ascendant", "descendant", "mc", "ic"];
+
+export function isAnglePointId(pointId: ChartReferencePointId): pointId is AnglePointId {
+  return (anglePointIds as ChartReferencePointId[]).includes(pointId);
+}
+
 export type AspectId =
   | "conjunction"
   | "sextile"
@@ -93,8 +99,8 @@ export type HouseCusp = {
 export type Aspect = {
   id: string;
   type: AspectId;
-  from: ChartPointId;
-  to: ChartPointId;
+  from: ChartReferencePointId;
+  to: ChartReferencePointId;
   orb: number;
   applying?: boolean;
 };

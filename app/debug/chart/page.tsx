@@ -13,6 +13,7 @@ import {
   type AspectId,
   type ChartPoint,
   type ChartPointId,
+  type ChartReferencePointId,
 } from "@/lib/chart";
 import { calculateNatalChart } from "@/lib/ephemeris.server";
 
@@ -65,7 +66,7 @@ const POINT_ORDER: ChartPointId[] = [
   "lilith",
 ];
 
-const POINT_LABELS: Record<ChartPointId, string> = {
+const POINT_LABELS: Record<ChartReferencePointId, string> = {
   sun: "Sun",
   moon: "Moon",
   mercury: "Mercury",
@@ -82,6 +83,10 @@ const POINT_LABELS: Record<ChartPointId, string> = {
   partOfFortune: "Part of Fortune",
   lilith: "Lilith",
   ceres: "Ceres",
+  ascendant: "Ascendant",
+  descendant: "Descendant",
+  mc: "Midheaven",
+  ic: "Imum Coeli",
 };
 
 const SIGN_LABELS = {

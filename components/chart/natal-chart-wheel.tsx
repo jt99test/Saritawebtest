@@ -10,8 +10,10 @@ import {
   type AspectId,
   type ChartPoint,
   type ChartPointId,
+  type ChartReferencePointId,
   type HouseCusp,
   type NatalChartData,
+  isAnglePointId,
 } from "@/lib/chart";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { dictionaries, type Dictionary } from "@/lib/i18n";
@@ -28,6 +30,20 @@ type TooltipState = {
   yPercent: number;
   content: string;
 };
+
+type AspectVisualPoint = {
+  id: ChartReferencePointId;
+  longitude: number;
+};
+
+function getAngleAspectPoints(chart: NatalChartData): AspectVisualPoint[] {
+  return [
+    { id: "ascendant", longitude: chart.meta.ascendant },
+    { id: "descendant", longitude: chart.meta.descendant },
+    { id: "mc", longitude: chart.meta.mc },
+    { id: "ic", longitude: chart.meta.ic },
+  ];
+}
 
 const SIZE = 860;
 const CX = 430;
@@ -519,7 +535,7 @@ function SymbolicAspects({
   onClickAspect,
 }: {
   aspects: Aspect[];
-  pointsById: Map<ChartPointId, ChartPoint>;
+  pointsById: Map<ChartReferencePointId, AspectVisualPoint>;
   pointLayouts?: Map<ChartPointId, ClearPointLayout>;
   dictionary: Dictionary;
   ascendant: number;
@@ -543,8 +559,8 @@ function SymbolicAspects({
           return null;
         }
 
-        const fromLayout = pointLayouts?.get(aspect.from);
-        const toLayout = pointLayouts?.get(aspect.to);
+        const fromLayout = isAnglePointId(aspect.from) ? undefined : pointLayouts?.get(aspect.from);
+        const toLayout = isAnglePointId(aspect.to) ? undefined : pointLayouts?.get(aspect.to);
         const [x1, y1] = pointAtRadius(ASPECT_RADIUS, fromLayout?.visualLongitude ?? fromPoint.longitude, ascendant);
         const [x2, y2] = pointAtRadius(ASPECT_RADIUS, toLayout?.visualLongitude ?? toPoint.longitude, ascendant);
         const mx = (x1 + x2) / 2;
@@ -1081,6 +1097,7 @@ function _AstroSeekPlanetLayer({
 
 function ClearPlanetLayer({
   points,
+  anglePoints,
   houses,
   aspects,
   dictionary,
@@ -1098,6 +1115,7 @@ function ClearPlanetLayer({
   onClickAspect,
 }: {
   points: ChartPoint[];
+  anglePoints: AspectVisualPoint[];
   houses: HouseCusp[];
   aspects: Aspect[];
   dictionary: Dictionary;
@@ -1119,8 +1137,8 @@ function ClearPlanetLayer({
   if (selectedPointId) {
     connectedPointIds.add(selectedPointId);
     aspects.forEach((aspect) => {
-      if (aspect.from === selectedPointId) connectedPointIds.add(aspect.to);
-      if (aspect.to === selectedPointId) connectedPointIds.add(aspect.from);
+      if (aspect.from === selectedPointId && !isAnglePointId(aspect.to)) connectedPointIds.add(aspect.to);
+      if (aspect.to === selectedPointId && !isAnglePointId(aspect.from)) connectedPointIds.add(aspect.from);
     });
   }
   const clusters: ChartPoint[][] = [];
@@ -1156,7 +1174,10 @@ function ClearPlanetLayer({
   }
 
   const pointLayouts = new Map<ChartPointId, ClearPointLayout>();
-  const pointsById = new Map(points.map((point) => [point.id, point] as const));
+  const pointsById = new Map<ChartReferencePointId, AspectVisualPoint>([
+    ...points.map((point) => [point.id, point] as const),
+    ...anglePoints.map((point) => [point.id, point] as const),
+  ]);
 
   clusters.forEach((cluster) => {
     const crossesZodiacStart = Math.max(...cluster.map((point) => point.longitude)) - Math.min(...cluster.map((point) => point.longitude)) > 180;
@@ -1592,22 +1613,26 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
     [chart, displayPoints],
   );
 
-  const pointsById = useMemo(
-    () => new Map(displayPoints.map((point) => [point.id, point] as const)),
-    [displayPoints],
+  const anglePoints = useMemo(() => getAngleAspectPoints(chart), [chart]);
+  const referencePointIds = useMemo(
+    () => new Set<ChartReferencePointId>([
+      ...displayPoints.map((point) => point.id),
+      ...anglePoints.map((point) => point.id),
+    ]),
+    [anglePoints, displayPoints],
   );
 
   const displayAspects = useMemo(
     () =>
       chart.aspects.filter((aspect) => {
-        if (!pointsById.has(aspect.from) || !pointsById.has(aspect.to)) {
+        if (!referencePointIds.has(aspect.from) || !referencePointIds.has(aspect.to)) {
           return false;
         }
 
         const definition = getAspectDefinition(aspect.type);
         return definition.major ? showAspects : showMinorAspects;
       }),
-    [chart.aspects, pointsById, showAspects, showMinorAspects],
+    [chart.aspects, referencePointIds, showAspects, showMinorAspects],
   );
 
   useEffect(() => {
@@ -1831,6 +1856,7 @@ export function NatalChartWheel({ chart, viewerMode = false }: Props) {
 
             <ClearPlanetLayer
               points={displayPoints}
+              anglePoints={anglePoints}
               houses={chart.houses}
               aspects={displayAspects}
               dictionary={dictionary}

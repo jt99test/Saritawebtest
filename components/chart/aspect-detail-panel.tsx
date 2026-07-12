@@ -5,12 +5,34 @@ import { AnimatePresence, motion } from "motion/react";
 import { formatHouseWithTransition } from "@/components/chart/chart-helpers";
 import { useChartStore } from "@/components/chart/chart-store";
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
-import { getAugmentedChartPoints, type NatalChartData } from "@/lib/chart";
+import {
+  formatSignPosition,
+  getAugmentedChartPoints,
+  getHouseForLongitude,
+  isAnglePointId,
+  type AnglePointId,
+  type ChartReferencePointId,
+  type NatalChartData,
+} from "@/lib/chart";
 import { dictionaries } from "@/lib/i18n";
 
 type Props = {
   chart: NatalChartData;
 };
+
+const ANGLE_GLYPHS: Record<AnglePointId, string> = {
+  ascendant: "AC",
+  descendant: "DC",
+  mc: "MC",
+  ic: "IC",
+};
+
+const ANGLE_LONGITUDES = {
+  ascendant: (chart: NatalChartData) => chart.meta.ascendant,
+  descendant: (chart: NatalChartData) => chart.meta.descendant,
+  mc: (chart: NatalChartData) => chart.meta.mc,
+  ic: (chart: NatalChartData) => chart.meta.ic,
+} satisfies Record<AnglePointId, (chart: NatalChartData) => number>;
 
 export function AspectDetailPanel({ chart }: Props) {
   const locale = useStoredLocale();
@@ -20,8 +42,31 @@ export function AspectDetailPanel({ chart }: Props) {
   const allPoints = getAugmentedChartPoints(chart);
   const pointsById = new Map(allPoints.map((point) => [point.id, point] as const));
 
-  const fromPoint = selectedAspect ? pointsById.get(selectedAspect.from) : null;
-  const toPoint = selectedAspect ? pointsById.get(selectedAspect.to) : null;
+  function getAspectPoint(pointId: ChartReferencePointId) {
+    const point = isAnglePointId(pointId) ? null : pointsById.get(pointId);
+    if (point) {
+      return point;
+    }
+
+    if (!isAnglePointId(pointId)) {
+      return null;
+    }
+
+    const longitude = ANGLE_LONGITUDES[pointId](chart);
+    const position = formatSignPosition(longitude);
+
+    return {
+      id: pointId,
+      glyph: ANGLE_GLYPHS[pointId],
+      longitude,
+      sign: position.sign,
+      house: getHouseForLongitude(longitude, chart.houses),
+      color: "#f1d28f",
+    };
+  }
+
+  const fromPoint = selectedAspect ? getAspectPoint(selectedAspect.from) : null;
+  const toPoint = selectedAspect ? getAspectPoint(selectedAspect.to) : null;
   const housePrefix = dictionary.result.transitPage.housePrefix.toLowerCase();
   const fromHouse = fromPoint
     ? formatHouseWithTransition({ longitude: fromPoint.longitude, house: fromPoint.house, houses: chart.houses })

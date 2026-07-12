@@ -886,8 +886,8 @@ export function BiWheelChart({
   if (activeInner) {
     focusedInnerPointIds.add(activeInner);
     innerChart.aspects.forEach((aspect) => {
-      if (aspect.from === activeInner) focusedInnerPointIds.add(aspect.to);
-      if (aspect.to === activeInner) focusedInnerPointIds.add(aspect.from);
+      if (aspect.from === activeInner && isChartPointId(aspect.to)) focusedInnerPointIds.add(aspect.to);
+      if (aspect.to === activeInner && isChartPointId(aspect.from)) focusedInnerPointIds.add(aspect.from);
     });
     interAspects.forEach((aspect) => {
       if (aspect.pointA === activeInner && isChartPointId(aspect.pointB)) focusedOuterPointIds.add(aspect.pointB);
@@ -896,8 +896,8 @@ export function BiWheelChart({
   if (activeOuter) {
     focusedOuterPointIds.add(activeOuter);
     outerChart?.aspects.forEach((aspect) => {
-      if (aspect.from === activeOuter) focusedOuterPointIds.add(aspect.to);
-      if (aspect.to === activeOuter) focusedOuterPointIds.add(aspect.from);
+      if (aspect.from === activeOuter && isChartPointId(aspect.to)) focusedOuterPointIds.add(aspect.to);
+      if (aspect.to === activeOuter && isChartPointId(aspect.from)) focusedOuterPointIds.add(aspect.from);
     });
     interAspects.forEach((aspect) => {
       if (aspect.pointB === activeOuter && isChartPointId(aspect.pointA)) focusedInnerPointIds.add(aspect.pointA);
@@ -1060,6 +1060,7 @@ export function BiWheelChart({
           <DegreeTickRing ascendant={ascendant} points={innerPoints} />
           <AxisLines chart={innerChart} ascendant={ascendant} />
           {innerChart.aspects.slice(0, 32).map((aspect) => {
+            if (!isChartPointId(aspect.from) || !isChartPointId(aspect.to)) return null;
             const from = innerPoints.find((point) => point.id === aspect.from);
             const to = innerPoints.find((point) => point.id === aspect.to);
             if (!from || !to) return null;
@@ -1085,6 +1086,7 @@ export function BiWheelChart({
             );
           })}
           {showOuterAspects ? outerChart?.aspects.slice(0, 32).map((aspect) => {
+            if (!isChartPointId(aspect.from) || !isChartPointId(aspect.to)) return null;
             const from = outerPoints.find((point) => point.id === aspect.from);
             const to = outerPoints.find((point) => point.id === aspect.to);
             const fromLayout = outerLayouts.get(aspect.from);

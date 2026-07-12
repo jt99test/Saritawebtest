@@ -6,6 +6,7 @@ import type {
   AspectId,
   ChartPoint,
   ChartPointId,
+  ChartReferencePointId,
   HouseCusp,
   NatalChartData,
 } from "./chart";
@@ -236,13 +237,39 @@ function aspectDelta(firstLongitude: number, secondLongitude: number, targetAngl
   return Math.abs(circularDistance(firstLongitude, secondLongitude) - targetAngle);
 }
 
-function isApplying(first: ChartPoint, second: ChartPoint, targetAngle: number, currentOrb: number) {
+type AspectCandidate = {
+  id: ChartReferencePointId;
+  longitude: number;
+  longitudeSpeed?: number;
+};
+
+function isApplying(first: AspectCandidate, second: AspectCandidate, targetAngle: number, currentOrb: number) {
   const futureFirst = normalizeLongitude(first.longitude + (first.longitudeSpeed ?? 0));
   const futureSecond = normalizeLongitude(second.longitude + (second.longitudeSpeed ?? 0));
   return aspectDelta(futureFirst, futureSecond, targetAngle) < currentOrb;
 }
 
-function detectAspects(points: ChartPoint[]): Aspect[] {
+function detectAspectForPair(first: AspectCandidate, second: AspectCandidate, applying = true): Aspect | null {
+  const angle = circularDistance(first.longitude, second.longitude);
+
+  for (const def of ASPECT_DEFS) {
+    const orb = Math.abs(angle - def.angle);
+    if (orb <= def.orb) {
+      return {
+        id: `${first.id}-${second.id}-${def.type}`,
+        type: def.type,
+        from: first.id,
+        to: second.id,
+        orb: Math.round(orb * 10) / 10,
+        applying: applying ? isApplying(first, second, def.angle, orb) : undefined,
+      };
+    }
+  }
+
+  return null;
+}
+
+function detectAspects(points: ChartPoint[], anglePoints: AspectCandidate[] = []): Aspect[] {
   const drawablePointIds = new Set<ChartPointId>([
     "sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn",
     "uranus", "neptune", "pluto", "northNode", "southNode", "chiron",
@@ -250,29 +277,30 @@ function detectAspects(points: ChartPoint[]): Aspect[] {
   ]);
 
   const aspects: Aspect[] = [];
+  const drawablePoints = points.filter((point) => drawablePointIds.has(point.id));
+
   for (let i = 0; i < points.length; i += 1) {
     for (let j = i + 1; j < points.length; j += 1) {
       const first = points[i]!;
       const second = points[j]!;
       if (!drawablePointIds.has(first.id) || !drawablePointIds.has(second.id)) continue;
 
-      const angle = circularDistance(first.longitude, second.longitude);
-      for (const def of ASPECT_DEFS) {
-        const orb = Math.abs(angle - def.angle);
-        if (orb <= def.orb) {
-          aspects.push({
-            id: `${first.id}-${second.id}-${def.type}`,
-            type: def.type,
-            from: first.id,
-            to: second.id,
-            orb: Math.round(orb * 10) / 10,
-            applying: isApplying(first, second, def.angle, orb),
-          });
-          break;
-        }
+      const aspect = detectAspectForPair(first, second);
+      if (aspect) {
+        aspects.push(aspect);
       }
     }
   }
+
+  for (const point of drawablePoints) {
+    for (const anglePoint of anglePoints) {
+      const aspect = detectAspectForPair(point, anglePoint, false);
+      if (aspect) {
+        aspects.push(aspect);
+      }
+    }
+  }
+
   return aspects;
 }
 
@@ -338,7 +366,17 @@ export async function calculateNatalChart(input: ChartInput): Promise<NatalChart
     rawHouses, input.lat, eps, houseSystem, ceresResult.longitudeSpeed < 0, ceresResult.longitudeSpeed);
   const extendedPoints = [...points, ceres];
 
-  const aspects = detectAspects(points);
+  const ascendant = normalizeLongitude(rawHouses.ascmc[0]!);
+  const mc = normalizeLongitude(rawHouses.ascmc[1]!);
+  const descendant = normalizeLongitude(rawHouses.cusps[7] ?? rawHouses.ascmc[0]! + 180);
+  const ic = normalizeLongitude(rawHouses.cusps[4] ?? rawHouses.ascmc[1]! + 180);
+  const anglePoints: AspectCandidate[] = [
+    { id: "ascendant", longitude: ascendant },
+    { id: "descendant", longitude: descendant },
+    { id: "mc", longitude: mc },
+    { id: "ic", longitude: ic },
+  ];
+  const aspects = detectAspects(points, anglePoints);
   const offsetMinutes = localDateTime.offset;
   const offsetHours = Math.floor(Math.abs(offsetMinutes) / 60);
   const offsetRemainder = Math.abs(offsetMinutes) % 60;
@@ -372,10 +410,10 @@ export async function calculateNatalChart(input: ChartInput): Promise<NatalChart
     houses: houseCusps,
     aspects,
     meta: {
-      ascendant:  normalizeLongitude(rawHouses.ascmc[0]!),
-      mc:         normalizeLongitude(rawHouses.ascmc[1]!),
-      descendant: normalizeLongitude(rawHouses.cusps[7]  ?? rawHouses.ascmc[0]! + 180),
-      ic:         normalizeLongitude(rawHouses.cusps[4]  ?? rawHouses.ascmc[1]! + 180),
+      ascendant,
+      mc,
+      descendant,
+      ic,
       solarReturnYear: input.solarReturnYear,
     },
     extendedPoints,

@@ -819,7 +819,11 @@
       "chiron": "Chiron",
       "partOfFortune": "Part of Fortune",
       "lilith": "Lilith",
-      "ceres": "Ceres"
+      "ceres": "Ceres",
+      "ascendant": "Ascendant",
+      "descendant": "Descendant",
+      "mc": "Midheaven",
+      "ic": "Imum Coeli"
     },
     "signs": {
       "aries": "Aries",

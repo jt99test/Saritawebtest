@@ -178,6 +178,10 @@ function findExactnessDate(se: SwissEph, planet: SupportedTransitPlanet, natalLo
 function natalAspectsForPoint(natalChart: NatalChartData, pointId: ChartPointId): ActiveTransit["activatedNatalAspects"] {
   return natalChart.aspects
     .filter((aspect) => aspect.from === pointId || aspect.to === pointId)
+    .filter(
+      (aspect): aspect is typeof aspect & { from: ChartPointId; to: ChartPointId } =>
+        !isAnglePointId(aspect.from) && !isAnglePointId(aspect.to),
+    )
     .sort((left, right) => left.orb - right.orb)
     .map((aspect) => ({
       pointA: aspect.from,

@@ -819,7 +819,11 @@
       "chiron": "Quirón",
       "partOfFortune": "Parte de la fortuna",
       "lilith": "Lilith",
-      "ceres": "Ceres"
+      "ceres": "Ceres",
+      "ascendant": "Ascendente",
+      "descendant": "Descendente",
+      "mc": "Medio Cielo",
+      "ic": "Fondo del Cielo"
     },
     "signs": {
       "aries": "Aries",

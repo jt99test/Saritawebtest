@@ -819,7 +819,11 @@
       "chiron": "Chirone",
       "partOfFortune": "Parte della fortuna",
       "lilith": "Lilith",
-      "ceres": "Cerere"
+      "ceres": "Cerere",
+      "ascendant": "Ascendente",
+      "descendant": "Discendente",
+      "mc": "Medio Cielo",
+      "ic": "Fondo Cielo"
     },
     "signs": {
       "aries": "Ariete",

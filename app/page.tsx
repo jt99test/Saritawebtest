@@ -39,18 +39,16 @@ function getLatestReadingFromRow(row: {
 
 async function getLatestReading() {
   const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: authData, error } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (error || !authData.user) {
     return null;
   }
 
   const { data } = await supabase
     .from("readings")
     .select("id,type,chart_data,created_at")
-    .eq("user_id", user.id)
+    .eq("user_id", authData.user.id)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();

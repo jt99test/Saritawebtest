@@ -9,6 +9,8 @@ import {
   getPointInterpretiveSign,
   getSignMeta,
   zodiacSigns,
+  isAnglePointId,
+  type AnglePointId,
   type ChartPoint,
   type ChartPointId,
   type NatalChartData,
@@ -20,6 +22,13 @@ type ChartPointDataCardProps = {
   point: ChartPoint;
   dictionary: Dictionary;
   onSelectPoint?: (pointId: ChartPointId) => void;
+};
+
+const ANGLE_GLYPHS: Record<AnglePointId, string> = {
+  ascendant: "AC",
+  descendant: "DC",
+  mc: "MC",
+  ic: "IC",
 };
 
 function SectionLabel({ children }: { children: string }) {
@@ -229,28 +238,32 @@ export function ChartPointDataCard({
               const otherPointId = aspect.from === point.id ? aspect.to : aspect.from;
               const otherPoint = chart.points.find((entry) => entry.id === otherPointId);
 
-              if (!otherPoint) {
+              if (!otherPoint && !isAnglePointId(otherPointId)) {
                 return null;
               }
+
+              const otherLabel = dictionary.result.points[otherPointId];
+              const otherGlyph = otherPoint?.glyph ?? ANGLE_GLYPHS[otherPointId as AnglePointId];
+              const otherColor = otherPoint?.color ?? "#f1d28f";
 
               const content = (
                 <>
                   <div className="min-w-0">
                     <p className="text-sm text-ivory">{dictionary.result.aspectTypes[aspect.type]}</p>
                     <p className="mt-1 text-xs text-[#3a3048]">
-                      {dictionary.result.points[point.id]} / {dictionary.result.points[otherPoint.id]}
+                      {dictionary.result.points[point.id]} / {otherLabel}
                     </p>
                     <p className="mt-1 text-xs text-[#3a3048]">
                       {dictionary.result.fields.orb}: {aspect.orb.toFixed(1)}°
                     </p>
                   </div>
-                  <span className="text-xl" style={{ color: otherPoint.color }}>
-                    {otherPoint.glyph}
+                  <span className="text-xl" style={{ color: otherColor }}>
+                    {otherGlyph}
                   </span>
                 </>
               );
 
-              if (!onSelectPoint) {
+              if (!onSelectPoint || !otherPoint) {
                 return (
                   <div
                     key={aspect.id}

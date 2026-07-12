@@ -1,7 +1,7 @@
 import { getAugmentedChartPoints, getPointInterpretiveHouse, zodiacSigns, type ChartPointId, type NatalChartData } from "@/lib/chart";
 import { getChartRuler } from "@/lib/chart-insights";
 import { getAspectLabel, getPointLabel, getSignLabel } from "@/lib/chart-labels";
-import { aspectPhrase, housePhrase, noMajorAspects, placementPhrase, transitMotionLabel } from "@/lib/prompt-i18n";
+import { aspectPhrase, housePhrase, noMajorAspects, placementPhrase } from "@/lib/prompt-i18n";
 
 export const GENERAL_READING_THEMES = [
   "tu-esencia",
@@ -219,7 +219,7 @@ export function getThemeInstruction(chart: NatalChartData, theme: GeneralReading
   const hardAspects = chart.aspects
     .filter((aspect) => aspect.type === "square" || aspect.type === "opposition")
     .slice(0, 5)
-    .map((aspect) => `${ASPECT_LABELS[aspect.type]} ${POINT_LABELS[aspect.from]} / ${POINT_LABELS[aspect.to]} (${aspect.orb.toFixed(1)}°)`)
+    .map((aspect) => `${ASPECT_LABELS[aspect.type]} ${POINT_LABELS[aspect.from as ChartPointId] ?? getPointLabel(aspect.from)} / ${POINT_LABELS[aspect.to as ChartPointId] ?? getPointLabel(aspect.to)} (${aspect.orb.toFixed(1)}°)`)
     .join(", ");
 
   const localizedHardAspects = chart.aspects

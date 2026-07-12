@@ -3,6 +3,7 @@
 import type { Dictionary } from "@/lib/i18n";
 import type { NatalChartData } from "@/lib/chart";
 import { formatSignPosition, getAugmentedChartPoints, zodiacSigns } from "@/lib/chart";
+import { isAnglePointId, type ChartReferencePointId } from "@/lib/chart";
 
 import { ChartPointDataCard } from "@/components/chart/chart-point-datacard";
 import { formatHouseWithTransition } from "@/components/chart/chart-helpers";
@@ -87,16 +88,20 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
   const visiblePoints = augmentedPoints.filter((point) =>
     showMinorPoints ? true : point.id !== "northNode" && point.id !== "chiron",
   );
-  const visiblePointIds = new Set(visiblePoints.map((point) => point.id));
-  const visibleAspects = chart.aspects.filter(
-    (aspect) => visiblePointIds.has(aspect.from) && visiblePointIds.has(aspect.to),
-  );
   const angles = [
     { id: "ascendant", short: "AC", longitude: chart.meta.ascendant },
     { id: "mc", short: "MC", longitude: chart.meta.mc },
     { id: "descendant", short: "DC", longitude: chart.meta.descendant },
     { id: "ic", short: "IC", longitude: chart.meta.ic },
   ] as const;
+  const visiblePointIds = new Set(visiblePoints.map((point) => point.id));
+  const visibleReferenceIds = new Set<ChartReferencePointId>([
+    ...visiblePoints.map((point) => point.id),
+    ...angles.map((angle) => angle.id),
+  ]);
+  const visibleAspects = chart.aspects.filter(
+    (aspect) => visibleReferenceIds.has(aspect.from) && visibleReferenceIds.has(aspect.to),
+  );
 
   return (
     <PremiumCard className="overflow-hidden border-black/15 bg-[linear-gradient(180deg,rgba(10,12,20,0.9),rgba(8,10,18,0.78))] shadow-[0_30px_100px_rgba(0,0,0,0.42)] backdrop-blur-xl xl:sticky xl:top-6">
@@ -293,10 +298,13 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                   .slice()
                   .sort((left, right) => left.orb - right.orb)
                   .map((aspect) => {
-                    const fromPoint = chart.points.find((point) => point.id === aspect.from);
-                    const toPoint = chart.points.find((point) => point.id === aspect.to);
+                    const clickablePointId = !isAnglePointId(aspect.from)
+                      ? aspect.from
+                      : !isAnglePointId(aspect.to)
+                        ? aspect.to
+                        : null;
 
-                    if (!fromPoint || !toPoint) {
+                    if (!clickablePointId) {
                       return null;
                     }
 
@@ -304,7 +312,7 @@ export function ChartSidePanel({ chart, dictionary }: ChartSidePanelProps) {
                       <button
                         key={aspect.id}
                         type="button"
-                        onClick={() => selectPoint(aspect.from)}
+                        onClick={() => selectPoint(clickablePointId)}
                         className="grid w-full grid-cols-[minmax(0,1fr)_auto_auto] gap-3 border-b border-black/10 px-4 py-3 text-left transition last:border-b-0 hover:bg-black/[0.04]"
                       >
                         <span className="min-w-0 text-sm text-ivory">
