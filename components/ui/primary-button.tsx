@@ -9,6 +9,8 @@ type SharedProps = {
 
 type LinkButtonProps = SharedProps & {
   href: string;
+  target?: string;
+  rel?: string;
 };
 
 type NativeButtonProps = SharedProps &
@@ -49,6 +51,8 @@ export function PrimaryButton(props: PrimaryButtonProps) {
     return (
       <Link
         href={props.href}
+        target={props.target}
+        rel={props.rel}
         className={`${buttonClassName} ${props.className ?? ""}`.trim()}
       >
         {content}

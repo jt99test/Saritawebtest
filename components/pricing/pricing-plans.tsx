@@ -3,11 +3,9 @@
 import { useState } from "react";
 
 import { PrimaryButton } from "@/components/ui/primary-button";
-import { showNotice } from "@/components/ui/notice-provider";
-import { CheckoutError, startCheckout } from "@/lib/checkout";
 import type { Dictionary } from "@/lib/i18n";
 import { PLAN_LIMITS } from "@/lib/reading-limits";
-import type { PaidPlan, PriceKey } from "@/lib/billing";
+import { whatsappLink } from "@/lib/whatsapp";
 
 const PRICES = {
   pro: { monthly: "€14.99", yearly: "€119" },
@@ -38,24 +36,13 @@ function accessLabel(value: FeatureAccess, dictionary: Dictionary) {
 
 export function PricingPlans({ dictionary }: PricingPlansProps) {
   const [period, setPeriod] = useState<"monthly" | "yearly">("monthly");
-  const [loadingKey, setLoadingKey] = useState<PriceKey | null>(null);
 
-  async function checkout(plan: PaidPlan) {
-    const key = `${plan}_${period}` as PriceKey;
-    setLoadingKey(key);
-    try {
-      await startCheckout(key);
-    } catch (error) {
-      if (error instanceof CheckoutError && error.status === 401) {
-        window.dispatchEvent(new Event("sarita:open-auth"));
-      } else {
-        showNotice({
-          message: "No pude abrir el checkout. Revisa la configuracion de Whop o intenta otra vez.",
-          tone: "error",
-        });
-      }
-      setLoadingKey(null);
-    }
+  function whatsappHref(plan: "pro" | "avanzado") {
+    const planName = plan === "pro" ? dictionary.paywall.proName : dictionary.paywall.avanzadoName;
+    const periodName = period === "monthly" ? dictionary.pricing.monthly : dictionary.pricing.yearly;
+    return whatsappLink(
+      dictionary.paywall.whatsappPlanMessage.replace("{plan}", planName).replace("{period}", periodName),
+    );
   }
 
   return (
@@ -79,12 +66,11 @@ export function PricingPlans({ dictionary }: PricingPlansProps) {
       <div className="mt-7 grid gap-4 sm:mt-8 sm:gap-5 lg:grid-cols-3">
         {PLAN_IDS.map((plan) => {
           const isPaid = plan !== "free";
-          const priceKey = isPaid ? (`${plan}_${period}` as PriceKey) : null;
           return (
             <article
               key={plan}
               className={[
-                "border p-5 shadow-[0_4px_16px_rgba(0,0,0,0.2)] sm:p-6",
+                "flex flex-col border p-5 shadow-[0_4px_16px_rgba(0,0,0,0.2)] sm:p-6",
                 plan === "avanzado"
                   ? "border-[#f5d782]/42 bg-[#f5d782]/[0.06] shadow-[0_8px_28px_rgba(245,215,130,0.1)]"
                   : "border-[#d7e7ff]/14 bg-[#061331]/82",
@@ -101,24 +87,27 @@ export function PricingPlans({ dictionary }: PricingPlansProps) {
                   {period === "monthly" ? dictionary.paywall.perMonth : dictionary.paywall.perYear}
                 </p>
               ) : null}
-              {isPaid ? (
-                <PrimaryButton
-                  disabled={Boolean(loadingKey)}
-                  onClick={() => void checkout(plan)}
-                  variant="ghostGold"
-                  className="mt-7 w-full px-5 py-3 text-[12px] uppercase tracking-[0.2em] disabled:cursor-wait disabled:opacity-50"
-                >
-                  {loadingKey === priceKey ? dictionary.paywall.checkoutLoading : dictionary.pricing.choose}
-                </PrimaryButton>
-              ) : (
-                <PrimaryButton
-                  href="/form"
-                  variant="ghostGold"
-                  className="mt-7 flex w-full px-5 py-3 text-[12px] uppercase tracking-[0.2em]"
-                >
-                  {dictionary.pricing.startFree}
-                </PrimaryButton>
-              )}
+              <div className="mt-7 flex grow flex-col justify-end">
+                {isPaid ? (
+                  <PrimaryButton
+                    href={whatsappHref(plan)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    variant="ghostGold"
+                    className="flex w-full px-5 py-3 text-[12px] uppercase tracking-[0.2em]"
+                  >
+                    {dictionary.paywall.whatsappCta}
+                  </PrimaryButton>
+                ) : (
+                  <PrimaryButton
+                    href="/form"
+                    variant="ghostGold"
+                    className="flex w-full px-5 py-3 text-[12px] uppercase tracking-[0.2em]"
+                  >
+                    {dictionary.pricing.startFree}
+                  </PrimaryButton>
+                )}
+              </div>
             </article>
           );
         })}

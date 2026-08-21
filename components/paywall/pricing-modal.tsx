@@ -4,10 +4,9 @@ import { useState } from "react";
 
 import { useStoredLocale } from "@/components/i18n/use-stored-locale";
 import { PrimaryButton } from "@/components/ui/primary-button";
-import { showNotice } from "@/components/ui/notice-provider";
-import { CheckoutError, startCheckout } from "@/lib/checkout";
 import { dictionaries } from "@/lib/i18n";
-import type { PaidPlan, PriceKey } from "@/lib/billing";
+import { whatsappLink } from "@/lib/whatsapp";
+import type { PaidPlan } from "@/lib/billing";
 
 type PricingModalProps = {
   open: boolean;
@@ -25,29 +24,17 @@ export function PricingModal({ open, onClose, requiredPlan }: PricingModalProps)
   const dictionary = dictionaries[locale];
   const copy = dictionary.paywall;
   const [period, setPeriod] = useState<"monthly" | "yearly">("monthly");
-  const [loadingKey, setLoadingKey] = useState<PriceKey | null>(null);
 
   if (!open) {
     return null;
   }
 
-  async function handleCheckout(plan: PaidPlan) {
-    const key = `${plan}_${period}` as PriceKey;
-    setLoadingKey(key);
-
-    try {
-      await startCheckout(key);
-    } catch (error) {
-      if (error instanceof CheckoutError && error.status === 401) {
-        window.dispatchEvent(new Event("sarita:open-auth"));
-      } else {
-        showNotice({
-          message: "No pude abrir el checkout. Revisa la configuracion de Whop o intenta otra vez.",
-          tone: "error",
-        });
-      }
-      setLoadingKey(null);
-    }
+  function whatsappHref(plan: PaidPlan) {
+    const planName = plan === "pro" ? copy.proName : copy.avanzadoName;
+    const periodName = period === "monthly" ? copy.monthly : copy.yearly;
+    return whatsappLink(
+      copy.whatsappPlanMessage.replace("{plan}", planName).replace("{period}", periodName),
+    );
   }
 
   const plans: Array<{ id: PaidPlan; name: string; features: string[] }> = [
@@ -96,9 +83,7 @@ export function PricingModal({ open, onClose, requiredPlan }: PricingModalProps)
         <div className="mt-7 grid gap-5 md:grid-cols-2">
           {plans.map((plan) => {
             const price = PRICES[plan.id][period];
-            const priceKey = `${plan.id}_${period}` as PriceKey;
             const highlighted = requiredPlan === plan.id;
-            const loading = loadingKey === priceKey;
 
             return (
               <article
@@ -151,15 +136,15 @@ export function PricingModal({ open, onClose, requiredPlan }: PricingModalProps)
                 ) : null}
 
                 <PrimaryButton
-                  type="button"
-                  className="mt-7 w-full"
-                  disabled={Boolean(loadingKey)}
-                  onClick={() => void handleCheckout(plan.id)}
+                  href={whatsappHref(plan.id)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-7 flex w-full"
                 >
-                  {loading ? copy.checkoutLoading : copy.upgrade}
+                  {copy.whatsappCta}
                 </PrimaryButton>
                 <p className="mt-3 text-center text-[12px] uppercase tracking-[0.16em] text-[#d7e7ff]/62">
-                  {copy.cancelAnytime}
+                  {copy.whatsappNote}
                 </p>
               </article>
             );

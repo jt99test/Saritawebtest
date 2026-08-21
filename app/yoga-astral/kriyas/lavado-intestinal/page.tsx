@@ -3,13 +3,13 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 
 import { getLavadoIntestinal } from "@/data/sarita/lavado-intestinal";
-import { LavadoBuyButton } from "@/components/paywall/lavado-buy-button";
 import { AtmosphericBackground } from "@/components/ui/atmospheric-background";
 import { Container } from "@/components/ui/container";
 import { PremiumCard } from "@/components/ui/premium-card";
 import { PrimaryButton } from "@/components/ui/primary-button";
 import { AsanaVisual } from "@/components/yoga/asana-visual";
 import { dictionaries, defaultLocale, isLocale, LOCALE_STORAGE_KEY } from "@/lib/i18n";
+import { whatsappLink } from "@/lib/whatsapp";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 function SectionHeader({ children }: { children: ReactNode }) {
@@ -91,10 +91,13 @@ export default async function LavadoIntestinalPage() {
                   {dictionary.paywall.lavado.gateBody}
                 </p>
                 <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                  <LavadoBuyButton
-                    label={dictionary.paywall.lavado.gateOnetimeCta}
-                    loadingLabel={dictionary.paywall.checkoutLoading}
-                  />
+                  <PrimaryButton
+                    href={whatsappLink(dictionary.paywall.whatsappLavadoMessage)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {dictionary.paywall.lavado.gateOnetimeCta}
+                  </PrimaryButton>
                   <PrimaryButton
                     href="/resultado"
                     variant="ghostGold"

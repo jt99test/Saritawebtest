@@ -251,7 +251,11 @@
     "successBanner": "Plan activado. Ya tienes acceso completo.",
     "cancelBanner": "Pago cancelado. Puedes retomar cuando quieras.",
     "manageSubscription": "Gestionar suscripción",
-    "cancelAnytime": "Cancela cuando quieras"
+    "cancelAnytime": "Cancela cuando quieras",
+    "whatsappCta": "Escríbeme por WhatsApp",
+    "whatsappNote": "Gestionamos tu plan de forma personal por WhatsApp",
+    "whatsappPlanMessage": "¡Hola! Me interesa el plan {plan} ({period}).",
+    "whatsappLavadoMessage": "¡Hola! Me interesa el acceso al Lavado Intestinal (€49,99)."
   },
   "yogaAstral": {
     "asanas": "asanas",

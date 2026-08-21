@@ -251,7 +251,11 @@
     "successBanner": "Plan activated. You now have full access.",
     "cancelBanner": "Payment cancelled. Come back whenever you're ready.",
     "manageSubscription": "Manage subscription",
-    "cancelAnytime": "Cancel anytime"
+    "cancelAnytime": "Cancel anytime",
+    "whatsappCta": "Message me on WhatsApp",
+    "whatsappNote": "Your plan is handled personally over WhatsApp",
+    "whatsappPlanMessage": "Hi! I'm interested in the {plan} plan ({period}).",
+    "whatsappLavadoMessage": "Hi! I'm interested in the Intestinal Cleanse access (€49.99)."
   },
   "yogaAstral": {
     "asanas": "asanas",
