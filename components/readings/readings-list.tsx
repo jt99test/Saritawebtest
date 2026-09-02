@@ -48,10 +48,17 @@ export function ReadingsList({
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [emailSearch, setEmailSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [sortOrder, setSortOrder] = useState<"recent" | "oldest" | "az" | "za">("recent");
   const [isPending, startTransition] = useTransition();
   const adminCopy = {
-    search: locale === "en" ? "Search by client or email" : locale === "it" ? "Cerca per cliente o email" : "Buscar por cliente o email",
+    searchByName: locale === "en" ? "Search by name" : locale === "it" ? "Cerca per nome" : "Buscar por nombre",
+    searchByEmail: locale === "en" ? "Search by account email" : locale === "it" ? "Cerca per email account" : "Buscar por email de cuenta",
+    sortRecent: locale === "en" ? "Newest first" : locale === "it" ? "Più recenti" : "Más recientes",
+    sortOldest: locale === "en" ? "Oldest first" : locale === "it" ? "Più vecchie" : "Más antiguas",
+    sortAz: locale === "en" ? "Name A-Z" : locale === "it" ? "Nome A-Z" : "Nombre A-Z",
+    sortZa: locale === "en" ? "Name Z-A" : locale === "it" ? "Nome Z-A" : "Nombre Z-A",
     allTypes: locale === "en" ? "All types" : locale === "it" ? "Tutti i tipi" : "Todos los tipos",
     noMatches: locale === "en" ? "No readings match those filters." : locale === "it" ? "Nessuna lettura coincide con i filtri." : "No hay lecturas con esos filtros.",
     client: locale === "en" ? "Client" : locale === "it" ? "Cliente" : "Cliente",
@@ -63,10 +70,12 @@ export function ReadingsList({
   );
   const filteredReadings = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
+    const normalizedEmail = emailSearch.trim().toLowerCase();
+    const labelOf = (reading: StoredReading) =>
+      getStoredResult(reading)?.chart.event.name ?? dictionary.readings.fallbackTitle;
 
-    return readings.filter((reading) => {
-      const result = getStoredResult(reading);
-      const label = result?.chart.event.name ?? dictionary.readings.fallbackTitle;
+    const matches = readings.filter((reading) => {
+      const label = labelOf(reading);
       const typeLabel =
         reading.type && reading.type in dictionary.readings.types
           ? dictionary.readings.types[reading.type as keyof typeof dictionary.readings.types]
@@ -75,12 +84,21 @@ export function ReadingsList({
       const matchesSearch =
         !normalizedSearch ||
         label.toLowerCase().includes(normalizedSearch) ||
-        (reading.owner_email ?? "").toLowerCase().includes(normalizedSearch) ||
         typeLabel.toLowerCase().includes(normalizedSearch);
+      const matchesEmail =
+        !normalizedEmail ||
+        (reading.owner_email ?? reading.user_id ?? "").toLowerCase().includes(normalizedEmail);
 
-      return matchesType && matchesSearch;
+      return matchesType && matchesSearch && matchesEmail;
     });
-  }, [dictionary, readings, search, typeFilter]);
+
+    return matches.sort((a, b) => {
+      if (sortOrder === "az") return labelOf(a).localeCompare(labelOf(b), locale);
+      if (sortOrder === "za") return labelOf(b).localeCompare(labelOf(a), locale);
+      if (sortOrder === "oldest") return Date.parse(a.created_at) - Date.parse(b.created_at);
+      return Date.parse(b.created_at) - Date.parse(a.created_at);
+    });
+  }, [dictionary, emailSearch, locale, readings, search, sortOrder, typeFilter]);
 
   function openReading(reading: StoredReading) {
     const result = getStoredResult(reading);
@@ -127,29 +145,51 @@ export function ReadingsList({
 
   return (
     <>
-      {isAdmin ? (
-        <div className="mt-8 grid gap-3 border-y border-[#d7e7ff]/18 py-4 sm:grid-cols-[1fr_14rem]">
+      <div
+        className={[
+          "mt-8 grid gap-3 border-y border-[#d7e7ff]/18 py-4",
+          isAdmin ? "sm:grid-cols-2 lg:grid-cols-[1fr_1fr_12rem_12rem]" : "sm:grid-cols-[1fr_12rem_12rem]",
+        ].join(" ")}
+      >
+        <input
+          type="search"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder={adminCopy.searchByName}
+          className="min-h-11 border border-[#d7e7ff]/20 bg-[#071437]/84 px-4 text-[13px] font-medium text-[#fffaf0] shadow-[0_0_22px_rgba(0,102,255,0.1)] outline-none transition placeholder:text-[#d7e7ff]/58 focus:border-[#f5d782]/55"
+        />
+        {isAdmin ? (
           <input
             type="search"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder={adminCopy.search}
+            value={emailSearch}
+            onChange={(event) => setEmailSearch(event.target.value)}
+            placeholder={adminCopy.searchByEmail}
             className="min-h-11 border border-[#d7e7ff]/20 bg-[#071437]/84 px-4 text-[13px] font-medium text-[#fffaf0] shadow-[0_0_22px_rgba(0,102,255,0.1)] outline-none transition placeholder:text-[#d7e7ff]/58 focus:border-[#f5d782]/55"
           />
-          <select
-            value={typeFilter}
-            onChange={(event) => setTypeFilter(event.target.value)}
-            className="min-h-11 border border-[#f5d782]/40 bg-[#071437]/92 px-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#fffaf0] shadow-[0_0_22px_rgba(245,215,130,0.1)] outline-none transition focus:border-[#f5d782]/70"
-          >
-            <option value="all">{adminCopy.allTypes}</option>
-            {typeOptions.map((type) => (
-              <option key={type} value={type}>
-                {type in dictionary.readings.types ? dictionary.readings.types[type as keyof typeof dictionary.readings.types] : type}
-              </option>
-            ))}
-          </select>
-        </div>
-      ) : null}
+        ) : null}
+        <select
+          value={sortOrder}
+          onChange={(event) => setSortOrder(event.target.value as typeof sortOrder)}
+          className="min-h-11 border border-[#d7e7ff]/20 bg-[#071437]/92 px-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#fffaf0] shadow-[0_0_22px_rgba(0,102,255,0.1)] outline-none transition focus:border-[#f5d782]/55"
+        >
+          <option value="recent">{adminCopy.sortRecent}</option>
+          <option value="oldest">{adminCopy.sortOldest}</option>
+          <option value="az">{adminCopy.sortAz}</option>
+          <option value="za">{adminCopy.sortZa}</option>
+        </select>
+        <select
+          value={typeFilter}
+          onChange={(event) => setTypeFilter(event.target.value)}
+          className="min-h-11 border border-[#f5d782]/40 bg-[#071437]/92 px-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#fffaf0] shadow-[0_0_22px_rgba(245,215,130,0.1)] outline-none transition focus:border-[#f5d782]/70"
+        >
+          <option value="all">{adminCopy.allTypes}</option>
+          {typeOptions.map((type) => (
+            <option key={type} value={type}>
+              {type in dictionary.readings.types ? dictionary.readings.types[type as keyof typeof dictionary.readings.types] : type}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <div className="mt-8 rounded-[1.8rem] border border-[#d7e7ff]/18 bg-[#071437]/76 px-5 py-2 shadow-[0_20px_64px_rgba(0,0,0,0.32),0_0_36px_rgba(0,102,255,0.12),inset_0_1px_0_rgba(255,250,240,0.08)] backdrop-blur-md sm:px-6">
         {filteredReadings.length ? filteredReadings.map((reading) => {
