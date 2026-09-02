@@ -156,7 +156,7 @@ export function ReadingsList({
           value={search}
           onChange={(event) => setSearch(event.target.value)}
           placeholder={adminCopy.searchByName}
-          className="min-h-11 border border-[#d7e7ff]/20 bg-[#071437]/84 px-4 text-[13px] font-medium text-[#fffaf0] shadow-[0_0_22px_rgba(0,102,255,0.1)] outline-none transition placeholder:text-[#d7e7ff]/58 focus:border-[#f5d782]/55"
+          className="min-h-[3.25rem] border border-[#d7e7ff]/20 bg-[#071437]/84 px-4 text-base font-medium text-[#fffaf0] shadow-[0_0_22px_rgba(0,102,255,0.1)] outline-none transition placeholder:text-[#d7e7ff]/58 focus:border-[#f5d782]/55 sm:min-h-11 sm:text-[13px]"
         />
         {isAdmin ? (
           <input
@@ -164,13 +164,13 @@ export function ReadingsList({
             value={emailSearch}
             onChange={(event) => setEmailSearch(event.target.value)}
             placeholder={adminCopy.searchByEmail}
-            className="min-h-11 border border-[#d7e7ff]/20 bg-[#071437]/84 px-4 text-[13px] font-medium text-[#fffaf0] shadow-[0_0_22px_rgba(0,102,255,0.1)] outline-none transition placeholder:text-[#d7e7ff]/58 focus:border-[#f5d782]/55"
+            className="min-h-[3.25rem] border border-[#d7e7ff]/20 bg-[#071437]/84 px-4 text-base font-medium text-[#fffaf0] shadow-[0_0_22px_rgba(0,102,255,0.1)] outline-none transition placeholder:text-[#d7e7ff]/58 focus:border-[#f5d782]/55 sm:min-h-11 sm:text-[13px]"
           />
         ) : null}
         <select
           value={sortOrder}
           onChange={(event) => setSortOrder(event.target.value as typeof sortOrder)}
-          className="min-h-11 border border-[#d7e7ff]/20 bg-[#071437]/92 px-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#fffaf0] shadow-[0_0_22px_rgba(0,102,255,0.1)] outline-none transition focus:border-[#f5d782]/55"
+          className="min-h-[3.25rem] border border-[#d7e7ff]/20 bg-[#071437]/92 px-4 text-sm font-semibold uppercase tracking-[0.14em] text-[#fffaf0] shadow-[0_0_22px_rgba(0,102,255,0.1)] outline-none transition focus:border-[#f5d782]/55 sm:min-h-11 sm:text-[12px]"
         >
           <option value="recent">{adminCopy.sortRecent}</option>
           <option value="oldest">{adminCopy.sortOldest}</option>
@@ -180,7 +180,7 @@ export function ReadingsList({
         <select
           value={typeFilter}
           onChange={(event) => setTypeFilter(event.target.value)}
-          className="min-h-11 border border-[#f5d782]/40 bg-[#071437]/92 px-4 text-[12px] font-semibold uppercase tracking-[0.14em] text-[#fffaf0] shadow-[0_0_22px_rgba(245,215,130,0.1)] outline-none transition focus:border-[#f5d782]/70"
+          className="min-h-[3.25rem] border border-[#f5d782]/40 bg-[#071437]/92 px-4 text-sm font-semibold uppercase tracking-[0.14em] text-[#fffaf0] shadow-[0_0_22px_rgba(245,215,130,0.1)] outline-none transition focus:border-[#f5d782]/70 sm:min-h-11 sm:text-[12px]"
         >
           <option value="all">{adminCopy.allTypes}</option>
           {typeOptions.map((type) => (
