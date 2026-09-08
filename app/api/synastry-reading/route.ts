@@ -14,6 +14,8 @@ import {
 import type { ChartPointId, NatalChartData, SignId } from "@/lib/chart";
 import { getPointInterpretiveHouse } from "@/lib/chart";
 import { getAspectLabel, getPointLabel, getSignLabel } from "@/lib/chart-labels";
+import { hashNatalChart } from "@/lib/chart-hash";
+import { synastryReadingCacheKey } from "@/lib/synastry-reading-cache";
 import { assertGeneratedLanguage } from "@/lib/generated-language";
 import { nativeToneInstruction, promptLanguageInstruction } from "@/lib/prompt-i18n";
 import { getEffectivePlan } from "@/lib/plan-access";
@@ -314,14 +316,13 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return new Response("Unauthorized", { status: 401 });
 
-  const { chartA, chartB, partnerName, aspects, locale, readingId, cacheKey, gender, partnerGender } = await request.json() as {
+  const { chartA, chartB, partnerName, aspects, locale, readingId, gender, partnerGender } = await request.json() as {
     chartA: NatalChartData;
     chartB: NatalChartData;
     partnerName: string;
     aspects: SynastryAspect[];
     locale?: string;
     readingId?: string;
-    cacheKey?: string;
     gender?: ReadingGender;
     partnerGender?: ReadingGender;
   };
@@ -332,7 +333,9 @@ export async function POST(request: Request) {
 
   const readingGender = normalizeReadingGender(gender);
   const partnerReadingGender = normalizeReadingGender(partnerGender);
-  const itemKey = `v6:${cacheKey ?? `synastry:${partnerName}:${chartB.event.julianDay}`}:${readingGender || "unspecified"}:${partnerReadingGender || "partner-unspecified"}`;
+  // Derive identity from both submitted charts, never from a client cache key.
+  const [subjectHash, partnerHash] = await Promise.all([hashNatalChart(chartA), hashNatalChart(chartB)]);
+  const itemKey = synastryReadingCacheKey(subjectHash, partnerHash, locale, readingGender, partnerReadingGender);
   const access = await validateReadingGenerationAccess({ supabase, user, readingId });
   if (!access.ok) return access.response;
 

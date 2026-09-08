@@ -28,6 +28,7 @@ import { getCachedPremiumReading, setCachedPremiumReading } from "@/lib/premium-
 import { normalizeReadingText, splitReading } from "@/lib/reading-text";
 import type { ReadingGender } from "@/lib/reading-gender";
 import { calculateSynastryAspects, type SynastryAspect } from "@/lib/synastry";
+import { synastryReadingCacheKey } from "@/lib/synastry-reading-cache";
 
 type SynastryPageProps = {
   natalChart: NatalChartData;
@@ -375,7 +376,8 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
     const subjectGender = readingSubjectGender === "female" || readingSubjectGender === "male" ? readingSubjectGender : undefined;
     const otherGender = readingPartnerGender === "female" || readingPartnerGender === "male" ? readingPartnerGender : undefined;
     const otherHash = flipped ? natalHash : partnerHash;
-    const cacheKey = `synastry:${otherHash}:${flipped ? "flipped" : "normal"}:${locale}:${subjectGender || "unspecified"}:${otherGender || "partner-unspecified"}`;
+    const subjectHash = flipped ? partnerHash : natalHash;
+    const cacheKey = synastryReadingCacheKey(subjectHash, otherHash, locale, subjectGender, otherGender);
     const cachedData = getCachedPremiumReading<SynastryData>(readingSubjectHash, cacheKey);
     setSynastryData({});
     setSynastryReadingError(null);
@@ -397,7 +399,6 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
         aspects: readingAspects,
         locale,
         readingId,
-        cacheKey,
         gender: subjectGender,
         partnerGender: otherGender,
       }),
