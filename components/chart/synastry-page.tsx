@@ -51,6 +51,7 @@ const LEGACY_SELECTED_PARTNER_STORAGE_KEYS = [
 
 type PartnerRow = {
   id: string;
+  canDelete?: boolean;
   name: string;
   birth_date: string;
   birth_time: string | null;
@@ -241,6 +242,8 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
   const locale = useStoredLocale();
   const synastryCopy = dictionary.result.synastryPage;
   const [partners, setPartners] = useState<PartnerRow[]>([]);
+  const [search, setSearch] = useState("");
+  const [savedItemsError, setSavedItemsError] = useState(false);
   const [savedNatalReadings, setSavedNatalReadings] = useState<SavedSynastryNatalReading[]>([]);
   const [selectedPartner, setSelectedPartner] = useState<PartnerRow | null>(null);
   const [form, setForm] = useState<SynastryPartnerInput>({
@@ -300,6 +303,11 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
   const selectableSavedNatalReadings = useMemo(() => (
     savedNatalReadings.filter((reading) => reading.chart.event.julianDay !== natalChart.event.julianDay)
   ), [natalChart.event.julianDay, savedNatalReadings]);
+  const searchLabel = locale === "en" ? "Search by name or birthplace" : locale === "it" ? "Cerca per nome o luogo di nascita" : "Buscar por nombre o lugar de nacimiento";
+  const normalizeSearch = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const searchTerm = normalizeSearch(search.trim());
+  const filteredReadings = selectableSavedNatalReadings.filter((reading) => normalizeSearch(`${reading.name} ${reading.locationLabel}`).includes(searchTerm));
+  const filteredPartners = partners.filter((partner) => normalizeSearch(`${partner.name} ${partner.birth_city}`).includes(searchTerm));
 
   useEffect(() => {
     LEGACY_SELECTED_PARTNER_STORAGE_KEYS.forEach((key) => {
@@ -310,17 +318,21 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
   useEffect(() => {
     let active = true;
     startTransition(async () => {
-      const [storedPartners, storedReadings] = await Promise.all([
-        getSynastryPartnersAction(),
-        getSavedNatalReadingsAction(),
-      ]);
-      if (!active) return;
-      setPartners((storedPartners as PartnerRow[]).map((partner) => ({
-        ...partner,
-        gender: "",
-        birth_time_unknown: false,
-      })));
-      setSavedNatalReadings(storedReadings);
+      try {
+        const [storedPartners, storedReadings] = await Promise.all([
+          getSynastryPartnersAction(),
+          getSavedNatalReadingsAction(),
+        ]);
+        if (!active) return;
+        setPartners((storedPartners as PartnerRow[]).map((partner) => ({
+          ...partner,
+          gender: "",
+          birth_time_unknown: false,
+        })));
+        setSavedNatalReadings(storedReadings);
+      } catch {
+        if (active) setSavedItemsError(true);
+      }
     });
     return () => {
       active = false;
@@ -700,7 +712,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
   }
 
   return (
-    <section className="mx-auto flex max-w-3xl flex-col py-16">
+    <section className="mx-auto flex w-full min-w-0 max-w-3xl flex-col overflow-hidden py-16">
       <div className="mx-auto mb-8 max-w-2xl text-center">
         <p className="text-sm leading-7 text-[#3a3048]">
           {synastryCopy.intro}
@@ -708,10 +720,28 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
       </div>
       <p className="font-serif text-[15px] italic lowercase tracking-[0.15em] text-[#5c4a24]">{synastryCopy.eyebrow}</p>
       <h2 className="mt-2 break-words font-serif text-[32px] leading-tight text-ivory sm:text-[52px]">{synastryCopy.title}</h2>
-      {selectableSavedNatalReadings.length ? (
-        <div className="order-2 mt-8 border-y border-black/10 py-5">
+      <div className="mt-6 border-y border-black/10 py-4">
+        <label htmlFor="synastry-search" className="mb-2 block text-sm text-[#3a3048]">{searchLabel}</label>
+        <input
+          id="synastry-search"
+          type="search"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder={searchLabel}
+          className="min-h-[3.25rem] w-full rounded-2xl border border-black/10 bg-white/70 px-5 text-base text-[#1e1a2e] outline-none transition placeholder:text-[#3a3048]/55 focus:border-dusty-gold/50"
+        />
+        <p className="mt-2 text-sm text-[#3a3048]" role="status">
+          {savedItemsError
+            ? (locale === "en" ? "Saved people could not load. Please reload to try again." : locale === "it" ? "Impossibile caricare le persone salvate. Ricarica per riprovare." : "No se pudieron cargar las personas guardadas. Recarga para volver a intentarlo.")
+            : isPending
+              ? (locale === "en" ? "Loading…" : locale === "it" ? "Caricamento…" : "Cargando…")
+              : `${filteredReadings.length + filteredPartners.length} ${locale === "en" ? "results" : locale === "it" ? "risultati" : "resultados"}`}
+        </p>
+      </div>
+      {filteredReadings.length ? (
+        <div className="order-2 min-w-0 max-w-full overflow-hidden border-y border-black/10 py-5 mt-8">
           <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
+            <div className="min-w-0">
               <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
                 {synastryCopy.savedChartsTitle}
               </p>
@@ -720,12 +750,12 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
               </p>
             </div>
           </div>
-          <div className="mt-4 grid gap-3">
-            {selectableSavedNatalReadings.map((reading) => (
-              <div key={reading.id} className="flex flex-wrap items-center justify-between gap-4 border border-black/10 bg-white/60 px-4 py-3">
-                <div className="min-w-0">
-                  <p className="notranslate truncate font-serif text-xl text-ivory" translate="no">{reading.name}</p>
-                  <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[#3a3048]">
+          <div className="mt-4 grid min-w-0 max-w-full gap-3">
+            {filteredReadings.map((reading) => (
+              <div key={reading.id} className="flex min-w-0 max-w-full flex-wrap items-center justify-between gap-4 overflow-hidden border border-black/10 bg-white/60 px-4 py-3">
+                <div className="min-w-0 max-w-full flex-1 basis-full sm:basis-auto">
+                  <p className="notranslate break-words font-serif text-xl text-ivory" translate="no">{reading.name}</p>
+                  <p className="mt-1 break-words text-xs uppercase tracking-[0.18em] text-[#3a3048]">
                     {reading.birthDate} - {reading.locationLabel}
                   </p>
                   <p className="mt-1 text-[11px] uppercase tracking-[0.16em] text-[#3a3048]/72">
@@ -747,9 +777,9 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
           </div>
         </div>
       ) : null}
-      {partners.length ? (
-        <div className="order-3 mt-8 border-y border-black/10 py-5">
-          <div>
+      {filteredPartners.length ? (
+        <div className="order-3 min-w-0 max-w-full overflow-hidden border-y border-black/10 py-5 mt-8">
+          <div className="min-w-0">
             <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#8a7a4e]">
               {synastryCopy.savedPeopleTitle}
             </p>
@@ -757,29 +787,33 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
               {synastryCopy.savedPeopleBody}
             </p>
           </div>
-          <div className="mt-4 grid gap-3">
-          {partners.map((partner) => (
-            <div key={partner.id} className="flex flex-wrap items-center justify-between gap-4 border-b border-black/10 py-4 last:border-b-0">
-              <div>
-                <p className="notranslate font-serif text-xl text-ivory" translate="no">{partner.name}</p>
-                <p className="text-xs uppercase tracking-[0.18em] text-[#3a3048]">{partner.birth_date} · {partner.birth_city}</p>
+          <div className="mt-4 grid min-w-0 max-w-full gap-3">
+          {filteredPartners.map((partner) => (
+            <div key={partner.id} className="flex min-w-0 max-w-full flex-wrap items-center justify-between gap-4 overflow-hidden border-b border-black/10 py-4 last:border-b-0">
+              <div className="min-w-0 max-w-full flex-1 basis-full sm:basis-auto">
+                <p className="notranslate break-words font-serif text-xl text-ivory" translate="no">{partner.name}</p>
+                <p className="break-words text-xs uppercase tracking-[0.18em] text-[#3a3048]">{partner.birth_date} · {partner.birth_city}</p>
               </div>
               <div className="flex gap-2">
                 <button type="button" className="border border-black/20 bg-transparent px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory transition hover:bg-black/[0.05]" onClick={() => { setSelectedPartner(partner); setFlipped(false); }}>{synastryCopy.compare}</button>
-                <button
+                {partner.canDelete !== false ? <button
                   type="button"
                   className="border border-black/20 bg-transparent px-4 py-2 text-xs uppercase tracking-[0.18em] text-ivory transition hover:bg-black/[0.05]"
                   onClick={() => {
                     startTransition(async () => {
                       if (!partner.id.startsWith("local-")) {
-                        await deleteSynastryPartnerAction(partner.id);
+                        const result = await deleteSynastryPartnerAction(partner.id);
+                        if (!result.ok) {
+                          setError(result.error ?? synastryCopy.saveError);
+                          return;
+                        }
                       }
                       setPartners((current) => current.filter((entry) => entry.id !== partner.id));
                     });
                   }}
                 >
                   {synastryCopy.delete}
-                </button>
+                </button> : null}
               </div>
             </div>
           ))}
@@ -787,7 +821,7 @@ export function SynastryPage({ natalChart, dictionary, readingId, gender }: Syna
         </div>
       ) : null}
 
-      <div className="order-1 mt-10 grid gap-5 border-t border-dusty-gold/14 pt-8">
+      <div className={`${searchTerm ? "order-4" : "order-1"} mt-10 grid gap-5 border-t border-dusty-gold/14 pt-8`}>
         <p className="font-serif text-2xl text-ivory">{synastryCopy.addPerson}</p>
         <div className="grid gap-3 sm:grid-cols-2">
           <input

@@ -7,7 +7,7 @@ import type { ReadingGender } from "./reading-gender";
 import { isAdminEmail } from "./admin";
 import { getEffectivePlan } from "./plan-access";
 import { getPlanReadingLimit } from "./reading-limits";
-import { createServerSupabaseClient } from "./supabase/server";
+import { createServerSupabaseClient, createServiceSupabaseClient } from "./supabase/server";
 
 function getStartOfMonth() {
   const now = new Date();
@@ -353,13 +353,15 @@ export async function getSavedNatalReadingsAction(): Promise<SavedSynastryNatalR
     return [];
   }
 
-  const { data } = await supabase
+  const isAdmin = isAdminEmail(user.email);
+  const readingsClient = isAdmin ? createServiceSupabaseClient() : supabase;
+  const query = readingsClient
     .from("readings")
     .select("id,chart_data,created_at")
-    .eq("user_id", user.id)
     .eq("type", "natal")
-    .order("created_at", { ascending: false })
-    .limit(30);
+    .order("created_at", { ascending: false });
+  const { data, error } = await (isAdmin ? query : query.eq("user_id", user.id));
+  if (error) throw new Error("Could not load saved natal charts.");
 
   return (data ?? [])
     .map((row) => savedNatalReadingFromRow(row))
@@ -376,13 +378,19 @@ export async function getSynastryPartnersAction() {
     return [];
   }
 
-  const { data } = await supabase
+  const isAdmin = isAdminEmail(user.email);
+  const partnersClient = isAdmin ? createServiceSupabaseClient() : supabase;
+  const query = partnersClient
     .from("synastry_partners")
-    .select("id,name,birth_date,birth_time,birth_city,birth_lat,birth_lng,chart_data,created_at")
-    .eq("user_id", user.id)
+    .select("id,user_id,name,birth_date,birth_time,birth_city,birth_lat,birth_lng,chart_data,created_at")
     .order("created_at", { ascending: false });
+  const { data, error } = await (isAdmin ? query : query.eq("user_id", user.id));
+  if (error) throw new Error("Could not load saved synastry partners.");
 
-  return data ?? [];
+  return (data ?? []).map(({ user_id, ...partner }) => ({
+    ...partner,
+    canDelete: user_id === user.id,
+  }));
 }
 
 export async function saveAndCalculateSynastryPartnerAction(input: SynastryPartnerInput) {
